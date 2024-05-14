@@ -1,0 +1,6 @@
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\bin\Debug\OtherSideCore.Utils.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\bin\Debug\OtherSideCore.Utils.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\obj\Debug\OtherSideCore.Utils.csproj.AssemblyReference.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\obj\Debug\OtherSideCore.Utils.csproj.CoreCompileInputs.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\obj\Debug\OtherSideCore.Utils.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Utils\obj\Debug\OtherSideCore.Utils.pdb

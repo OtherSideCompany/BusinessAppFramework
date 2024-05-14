@@ -1,0 +1,13 @@
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\bin\Debug\OtherSideCore.Wpf.CustomControls.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\bin\Debug\OtherSideCore.Wpf.CustomControls.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.csproj.AssemblyReference.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls_MarkupCompile.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls_MarkupCompile.lref
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\Themes\Generic.baml
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.g.resources
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.Properties.Resources.resources
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.csproj.GenerateResource.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.csproj.CoreCompileInputs.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Wpf.CustomControls\obj\Debug\OtherSideCore.Wpf.CustomControls.pdb
