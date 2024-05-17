@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherSideCore.Wpf.CustomCon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherSideCore.Utils", "OtherSideCore.Utils\OtherSideCore.Utils.csproj", "{FC098A53-1EDE-4785-8002-39ABDB6FA71E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherSideCore.Wpf.UserControls", "OtherSideCore.Wpf.UserControls\OtherSideCore.Wpf.UserControls.csproj", "{B17A8161-37B0-4659-B6A9-E3067584C589}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{FC098A53-1EDE-4785-8002-39ABDB6FA71E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC098A53-1EDE-4785-8002-39ABDB6FA71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC098A53-1EDE-4785-8002-39ABDB6FA71E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B17A8161-37B0-4659-B6A9-E3067584C589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B17A8161-37B0-4659-B6A9-E3067584C589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B17A8161-37B0-4659-B6A9-E3067584C589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B17A8161-37B0-4659-B6A9-E3067584C589}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

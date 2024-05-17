@@ -2,17 +2,71 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OtherSideCore.Wpf.CustomControls">
-    <Style TargetType="{x:Type local:CustomControl1}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:CustomControl1}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
 
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+   <!-- ImageButton-->
+   <Style TargetType="local:ImageButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="ImageButton_ImageSize" Value="32" />
+      <Setter Property="ImageButton_OverBackgroundColor" Value="{StaticResource MMColor_LightGray}" />
+      <Setter Property="ImageButton_MouseDownBackgroundColor" Value="{StaticResource MMColor_Green_Light}" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type local:ImageButton}">
+               <Border Name="ImageContainer" Background="{TemplateBinding Background}">
+                  <Image Name ="Image" Source="{TemplateBinding ImageButton_BackgroundImage}" 
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ImageButton_ImageSize}" 
+                            Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ImageButton_ImageSize}"/>
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{Binding ImageButton_OverBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ImageContainer"/>
+                     <Setter Property="Source" Value="{Binding ImageButton_OverImage, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                     <Setter Property="Background" Value="{Binding ImageButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ImageContainer"/>
+                     <Setter Property="Source" Value="{Binding ImageButton_MouseDownImage, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.3"/>
+                     <Setter Property="Opacity" Value="0.3" TargetName="Image"/>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <!-- ImageToggleButton -->
+   <Style TargetType="local:ImageToggleButton">
+      <Setter Property="ImageToggleButton_OverBackgroundColor" Value="{StaticResource MMColor_LightGray}" />
+      <Setter Property="ImageToggleButton_MouseDownBackgroundColor" Value="{StaticResource MMColor_Green_Light}" />
+      <Setter Property="ImageToggleButton_CheckedBackgroundColor" Value="{StaticResource MMColor_Green_Light}" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type local:ImageToggleButton}">
+               <Border Name="ImageContainer" Background="{TemplateBinding Background}">
+                  <Image Grid.Row="0" Name="Image" Source="{TemplateBinding ImageToggleButton_BackgroundImage}"
+                            Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ImageToggleButton_ImageSize}" 
+                            Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ImageToggleButton_ImageSize}"/>
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{Binding ImageToggleButton_OverBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ImageContainer"/>
+                     <Setter Property="Source" Value="{Binding ImageToggleButton_OverImage, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter Property="Background" Value="{Binding ImageToggleButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ImageContainer"/>
+                     <Setter Property="Source" Value="{Binding ImageToggleButton_CheckedImage, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                     <Setter Property="Background" Value="{Binding ImageToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ImageContainer"/>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
 </ResourceDictionary>

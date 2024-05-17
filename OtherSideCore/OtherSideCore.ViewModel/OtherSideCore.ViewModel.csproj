@@ -47,9 +47,11 @@
     <Compile Include="Command.cs" />
     <Compile Include="IDragDroppable.cs" />
     <Compile Include="ModelObjectViewModelBase.cs" />
+    <Compile Include="ModelViewModel.cs" />
     <Compile Include="ModuleGroupViewModel.cs" />
     <Compile Include="ModuleBaseViewModel.cs" />
     <Compile Include="ModuleViewModel.cs" />
+    <Compile Include="OtherSideCoreMainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
