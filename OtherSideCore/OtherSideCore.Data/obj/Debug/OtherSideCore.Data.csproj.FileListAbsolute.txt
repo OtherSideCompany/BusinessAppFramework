@@ -1,5 +1,0 @@
-D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Data\bin\Debug\OtherSideCore.Data.dll
-D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Data\bin\Debug\OtherSideCore.Data.pdb
-D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Data\obj\Debug\OtherSideCore.Data.csproj.CoreCompileInputs.cache
-D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Data\obj\Debug\OtherSideCore.Data.dll
-D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Data\obj\Debug\OtherSideCore.Data.pdb
