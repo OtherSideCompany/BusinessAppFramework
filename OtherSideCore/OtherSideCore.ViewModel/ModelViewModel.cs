@@ -12,23 +12,23 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-      private ObservableCollection<ModuleBaseViewModel> m_QuickNavigationModuleBases;
+      private ObservableCollection<ModuleBaseViewModel> m_QuickNavigationModuleViewModels;
 
       #endregion
 
       #region Properties
 
-      public ObservableCollection<ModuleBaseViewModel> QuickNavigationModuleBases
+      public ObservableCollection<ModuleBaseViewModel> QuickNavigationModuleViewModels
       {
          get
          {
-            return m_QuickNavigationModuleBases;
+            return m_QuickNavigationModuleViewModels;
          }
          set
          {
-            if (value != m_QuickNavigationModuleBases)
+            if (value != m_QuickNavigationModuleViewModels)
             {
-               m_QuickNavigationModuleBases = value;
+               m_QuickNavigationModuleViewModels = value;
                OnPropertyChanged("QuickNavigationModuleBases");
             }
          }
@@ -46,7 +46,7 @@ namespace OtherSideCore.ViewModel
 
       public ModelViewModel()
       {
-         QuickNavigationModuleBases = new ObservableCollection<ModuleBaseViewModel>();
+         QuickNavigationModuleViewModels = new ObservableCollection<ModuleBaseViewModel>();
       }
 
       #endregion

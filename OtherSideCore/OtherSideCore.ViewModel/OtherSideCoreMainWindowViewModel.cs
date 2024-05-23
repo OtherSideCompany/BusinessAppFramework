@@ -18,7 +18,6 @@ namespace OtherSideCore.ViewModel
       private bool m_IsNavigationMenuDisplayed;
       private ModuleBaseViewModel m_CurrentLoadedModuleBaseViewModel;
       private SolidColorBrush m_LogoBackgroundColor;
-      private SolidColorBrush m_HeaderBarBackgroundColor;
       private ModelViewModel m_ModelViewModel;
 
       #endregion
@@ -105,22 +104,6 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public SolidColorBrush HeaderBarBackgroundColor
-      {
-         get
-         {
-            return m_HeaderBarBackgroundColor;
-         }
-         set
-         {
-            if (value != m_HeaderBarBackgroundColor)
-            {
-               m_HeaderBarBackgroundColor = value;
-               OnPropertyChanged("HeaderBarBackgroundColor");
-            }
-         }
-      }
-
       public ModelViewModel ModelViewModel
       {
          get
@@ -151,8 +134,7 @@ namespace OtherSideCore.ViewModel
       {
          ApplicationName = "Unnamed App";
 
-         LogoBackgroundColor = new SolidColorBrush(Colors.Black);
-         HeaderBarBackgroundColor = new SolidColorBrush(Color.FromRgb(23,25,28));
+         LogoBackgroundColor = new SolidColorBrush(Color.FromRgb(143, 0, 124));
       }
 
       #endregion

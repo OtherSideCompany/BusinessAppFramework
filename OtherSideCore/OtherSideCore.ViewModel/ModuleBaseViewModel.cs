@@ -17,7 +17,7 @@ namespace OtherSideCore.ViewModel
       private Type m_ViewModelType;
       private Type m_ViewType;
       private UserControl m_ModuleView;
-      private string m_IconFilePath;
+      private object m_IconResource;
 
       #endregion
 
@@ -87,18 +87,18 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public string IconFilePath
+      public object IconResource
       {
          get
          {
-            return m_IconFilePath;
+            return m_IconResource;
          }
          protected set
          {
-            if (value != m_IconFilePath)
+            if (value != m_IconResource)
             {
-               m_IconFilePath = value;
-               OnPropertyChanged("IconFilePath");
+               m_IconResource = value;
+               OnPropertyChanged("IconResource");
             }
          }
       }
@@ -113,12 +113,12 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleBaseViewModel(ModuleBase moduleBase, Type viewModelType, Type viewType, string iconFilePath)
+      public ModuleBaseViewModel(ModuleBase moduleBase, Type viewModelType, Type viewType, object iconResource)
       {
          ModuleBase = moduleBase;
          ViewModelType = viewModelType;
          ViewType = viewType;
-         IconFilePath = iconFilePath;
+         IconResource = iconResource;
       }
 
       #endregion

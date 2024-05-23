@@ -100,9 +100,10 @@
       <Project>{f334a19e-5602-4619-8f02-17492f3d9d83}</Project>
       <Name>OtherSideCore.Wpf.CustomControls</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\navigation-menu-white.png" />
+    <ProjectReference Include="..\OtherSideCore.Wpf.Icons\OtherSideCore.Wpf.Icons.csproj">
+      <Project>{4090f830-6dcc-45e6-85c5-a705d960a446}</Project>
+      <Name>OtherSideCore.Wpf.Icons</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

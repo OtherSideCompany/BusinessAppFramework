@@ -15,6 +15,12 @@
             <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.CustomControls;component/Converters/Converters.xaml"/>
          </ResourceDictionary.MergedDictionaries>
 
+         <SolidColorBrush Color="#17191c" x:Key="HeaderBackgroundColor" />
+         <SolidColorBrush Color="White" x:Key="TextForeGroundColor" />
+         <SolidColorBrush Color="#343638" x:Key="CaptionButtonHoverColor" />
+         <SolidColorBrush Color="#404143" x:Key="CaptionButtonIsPressedColor" />
+         <SolidColorBrush Color="#e3021c" x:Key="CloseButtonHoverColor" />
+
          <Style x:Key="CaptionButtonStyle" TargetType="Button">
             <Setter Property="Template">
                <Setter.Value>
@@ -26,10 +32,10 @@
                      </Grid>
                      <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                           <Setter TargetName="LayoutRoot" Property="Background" Value="#343638"/>
+                           <Setter TargetName="LayoutRoot" Property="Background" Value="{StaticResource CaptionButtonHoverColor}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                           <Setter TargetName="LayoutRoot" Property="Background" Value="#404143"/>
+                           <Setter TargetName="LayoutRoot" Property="Background" Value="{StaticResource CaptionButtonIsPressedColor}"/>
                         </Trigger>
                      </ControlTemplate.Triggers>
                   </ControlTemplate>
@@ -48,7 +54,7 @@
                      </Grid>
                      <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                           <Setter TargetName="LayoutRoot" Property="Background" Value="#e3021c"/>
+                           <Setter TargetName="LayoutRoot" Property="Background" Value="{StaticResource CloseButtonHoverColor}"/>
                         </Trigger>
                      </ControlTemplate.Triggers>
                   </ControlTemplate>
@@ -75,7 +81,7 @@
       </ResourceDictionary>      
       
    </UserControl.Resources>
-   <Grid Background="{Binding HeaderBarBackgroundColor}">
+   <Grid Background="{StaticResource HeaderBackgroundColor}" Height="32">
       <Grid.ColumnDefinitions>
          <ColumnDefinition Width="Auto" />
          <ColumnDefinition Width="Auto" />
@@ -83,8 +89,8 @@
          <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <Border Grid.Column="0" Width="44" Height="32" Background="{Binding LogoBackgroundColor}">
-         <Image Width="32" Height="32" Source="{Binding ApplicationLogoImageSource}" HorizontalAlignment="Center" />
+      <Border Grid.Column="0" Width="38" Height="32" Background="{Binding LogoBackgroundColor}">
+         <Image Width="32" Height="32" Source="{Binding ApplicationLogoImageSource}" HorizontalAlignment="Center" SnapsToDevicePixels="True" />
       </Border>
 
       <Grid Grid.Column="1">
@@ -94,10 +100,10 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <TextBlock Grid.Column="0" Text="{Binding ApplicationName}" Foreground="white" FontSize="14" Margin="10,0,0,0" />
-         <TextBlock Grid.Column="1" Text="|" Foreground="white" FontSize="14" Margin="10,0,0,0"
+         <TextBlock Grid.Column="0" Text="{Binding ApplicationName}" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0" />
+         <TextBlock Grid.Column="1" Text="|" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0"
                     Visibility="{Binding CurrentLoadedModuleBaseViewModel, Converter={StaticResource NullOrEmptyStringToVisibilityConverter}}"/>
-         <TextBlock Grid.Column="2" Text="{Binding CurrentLoadedModuleBaseViewModel.ModuleBase.ModuleNavigationPath}" Foreground="white" FontSize="14" Margin="10,0,0,0" />
+         <TextBlock Grid.Column="2" Text="{Binding CurrentLoadedModuleBaseViewModel.ModuleBase.ModuleNavigationPath}" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0" />
 
       </Grid>
 

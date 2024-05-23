@@ -4,4 +4,5 @@
    <converters:NullOrEmptyStringToVisibilityConverter x:Key="NullOrEmptyStringToVisibilityConverter" />
    <converters:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+   <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
 </ResourceDictionary>

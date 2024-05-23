@@ -29,7 +29,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleViewModel(Module module, Type viewModelType, Type viewType, string iconFilePath) : base(module, viewModelType, viewType, iconFilePath)
+      public ModuleViewModel(Module module, Type viewModelType, Type viewType, object iconResource) : base(module, viewModelType, viewType, iconResource)
       {
 
       }

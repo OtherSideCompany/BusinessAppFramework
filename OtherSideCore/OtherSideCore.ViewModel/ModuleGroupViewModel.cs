@@ -62,7 +62,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleGroupViewModel(ModuleGroup moduleGroup, Type viewModelType, Type viewType, string iconFilePath) : base(moduleGroup, viewModelType, viewType, iconFilePath)
+      public ModuleGroupViewModel(ModuleGroup moduleGroup, Type viewModelType, Type viewType, object iconResource) : base(moduleGroup, viewModelType, viewType, iconResource)
       {
          ModuleViewModels = new ObservableCollection<ModuleViewModel>();
       }
