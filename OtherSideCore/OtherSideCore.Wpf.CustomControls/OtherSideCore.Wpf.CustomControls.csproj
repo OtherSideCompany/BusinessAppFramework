@@ -66,6 +66,7 @@
     <Compile Include="Converters\NullOrEmptyStringToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\ZeroToVisibilityConverter.cs" />
+    <Compile Include="ModuleButton.cs" />
     <Compile Include="SvgImageButton.cs" />
     <Compile Include="SvgImageToggleButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -90,6 +91,16 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OtherSideCore.Utils\OtherSideCore.Utils.csproj">
+      <Project>{FC098A53-1EDE-4785-8002-39ABDB6FA71E}</Project>
+      <Name>OtherSideCore.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OtherSideCore.ViewModel\OtherSideCore.ViewModel.csproj">
+      <Project>{CB376E80-D850-4974-8537-94CC8FAA92AF}</Project>
+      <Name>OtherSideCore.ViewModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

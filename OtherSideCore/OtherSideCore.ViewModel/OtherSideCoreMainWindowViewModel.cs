@@ -9,14 +9,13 @@ using System.Windows.Media;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class OtherSideCoreMainWindowViewModel : ObservableObject
+   public abstract class OtherSideCoreMainWindowViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
       private string m_ApplicationLogoImageSource;
       private string m_ApplicationName;
       private bool m_IsNavigationMenuDisplayed;
-      private ModuleBaseViewModel m_CurrentLoadedModuleBaseViewModel;
       private SolidColorBrush m_LogoBackgroundColor;
       private ModelViewModel m_ModelViewModel;
 
@@ -68,22 +67,6 @@ namespace OtherSideCore.ViewModel
             {
                m_IsNavigationMenuDisplayed = value;
                OnPropertyChanged("IsNavigationMenuDisplayed");
-            }
-         }
-      }
-
-      public ModuleBaseViewModel CurrentLoadedModuleBaseViewModel
-      {
-         get
-         {
-            return m_CurrentLoadedModuleBaseViewModel;
-         }
-         set
-         {
-            if (value != m_CurrentLoadedModuleBaseViewModel)
-            {
-               m_CurrentLoadedModuleBaseViewModel = value;
-               OnPropertyChanged("CurrentLoadedModuleBaseViewModel");
             }
          }
       }
@@ -141,7 +124,11 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-
+      public void Dispose()
+      {
+         ModelViewModel.Dispose();
+         ModelViewModel = null;
+      }
 
       #endregion
    }

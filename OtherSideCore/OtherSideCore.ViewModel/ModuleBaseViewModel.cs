@@ -9,13 +9,14 @@ using System.Windows.Controls;
 
 namespace OtherSideCore.ViewModel
 {
-   public class ModuleBaseViewModel : ObservableObject
+   public class ModuleBaseViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
       private ModuleBase m_ModuleBase;
       private Type m_ViewModelType;
-      private Type m_ViewType;
+      private string m_ViewType;
+      private string m_ViewAssembly;
       private UserControl m_ModuleView;
       private object m_IconResource;
 
@@ -55,7 +56,23 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public Type ViewType
+      public string ViewAssembly
+      {
+         get
+         {
+            return m_ViewAssembly;
+         }
+         protected set
+         {
+            if (value != m_ViewAssembly)
+            {
+               m_ViewAssembly = value;
+               OnPropertyChanged("ViewAssembly");
+            }
+         }
+      }
+
+      public string ViewType
       {
          get
          {
@@ -113,10 +130,11 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleBaseViewModel(ModuleBase moduleBase, Type viewModelType, Type viewType, object iconResource)
+      public ModuleBaseViewModel(ModuleBase moduleBase, Type viewModelType, string viewAssembly, string viewType, object iconResource)
       {
          ModuleBase = moduleBase;
          ViewModelType = viewModelType;
+         ViewAssembly = viewAssembly;
          ViewType = viewType;
          IconResource = iconResource;
       }
@@ -127,29 +145,25 @@ namespace OtherSideCore.ViewModel
 
       public void Load()
       {
-         if (ViewModelType == typeof(ModuleGroupViewModel))
+         if (ViewModelType == typeof(ModuleGroupModuleListViewModel))
          {
-            var moduleGroupViewModel = (ModuleGroupViewModel)Activator.CreateInstance(ViewModelType, this);
-            ModuleView = (UserControl)Activator.CreateInstance(m_ViewType);
+            var moduleGroupViewModel = Activator.CreateInstance(ViewModelType, this);
+            ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
             ModuleView.DataContext = moduleGroupViewModel;
          }
          else
          {
-            var moduleViewModel = (ModuleBaseViewModel)Activator.CreateInstance(ViewModelType);
-            ModuleView = (UserControl)Activator.CreateInstance(m_ViewType);
+            var moduleViewModel = Activator.CreateInstance(ViewModelType);
+            ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
             ModuleView.DataContext = moduleViewModel;
          }
-
-         ModuleBase.Load();
       }
 
       public void Load(List<string> filters)
       {
-         var moduleViewModel = (ModuleBaseViewModel)Activator.CreateInstance(ViewModelType, filters);
-         ModuleView = (UserControl)Activator.CreateInstance(m_ViewType);
+         var moduleViewModel = Activator.CreateInstance(ViewModelType, filters);
+         ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
          ModuleView.DataContext = moduleViewModel;
-
-         ModuleBase.Load();
       }
 
       public void Unload()
@@ -157,11 +171,14 @@ namespace OtherSideCore.ViewModel
          if (ModuleView != null)
          {
             (ModuleView.DataContext as IDisposable).Dispose();
-
-            ModuleBase.Unload();
-
             GC.Collect();
          }
+      }
+
+      public virtual void Dispose()
+      {
+         Unload();
+         ModuleBase.Dispose();
       }
 
 

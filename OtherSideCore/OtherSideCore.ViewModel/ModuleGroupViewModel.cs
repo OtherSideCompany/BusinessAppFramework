@@ -20,6 +20,15 @@ namespace OtherSideCore.ViewModel
 
       #region Properties
 
+      public ModuleGroup ModuleGroup
+      {
+         get
+         {
+            return ModuleBase as ModuleGroup;
+         }
+      }
+         
+
       public bool IsExpanded
       {
          get
@@ -62,7 +71,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleGroupViewModel(ModuleGroup moduleGroup, Type viewModelType, Type viewType, object iconResource) : base(moduleGroup, viewModelType, viewType, iconResource)
+      public ModuleGroupViewModel(ModuleGroup moduleGroup, Type viewModelType, string viewAssembly, string viewType, object iconResource) : base(moduleGroup, viewModelType, viewAssembly, viewType, iconResource)
       {
          ModuleViewModels = new ObservableCollection<ModuleViewModel>();
       }

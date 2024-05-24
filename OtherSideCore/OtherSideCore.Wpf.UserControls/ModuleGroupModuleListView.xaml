@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.ModuleGroupModuleListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <UserControl.Resources>
+      <Style TargetType="{x:Type customcontrols:ModuleButton}">
+         <Setter Property="Width" Value="200" />
+         <Setter Property="Height" Value="150" />
+         <Setter Property="Margin" Value="10" />
+         <Setter Property="Cursor" Value="Hand" />
+         <!--<Setter Property="Background" Value="{StaticResource Menu_Color}" />
+         <Setter Property="ModuleButton_HoverColor" Value="#ff4f5f78" />
+         <Setter Property="ModuleButton_PressedColor" Value="{StaticResource Menu_Color_Dark}" />-->
+         <Setter Property="Visibility" Value="Visible" />
+         <Setter Property="Template">
+            <Setter.Value>
+               <ControlTemplate TargetType="{x:Type Button}">
+                  <Border x:Name="ButtonContainer" Background="{TemplateBinding Background}">
+                     <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                  </Border>
+                  <ControlTemplate.Triggers>
+                     <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{Binding ModuleButton_HoverColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
+                     </Trigger>
+                     <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Background" Value="{Binding ModuleButton_PressedColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
+                     </Trigger>
+                  </ControlTemplate.Triggers>
+               </ControlTemplate>
+            </Setter.Value>
+         </Setter>         
+      </Style>
+
+   </UserControl.Resources>
+   <Grid>
+      <ItemsControl ItemsSource="{Binding ModuleGroupViewModel.ModuleViewModels}" Grid.IsSharedSizeScope="True">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="1000"  />
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemTemplate>
+            <DataTemplate>
+               <customcontrols:ModuleButton Command="{Binding DataContext.ModelViewModel.LoadModuleCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                            CommandParameter="{Binding}">
+                  <Border>
+                     <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                           <RowDefinition Height="*" />
+                           <RowDefinition Height="Auto" SharedSizeGroup="A" />
+                        </Grid.RowDefinitions>
+                        <!--<Image Grid.Row="0" Source="{Binding IconFilePath}" Width="64" Height="64" HorizontalAlignment="Center" />-->
+                        <TextBlock Grid.Row="1" Text="{Binding ModuleBase.Name}" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                   TextWrapping="Wrap" TextAlignment="Center"/>
+                     </Grid>
+                  </Border>
+               </customcontrols:ModuleButton>
+            </DataTemplate>
+         </ItemsControl.ItemTemplate>
+      </ItemsControl>
+   </Grid>
+</UserControl>

@@ -54,7 +54,6 @@ namespace OtherSideCore.Model
          {
             ModuleNavigationPath = Name;
          }
-
       }
 
       #endregion

@@ -1,8 +1,10 @@
 ﻿using OtherSideCore.Utils;
+using System;
+using System.Collections.Generic;
 
 namespace OtherSideCore.Model
 {
-   public abstract class ModuleBase : ObservableObject
+   public abstract class ModuleBase : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -81,7 +83,7 @@ namespace OtherSideCore.Model
 
       #region Methods
 
-      public void Load()
+      public void Load(List<string> filters = null)
       {
          IsLoaded = true;
       }
@@ -89,6 +91,11 @@ namespace OtherSideCore.Model
       public void Unload()
       {
          IsLoaded = false;
+      }
+
+      public virtual void Dispose()
+      {
+         Unload();
       }
 
       #endregion

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Utils
 {
-   public class ObservableObject
+   public class ObservableObject : INotifyPropertyChanged
    {
       #region Fields
 
@@ -41,6 +41,7 @@ namespace OtherSideCore.Utils
       protected void OnPropertyChanged(string name)
       {
          PropertyChangedEventHandler handler = PropertyChanged;
+
          if (handler != null)
          {
             handler(this, new PropertyChangedEventArgs(name));

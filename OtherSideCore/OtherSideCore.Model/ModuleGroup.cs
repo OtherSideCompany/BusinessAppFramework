@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OtherSideCore.Model
 {
@@ -28,6 +29,15 @@ namespace OtherSideCore.Model
          }
       }
 
+      public bool IsSubModuleLoaded
+      {
+         get
+         {
+            return Modules.Any(m => m.IsLoaded);
+         }
+      }
+
+
       #endregion
 
       #region Commands
@@ -42,13 +52,54 @@ namespace OtherSideCore.Model
       {
          Modules = new ObservableCollection<Module>();
          ModuleNavigationPath = Name;
+
+         Modules.CollectionChanged += Modules_CollectionChanged;
       }
 
       #endregion
 
       #region Methods
 
+      private void Modules_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+      {
+         if (e.OldItems != null)
+         {
+            foreach (var oldItem in e.OldItems)
+            {
+               (oldItem as Module).PropertyChanged -= Module_PropertyChanged;
+            }
+         }
 
+         if (e.NewItems != null)
+         {
+            foreach (var newItem in e.NewItems)
+            {
+               (newItem as Module).PropertyChanged += Module_PropertyChanged;
+            }
+         }
+
+         OnPropertyChanged("IsSubModuleLoaded");
+      }
+
+      private void Module_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+      {
+         if (e.PropertyName.Equals("IsLoaded"))
+         {
+            OnPropertyChanged("IsSubModuleLoaded");
+         }
+      }
+
+      public override void Dispose()
+      {
+         base.Dispose();
+
+         Modules.CollectionChanged -= Modules_CollectionChanged;
+
+         foreach (var module in Modules)
+         {
+            module.PropertyChanged -= Module_PropertyChanged;
+         }
+      }
 
       #endregion
    }

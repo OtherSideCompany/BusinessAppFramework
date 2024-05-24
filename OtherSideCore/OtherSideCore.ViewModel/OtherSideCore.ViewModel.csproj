@@ -48,6 +48,7 @@
     <Compile Include="IDragDroppable.cs" />
     <Compile Include="ModelObjectViewModelBase.cs" />
     <Compile Include="ModelViewModel.cs" />
+    <Compile Include="ModuleGroupModuleListViewModel.cs" />
     <Compile Include="ModuleGroupViewModel.cs" />
     <Compile Include="ModuleBaseViewModel.cs" />
     <Compile Include="ModuleViewModel.cs" />
