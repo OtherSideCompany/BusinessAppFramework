@@ -41,14 +41,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseFields\DatabaseField.cs" />
+    <Compile Include="DatabaseFields\IntegerDatabaseField.cs" />
+    <Compile Include="DatabaseFields\StringDatabaseField.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ModelObjectBase.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="ModuleBase.cs" />
     <Compile Include="ModuleGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OtherSideCore.Data\OtherSideCore.Data.csproj">
+      <Project>{300dda2c-4b95-4147-9143-fc46498026b0}</Project>
+      <Name>OtherSideCore.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OtherSideCore.Utils\OtherSideCore.Utils.csproj">
       <Project>{FC098A53-1EDE-4785-8002-39ABDB6FA71E}</Project>
       <Name>OtherSideCore.Utils</Name>

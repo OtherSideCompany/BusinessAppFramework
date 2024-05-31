@@ -54,7 +54,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsSelected)
             {
                m_IsSelected = value;
-               OnPropertyChanged("IsSelected");
+               OnPropertyChanged(nameof(IsSelected));
             }
          }
       }
@@ -70,7 +70,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsVisible)
             {
                m_IsVisible = value;
-               OnPropertyChanged("IsVisible");
+               OnPropertyChanged(nameof(IsVisible));
             }
          }
       }
@@ -86,7 +86,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsExpanded)
             {
                m_IsExpanded = value;
-               OnPropertyChanged("IsExpanded");
+               OnPropertyChanged(nameof(IsExpanded));
             }
          }
       }
@@ -102,7 +102,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsCollapsed)
             {
                m_IsCollapsed = value;
-               OnPropertyChanged("IsCollapsed");
+               OnPropertyChanged(nameof(IsCollapsed));
             }
          }
       }
@@ -118,7 +118,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsDropBeforeIndicatorVisible)
             {
                m_IsDropBeforeIndicatorVisible = value;
-               OnPropertyChanged("IsDropBeforeIndicatorVisible");
+               OnPropertyChanged(nameof(IsDropBeforeIndicatorVisible));
             }
          }
       }
@@ -134,7 +134,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsDropAfterIndicatorVisible)
             {
                m_IsDropAfterIndicatorVisible = value;
-               OnPropertyChanged("IsDropAfterIndicatorVisible");
+               OnPropertyChanged(nameof(IsDropAfterIndicatorVisible));
             }
          }
       }

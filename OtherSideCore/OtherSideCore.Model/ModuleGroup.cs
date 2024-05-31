@@ -24,7 +24,7 @@ namespace OtherSideCore.Model
             if (value != m_Modules)
             {
                m_Modules = value;
-               OnPropertyChanged("Modules");
+               OnPropertyChanged(nameof(Modules));
             }
          }
       }
@@ -78,14 +78,14 @@ namespace OtherSideCore.Model
             }
          }
 
-         OnPropertyChanged("IsSubModuleLoaded");
+         OnPropertyChanged(nameof(IsSubModuleLoaded));
       }
 
       private void Module_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
       {
-         if (e.PropertyName.Equals("IsLoaded"))
+         if (e.PropertyName.Equals(nameof(IsLoaded)))
          {
-            OnPropertyChanged("IsSubModuleLoaded");
+            OnPropertyChanged(nameof(IsSubModuleLoaded));
          }
       }
 

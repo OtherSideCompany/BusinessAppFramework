@@ -34,7 +34,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ApplicationLogoImageSource)
             {
                m_ApplicationLogoImageSource = value;
-               OnPropertyChanged("ApplicationLogoImageSource");
+               OnPropertyChanged(nameof(ApplicationLogoImageSource));
             }
          }
       }
@@ -50,7 +50,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ApplicationName)
             {
                m_ApplicationName = value;
-               OnPropertyChanged("ApplicationName");
+               OnPropertyChanged(nameof(ApplicationName));
             }
          }
       }
@@ -66,7 +66,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsNavigationMenuDisplayed)
             {
                m_IsNavigationMenuDisplayed = value;
-               OnPropertyChanged("IsNavigationMenuDisplayed");
+               OnPropertyChanged(nameof(IsNavigationMenuDisplayed));
             }
          }
       }
@@ -82,7 +82,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_LogoBackgroundColor)
             {
                m_LogoBackgroundColor = value;
-               OnPropertyChanged("LogoBackgroundColor");
+               OnPropertyChanged(nameof(LogoBackgroundColor));
             }
          }
       }
@@ -98,7 +98,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModelViewModel)
             {
                m_ModelViewModel = value;
-               OnPropertyChanged("ModelViewModel");
+               OnPropertyChanged(nameof(ModelViewModel));
             }
          }
       }

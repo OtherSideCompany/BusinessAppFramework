@@ -40,7 +40,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IsExpanded)
             {
                m_IsExpanded = value;
-               OnPropertyChanged("IsExpanded");
+               OnPropertyChanged(nameof(IsExpanded));
             }
          }
       }
@@ -56,7 +56,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModuleViewModels)
             {
                m_ModuleViewModels = value;
-               OnPropertyChanged("ModuleViewModels");
+               OnPropertyChanged(nameof(ModuleViewModels));
             }
          }
       }

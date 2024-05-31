@@ -38,7 +38,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModelObjectBase)
             {
                m_ModelObjectBase = value;
-               OnPropertyChanged("ModelObjectBase");
+               OnPropertyChanged(nameof(ModelObjectBase));
             }
          }
       }
@@ -54,7 +54,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ParentModelObjectViewModelBase)
             {
                m_ParentModelObjectViewModelBase = value;
-               OnPropertyChanged("ParentModelObjectViewModelBase");
+               OnPropertyChanged(nameof(ParentModelObjectViewModelBase));
             }
          }
       }
@@ -70,7 +70,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ChildrenModelObjectViewModelBase)
             {
                m_ChildrenModelObjectViewModelBase = value;
-               OnPropertyChanged("ChildrenModelObjectViewModelBase");
+               OnPropertyChanged(nameof(ChildrenModelObjectViewModelBase));
             }
          }
       }

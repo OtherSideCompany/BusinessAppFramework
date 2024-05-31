@@ -37,7 +37,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_Model)
             {
                m_Model = value;
-               OnPropertyChanged("Model");
+               OnPropertyChanged(nameof(Model));
             }
          }
       }
@@ -53,7 +53,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_LoadedModuleBaseViewModel)
             {
                m_LoadedModuleBaseViewModel = value;
-               OnPropertyChanged("LoadedModuleBaseViewModel");
+               OnPropertyChanged(nameof(LoadedModuleBaseViewModel));
             }
          }
       }
@@ -69,7 +69,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModuleBaseViewModels)
             {
                m_ModuleBaseViewModels = value;
-               OnPropertyChanged("ModuleBaseViewModels");
+               OnPropertyChanged(nameof(ModuleBaseViewModels));
             }
          }
       }
@@ -85,7 +85,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_QuickNavigationModuleViewModels)
             {
                m_QuickNavigationModuleViewModels = value;
-               OnPropertyChanged("QuickNavigationModuleBases");
+               OnPropertyChanged(nameof(QuickNavigationModuleViewModels));
             }
          }
       }

@@ -1,9 +1,8 @@
-﻿using OtherSideCore.Utils;
+﻿using OtherSideCore.Model.DatabaseFields;
+using OtherSideCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
@@ -11,7 +10,7 @@ namespace OtherSideCore.Model
    {
       #region Fields
 
-      private int m_Id;
+      private IntegerDatabaseField m_Id;
       private bool m_IsLoading;
       private bool m_IsDirty;
 
@@ -21,7 +20,7 @@ namespace OtherSideCore.Model
 
       public Guid guid { get; set; }
 
-      public int Id
+      public IntegerDatabaseField Id
       {
          get
          {
@@ -32,8 +31,8 @@ namespace OtherSideCore.Model
             if (value != m_Id)
             {
                m_Id = value;
-               OnPropertyChanged("Id");
-               OnPropertyChanged("IsCreated");
+               OnPropertyChanged(nameof(Id));
+               OnPropertyChanged(nameof(IsCreated));
             }
          }
       }
@@ -49,7 +48,7 @@ namespace OtherSideCore.Model
             if (value != m_IsLoading)
             {
                m_IsLoading = value;
-               OnPropertyChanged("IsLoading");
+               OnPropertyChanged(nameof(IsLoading));
             }
          }
       }
@@ -58,7 +57,7 @@ namespace OtherSideCore.Model
       {
          get
          {
-            return Id != 0;
+            return Id.Value != 0;
          }
       }
 
@@ -73,7 +72,7 @@ namespace OtherSideCore.Model
             if (value != m_IsDirty)
             {
                m_IsDirty = value;
-               OnPropertyChanged("IsDirty");
+               OnPropertyChanged(nameof(IsDirty));
             }
          }
       }
@@ -109,15 +108,59 @@ namespace OtherSideCore.Model
       public virtual void Delete()
       {
          IsLoading = true;
-         Id = 0;
+         Id.Value = 0;
          IsLoading = false;
-      }  
+      }
 
       public abstract void Dispose();
 
       #endregion
 
       #region Methods
+
+      protected List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
+      {
+         var databaseProperties = typeof(ModelObjectBase).GetProperties().Where(p => p.PropertyType == typeof(DatabaseField))
+                                                                         .Select(p => p.GetValue(this))
+                                                                         .Where(p => (p as DatabaseField).IsDirty)
+                                                                         .Cast<DatabaseField>()
+                                                                         .ToList();
+
+         return ConvertDatabaseFieldsToDataProperties(databaseProperties);
+      }
+
+      protected List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
+      {
+         var databaseProperties = typeof(ModelObjectBase).GetProperties().Where(p => p.PropertyType == typeof(DatabaseField))
+                                                                         .Select(p => p.GetValue(this))
+                                                                         .Cast<DatabaseField>()
+                                                                         .ToList();
+
+         return ConvertDatabaseFieldsToDataProperties(databaseProperties);
+      }
+
+      private List<Data.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
+      {
+         var entityDataProperties = new List<OtherSideCore.Data.DatabaseFields.DatabaseField>();
+
+         foreach (var databaseField in databaseFields)
+         {
+            switch (databaseField)
+            {
+               case StringDatabaseField stringDatabaseField:
+                  entityDataProperties.Add(new Data.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName));
+                  break;
+               case IntegerDatabaseField integerDatabaseField:
+                  entityDataProperties.Add(new Data.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName));
+                  break;
+               default:
+                  throw new Exception("Unrecognized type " + databaseField.GetType());
+                  break;
+            }
+         }
+
+         return entityDataProperties;
+      }
 
       public override bool Equals(object obj)
       {
@@ -128,7 +171,7 @@ namespace OtherSideCore.Model
             return false;
          }
 
-         if (Id == 0 && item.Id == 0)
+         if (Id.Value == 0 && item.Id.Value == 0)
          {
             return guid == item.guid;
          }

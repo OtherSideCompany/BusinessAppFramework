@@ -27,7 +27,7 @@ namespace OtherSideCore.Model
             if (value != m_IsLoaded)
             {
                m_IsLoaded = value;
-               OnPropertyChanged("IsLoaded");
+               OnPropertyChanged(nameof(IsLoaded));
             }
          }
       }
@@ -43,7 +43,7 @@ namespace OtherSideCore.Model
             if (value != m_Name)
             {
                m_Name = value;
-               OnPropertyChanged("Name");
+               OnPropertyChanged(nameof(Name));
             }
          }
       }
@@ -59,7 +59,7 @@ namespace OtherSideCore.Model
             if (value != m_ModuleNavigationPath)
             {
                m_ModuleNavigationPath = value;
-               OnPropertyChanged("ModuleNavigationPath");
+               OnPropertyChanged(nameof(ModuleNavigationPath));
             }
          }
       }

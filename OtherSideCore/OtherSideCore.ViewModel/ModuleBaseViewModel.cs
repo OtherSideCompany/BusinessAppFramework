@@ -35,7 +35,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModuleBase)
             {
                m_ModuleBase = value;
-               OnPropertyChanged("ModuleBase");
+               OnPropertyChanged(nameof(ModuleBase));
             }
          }
       }
@@ -51,7 +51,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ViewModelType)
             {
                m_ViewModelType = value;
-               OnPropertyChanged("ViewModelType");
+               OnPropertyChanged(nameof(ViewModelType));
             }
          }
       }
@@ -67,7 +67,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ViewAssembly)
             {
                m_ViewAssembly = value;
-               OnPropertyChanged("ViewAssembly");
+               OnPropertyChanged(nameof(ViewAssembly));
             }
          }
       }
@@ -83,7 +83,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ViewType)
             {
                m_ViewType = value;
-               OnPropertyChanged("ViewType");
+               OnPropertyChanged(nameof(ViewType));
             }
          }
       }
@@ -99,7 +99,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModuleView)
             {
                m_ModuleView = value;
-               OnPropertyChanged("ModuleView");
+               OnPropertyChanged(nameof(ModuleView));
             }
          }
       }
@@ -115,7 +115,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_IconResource)
             {
                m_IconResource = value;
-               OnPropertyChanged("IconResource");
+               OnPropertyChanged(nameof(IconResource));
             }
          }
       }

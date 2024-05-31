@@ -30,7 +30,7 @@ namespace OtherSideCore.ViewModel
             if (value != m_ModuleGroupViewModel)
             {
                m_ModuleGroupViewModel = value;
-               OnPropertyChanged("ModuleGroupViewModel");
+               OnPropertyChanged(nameof(ModuleGroupViewModel));
             }
          }
       }

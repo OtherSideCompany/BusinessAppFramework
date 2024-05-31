@@ -14,6 +14,7 @@ namespace OtherSideCore.Model
 
       private ModuleBase m_LoadedModule;
       private ObservableCollection<ModuleBase> m_ModuleBases;
+      private User m_AuthenticatedUser;
 
       #endregion
 
@@ -30,7 +31,7 @@ namespace OtherSideCore.Model
             if (value != m_ModuleBases)
             {
                m_ModuleBases = value;
-               OnPropertyChanged("ModuleBases");
+               OnPropertyChanged(nameof(ModuleBases));
             }
          }
       }
@@ -46,7 +47,23 @@ namespace OtherSideCore.Model
             if (value != m_LoadedModule)
             {
                m_LoadedModule = value;
-               OnPropertyChanged("LoadedModule");
+               OnPropertyChanged(nameof(LoadedModule));
+            }
+         }
+      }
+
+      public User AuthenticatedUser
+      {
+         get
+         {
+            return m_AuthenticatedUser;
+         }
+         private set
+         {
+            if (value != m_AuthenticatedUser)
+            {
+               m_AuthenticatedUser = value;
+               OnPropertyChanged(nameof(AuthenticatedUser));
             }
          }
       }
@@ -103,6 +120,24 @@ namespace OtherSideCore.Model
 
             LoadedModule = moduleBase;
          }
+      }
+
+      public bool CanAuthenticateUser()
+      {
+         return AuthenticatedUser == null;
+      }
+
+      public bool AuthenticateUser(User user, string passwordHash)
+      {
+         if (CanAuthenticateUser())
+         {
+            if (user.Authenticate(passwordHash))
+            {
+               AuthenticatedUser = user;
+            }
+         }
+
+         return false;
       }
 
       public void Dispose()

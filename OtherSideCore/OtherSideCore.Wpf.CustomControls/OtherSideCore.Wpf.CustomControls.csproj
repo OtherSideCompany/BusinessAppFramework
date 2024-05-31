@@ -68,6 +68,8 @@
     <Compile Include="Converters\ZeroToVisibilityConverter.cs" />
     <Compile Include="ModuleButton.cs" />
     <Compile Include="SvgImageButton.cs" />
+    <Compile Include="SvgImageTextButton.cs" />
+    <Compile Include="SvgImageTextToggleButton.cs" />
     <Compile Include="SvgImageToggleButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

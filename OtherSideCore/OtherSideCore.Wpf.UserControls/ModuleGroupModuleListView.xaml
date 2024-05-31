@@ -8,14 +8,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
+
+      <SolidColorBrush Color="White" x:Key="ForegroundColor" />
+      <SolidColorBrush Color="#17191c" x:Key="ModuleButtonBackgroundColor" />
+      <SolidColorBrush Color="#343638" x:Key="ModuleButtonOverColor" />
+      <SolidColorBrush Color="#404143" x:Key="ModuleButtonIsPressedColor" />
+
       <Style TargetType="{x:Type customcontrols:ModuleButton}">
          <Setter Property="Width" Value="200" />
          <Setter Property="Height" Value="150" />
          <Setter Property="Margin" Value="10" />
          <Setter Property="Cursor" Value="Hand" />
-         <!--<Setter Property="Background" Value="{StaticResource Menu_Color}" />
-         <Setter Property="ModuleButton_HoverColor" Value="#ff4f5f78" />
-         <Setter Property="ModuleButton_PressedColor" Value="{StaticResource Menu_Color_Dark}" />-->
+         <Setter Property="Background" Value="{StaticResource ModuleButtonBackgroundColor}" />
+         <Setter Property="ModuleButton_HoverColor" Value="{StaticResource ModuleButtonOverColor}" />
+         <Setter Property="ModuleButton_PressedColor" Value="{StaticResource ModuleButtonIsPressedColor}" />
          <Setter Property="Visibility" Value="Visible" />
          <Setter Property="Template">
             <Setter.Value>
@@ -54,9 +60,13 @@
                            <RowDefinition Height="*" />
                            <RowDefinition Height="Auto" SharedSizeGroup="A" />
                         </Grid.RowDefinitions>
-                        <!--<Image Grid.Row="0" Source="{Binding IconFilePath}" Width="64" Height="64" HorizontalAlignment="Center" />-->
-                        <TextBlock Grid.Row="1" Text="{Binding ModuleBase.Name}" Foreground="White" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                                   TextWrapping="Wrap" TextAlignment="Center"/>
+                        <customcontrols:SvgViewer Grid.Row="0" 
+                                                  SvgViewer_ImageColor="{StaticResource ForegroundColor}"
+                                                  SvgViewer_ImageGeometry="{Binding IconResource}"
+                                                  SvgViewer_ImageHeight="36" 
+                                                  SvgViewer_ImageWidth="36"/>
+                        <TextBlock Grid.Row="1" Text="{Binding ModuleBase.Name}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                   TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource ForegroundColor}"/>
                      </Grid>
                   </Border>
                </customcontrols:ModuleButton>

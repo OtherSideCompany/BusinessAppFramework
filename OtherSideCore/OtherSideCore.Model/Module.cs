@@ -27,7 +27,7 @@ namespace OtherSideCore.Model
             if (value != m_ParentGroup)
             {
                m_ParentGroup = value;
-               OnPropertyChanged("ParentGroup");
+               OnPropertyChanged(nameof(ParentGroup));
             }
          }
       }
