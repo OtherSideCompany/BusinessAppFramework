@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtherSideCore.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -79,6 +80,7 @@ namespace OtherSideCore.Model.DatabaseFields
       public StringDatabaseField(string databaseFieldName, int maxLength) : base(databaseFieldName)
       {
          MaxLength = maxLength;
+         Value = GlobalVariables.DefaultString;
       }
 
       #endregion

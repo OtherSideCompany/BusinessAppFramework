@@ -8,14 +8,30 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Data.Entities
 {
-   public class EntityBase
+   public abstract class EntityBase
    {
+      public abstract List<DatabaseField> GetDatabaseFieldProperties();
+
       protected void SetProperties(List<DatabaseField> databaseFields)
       {
          foreach (var databaseField in databaseFields)
          {
             PropertyInfo propertyInfo = GetType().GetProperty(databaseField.DatabaseFieldName);
-            propertyInfo.SetValue(this, databaseField.Value, null);
+
+            switch (databaseField)
+            {
+               case IntegerDatabaseField integerDatabaseField:
+                  propertyInfo.SetValue(this, integerDatabaseField.Value, null);
+                  break;
+               case StringDatabaseField stringDatabaseField:
+                  propertyInfo.SetValue(this, stringDatabaseField.Value, null);
+                  break;
+               default:
+                  throw new Exception("Unrecognized type " + databaseField.GetType());
+                  break;
+            }
+
+            
          }
       }
    }

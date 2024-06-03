@@ -3,10 +3,11 @@ using OtherSideCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace OtherSideCore.Model
 {
-   public abstract class ModelObjectBase : ObservableObject, IDisposable
+   public abstract class ModelObject : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -81,7 +82,7 @@ namespace OtherSideCore.Model
 
       #region Constructor
 
-      public ModelObjectBase()
+      public ModelObject()
       {
          guid = Guid.NewGuid();
       }
@@ -93,6 +94,30 @@ namespace OtherSideCore.Model
       public virtual bool MatchFilter(List<string> filters, bool extendedSearch)
       {
          return false;
+      }
+
+      protected void LoadPropertiesFromEntity<T>(Data.Entities.EntityBase entity) where T : ModelObject
+      {
+         var databaseFieldProperties = entity.GetDatabaseFieldProperties();
+
+         foreach (var databaseFieldProperty in databaseFieldProperties)
+         {
+            PropertyInfo propertyInfo = GetDatabaseFieldsPropertyInfos<T>().First(dbf => (dbf.GetValue(this) as DatabaseField).DatabaseFieldName.Equals(databaseFieldProperty.DatabaseFieldName));
+            var databaseField = propertyInfo.GetValue(this);
+
+            switch (databaseField)
+            {
+               case IntegerDatabaseField integerDatabaseField:
+                  integerDatabaseField.Value = (databaseFieldProperty as Data.DatabaseFields.IntegerDatabaseField).Value;
+                  break;
+               case StringDatabaseField stringDatabaseField:
+                  stringDatabaseField.Value = (databaseFieldProperty as Data.DatabaseFields.StringDatabaseField).Value;
+                  break;
+               default:
+                  throw new Exception("Unrecognized type " + databaseField.GetType());
+                  break;
+            }
+         }
       }
 
       public abstract void Load();
@@ -118,25 +143,36 @@ namespace OtherSideCore.Model
 
       #region Methods
 
-      protected List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
+      protected List<PropertyInfo> GetDatabaseFieldsPropertyInfos<T>() where T : ModelObject
       {
-         var databaseProperties = typeof(ModelObjectBase).GetProperties().Where(p => p.PropertyType == typeof(DatabaseField))
-                                                                         .Select(p => p.GetValue(this))
-                                                                         .Where(p => (p as DatabaseField).IsDirty)
-                                                                         .Cast<DatabaseField>()
-                                                                         .ToList();
-
-         return ConvertDatabaseFieldsToDataProperties(databaseProperties);
+         return typeof(T).GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField))).ToList();
       }
 
-      protected List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
+      protected List<DatabaseField> GetDatabaseFields<T>() where T : ModelObject
       {
-         var databaseProperties = typeof(ModelObjectBase).GetProperties().Where(p => p.PropertyType == typeof(DatabaseField))
-                                                                         .Select(p => p.GetValue(this))
-                                                                         .Cast<DatabaseField>()
-                                                                         .ToList();
+         return typeof(T).GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField)))
+                                         .Select(p => p.GetValue(this))
+                                         .Cast<DatabaseField>()
+                                         .ToList();
+      }
 
-         return ConvertDatabaseFieldsToDataProperties(databaseProperties);
+      protected List<DatabaseField> GetDirtyDatabaseFields<T>() where T : ModelObject
+      {
+         return typeof(T).GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField)))
+                                         .Select(p => p.GetValue(this))
+                                         .Cast<DatabaseField>()
+                                         .Where(p => (p as DatabaseField).IsDirty)
+                                         .ToList();
+      }
+
+      protected List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties<T>() where T : ModelObject
+      {
+         return ConvertDatabaseFieldsToDataProperties(GetDirtyDatabaseFields<T>());
+      }
+
+      protected List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties<T>() where T : ModelObject
+      {
+         return ConvertDatabaseFieldsToDataProperties(GetDatabaseFields<T>());
       }
 
       private List<Data.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
@@ -164,7 +200,7 @@ namespace OtherSideCore.Model
 
       public override bool Equals(object obj)
       {
-         var item = obj as ModelObjectBase;
+         var item = obj as ModelObject;
 
          if (item == null)
          {

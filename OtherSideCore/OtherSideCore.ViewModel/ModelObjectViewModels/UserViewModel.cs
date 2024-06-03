@@ -1,12 +1,13 @@
-﻿using System;
+﻿using OtherSideCore.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.DatabaseFields
+namespace OtherSideCore.ViewModel.ModelObjectViewModels
 {
-   public class IntegerDatabaseField : DatabaseField
+   public class UserViewModel : ModelObjectViewModel
    {
       #region Fields
 
@@ -16,7 +17,7 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Properties
 
-      public int Value { get; set; }
+
 
       #endregion
 
@@ -28,9 +29,9 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Constructor
 
-      public IntegerDatabaseField(int value, string databaseFieldName) : base(databaseFieldName)
+      public UserViewModel(User user) : base(user) 
       {
-         Value = value;
+
       }
 
       #endregion

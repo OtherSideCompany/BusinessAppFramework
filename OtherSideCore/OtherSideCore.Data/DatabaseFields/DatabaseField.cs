@@ -16,7 +16,6 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Properties
 
-      public object Value { get; set; }
       public string DatabaseFieldName { get; set; }
 
       #endregion
@@ -29,9 +28,8 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Constructor
 
-      public DatabaseField(object value, string databaseFieldName)
+      public DatabaseField(string databaseFieldName)
       {
-         Value = value;
          DatabaseFieldName = databaseFieldName;
       }
 

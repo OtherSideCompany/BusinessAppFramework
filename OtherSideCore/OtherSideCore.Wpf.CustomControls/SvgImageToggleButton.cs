@@ -76,10 +76,5 @@ namespace OtherSideCore.Wpf.CustomControls
       {
          DefaultStyleKeyProperty.OverrideMetadata(typeof(SvgImageToggleButton), new FrameworkPropertyMetadata(typeof(SvgImageToggleButton)));
       }
-
-      public SvgImageToggleButton()
-      {
-         SetResourceReference(StyleProperty, typeof(SvgImageToggleButton));
-      }
    }
 }

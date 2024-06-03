@@ -9,14 +9,14 @@ using System.Windows.Input;
 
 namespace OtherSideCore.ViewModel
 {
-   public class ModelObjectViewModelBase : ViewModelBase
+   public class ModelObjectViewModel : ViewModelBase
    {
       #region Fields
 
-      private ModelObjectBase m_ModelObjectBase;
+      private ModelObject m_ModelObjectBase;
 
-      private ModelObjectViewModelBase m_ParentModelObjectViewModelBase;
-      private ObservableCollection<ModelObjectViewModelBase> m_ChildrenModelObjectViewModelBase;
+      private ModelObjectViewModel m_ParentModelObjectViewModelBase;
+      private ObservableCollection<ModelObjectViewModel> m_ChildrenModelObjectViewModelBase;
 
       private Command m_SaveChangesCommand;
       private Command m_CancelChangesCommand;
@@ -27,7 +27,7 @@ namespace OtherSideCore.ViewModel
 
       #region Properties
 
-      public ModelObjectBase ModelObjectBase
+      public ModelObject ModelObjectBase
       {
          get
          {
@@ -43,7 +43,7 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public ModelObjectViewModelBase ParentModelObjectViewModelBase
+      public ModelObjectViewModel ParentModelObjectViewModelBase
       {
          get
          {
@@ -59,7 +59,7 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public ObservableCollection<ModelObjectViewModelBase> ChildrenModelObjectViewModelBase
+      public ObservableCollection<ModelObjectViewModel> ChildrenModelObjectViewModelBase
       {
          get
          {
@@ -132,13 +132,13 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectViewModelBase(ModelObjectBase modelObjectBase) : base()
+      public ModelObjectViewModel(ModelObject modelObjectBase) : base()
       {
          ModelObjectBase = modelObjectBase;
-         ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModelBase>();
+         ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
       }
 
-      public ModelObjectViewModelBase(ModelObjectBase modelObjectBase, ModelObjectViewModelBase parentModelObjectViewModelBase) : this(modelObjectBase)
+      public ModelObjectViewModel(ModelObject modelObjectBase, ModelObjectViewModel parentModelObjectViewModelBase) : this(modelObjectBase)
       {
          ParentModelObjectViewModelBase = parentModelObjectViewModelBase;
       }
@@ -170,12 +170,12 @@ namespace OtherSideCore.ViewModel
 
       private bool CanExecuteDeleteCommand(object parameter)
       {
-         return (parameter as ModelObjectViewModelBase) != null && (parameter as ModelObjectViewModelBase).ModelObjectBase.CanBeDeleted();
+         return (parameter as ModelObjectViewModel) != null && (parameter as ModelObjectViewModel).ModelObjectBase.CanBeDeleted();
       }
 
       private void ExecuteDeleteCommand(object parameter)
       {
-         (parameter as ModelObjectBase).Delete();
+         (parameter as ModelObject).Delete();
       }
 
       private bool CanExecuteSaveChangesCommand(object parameter)
