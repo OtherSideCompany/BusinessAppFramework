@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls"
              xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf.CustomControls"
+             xmlns:extensions="clr-namespace:OtherSideCore.Wpf.CustomControls.Extensions;assembly=OtherSideCore.Wpf.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
@@ -14,14 +15,14 @@
       <SolidColorBrush Color="#343638" x:Key="ModuleButtonOverColor" />
       <SolidColorBrush Color="#404143" x:Key="ModuleButtonIsPressedColor" />
 
-      <Style TargetType="{x:Type customcontrols:ModuleButton}">
+      <Style TargetType="{x:Type Button}" x:Key="ModuleButton">
          <Setter Property="Width" Value="200" />
          <Setter Property="Height" Value="150" />
          <Setter Property="Margin" Value="10" />
          <Setter Property="Cursor" Value="Hand" />
          <Setter Property="Background" Value="{StaticResource ModuleButtonBackgroundColor}" />
-         <Setter Property="ModuleButton_HoverColor" Value="{StaticResource ModuleButtonOverColor}" />
-         <Setter Property="ModuleButton_PressedColor" Value="{StaticResource ModuleButtonIsPressedColor}" />
+         <Setter Property="extensions:ButtonExtension.OverColor" Value="{StaticResource ModuleButtonOverColor}" />
+         <Setter Property="extensions:ButtonExtension.PressedColor" Value="{StaticResource ModuleButtonIsPressedColor}" />
          <Setter Property="Visibility" Value="Visible" />
          <Setter Property="Template">
             <Setter.Value>
@@ -31,15 +32,15 @@
                   </Border>
                   <ControlTemplate.Triggers>
                      <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{Binding ModuleButton_HoverColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
+                        <Setter Property="Background" Value="{Binding Path=(extensions:ButtonExtension.OverColor), RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
                      </Trigger>
                      <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Background" Value="{Binding ModuleButton_PressedColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
+                        <Setter Property="Background" Value="{Binding Path=(extensions:ButtonExtension.PressedColor), RelativeSource={RelativeSource TemplatedParent}}" TargetName="ButtonContainer"/>
                      </Trigger>
                   </ControlTemplate.Triggers>
                </ControlTemplate>
             </Setter.Value>
-         </Setter>         
+         </Setter>
       </Style>
 
    </UserControl.Resources>
@@ -52,8 +53,9 @@
          </ItemsControl.ItemsPanel>
          <ItemsControl.ItemTemplate>
             <DataTemplate>
-               <customcontrols:ModuleButton Command="{Binding DataContext.ModelViewModel.LoadModuleCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                            CommandParameter="{Binding}">
+               <Button Style="{StaticResource ModuleButton}"
+                       Command="{Binding DataContext.ModelViewModel.LoadModuleCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                       CommandParameter="{Binding}">
                   <Border>
                      <Grid Margin="10">
                         <Grid.RowDefinitions>
@@ -61,15 +63,15 @@
                            <RowDefinition Height="Auto" SharedSizeGroup="A" />
                         </Grid.RowDefinitions>
                         <customcontrols:SvgViewer Grid.Row="0" 
-                                                  SvgViewer_ImageColor="{StaticResource ForegroundColor}"
-                                                  SvgViewer_ImageGeometry="{Binding IconResource}"
-                                                  SvgViewer_ImageHeight="36" 
-                                                  SvgViewer_ImageWidth="36"/>
+                                   SvgViewer_ImageColor="{StaticResource ForegroundColor}"
+                                   SvgViewer_ImageGeometry="{Binding IconResource}"
+                                   SvgViewer_ImageHeight="36" 
+                                   SvgViewer_ImageWidth="36"/>
                         <TextBlock Grid.Row="1" Text="{Binding ModuleBase.Name}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" 
                                    TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource ForegroundColor}"/>
                      </Grid>
                   </Border>
-               </customcontrols:ModuleButton>
+               </Button>
             </DataTemplate>
          </ItemsControl.ItemTemplate>
       </ItemsControl>

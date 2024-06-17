@@ -15,12 +15,12 @@
             <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.Icons;component/Icons.xaml"/>
          </ResourceDictionary.MergedDictionaries>
 
-         <SolidColorBrush Color="#efefef" x:Key="NavigationMenuBackgroundColor" />
+         <SolidColorBrush Color="#ededed" x:Key="NavigationMenuBackgroundColor" />
          <SolidColorBrush Color="White" x:Key="ButtonOverBackgroundColor" />
          <SolidColorBrush Color="White" x:Key="ButtonIsPressedBackgroundColor" />
          <SolidColorBrush Color="White" x:Key="ButtonIsCheckedBackgroundColor" />
          <SolidColorBrush Color="#777676" x:Key="ForegroundColor" />
-         <SolidColorBrush Color="#e8e7e8" x:Key="NavigationMenuBorderBrushForegroundColor" />
+         <SolidColorBrush Color="#e8e7e8" x:Key="NavigationMenuBorderBrushForegroundColor" />     
 
       </ResourceDictionary>
    </UserControl.Resources>
@@ -137,6 +137,7 @@
                                                       <customcontrols:SvgImageToggleButton Width="32" Background="Transparent"
                                                                                            SvgImageToggleButton_ImageSize="16"
                                                                                            SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                                                           SvgImageToggleButton_OverBackgroundColor="Transparent"
                                                                                            SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-up}"
                                                                                            SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
                                                                                            SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"

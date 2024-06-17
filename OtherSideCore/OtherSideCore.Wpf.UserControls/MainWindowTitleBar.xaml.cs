@@ -23,6 +23,15 @@ namespace OtherSideCore.Wpf.UserControls
    {
       private bool m_RestoreIfMove = false;
 
+      public static readonly DependencyProperty MainWindowTitleBar_ApplicationLogoColorProperty =
+          DependencyProperty.Register("MainWindowTitleBar_ApplicationLogoColor", typeof(SolidColorBrush), typeof(MainWindowTitleBar), new UIPropertyMetadata(Brushes.Blue));
+
+      public SolidColorBrush MainWindowTitleBar_ApplicationLogoColor
+      {
+         get { return (SolidColorBrush)GetValue(MainWindowTitleBar_ApplicationLogoColorProperty); }
+         set { SetValue(MainWindowTitleBar_ApplicationLogoColorProperty, value); }
+      }
+
       public MainWindowTitleBar()
       {
          InitializeComponent();

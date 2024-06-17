@@ -30,9 +30,16 @@ namespace OtherSideCore.Data.Entities
                   throw new Exception("Unrecognized type " + databaseField.GetType());
                   break;
             }
-
-            
          }
       }
+
+      public abstract int Create(List<DatabaseField> databaseFields);
+
+      public abstract void Save(int id, List<DatabaseField> databaseFields);
+
+      public abstract EntityBase Get(int id);
+
+      public abstract void Delete(int id);
+      
    }
 }

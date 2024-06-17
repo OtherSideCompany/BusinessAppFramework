@@ -31,6 +31,11 @@ namespace OtherSideCore.Model.DatabaseFields
             {
                m_Value = value;
                OnPropertyChanged(nameof(Value));
+
+               if (!m_IsLoading)
+               {
+                  IsDirty = true;
+               }
             }
          }
       }
@@ -79,8 +84,12 @@ namespace OtherSideCore.Model.DatabaseFields
 
       public StringDatabaseField(string databaseFieldName, int maxLength) : base(databaseFieldName)
       {
+         m_IsLoading = true;
+
          MaxLength = maxLength;
          Value = GlobalVariables.DefaultString;
+
+         m_IsLoading = false;
       }
 
       #endregion
@@ -100,6 +109,15 @@ namespace OtherSideCore.Model.DatabaseFields
       public override bool IsValid()
       {
          return Value.Length < MaxLength;
+      }
+
+      public override void LoadValue(object value)
+      {
+         m_IsLoading = true;
+
+         Value = (string)value;
+
+         m_IsLoading = false;
       }
 
       #endregion

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Data
 {
-   public class User : EntityBase
+   public abstract class User : EntityBase
    {
       public int Id { get; set; }
       public string FirstName { get; set; }

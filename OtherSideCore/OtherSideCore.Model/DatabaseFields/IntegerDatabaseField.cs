@@ -47,6 +47,11 @@ namespace OtherSideCore.Model.DatabaseFields
 
       }
 
+      public override void LoadValue(object value)
+      {
+         Value = (int)value;
+      }
+
       #endregion
 
       #region Methods

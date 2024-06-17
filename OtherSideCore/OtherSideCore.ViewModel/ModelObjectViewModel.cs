@@ -13,7 +13,7 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-      private ModelObject m_ModelObjectBase;
+      private ModelObject m_ModelObject;
 
       private ModelObjectViewModel m_ParentModelObjectViewModelBase;
       private ObservableCollection<ModelObjectViewModel> m_ChildrenModelObjectViewModelBase;
@@ -27,18 +27,18 @@ namespace OtherSideCore.ViewModel
 
       #region Properties
 
-      public ModelObject ModelObjectBase
+      public ModelObject ModelObject
       {
          get
          {
-            return m_ModelObjectBase;
+            return m_ModelObject;
          }
          set
          {
-            if (value != m_ModelObjectBase)
+            if (value != m_ModelObject)
             {
-               m_ModelObjectBase = value;
-               OnPropertyChanged(nameof(ModelObjectBase));
+               m_ModelObject = value;
+               OnPropertyChanged(nameof(ModelObject));
             }
          }
       }
@@ -132,15 +132,15 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectViewModel(ModelObject modelObjectBase) : base()
+      public ModelObjectViewModel(ModelObject modelObject) : base()
       {
-         ModelObjectBase = modelObjectBase;
+         ModelObject = modelObject;
          ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
       }
 
-      public ModelObjectViewModel(ModelObject modelObjectBase, ModelObjectViewModel parentModelObjectViewModelBase) : this(modelObjectBase)
+      public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel) : this(modelObject)
       {
-         ParentModelObjectViewModelBase = parentModelObjectViewModelBase;
+         ParentModelObjectViewModelBase = parentModelObjectViewModel;
       }
 
       #endregion
@@ -149,33 +149,33 @@ namespace OtherSideCore.ViewModel
 
       public virtual bool CanSaveChanges()
       {
-         return ModelObjectBase.CanSaveChanges();
+         return ModelObject.CanSaveChanges();
       }
 
       public virtual void SaveChanges()
       {
-         ModelObjectBase.Save();
-         ModelObjectBase.Load();
+         ModelObject.Save();
+         ModelObject.Load();
       }
 
       public virtual bool CanCancelChanges()
       {
-         return ModelObjectBase.CanCancelChanges();
+         return ModelObject.CanCancelChanges();
       }
 
       public virtual void CancelChanges()
       {
-         ModelObjectBase.Load();
+         ModelObject.Load();
       }
 
       private bool CanExecuteDeleteCommand(object parameter)
       {
-         return (parameter as ModelObjectViewModel) != null && (parameter as ModelObjectViewModel).ModelObjectBase.CanBeDeleted();
+         return (parameter as ModelObjectViewModel) != null && (parameter as ModelObjectViewModel).ModelObject.CanBeDeleted();
       }
 
       private void ExecuteDeleteCommand(object parameter)
       {
-         (parameter as ModelObject).Delete();
+         (parameter as ModelObjectViewModel).ModelObject.Delete();
       }
 
       private bool CanExecuteSaveChangesCommand(object parameter)

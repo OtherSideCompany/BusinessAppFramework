@@ -7,7 +7,8 @@
              xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Loaded="MainWindowTitleBar_Loaded">
+             Loaded="MainWindowTitleBar_Loaded"
+             x:Name="MainWindowTitleBarUserControl">
    <UserControl.Resources>
 
       <ResourceDictionary>
@@ -20,14 +21,15 @@
          <SolidColorBrush Color="#343638" x:Key="CaptionButtonHoverColor" />
          <SolidColorBrush Color="#404143" x:Key="CaptionButtonIsPressedColor" />
          <SolidColorBrush Color="#e3021c" x:Key="CloseButtonHoverColor" />
-
+         <SolidColorBrush Color="White" x:Key="CaptionButtonForeground" />
+         
          <Style x:Key="CaptionButtonStyle" TargetType="Button">
             <Setter Property="Template">
                <Setter.Value>
                   <ControlTemplate TargetType="Button">
                      <Grid x:Name="LayoutRoot" Background="Transparent" Width="44" Height="32">
                         <TextBlock x:Name="txt" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
-                                   Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{StaticResource CaptionButtonForeground}" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased"  TextOptions.TextFormattingMode="Display"/>
                      </Grid>
                      <ControlTemplate.Triggers>
@@ -49,7 +51,7 @@
                   <ControlTemplate TargetType="Button">
                      <Grid x:Name="LayoutRoot" Background="Transparent" Width="44" Height="32">
                         <TextBlock x:Name="txt" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
-                                   Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{StaticResource CaptionButtonForeground}" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased"  TextOptions.TextFormattingMode="Display"/>
                      </Grid>
                      <ControlTemplate.Triggers>
@@ -89,7 +91,8 @@
          <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <Border Grid.Column="0" Width="38" Height="32" Background="{Binding LogoBackgroundColor}">
+      <Border Grid.Column="0" Width="38" Height="32" 
+              Background="{Binding MainWindowTitleBar_ApplicationLogoColor, ElementName=MainWindowTitleBarUserControl}">
          <Image Width="32" Height="32" Source="{Binding ApplicationLogoImageSource}" HorizontalAlignment="Center" SnapsToDevicePixels="True" />
       </Border>
 
@@ -120,12 +123,17 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <Button Grid.Column="0" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
-         <Button Grid.Column="1" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />
-         <Button Grid.Column="2" Style="{StaticResource RestoreButtonStyle}" Click="RestoreButton_Click" x:Name="RestoreButton" />         
-         <Button Grid.Column="3" Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" />
+         <TextBlock Grid.Column="0" Foreground="{StaticResource TextForeGroundColor}" Margin="0,0,10,0">
+            <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.FirstName.Value}" />
+            <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.LastName.Value}" />
+         </TextBlock>
+         <Button Grid.Column="1" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
+         <Button Grid.Column="2" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />
+         <Button Grid.Column="3" Style="{StaticResource RestoreButtonStyle}" Click="RestoreButton_Click" x:Name="RestoreButton" />         
+         <Button Grid.Column="4" Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" />
          
       </Grid>   
       

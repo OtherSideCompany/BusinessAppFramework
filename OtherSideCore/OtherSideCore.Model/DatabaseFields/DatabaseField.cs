@@ -11,12 +11,30 @@ namespace OtherSideCore.Model.DatabaseFields
    {
       #region Fields
 
+      private bool m_IsIdentity;
       private string m_DatabaseFieldName;
-      private bool m_IsDirty;      
+      private bool m_IsDirty;
+      protected bool m_IsLoading;
 
       #endregion
 
       #region Properties
+
+      public bool IsIdentity
+      {
+         get
+         {
+            return m_IsIdentity;
+         }
+         set
+         {
+            if (value != m_IsIdentity)
+            {
+               m_IsIdentity = value;
+               OnPropertyChanged(nameof(IsIdentity));
+            }
+         }
+      }
 
       public string DatabaseFieldName
       {
@@ -73,6 +91,8 @@ namespace OtherSideCore.Model.DatabaseFields
       {
          return true;
       }
+
+      public abstract void LoadValue(object value);
 
       #endregion
    }

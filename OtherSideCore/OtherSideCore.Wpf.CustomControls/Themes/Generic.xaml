@@ -3,6 +3,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OtherSideCore.Wpf.CustomControls">
 
+   <ResourceDictionary.MergedDictionaries>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.CustomControls;component/Converters/Converters.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.CustomControls;component/Styles.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.Icons;component/Icons.xaml"/>
+   </ResourceDictionary.MergedDictionaries>
+
    <!-- SvgViewer-->
    <Style TargetType="{x:Type local:SvgViewer}">
       <Setter Property="SvgViewer_ImageHeight" Value="{Binding SvgViewer_ImageHeight, RelativeSource={RelativeSource Self}}" />
@@ -65,6 +71,7 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="SvgImageTextButton_ImageSize" Value="20" />
       <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="SvgImageTextButton_MouseDownBackgroundColor" Value="{Binding SvgImageTextButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextButton_OverBackgroundColor" Value="LightGray" />
       <Setter Property="Template">
@@ -151,6 +158,7 @@
    <!-- SvgImageTextToggleButton -->
    <Style TargetType="{x:Type local:SvgImageTextToggleButton}">
       <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="SvgImageTextToggleButton_CheckedIconGeometry" Value="{Binding SvgImageTextToggleButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageTextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="Template">
@@ -196,5 +204,75 @@
       </Setter>
    </Style>
 
+   <!-- Info Panel Category -->
+   <Style TargetType="{x:Type ToggleButton}"  x:Key="InfoPanelCategoryHeaderToggleButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+               <Grid Background="Transparent">
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto" />
+                     <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+
+                  <ContentPresenter Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Height="{TemplateBinding Height}" />
+
+                  <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                     <local:SvgImageToggleButton SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-right}" 
+                                                 SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
+                                                 SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                 SvgImageToggleButton_OverBackgroundColor="Transparent"
+                                                 SvgImageToggleButton_ImageSize="20"
+                                                 Height="{TemplateBinding Height}"
+                                                 Margin="2,4,0,0"
+                                                 IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"/>
+                  </Grid>
+
+                  <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="1" BorderThickness="0" BorderBrush="{StaticResource OtherSide_DarkGray}" />
+
+               </Grid>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <Style TargetType="{x:Type local:InfoPanelCategory}">
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type local:InfoPanelCategory}">
+               <Grid>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <Border Grid.Row="0">
+                     <ToggleButton Grid.Row="0" Height="42"
+                                   x:Name="HeaderToggleButton"
+                                   VerticalAlignment="Center"
+                                   IsChecked="{Binding InfoPanelCategory_IsExpanded, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
+                                   Style="{StaticResource InfoPanelCategoryHeaderToggleButton}"
+                                   Content="{Binding InfoPanelCategory_HeaderName, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
+                  </Border>
+
+                  <ContentPresenter Grid.Row="1" 
+                                    Margin="0,10,0,10"
+                                    Visibility="{Binding IsChecked, ElementName=HeaderToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+
+                  <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Height="1" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}"                              
+                          Visibility="{Binding InfoPanelCategory_DisplaySeparator, Converter={StaticResource BoolToVisibleOrCollapsed}, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
+
+               </Grid>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
 
 </ResourceDictionary>

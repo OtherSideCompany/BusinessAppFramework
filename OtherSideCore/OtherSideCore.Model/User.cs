@@ -80,7 +80,6 @@ namespace OtherSideCore.Model
 
       public User() : base()
       {
-         Id = new IntegerDatabaseField("Id");
          FirstName = new StringDatabaseField("FirstName", 50);
          LastName = new StringDatabaseField("LastName", 50);
          UserName = new StringDatabaseField("UserName", 50);

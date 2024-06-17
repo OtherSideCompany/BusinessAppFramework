@@ -16,7 +16,6 @@ namespace OtherSideCore.ViewModel
       private string m_ApplicationLogoImageSource;
       private string m_ApplicationName;
       private bool m_IsNavigationMenuDisplayed;
-      private SolidColorBrush m_LogoBackgroundColor;
       private ModelViewModel m_ModelViewModel;
 
       #endregion
@@ -71,22 +70,6 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public SolidColorBrush LogoBackgroundColor
-      {
-         get
-         {
-            return m_LogoBackgroundColor;
-         }
-         set
-         {
-            if (value != m_LogoBackgroundColor)
-            {
-               m_LogoBackgroundColor = value;
-               OnPropertyChanged(nameof(LogoBackgroundColor));
-            }
-         }
-      }
-
       public ModelViewModel ModelViewModel
       {
          get
@@ -116,8 +99,6 @@ namespace OtherSideCore.ViewModel
       public OtherSideCoreMainWindowViewModel()
       {
          ApplicationName = "Unnamed App";
-
-         LogoBackgroundColor = new SolidColorBrush(Color.FromRgb(143, 0, 124));
       }
 
       #endregion
