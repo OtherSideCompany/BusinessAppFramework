@@ -22,50 +22,20 @@ namespace OtherSideCore.Model
 
       public StringDatabaseField FirstName
       {
-         get
-         {
-            return m_FirstName;
-         }
-         set
-         {
-            if (value != m_FirstName)
-            {
-               m_FirstName = value;
-               OnPropertyChanged(nameof(FirstName));
-            }
-         }
+         get => m_FirstName;
+         set => SetProperty(ref m_FirstName, value);
       }
 
       public StringDatabaseField LastName
       {
-         get
-         {
-            return m_LastName;
-         }
-         set
-         {
-            if (value != m_LastName)
-            {
-               m_LastName = value;
-               OnPropertyChanged(nameof(LastName));
-            }
-         }
+         get => m_LastName;
+         set => SetProperty(ref m_LastName, value);
       }
 
       public StringDatabaseField UserName
       {
-         get
-         {
-            return m_UserName;
-         }
-         set
-         {
-            if (value != m_UserName)
-            {
-               m_UserName = value;
-               OnPropertyChanged(nameof(UserName));
-            }
-         }
+         get => m_UserName;
+         set => SetProperty(ref m_UserName, value);
       }
 
       #endregion

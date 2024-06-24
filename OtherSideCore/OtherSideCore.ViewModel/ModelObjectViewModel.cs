@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Model;
+﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +10,7 @@ using System.Windows.Input;
 
 namespace OtherSideCore.ViewModel
 {
-   public class ModelObjectViewModel : ViewModelBase
+   public abstract class ModelObjectViewModel : ViewModelBase
    {
       #region Fields
 
@@ -18,115 +19,36 @@ namespace OtherSideCore.ViewModel
       private ModelObjectViewModel m_ParentModelObjectViewModelBase;
       private ObservableCollection<ModelObjectViewModel> m_ChildrenModelObjectViewModelBase;
 
-      private Command m_SaveChangesCommand;
-      private Command m_CancelChangesCommand;
-      private Command m_DeleteCommand;
-      private Command m_DisplayInExternalWindowCommand;
-
       #endregion
 
       #region Properties
 
       public ModelObject ModelObject
       {
-         get
-         {
-            return m_ModelObject;
-         }
-         set
-         {
-            if (value != m_ModelObject)
-            {
-               m_ModelObject = value;
-               OnPropertyChanged(nameof(ModelObject));
-            }
-         }
+         get => m_ModelObject;
+         set => SetProperty(ref m_ModelObject, value);
       }
 
       public ModelObjectViewModel ParentModelObjectViewModelBase
       {
-         get
-         {
-            return m_ParentModelObjectViewModelBase;
-         }
-         set
-         {
-            if (value != m_ParentModelObjectViewModelBase)
-            {
-               m_ParentModelObjectViewModelBase = value;
-               OnPropertyChanged(nameof(ParentModelObjectViewModelBase));
-            }
-         }
+         get => m_ParentModelObjectViewModelBase;
+         set => SetProperty(ref m_ParentModelObjectViewModelBase, value);
       }
 
       public ObservableCollection<ModelObjectViewModel> ChildrenModelObjectViewModelBase
       {
-         get
-         {
-            return m_ChildrenModelObjectViewModelBase;
-         }
-         set
-         {
-            if (value != m_ChildrenModelObjectViewModelBase)
-            {
-               m_ChildrenModelObjectViewModelBase = value;
-               OnPropertyChanged(nameof(ChildrenModelObjectViewModelBase));
-            }
-         }
+         get => m_ChildrenModelObjectViewModelBase;
+         set => SetProperty(ref m_ChildrenModelObjectViewModelBase, value);
       }
 
       #endregion
 
       #region Commands
 
-      public Command SaveChangesCommand
-      {
-         get
-         {
-            if (m_SaveChangesCommand == null)
-            {
-               m_SaveChangesCommand = new Command(ExecuteSaveChangesCommand, CanExecuteSaveChangesCommand);
-            }
-            return m_SaveChangesCommand;
-         }
-      }
-
-      public Command CancelChangesCommand
-      {
-         get
-         {
-            if (m_CancelChangesCommand == null)
-            {
-               m_CancelChangesCommand = new Command(ExecuteCancelChangesCommand, CanExecuteCancelChangesCommand);
-            }
-            return m_CancelChangesCommand;
-         }
-      }
-
-      public Command DeleteCommand
-      {
-         get
-         {
-            if (m_DeleteCommand == null)
-            {
-               m_DeleteCommand = new Command(ExecuteDeleteCommand, CanExecuteDeleteCommand);
-            }
-            return m_DeleteCommand;
-         }
-      }
-
-      public Command DisplayInExternalWindowCommand
-      {
-         get
-         {
-            if (m_DisplayInExternalWindowCommand == null)
-            {
-               m_DisplayInExternalWindowCommand = new Command(ExecuteDisplayInExternalWindowCommand, CanExecuteDisplayInExternalWindowCommand);
-            }
-
-            return m_DisplayInExternalWindowCommand;
-         }
-      }
+      public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
+      public RelayCommand DisplayInExternalWindowCommand { get; private set; }
 
       #endregion
 
@@ -134,6 +56,11 @@ namespace OtherSideCore.ViewModel
 
       public ModelObjectViewModel(ModelObject modelObject) : base()
       {
+         SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
+         CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
+         DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanExecuteDelete);
+         DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
+
          ModelObject = modelObject;
          ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
       }
@@ -147,15 +74,22 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
+      public void NotifyCommandsCanExecuteChanged()
+      {
+         SaveChangesAsyncCommand.NotifyCanExecuteChanged();
+         CancelChangesAsyncCommand.NotifyCanExecuteChanged();
+         DeleteAsyncCommand.NotifyCanExecuteChanged();
+      }
+
       public virtual bool CanSaveChanges()
       {
          return ModelObject.CanSaveChanges();
       }
 
-      public virtual void SaveChanges()
+      public virtual async Task SaveChangesAsync()
       {
-         ModelObject.Save();
-         ModelObject.Load();
+         await ModelObject.SaveAsync();
+         await ModelObject.LoadAsync();
       }
 
       public virtual bool CanCancelChanges()
@@ -163,51 +97,26 @@ namespace OtherSideCore.ViewModel
          return ModelObject.CanCancelChanges();
       }
 
-      public virtual void CancelChanges()
+      public virtual async Task CancelChangesAsync()
       {
-         ModelObject.Load();
+         await ModelObject.LoadAsync();
       }
 
-      private bool CanExecuteDeleteCommand(object parameter)
+      private bool CanExecuteDelete()
       {
-         return (parameter as ModelObjectViewModel) != null && (parameter as ModelObjectViewModel).ModelObject.CanBeDeleted();
+         return ModelObject.CanBeDeleted();
       }
 
-      private void ExecuteDeleteCommand(object parameter)
+      private async Task DeleteAsync()
       {
-         (parameter as ModelObjectViewModel).ModelObject.Delete();
+         await ModelObject.DeleteAsync();
       }
 
-      private bool CanExecuteSaveChangesCommand(object parameter)
-      {
-         return CanSaveChanges();
-      }
+      protected abstract void DisplayInExternalWindow();
 
-      private void ExecuteSaveChangesCommand(object parameter)
+      protected override void ExecuteToggleExpandCommand()
       {
-         SaveChanges();
-      }
-
-      private bool CanExecuteCancelChangesCommand(object parameter)
-      {
-         return CanCancelChanges();
-      }
-
-      private void ExecuteCancelChangesCommand(object parameter)
-      {
-         CancelChanges();
-      }
-
-      protected virtual bool CanExecuteDisplayInExternalWindowCommand(object parameter)
-      {
-         return true;
-      }
-
-      protected virtual void ExecuteDisplayInExternalWindowCommand(object parameter) { }
-
-      protected override void ExecuteToggleExpandCommand(object parameter)
-      {
-         base.ExecuteToggleExpandCommand(parameter);
+         base.ExecuteToggleExpandCommand();
 
          if (IsExpanded)
          {

@@ -1,10 +1,9 @@
-﻿using OtherSideCore.Model;
-using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -19,104 +18,40 @@ namespace OtherSideCore.ViewModel
       private ObservableCollection<ModuleBaseViewModel> m_ModuleBaseViewModels;
       private ObservableCollection<ModuleBaseViewModel> m_QuickNavigationModuleViewModels;
 
-      private Command m_LoadModuleCommand;
-      private Command m_LoadFilteredModuleCommand;
-
       #endregion
 
       #region Properties
 
       public Model.Model Model
       {
-         get
-         {
-            return m_Model;
-         }
-         set
-         {
-            if (value != m_Model)
-            {
-               m_Model = value;
-               OnPropertyChanged(nameof(Model));
-            }
-         }
+         get => m_Model;
+         set => SetProperty(ref m_Model, value);
       }
 
       public ModuleBaseViewModel LoadedModuleBaseViewModel
       {
-         get
-         {
-            return m_LoadedModuleBaseViewModel;
-         }
-         set
-         {
-            if (value != m_LoadedModuleBaseViewModel)
-            {
-               m_LoadedModuleBaseViewModel = value;
-               OnPropertyChanged(nameof(LoadedModuleBaseViewModel));
-            }
-         }
+         get => m_LoadedModuleBaseViewModel;
+         set => SetProperty(ref m_LoadedModuleBaseViewModel, value);
       }
 
       public ObservableCollection<ModuleBaseViewModel> ModuleBaseViewModels
       {
-         get
-         {
-            return m_ModuleBaseViewModels;
-         }
-         set
-         {
-            if (value != m_ModuleBaseViewModels)
-            {
-               m_ModuleBaseViewModels = value;
-               OnPropertyChanged(nameof(ModuleBaseViewModels));
-            }
-         }
+         get => m_ModuleBaseViewModels;
+         set => SetProperty(ref m_ModuleBaseViewModels, value);
       }
 
       public ObservableCollection<ModuleBaseViewModel> QuickNavigationModuleViewModels
       {
-         get
-         {
-            return m_QuickNavigationModuleViewModels;
-         }
-         set
-         {
-            if (value != m_QuickNavigationModuleViewModels)
-            {
-               m_QuickNavigationModuleViewModels = value;
-               OnPropertyChanged(nameof(QuickNavigationModuleViewModels));
-            }
-         }
+         get => m_QuickNavigationModuleViewModels;
+         set => SetProperty(ref m_QuickNavigationModuleViewModels, value);
       }
 
       #endregion
 
       #region Commands
 
-      public Command LoadModuleCommand
-      {
-         get
-         {
-            if (m_LoadModuleCommand == null)
-            {
-               m_LoadModuleCommand = new Command(ExecuteLoadModuleCommand, CanExecuteLoadModuleCommand);
-            }
-            return m_LoadModuleCommand;
-         }
-      }
-
-      public Command LoadFilteredModuleCommand
-      {
-         get
-         {
-            if (m_LoadFilteredModuleCommand == null)
-            {
-               m_LoadFilteredModuleCommand = new Command(ExecuteLoadFilteredModuleCommand, CanExecuteLoadFilteredModuleCommand);
-            }
-            return m_LoadFilteredModuleCommand;
-         }
-      }
+      public RelayCommand<ModuleBaseViewModel> LoadModuleCommand { get; private set; }
+      public RelayCommand<object> LoadFilteredModuleCommand { get; private set; }
 
       #endregion
 
@@ -124,6 +59,9 @@ namespace OtherSideCore.ViewModel
 
       public ModelViewModel(Model.Model model)
       {
+         LoadModuleCommand = new RelayCommand<ModuleBaseViewModel>(LoadModule, CanLoadModule);
+         LoadFilteredModuleCommand = new RelayCommand<object>(LoadFilteredModule, CanLoadFilteredModule);
+
          Model = model;
          ModuleBaseViewModels = new ObservableCollection<ModuleBaseViewModel>();
          QuickNavigationModuleViewModels = new ObservableCollection<ModuleBaseViewModel>();
@@ -133,34 +71,29 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-      private bool CanExecuteLoadModuleCommand(object parameter)
+      private bool CanLoadModule(ModuleBaseViewModel moduleBaseViewModel)
       {
-         return CanLoadModule(parameter as ModuleBaseViewModel);
+         return moduleBaseViewModel != null;
       }
 
-      private void ExecuteLoadModuleCommand(object parameter)
+      private void LoadModule(ModuleBaseViewModel moduleBaseViewModel)
       {
-         LoadModule(parameter as ModuleBaseViewModel, null);
+         LoadModule(moduleBaseViewModel, null);
       }
 
-      private bool CanExecuteLoadFilteredModuleCommand(object parameter)
+      private bool CanLoadFilteredModule(object parameter)
       {
          var values = (object[])parameter;
-         return CanLoadModule(values[0] as ModuleBaseViewModel);
+         return (values[0] as ModuleBaseViewModel) != null;
       }
 
-      private void ExecuteLoadFilteredModuleCommand(object parameter)
+      private void LoadFilteredModule(object parameter)
       {
          var values = (object[])parameter;
          var moduleToLoad = values[0] as ModuleBaseViewModel;
          var filters = values[1] as List<string>;
 
          LoadModule(moduleToLoad, filters);
-      }
-
-      private bool CanLoadModule(ModuleBaseViewModel moduleBaseViewModel)
-      {
-         return moduleBaseViewModel != null;
       }
 
       private void LoadModule(ModuleBaseViewModel moduleBaseViewModel, List<string> filters)

@@ -1,11 +1,5 @@
-﻿using OtherSideCore.Model;
-using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -21,18 +15,8 @@ namespace OtherSideCore.ViewModel
 
       public ModuleGroupViewModel ModuleGroupViewModel
       {
-         get
-         {
-            return m_ModuleGroupViewModel;
-         }
-         set
-         {
-            if (value != m_ModuleGroupViewModel)
-            {
-               m_ModuleGroupViewModel = value;
-               OnPropertyChanged(nameof(ModuleGroupViewModel));
-            }
-         }
+         get => m_ModuleGroupViewModel;
+         set => SetProperty(ref m_ModuleGroupViewModel, value);
       }
 
       #endregion

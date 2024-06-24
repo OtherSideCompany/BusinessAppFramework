@@ -1,11 +1,5 @@
-﻿using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace OtherSideCore.ViewModel
 {
@@ -24,66 +18,26 @@ namespace OtherSideCore.ViewModel
 
       public string ApplicationLogoImageSource
       {
-         get
-         {
-            return m_ApplicationLogoImageSource;
-         }
-         set
-         {
-            if (value != m_ApplicationLogoImageSource)
-            {
-               m_ApplicationLogoImageSource = value;
-               OnPropertyChanged(nameof(ApplicationLogoImageSource));
-            }
-         }
+         get => m_ApplicationLogoImageSource;
+         set => SetProperty(ref m_ApplicationLogoImageSource, value);
       }
 
       public string ApplicationName
       {
-         get
-         {
-            return m_ApplicationName;
-         }
-         set
-         {
-            if (value != m_ApplicationName)
-            {
-               m_ApplicationName = value;
-               OnPropertyChanged(nameof(ApplicationName));
-            }
-         }
+         get => m_ApplicationName;
+         set => SetProperty(ref m_ApplicationName, value);
       }
 
       public bool IsNavigationMenuDisplayed
       {
-         get
-         {
-            return m_IsNavigationMenuDisplayed;
-         }
-         set
-         {
-            if (value != m_IsNavigationMenuDisplayed)
-            {
-               m_IsNavigationMenuDisplayed = value;
-               OnPropertyChanged(nameof(IsNavigationMenuDisplayed));
-            }
-         }
+         get => m_IsNavigationMenuDisplayed;
+         set => SetProperty(ref m_IsNavigationMenuDisplayed, value);
       }
 
       public ModelViewModel ModelViewModel
       {
-         get
-         {
-            return m_ModelViewModel;
-         }
-         set
-         {
-            if (value != m_ModelViewModel)
-            {
-               m_ModelViewModel = value;
-               OnPropertyChanged(nameof(ModelViewModel));
-            }
-         }
+         get => m_ModelViewModel;
+         set => SetProperty(ref m_ModelViewModel, value);
       }
 
       #endregion

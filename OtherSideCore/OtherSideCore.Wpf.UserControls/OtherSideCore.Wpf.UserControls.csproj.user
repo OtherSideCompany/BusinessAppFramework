@@ -4,12 +4,24 @@
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Update="LoadingView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="SaveCancelChangesView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="SearchListAsyncActionButton.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="LoadingView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="SaveCancelChangesView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SearchListAsyncActionButton.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles.xaml">

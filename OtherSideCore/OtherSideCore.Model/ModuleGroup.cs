@@ -15,18 +15,8 @@ namespace OtherSideCore.Model
 
       public ObservableCollection<Module> Modules
       {
-         get
-         {
-            return m_Modules;
-         }
-         private set
-         {
-            if (value != m_Modules)
-            {
-               m_Modules = value;
-               OnPropertyChanged(nameof(Modules));
-            }
-         }
+         get => m_Modules;
+         set => SetProperty(ref m_Modules, value);
       }
 
       public bool IsSubModuleLoaded

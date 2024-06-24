@@ -13,23 +13,47 @@
             <DropShadowEffect ShadowDepth="0" BlurRadius="6" />
          </Border.Effect>
          <Grid VerticalAlignment="Center" >
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-               <customcontrols:SvgImageButton Width="36" Height="36" 
-                                              SvgImageButton_ImageSize="24"
-                                              SvgImageButton_ImageColor="White"
-                                              SvgImageButton_IconGeometry="{StaticResource icon_content-save}"
-                                              SvgImageButton_OverBackgroundColor="Red"
-                                              SvgImageButton_MouseDownBackgroundColor="Red"
-                                              Command="{Binding SaveChangesCommand}"
-                                              ToolTip="Enregistrer les changements"/>
-               <customcontrols:SvgImageButton Width="36" Height="36" 
-                                              SvgImageButton_ImageSize="24"
-                                              SvgImageButton_ImageColor="White"
-                                              SvgImageButton_IconGeometry="{StaticResource icon_undo}" 
-                                              SvgImageButton_OverBackgroundColor="Red"
-                                              SvgImageButton_MouseDownBackgroundColor="Red"
-                                              Command="{Binding CancelChangesCommand}"
-                                              ToolTip="Annuler les changements"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="36">
+
+               <Border Visibility="{Binding CancelChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
+                  <customcontrols:SvgImageButton Width="36"
+                                                 SvgImageButton_ImageSize="24"
+                                                 SvgImageButton_ImageColor="White"
+                                                 SvgImageButton_IconGeometry="{StaticResource icon_content-save}"
+                                                 SvgImageButton_OverBackgroundColor="Red"
+                                                 SvgImageButton_MouseDownBackgroundColor="Red"
+                                                 Command="{Binding SaveChangesAsyncCommand}"
+                                                 ToolTip="Enregistrer les changements"
+                                                 Visibility="{Binding SaveChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
+               </Border>
+
+               <local:LoadingView VerticalAlignment="Center" 
+                                  Width="72"
+                                  LoadingView_IconColor="White"
+                                  LoadingView_IconSize="24"
+                                  LoadingView_DisplayCaption="False"
+                                  Visibility="{Binding SaveChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
+
+
+               <Border Visibility="{Binding SaveChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
+                  <customcontrols:SvgImageButton Width="36" 
+                                                 SvgImageButton_ImageSize="24"
+                                                 SvgImageButton_ImageColor="White"
+                                                 SvgImageButton_IconGeometry="{StaticResource icon_undo}" 
+                                                 SvgImageButton_OverBackgroundColor="Red"
+                                                 SvgImageButton_MouseDownBackgroundColor="Red"
+                                                 Command="{Binding CancelChangesAsyncCommand}"
+                                                 ToolTip="Annuler les changements"
+                                                 Visibility="{Binding CancelChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
+               </Border>
+
+               <local:LoadingView VerticalAlignment="Center" 
+                                  Width="72"
+                                  LoadingView_IconColor="White"
+                                  LoadingView_IconSize="24"
+                                  LoadingView_DisplayCaption="False"
+                                  Visibility="{Binding CancelChangesAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+               
             </StackPanel>
          </Grid>
       </Border>

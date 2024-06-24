@@ -1,9 +1,10 @@
-﻿using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
@@ -17,7 +18,7 @@ namespace OtherSideCore.Model
       private MultiTextFilter m_MultiTextFilter;
       private ModelObject m_SelectedModelObject;
 
-      private Action m_SelectedSearchResultChanged;
+      private Func<Task> m_SelectedSearchResultChangedAsync;
 
       #endregion
 
@@ -25,87 +26,35 @@ namespace OtherSideCore.Model
 
       public bool IsSelectionLocked
       {
-         get
-         {
-            return m_IsSelectionLocked;
-         }
-         set
-         {
-            if (value != m_IsSelectionLocked)
-            {
-               m_IsSelectionLocked = value;
-               OnPropertyChanged(nameof(IsSelectionLocked));
-            }
-         }
+         get => m_IsSelectionLocked;
+         set => SetProperty(ref m_IsSelectionLocked, value);
       }
 
       public ObservableCollection<ModelObject> SearchResults
       {
-         get
-         {
-            return m_SearchResults;
-         }
-         set
-         {
-            if (value != m_SearchResults)
-            {
-               m_SearchResults = value;
-               OnPropertyChanged(nameof(SearchResults));
-            }
-         }
+         get => m_SearchResults;
+         set => SetProperty(ref m_SearchResults, value);
       }
 
       public MultiTextFilter MultiTextFilter
       {
-         get
-         {
-            return m_MultiTextFilter;
-         }
-         set
-         {
-            if (value != m_MultiTextFilter)
-            {
-               m_MultiTextFilter = value;
-               OnPropertyChanged(nameof(MultiTextFilter));
-            }
-         }
+         get => m_MultiTextFilter;
+         set => SetProperty(ref m_MultiTextFilter, value);
       }
 
       public ModelObject SelectedModelObject
       {
-         get
-         {
-            return m_SelectedModelObject;
-         }
-         set
-         {
-            if (value != m_SelectedModelObject)
-            {
-               m_SelectedModelObject = value;
-               OnPropertyChanged(nameof(SelectedModelObject));
-            }
-         }
+         get => m_SelectedModelObject;
+         set => SetProperty(ref m_SelectedModelObject, value);
       }
 
-      public Action SelectedSearchResultChanged
+      public Func<Task> SelectedSearchResultChangedAsync
       {
-         get
-         {
-            return m_SelectedSearchResultChanged;
-         }
-         set
-         {
-            if (value != m_SelectedSearchResultChanged)
-            {
-               m_SelectedSearchResultChanged = value;
-               OnPropertyChanged(nameof(SelectedSearchResultChanged));
-            }
-         }
+         get => m_SelectedSearchResultChangedAsync;
+         set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
       }
 
       #endregion
-
-
 
       #region Constructor
 
@@ -119,7 +68,7 @@ namespace OtherSideCore.Model
 
       #region Methods
 
-      public virtual void Search()
+      public virtual async Task SearchAsync()
       {
          Unload();
       }
@@ -151,18 +100,16 @@ namespace OtherSideCore.Model
                 !modelObject.Equals(SelectedModelObject);
       }
 
-      public void SelectModelObject(ModelObject modelObject)
+      public async virtual Task SelectModelObjectAsync(ModelObject modelObject)
       {
          SelectedModelObject = modelObject;
-         SelectedSearchResultChanged?.Invoke();
+         await SelectedSearchResultChangedAsync?.Invoke();
       }
 
       public void Dispose()
       {
          Unload();
-      }
-
-      
+      }      
 
       #endregion
    }

@@ -33,13 +33,13 @@ namespace OtherSideCore.Data.Entities
          }
       }
 
-      public abstract int Create(List<DatabaseField> databaseFields);
+      public abstract Task<int> CreateAsync(List<DatabaseField> databaseFields);
 
-      public abstract void Save(int id, List<DatabaseField> databaseFields);
+      public abstract Task SaveAsync(int id, List<DatabaseField> databaseFields);
 
-      public abstract EntityBase Get(int id);
+      public abstract Task<EntityBase> GetAsync(int id);
 
-      public abstract void Delete(int id);
+      public abstract Task DeleteAsync(int id);
       
    }
 }

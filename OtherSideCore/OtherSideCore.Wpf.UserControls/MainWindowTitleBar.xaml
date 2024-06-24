@@ -124,16 +124,24 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
          <TextBlock Grid.Column="0" Foreground="{StaticResource TextForeGroundColor}" Margin="0,0,10,0">
             <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.FirstName.Value}" />
             <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.LastName.Value}" />
          </TextBlock>
-         <Button Grid.Column="1" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
-         <Button Grid.Column="2" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />
-         <Button Grid.Column="3" Style="{StaticResource RestoreButtonStyle}" Click="RestoreButton_Click" x:Name="RestoreButton" />         
-         <Button Grid.Column="4" Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" />
+         <customcontrols:SvgImageButton Grid.Column="1" Width="44" Height="32"
+                                        SvgImageButton_IconGeometry="{StaticResource icon_log-out}"
+                                        SvgImageButton_ImageColor="White"
+                                        SvgImageButton_OverBackgroundColor="{StaticResource CaptionButtonHoverColor}"
+                                        SvgImageButton_MouseDownBackgroundColor="{StaticResource CaptionButtonIsPressedColor}"
+                                        Command="{Binding DisconnectAuthenticatedUserCommand}"
+                                        Visibility="{Binding ModelViewModel.Model.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+         <Button Grid.Column="2" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
+         <Button Grid.Column="3" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />
+         <Button Grid.Column="4" Style="{StaticResource RestoreButtonStyle}" Click="RestoreButton_Click" x:Name="RestoreButton" />         
+         <Button Grid.Column="5" Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click" />
          
       </Grid>   
       

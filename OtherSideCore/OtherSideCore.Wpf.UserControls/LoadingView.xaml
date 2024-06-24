@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.LoadingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls" xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="LoadingViewUserControl">
+
+   <UserControl.Resources>
+      <Storyboard x:Key="Animation0" BeginTime="00:00:00.0" RepeatBehavior="Forever">
+         <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                    From="0" To="360" Duration="00:00:01.6" RepeatBehavior="Forever" />
+      </Storyboard>
+   </UserControl.Resources>
+
+   <Grid>
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto" />
+         <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <customcontrols:SvgViewer Grid.Row="0"
+                                   SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
+                                   SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
+                                   SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                   SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                   RenderTransformOrigin="0.5 0.5"
+                                   x:Name="OuterRing">
+         <customcontrols:SvgViewer.RenderTransform>
+            <RotateTransform />
+         </customcontrols:SvgViewer.RenderTransform>
+         <customcontrols:SvgViewer.Style>
+            <Style TargetType="{x:Type customcontrols:SvgViewer}" BasedOn="{StaticResource {x:Type customcontrols:SvgViewer}}">
+               <Style.Triggers>
+                  <Trigger Property="IsVisible" Value="True">
+                     <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource Animation0}" x:Name="Storyboard0" />
+                     </Trigger.EnterActions>
+                     <Trigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="Storyboard0"/>
+                     </Trigger.ExitActions>
+                  </Trigger>
+               </Style.Triggers>
+            </Style>
+         </customcontrols:SvgViewer.Style>
+      </customcontrols:SvgViewer>
+
+      <TextBlock Grid.Row="1" Text="Chargement..." HorizontalAlignment="Center" FontSize="10" Margin="0,3,0,0"
+                 Visibility="{Binding LoadingView_DisplayCaption, ElementName=LoadingViewUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                 Foreground="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"/>
+
+   </Grid>
+   
+</UserControl>

@@ -1,9 +1,4 @@
-﻿using OtherSideCore.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OtherSideCore.Model.DatabaseFields
 {
@@ -11,62 +6,32 @@ namespace OtherSideCore.Model.DatabaseFields
    {
       #region Fields
 
-      private bool m_IsIdentity;
       private string m_DatabaseFieldName;
       private bool m_IsDirty;
       protected bool m_IsLoading;
+      private bool m_IsEditable;
 
       #endregion
 
       #region Properties
 
-      public bool IsIdentity
-      {
-         get
-         {
-            return m_IsIdentity;
-         }
-         set
-         {
-            if (value != m_IsIdentity)
-            {
-               m_IsIdentity = value;
-               OnPropertyChanged(nameof(IsIdentity));
-            }
-         }
-      }
-
       public string DatabaseFieldName
       {
-         get
-         {
-            return m_DatabaseFieldName;
-         }
-         set
-         {
-            if (value != m_DatabaseFieldName)
-            {
-               m_DatabaseFieldName = value;
-               OnPropertyChanged(nameof(DatabaseFieldName));
-            }
-         }
+         get => m_DatabaseFieldName;
+         set => SetProperty(ref m_DatabaseFieldName, value);
       }
 
       public bool IsDirty
       {
-         get
-         {
-            return m_IsDirty;
-         }
-         set
-         {
-            if (value != m_IsDirty)
-            {
-               m_IsDirty = value;
-               OnPropertyChanged(nameof(IsDirty));
-            }
-         }
-      }      
+         get => m_IsDirty;
+         set => SetProperty(ref m_IsDirty, value);
+      }
+
+      public bool IsEditable
+      {
+         get => m_IsEditable;
+         set => SetProperty(ref m_IsEditable, value);
+      }
 
       #endregion
 
@@ -80,6 +45,7 @@ namespace OtherSideCore.Model.DatabaseFields
 
       public DatabaseField(string databaseFieldName)
       {
+         IsEditable = true;
          DatabaseFieldName = databaseFieldName;
       }
 

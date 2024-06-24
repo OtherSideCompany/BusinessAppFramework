@@ -1,11 +1,9 @@
 ﻿using OtherSideCore.Model;
-using OtherSideCore.Utils;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -26,98 +24,38 @@ namespace OtherSideCore.ViewModel
 
       public ModuleBase ModuleBase
       {
-         get
-         {
-            return m_ModuleBase;
-         }
-         protected set
-         {
-            if (value != m_ModuleBase)
-            {
-               m_ModuleBase = value;
-               OnPropertyChanged(nameof(ModuleBase));
-            }
-         }
+         get => m_ModuleBase;
+         set => SetProperty(ref m_ModuleBase, value);
       }
 
       public Type ViewModelType
       {
-         get
-         {
-            return m_ViewModelType;
-         }
-         protected set
-         {
-            if (value != m_ViewModelType)
-            {
-               m_ViewModelType = value;
-               OnPropertyChanged(nameof(ViewModelType));
-            }
-         }
+         get => m_ViewModelType;
+         protected set => SetProperty(ref m_ViewModelType, value);
       }
 
       public string ViewAssembly
       {
-         get
-         {
-            return m_ViewAssembly;
-         }
-         protected set
-         {
-            if (value != m_ViewAssembly)
-            {
-               m_ViewAssembly = value;
-               OnPropertyChanged(nameof(ViewAssembly));
-            }
-         }
+         get => m_ViewAssembly;
+         protected set => SetProperty(ref m_ViewAssembly, value);
       }
 
       public string ViewType
       {
-         get
-         {
-            return m_ViewType;
-         }
-         protected set
-         {
-            if (value != m_ViewType)
-            {
-               m_ViewType = value;
-               OnPropertyChanged(nameof(ViewType));
-            }
-         }
+         get => m_ViewType;
+         protected set => SetProperty(ref m_ViewType, value);
       }
 
       public UserControl ModuleView
       {
-         get
-         {
-            return m_ModuleView;
-         }
-         protected set
-         {
-            if (value != m_ModuleView)
-            {
-               m_ModuleView = value;
-               OnPropertyChanged(nameof(ModuleView));
-            }
-         }
+         get => m_ModuleView;
+         protected set => SetProperty(ref m_ModuleView, value);
       }
 
       public object IconResource
       {
-         get
-         {
-            return m_IconResource;
-         }
-         protected set
-         {
-            if (value != m_IconResource)
-            {
-               m_IconResource = value;
-               OnPropertyChanged(nameof(IconResource));
-            }
-         }
+         get => m_IconResource;
+         protected set => SetProperty(ref m_IconResource, value);
       }
 
       #endregion

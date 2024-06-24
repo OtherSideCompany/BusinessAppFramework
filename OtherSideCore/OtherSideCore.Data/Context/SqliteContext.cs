@@ -24,9 +24,9 @@ namespace OtherSideCore.Data.Context
          options.UseSqlite($"Data Source={DatabasePath}");
       }
 
-      public static void Migrate(SqliteContext context)
+      public static async Task MigrateAsync(SqliteContext context)
       {
-         context.Database.Migrate();
+         await context.Database.MigrateAsync();
       }
    }
 }

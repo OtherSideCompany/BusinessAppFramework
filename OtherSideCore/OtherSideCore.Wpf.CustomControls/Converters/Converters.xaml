@@ -5,4 +5,5 @@
    <converters:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
    <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
+   <converters:BoolInverter x:Key="BoolInverter" />
 </ResourceDictionary>

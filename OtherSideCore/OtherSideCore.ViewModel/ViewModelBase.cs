@@ -1,11 +1,6 @@
-﻿using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace OtherSideCore.ViewModel
 {
@@ -21,23 +16,11 @@ namespace OtherSideCore.ViewModel
       private bool m_IsDropBeforeIndicatorVisible;
       private bool m_IsDropAfterIndicatorVisible;
 
-      private Command m_ToggleExpandCommand;
-
       #endregion
 
       #region Commands 
 
-      public Command ToggleExpandCommand
-      {
-         get
-         {
-            if (m_ToggleExpandCommand == null)
-            {
-               m_ToggleExpandCommand = new Command(ExecuteToggleExpandCommand, CanExecuteToggleExpandCommand);
-            }
-            return m_ToggleExpandCommand;
-         }
-      }
+      public RelayCommand ToggleExpandCommand { get; private set; }
 
       #endregion
 
@@ -45,98 +28,38 @@ namespace OtherSideCore.ViewModel
 
       public bool IsSelected
       {
-         get
-         {
-            return m_IsSelected;
-         }
-         set
-         {
-            if (value != m_IsSelected)
-            {
-               m_IsSelected = value;
-               OnPropertyChanged(nameof(IsSelected));
-            }
-         }
+         get => m_IsSelected;
+         set => SetProperty(ref m_IsSelected, value);
       }
 
       public bool IsVisible
       {
-         get
-         {
-            return m_IsVisible;
-         }
-         set
-         {
-            if (value != m_IsVisible)
-            {
-               m_IsVisible = value;
-               OnPropertyChanged(nameof(IsVisible));
-            }
-         }
+         get => m_IsVisible;
+         set => SetProperty(ref m_IsVisible, value);
       }
 
       public bool IsExpanded
       {
-         get
-         {
-            return m_IsExpanded;
-         }
-         set
-         {
-            if (value != m_IsExpanded)
-            {
-               m_IsExpanded = value;
-               OnPropertyChanged(nameof(IsExpanded));
-            }
-         }
+         get => m_IsExpanded;
+         set => SetProperty(ref m_IsExpanded, value);
       }
 
       public bool IsCollapsed
       {
-         get
-         {
-            return m_IsCollapsed;
-         }
-         set
-         {
-            if (value != m_IsCollapsed)
-            {
-               m_IsCollapsed = value;
-               OnPropertyChanged(nameof(IsCollapsed));
-            }
-         }
+         get => m_IsCollapsed;
+         set => SetProperty(ref m_IsCollapsed, value);
       }
 
       public bool IsDropBeforeIndicatorVisible
       {
-         get
-         {
-            return m_IsDropBeforeIndicatorVisible;
-         }
-         set
-         {
-            if (value != m_IsDropBeforeIndicatorVisible)
-            {
-               m_IsDropBeforeIndicatorVisible = value;
-               OnPropertyChanged(nameof(IsDropBeforeIndicatorVisible));
-            }
-         }
+         get => m_IsDropBeforeIndicatorVisible;
+         set => SetProperty(ref m_IsDropBeforeIndicatorVisible, value);
       }
 
       public bool IsDropAfterIndicatorVisible
       {
-         get
-         {
-            return m_IsDropAfterIndicatorVisible;
-         }
-         set
-         {
-            if (value != m_IsDropAfterIndicatorVisible)
-            {
-               m_IsDropAfterIndicatorVisible = value;
-               OnPropertyChanged(nameof(IsDropAfterIndicatorVisible));
-            }
-         }
+         get => m_IsDropAfterIndicatorVisible;
+         set => SetProperty(ref m_IsDropAfterIndicatorVisible, value);
       }
 
       #endregion
@@ -145,7 +68,7 @@ namespace OtherSideCore.ViewModel
 
       public ViewModelBase()
       {
-         
+         ToggleExpandCommand = new RelayCommand(ExecuteToggleExpandCommand);
       }
 
       #endregion
@@ -164,12 +87,7 @@ namespace OtherSideCore.ViewModel
          IsDropBeforeIndicatorVisible = false;
       }
 
-      protected virtual bool CanExecuteToggleExpandCommand(object parameter)
-      {
-         return true;
-      }
-
-      protected virtual void ExecuteToggleExpandCommand(object parameter)
+      protected virtual void ExecuteToggleExpandCommand()
       {
          IsExpanded = !IsExpanded;
       }      

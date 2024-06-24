@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 
@@ -18,50 +18,20 @@ namespace OtherSideCore.Model
 
       public bool IsLoaded
       {
-         get
-         {
-            return m_IsLoaded;
-         }
-         private set
-         {
-            if (value != m_IsLoaded)
-            {
-               m_IsLoaded = value;
-               OnPropertyChanged(nameof(IsLoaded));
-            }
-         }
+         get => m_IsLoaded;
+         set => SetProperty(ref m_IsLoaded, value);
       }
 
       public string Name
       {
-         get
-         {
-            return m_Name;
-         }
-         protected set
-         {
-            if (value != m_Name)
-            {
-               m_Name = value;
-               OnPropertyChanged(nameof(Name));
-            }
-         }
+         get => m_Name;
+         set => SetProperty(ref m_Name, value);
       }
 
       public string ModuleNavigationPath
       {
-         get
-         {
-            return m_ModuleNavigationPath;
-         }
-         set
-         {
-            if (value != m_ModuleNavigationPath)
-            {
-               m_ModuleNavigationPath = value;
-               OnPropertyChanged(nameof(ModuleNavigationPath));
-            }
-         }
+         get => m_ModuleNavigationPath;
+         set => SetProperty(ref m_ModuleNavigationPath, value);
       }
 
       #endregion

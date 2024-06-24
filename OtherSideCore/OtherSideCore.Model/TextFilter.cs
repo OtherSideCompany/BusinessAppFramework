@@ -1,9 +1,4 @@
-﻿using OtherSideCore.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OtherSideCore.Model
 {
@@ -19,18 +14,8 @@ namespace OtherSideCore.Model
 
       public string Text
       {
-         get
-         {
-            return m_Text;
-         }
-         set
-         {
-            if (value != m_Text)
-            {
-               m_Text = value;
-               OnPropertyChanged(nameof(Text));
-            }
-         }
+         get => m_Text;
+         set => SetProperty(ref m_Text, value);
       }
 
       #endregion

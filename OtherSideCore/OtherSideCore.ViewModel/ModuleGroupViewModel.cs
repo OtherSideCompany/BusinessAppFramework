@@ -26,39 +26,18 @@ namespace OtherSideCore.ViewModel
          {
             return ModuleBase as ModuleGroup;
          }
-      }
-         
+      }         
 
       public bool IsExpanded
       {
-         get
-         {
-            return m_IsExpanded;
-         }
-         set
-         {
-            if (value != m_IsExpanded)
-            {
-               m_IsExpanded = value;
-               OnPropertyChanged(nameof(IsExpanded));
-            }
-         }
+         get => m_IsExpanded;
+         set => SetProperty(ref m_IsExpanded, value);
       }
 
       public ObservableCollection<ModuleViewModel> ModuleViewModels
       {
-         get
-         {
-            return m_ModuleViewModels;
-         }
-         set
-         {
-            if (value != m_ModuleViewModels)
-            {
-               m_ModuleViewModels = value;
-               OnPropertyChanged(nameof(ModuleViewModels));
-            }
-         }
+         get => m_ModuleViewModels;
+         set => SetProperty(ref m_ModuleViewModels, value);
       }
 
       #endregion

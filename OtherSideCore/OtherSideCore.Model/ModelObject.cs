@@ -1,10 +1,11 @@
 ﻿using OtherSideCore.Model.DatabaseFields;
-using OtherSideCore.Utils;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
@@ -25,19 +26,8 @@ namespace OtherSideCore.Model
 
       public IntegerDatabaseField Id
       {
-         get
-         {
-            return m_Id;
-         }
-         set
-         {
-            if (value != m_Id)
-            {
-               m_Id = value;
-               OnPropertyChanged(nameof(Id));
-               OnPropertyChanged(nameof(IsCreated));
-            }
-         }
+         get => m_Id;
+         set { SetProperty(ref m_Id, value); OnPropertyChanged(nameof(IsCreated)); }
       }
 
       public bool IsCreated
@@ -48,22 +38,6 @@ namespace OtherSideCore.Model
          }
       }
 
-      public bool IsDirty
-      {
-         get
-         {
-            return m_IsDirty;
-         }
-         set
-         {
-            if (value != m_IsDirty)
-            {
-               m_IsDirty = value;
-               OnPropertyChanged(nameof(IsDirty));
-            }
-         }
-      }
-
       #endregion
 
       #region Constructor
@@ -71,7 +45,7 @@ namespace OtherSideCore.Model
       public ModelObject()
       {
          guid = Guid.NewGuid();
-         Id = new IntegerDatabaseField("Id") { IsIdentity = true };
+         Id = new IntegerDatabaseField("Id");
       }
 
       #endregion
@@ -106,12 +80,14 @@ namespace OtherSideCore.Model
          }
       }
 
-      public void Load()
+      public async Task LoadAsync()
       {
-         var userEntity = m_EntityBase.Get(Id.Value);
+         LockDatabasePropertiesEdition();
+
+         var userEntity = await m_EntityBase.GetAsync(Id.Value);
          LoadPropertiesFromEntity(userEntity);
 
-         Thread.Sleep(5000);
+         UnlockDatabasePropertiesEdition();
 
          ResetDatabaseFieldsDirtyState();
       }
@@ -124,20 +100,40 @@ namespace OtherSideCore.Model
       public bool CanCancelChanges()
       {
          return GetDatabaseFields().Any(dbf => dbf.IsDirty);
+      }      
+
+      private void LockDatabasePropertiesEdition()
+      {
+         foreach (var databaseProperty in GetDatabaseFields())
+         {
+            databaseProperty.IsEditable = false;
+         }
       }
 
-      public void Save()
+      private void UnlockDatabasePropertiesEdition()
       {
+         foreach (var databaseProperty in GetDatabaseFields())
+         {
+            databaseProperty.IsEditable = true;
+         }
+      }
+
+      public async Task SaveAsync()
+      {       
          if (Id.Value == 0)
          {
-            Id.Value = m_EntityBase.Create(ConvertPropertiesToDataProperties());
+            Id.Value = await m_EntityBase.CreateAsync(ConvertPropertiesToDataProperties());
          }
          else
          {
-            m_EntityBase.Save(Id.Value, ConvertDirtyPropertiesToDataProperties());
-         }
+            LockDatabasePropertiesEdition();
 
-         ResetDatabaseFieldsDirtyState();
+            await m_EntityBase.SaveAsync(Id.Value, ConvertDirtyPropertiesToDataProperties());
+
+            UnlockDatabasePropertiesEdition();
+         }         
+
+         ResetDatabaseFieldsDirtyState();         
       }
 
       public bool CanBeDeleted()
@@ -145,10 +141,14 @@ namespace OtherSideCore.Model
          return true;
       }
 
-      public void Delete()
+      public async Task DeleteAsync()
       {
-         m_EntityBase.Delete(Id.Value);
+         LockDatabasePropertiesEdition();
+
+         await m_EntityBase.DeleteAsync(Id.Value);
          Id.Value = 0;
+
+         UnlockDatabasePropertiesEdition();
       }
 
       protected void ResetDatabaseFieldsDirtyState()

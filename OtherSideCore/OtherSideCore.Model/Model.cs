@@ -1,10 +1,8 @@
-﻿using OtherSideCore.Utils;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
@@ -22,50 +20,20 @@ namespace OtherSideCore.Model
 
       public ObservableCollection<ModuleBase> ModuleBases
       {
-         get
-         {
-            return m_ModuleBases;
-         }
-         set
-         {
-            if (value != m_ModuleBases)
-            {
-               m_ModuleBases = value;
-               OnPropertyChanged(nameof(ModuleBases));
-            }
-         }
+         get => m_ModuleBases;
+         set => SetProperty(ref m_ModuleBases, value);
       }
 
       public ModuleBase LoadedModule
       {
-         get
-         {
-            return m_LoadedModule;
-         }
-         private set
-         {
-            if (value != m_LoadedModule)
-            {
-               m_LoadedModule = value;
-               OnPropertyChanged(nameof(LoadedModule));
-            }
-         }
+         get => m_LoadedModule;
+         set => SetProperty(ref m_LoadedModule, value);
       }
 
       public User AuthenticatedUser
       {
-         get
-         {
-            return m_AuthenticatedUser;
-         }
-         private set
-         {
-            if (value != m_AuthenticatedUser)
-            {
-               m_AuthenticatedUser = value;
-               OnPropertyChanged(nameof(AuthenticatedUser));
-            }
-         }
+         get => m_AuthenticatedUser;
+         set => SetProperty(ref m_AuthenticatedUser, value);
       }
 
       #endregion
@@ -94,7 +62,7 @@ namespace OtherSideCore.Model
          return moduleBase != LoadedModule && !moduleBase.IsLoaded;
       }
 
-      private void UnloadLoadedModule()
+      private void UnloadLoadModule()
       {
          if (LoadedModule != null)
          {
@@ -105,7 +73,7 @@ namespace OtherSideCore.Model
 
       public void LoadModule(ModuleBase moduleBase, List<string> filters)
       {
-         UnloadLoadedModule();
+         UnloadLoadModule();
 
          if (moduleBase != null)
          {
@@ -140,9 +108,15 @@ namespace OtherSideCore.Model
          return false;
       }
 
+      public void DisconnectAuthenticatedUser()
+      {
+         UnloadLoadModule();
+         AuthenticatedUser = null;
+      }
+
       public void Dispose()
       {
-         UnloadLoadedModule();
+         UnloadLoadModule();
       }
 
       #endregion

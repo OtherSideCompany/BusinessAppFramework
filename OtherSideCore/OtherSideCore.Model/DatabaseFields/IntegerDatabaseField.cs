@@ -18,16 +18,16 @@ namespace OtherSideCore.Model.DatabaseFields
 
       public int Value
       {
-         get
-         {
-            return m_Value;
-         }
+         get => m_Value;
          set
          {
-            if (value != m_Value)
+            var updateDirtySate = !m_IsLoading && value != m_Value;
+
+            if (IsEditable)
             {
-               m_Value = value;
-               OnPropertyChanged("Value");
+               SetProperty(ref m_Value, value);
+
+               if (updateDirtySate) IsDirty = true;
             }
          }
       }
@@ -49,7 +49,11 @@ namespace OtherSideCore.Model.DatabaseFields
 
       public override void LoadValue(object value)
       {
+         m_IsLoading = true;
+
          Value = (int)value;
+
+         m_IsLoading = false;
       }
 
       #endregion

@@ -1,9 +1,11 @@
-﻿using OtherSideCore.Model;
+﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
@@ -17,59 +19,26 @@ namespace OtherSideCore.ViewModel
 
       private ObservableCollection<ModelObjectViewModel> m_SearchResultViewModels;
 
-      private Command m_SearchCommand;
-      private Command m_SelectModelObjectCommand;
-
       #endregion
 
       #region Properties
 
       public ModelObjectListSearch ModelObjectListSearch
       {
-         get
-         {
-            return m_ModelObjectListSearch;
-         }
-         set
-         {
-            if (value != m_ModelObjectListSearch)
-            {
-               m_ModelObjectListSearch = value;
-               OnPropertyChanged(nameof(ModelObjectListSearch));
-            }
-         }
+         get => m_ModelObjectListSearch;
+         set => SetProperty(ref m_ModelObjectListSearch, value);
       }
 
       public MultiTextFilterViewModel MultiTextFilterViewModel
       {
-         get
-         {
-            return m_MultiTextFilterViewModel;
-         }
-         set
-         {
-            if (value != m_MultiTextFilterViewModel)
-            {
-               m_MultiTextFilterViewModel = value;
-               OnPropertyChanged(nameof(MultiTextFilterViewModel));
-            }
-         }
+         get => m_MultiTextFilterViewModel;
+         set => SetProperty(ref m_MultiTextFilterViewModel, value);
       }
 
       public ObservableCollection<ModelObjectViewModel> SearchResultViewModels
       {
-         get
-         {
-            return m_SearchResultViewModels;
-         }
-         set
-         {
-            if (value != m_SearchResultViewModels)
-            {
-               m_SearchResultViewModels = value;
-               OnPropertyChanged(nameof(SearchResultViewModels));
-            }
-         }
+         get => m_SearchResultViewModels;
+         set => SetProperty(ref m_SearchResultViewModels, value);
       }
 
       public ModelObjectViewModel SelectedSearchResultViewModel
@@ -84,29 +53,8 @@ namespace OtherSideCore.ViewModel
 
       #region Commands
 
-      public Command SearchCommand
-      {
-         get
-         {
-            if (m_SearchCommand == null)
-            {
-               m_SearchCommand = new Command(ExecuteSearchCommand, CanExecuteSearchCommand);
-            }
-            return m_SearchCommand;
-         }
-      }
-
-      public Command SelectModelObjectCommand
-      {
-         get
-         {
-            if (m_SelectModelObjectCommand == null)
-            {
-               m_SelectModelObjectCommand = new Command(ExecuteSelectModelObjectCommand, CanExecuteSelectModelObjectCommand);
-            }
-            return m_SelectModelObjectCommand;
-         }
-      }
+      public AsyncRelayCommand SearchCommand { get; private set; }
+      public AsyncRelayCommand<ModelObjectViewModel> SelectModelObjectCommand { get; private set; }
 
       #endregion
 
@@ -114,6 +62,9 @@ namespace OtherSideCore.ViewModel
 
       public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch)
       {
+         SearchCommand = new AsyncRelayCommand(SearchAsync);
+         SelectModelObjectCommand = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
+
          ModelObjectListSearch = modelObjectListSearch;
          MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
@@ -123,7 +74,17 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-      protected abstract void ConstructSearchResultViewModels();
+      protected abstract Task<List<ModelObjectViewModel>> ConstructSearchResultViewModels();
+
+      private void UnloadSearchResultViewModels()
+      {
+         foreach (var viewModel in SearchResultViewModels)
+         {
+            viewModel.Dispose();
+         }
+
+         SearchResultViewModels.Clear();
+      }
 
       public void AddSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
@@ -136,60 +97,53 @@ namespace OtherSideCore.ViewModel
          OnPropertyChanged(nameof(SelectedSearchResultViewModel));
       }
 
-      public void SelectSearchResult(ModelObjectViewModel modelObjectViewModel)
+      public async Task SelectSearchResultAsync(ModelObjectViewModel modelObjectViewModel)
       {
          UnselectSearchResult();
 
          if (modelObjectViewModel != null)
          {
             modelObjectViewModel.IsSelected = true;
-            ModelObjectListSearch.SelectModelObject(modelObjectViewModel.ModelObject);            
+            await ModelObjectListSearch.SelectModelObjectAsync(modelObjectViewModel.ModelObject);            
             OnPropertyChanged(nameof(SelectedSearchResultViewModel));
          }
       }
 
-      private bool CanExecuteSearchCommand(object parameter)
-      {
-         return true;
+      private async Task SearchAsync()
+      {         
+         UnloadSearchResultViewModels();
+
+         await ModelObjectListSearch.SearchAsync();
+         var viewModels = await ConstructSearchResultViewModels();
+
+         foreach (var viewModel in viewModels)
+         {
+            SearchResultViewModels.Add(viewModel);
+         }
       }
 
-      private void ExecuteSearchCommand(object parameter)
+      private bool CanSelectModelObject(ModelObjectViewModel modelObjectViewModel)
       {
-         UnselectSearchResult();
-         ModelObjectListSearch.Search();
-         SearchResultViewModels.Clear();
-         ConstructSearchResultViewModels();
-      }
-
-      private bool CanExecuteSelectModelObjectCommand(object parameter)
-      {
-         var modelObjectViewModel = parameter as ModelObjectViewModel;
          return modelObjectViewModel != null && ModelObjectListSearch.CanSelectModelObject(modelObjectViewModel.ModelObject);
       }
 
-      private void ExecuteSelectModelObjectCommand(object parameter)
+      private async Task SelectModelObjectAsync(ModelObjectViewModel modelObjectViewModel)
       {
-         var modelObjectViewModel = parameter as ModelObjectViewModel;
-
-         SelectSearchResult(modelObjectViewModel);
+         await SelectSearchResultAsync(modelObjectViewModel);
       }
 
-      private void UnselectSearchResult()
+      public void UnselectSearchResult()
       {
          if (SelectedSearchResultViewModel != null)
          {
             SelectedSearchResultViewModel.IsSelected = false;
+            OnPropertyChanged(nameof(SelectedSearchResultViewModel));
          }
       }
 
       public override void Dispose()
       {
-         foreach (var viewModel in SearchResultViewModels)
-         {
-            viewModel.Dispose();
-         }
-
-         SearchResultViewModels.Clear();
+         UnloadSearchResultViewModels();
 
          ModelObjectListSearch.Dispose();
          MultiTextFilterViewModel.Dispose();

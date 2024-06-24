@@ -1,10 +1,5 @@
-﻿using OtherSideCore.Utils;
-using System;
-using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
@@ -22,34 +17,14 @@ namespace OtherSideCore.Model
 
       public ObservableCollection<TextFilter> Filters
       {
-         get
-         {
-            return m_Filters;
-         }
-         set
-         {
-            if (value != m_Filters)
-            {
-               m_Filters = value;
-               OnPropertyChanged(nameof(Filters));
-            }
-         }
+         get => m_Filters;
+         set => SetProperty(ref m_Filters, value);
       }
 
       public bool ExtendedSearch
       {
-         get
-         {
-            return m_ExtendedSearch;
-         }
-         set
-         {
-            if (m_ExtendedSearch != value)
-            {
-               m_ExtendedSearch = value;
-               OnPropertyChanged(nameof(ExtendedSearch));
-            }
-         }
+         get => m_ExtendedSearch;
+         set => SetProperty(ref m_ExtendedSearch, value);
       }
 
       #endregion

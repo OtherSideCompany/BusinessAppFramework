@@ -18,18 +18,8 @@ namespace OtherSideCore.Model
 
       public ModuleGroup ParentGroup
       {
-         get
-         {
-            return m_ParentGroup;
-         }
-         private set
-         {
-            if (value != m_ParentGroup)
-            {
-               m_ParentGroup = value;
-               OnPropertyChanged(nameof(ParentGroup));
-            }
-         }
+         get => m_ParentGroup;
+         set => SetProperty(ref m_ParentGroup, value);
       }
 
       #endregion
