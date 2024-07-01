@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
+using System.Windows.Input;
+using System.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace OtherSideCore.Wpf.CustomControls.Extensions
 {
@@ -48,5 +52,19 @@ namespace OtherSideCore.Wpf.CustomControls.Extensions
       {
          return (Brush)element.GetValue(HeaderForegroundColorProperty);
       }
+
+      public static readonly DependencyProperty SortCommandProperty =
+        DependencyProperty.RegisterAttached("SortCommand", typeof(ICommand), typeof(ListViewExtension), new PropertyMetadata(null));
+
+      public static void SetSortCommand(UIElement element, Brush value)
+      {
+         element.SetValue(SortCommandProperty, value);
+      }
+
+      public static ICommand GetSortCommand(UIElement element)
+      {
+         return (ICommand)element.GetValue(SortCommandProperty);
+      }
+      
    }
 }

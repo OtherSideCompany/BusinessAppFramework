@@ -1,0 +1,57 @@
+﻿using System;
+using System.ComponentModel;
+using System.DirectoryServices;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace OtherSideCore.Wpf.CustomControls
+{
+   public class SortableListView : ListView
+   {
+      private string m_IsSorted;
+      private string m_SortPropertyName;
+      private SortDirection m_SortDirection = SortDirection.Descending;
+      private SortableGridViewColumn m_CurrentSortedColumnHeader;
+
+      public SortableListView() : base()
+      {
+         AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(GridViewColumnHeaderClickedHandler));
+      }
+
+      private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
+      {
+         var gridViewColumnHeader = e.OriginalSource as GridViewColumnHeader;
+
+         if (gridViewColumnHeader.Column is SortableGridViewColumn)
+         {                      
+            var direction = ListSortDirection.Ascending;
+            var sortableGridViewColumn = gridViewColumnHeader.Column as SortableGridViewColumn;
+
+            if (m_CurrentSortedColumnHeader != null)
+            {
+               m_CurrentSortedColumnHeader.Unsort();
+
+               if (sortableGridViewColumn.Equals(m_CurrentSortedColumnHeader))
+               {
+                  direction = sortableGridViewColumn.SortDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+               }
+               else
+               {
+                  direction = ListSortDirection.Ascending;
+               }
+            }
+
+            Items.SortDescriptions.Clear();
+            Items.SortDescriptions.Add(new SortDescription(sortableGridViewColumn.SortPropertyName, direction));
+
+            m_CurrentSortedColumnHeader = sortableGridViewColumn;
+            m_CurrentSortedColumnHeader.Sort(direction);
+         }
+         else if (gridViewColumnHeader.Column != null)
+         {
+            throw new Exception("SortableListView requires SortableGridViewColumnHeaders");
+         }
+      }
+   }
+}

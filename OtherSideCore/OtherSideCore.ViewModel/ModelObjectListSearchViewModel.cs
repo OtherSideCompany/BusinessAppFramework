@@ -3,10 +3,13 @@ using OtherSideCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace OtherSideCore.ViewModel
 {
@@ -18,6 +21,7 @@ namespace OtherSideCore.ViewModel
       private MultiTextFilterViewModel m_MultiTextFilterViewModel;
 
       private ObservableCollection<ModelObjectViewModel> m_SearchResultViewModels;
+      private CollectionViewSource m_SearchResultViewModelsCollection;
 
       #endregion
 
@@ -39,6 +43,11 @@ namespace OtherSideCore.ViewModel
       {
          get => m_SearchResultViewModels;
          set => SetProperty(ref m_SearchResultViewModels, value);
+      }
+
+      public ICollectionView SearchResultViewModelsCollection
+      {
+         get => m_SearchResultViewModelsCollection.View;
       }
 
       public ModelObjectViewModel SelectedSearchResultViewModel
@@ -68,6 +77,8 @@ namespace OtherSideCore.ViewModel
          ModelObjectListSearch = modelObjectListSearch;
          MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
+         m_SearchResultViewModelsCollection = new CollectionViewSource();
+         m_SearchResultViewModelsCollection.Source = SearchResultViewModels;
       }
 
       #endregion
