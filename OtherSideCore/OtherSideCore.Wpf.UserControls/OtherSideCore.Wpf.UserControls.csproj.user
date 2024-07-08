@@ -7,6 +7,9 @@
     <Compile Update="LoadingView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="MultiTextFilterView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="SaveCancelChangesView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -16,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="LoadingView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MultiTextFilterView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="SaveCancelChangesView.xaml">

@@ -10,6 +10,14 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Migrations\CreateTSqlEditDistanceFunction.sql" />
+    <None Remove="Migrations\CreateTSqlLevenshteinDistanceFunction.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\CreateTSqlEditDistanceFunction.sql" />
+    <EmbeddedResource Include="Migrations\CreateTSqlLevenshteinDistanceFunction.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.6" />

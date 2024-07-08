@@ -10,7 +10,7 @@ namespace OtherSideCore.Wpf.CustomControls
    public class InfoPanelCategory : System.Windows.Controls.UserControl
    {
       public static readonly DependencyProperty InfoPanelCategory_IsExpandedProperty =
-        DependencyProperty.Register("InfoPanelCategory_IsExpanded", typeof(bool), typeof(InfoPanelCategory), new UIPropertyMetadata(false));
+        DependencyProperty.Register("InfoPanelCategory_IsExpanded", typeof(bool), typeof(InfoPanelCategory), new UIPropertyMetadata(true));
 
       public bool InfoPanelCategory_IsExpanded
       {

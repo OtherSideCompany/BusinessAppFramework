@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OtherSideCore.Model
 {
@@ -7,7 +9,8 @@ namespace OtherSideCore.Model
    {
       #region Fields
 
-      public bool m_ExtendedSearch;
+      private bool m_AllowExtendedSearch;
+      private bool m_ExtendSearch;      
 
       private ObservableCollection<TextFilter> m_Filters;
 
@@ -15,16 +18,27 @@ namespace OtherSideCore.Model
 
       #region Properties
 
+      public bool AllowExtendedSearch
+      {
+         get => m_AllowExtendedSearch;
+         set => SetProperty(ref m_AllowExtendedSearch, value);
+      }
+
+      public bool ExtendSearch
+      {
+         get => m_ExtendSearch;
+         set => SetProperty(ref m_ExtendSearch, value);
+      }
+
       public ObservableCollection<TextFilter> Filters
       {
          get => m_Filters;
          set => SetProperty(ref m_Filters, value);
       }
 
-      public bool ExtendedSearch
+      public List<string> StringFilters
       {
-         get => m_ExtendedSearch;
-         set => SetProperty(ref m_ExtendedSearch, value);
+         get => Filters.Select(f => f.Text).ToList();
       }
 
       #endregion
@@ -37,9 +51,10 @@ namespace OtherSideCore.Model
 
       #region Constructor
 
-      public MultiTextFilter()
+      public MultiTextFilter(bool allowExtendedSearch = false)
       {
          Filters = new ObservableCollection<TextFilter>();
+         AllowExtendedSearch = allowExtendedSearch;
       }
 
       #endregion

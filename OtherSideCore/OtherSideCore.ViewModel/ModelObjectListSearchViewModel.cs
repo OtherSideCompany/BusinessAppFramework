@@ -62,7 +62,7 @@ namespace OtherSideCore.ViewModel
 
       #region Commands
 
-      public AsyncRelayCommand SearchCommand { get; private set; }
+      public AsyncRelayCommand SearchCommandAsync { get; private set; }
       public AsyncRelayCommand<ModelObjectViewModel> SelectModelObjectCommand { get; private set; }
 
       #endregion
@@ -71,11 +71,11 @@ namespace OtherSideCore.ViewModel
 
       public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch)
       {
-         SearchCommand = new AsyncRelayCommand(SearchAsync);
+         SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
          SelectModelObjectCommand = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
 
          ModelObjectListSearch = modelObjectListSearch;
-         MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter);
+         MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter, SearchCommandAsync);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
          m_SearchResultViewModelsCollection = new CollectionViewSource();
          m_SearchResultViewModelsCollection.Source = SearchResultViewModels;

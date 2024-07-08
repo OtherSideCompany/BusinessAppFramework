@@ -15,6 +15,7 @@ namespace OtherSideCore.ViewModel
       #region Fields
 
       private MultiTextFilter m_MultiTextFilter;
+      private AsyncRelayCommand m_SearchCommandAsync;
 
       #endregion
 
@@ -24,6 +25,12 @@ namespace OtherSideCore.ViewModel
       {
          get => m_MultiTextFilter;
          set => SetProperty(ref m_MultiTextFilter, value);
+      }
+
+      public AsyncRelayCommand SearchCommandAsync
+      {
+         get => m_SearchCommandAsync;
+         set => SetProperty(ref m_SearchCommandAsync, value);
       }
 
       #endregion
@@ -38,10 +45,12 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public MultiTextFilterViewModel(MultiTextFilter multiTextFilter)
+      public MultiTextFilterViewModel(MultiTextFilter multiTextFilter, AsyncRelayCommand searchCommandAsync)
       {
-         AddFilterCommand = new RelayCommand(ExecuteAddFilterCommand);
-         RemoveFilterCommand = new RelayCommand<TextFilter>(ExecuteRemoveFilterCommand, CanExecuteRemoveFilterCommand);
+         AddFilterCommand = new RelayCommand(AddFilter);
+         RemoveFilterCommand = new RelayCommand<TextFilter>(RemoveFilter, CanRemoveFilter);
+
+         SearchCommandAsync = searchCommandAsync;
 
          MultiTextFilter = multiTextFilter;
       }
@@ -50,17 +59,17 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-      private void ExecuteAddFilterCommand()
+      private void AddFilter()
       {
          MultiTextFilter.AddFilter();         
       }
 
-      private bool CanExecuteRemoveFilterCommand(TextFilter textFilter)
+      private bool CanRemoveFilter(TextFilter textFilter)
       {
          return textFilter != null;
       }
 
-      private void ExecuteRemoveFilterCommand(TextFilter textFilter)
+      private void RemoveFilter(TextFilter textFilter)
       {
          MultiTextFilter.RemoveFilter(textFilter);
       }

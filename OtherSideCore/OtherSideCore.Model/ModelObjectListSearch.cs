@@ -61,7 +61,7 @@ namespace OtherSideCore.Model
       public ModelObjectListSearch()
       {
          SearchResults = new ObservableCollection<ModelObject>();
-         MultiTextFilter = new MultiTextFilter();
+         MultiTextFilter = new MultiTextFilter(true);
       }
 
       #endregion

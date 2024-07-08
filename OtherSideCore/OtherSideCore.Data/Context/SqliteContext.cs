@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +25,23 @@ namespace OtherSideCore.Data.Context
             Directory.CreateDirectory(directoryPath);
          }
 
-         options.UseSqlite($"Data Source={DatabasePath}");
+         var connection = CreateConfiguredConnection();
+         options.UseSqlite(connection);
+      }
+      private SqliteConnection CreateConfiguredConnection()
+      {
+         var connection = new SqliteConnection("Data Source=" + DatabasePath);
+         connection.Open();
+
+         connection.CreateFunction("Levenshtein", (string s, string t) => Utils.LevenshteinDistance(s, t));
+         connection.CreateFunction("EditDistance", (string s, string t) => Utils.EditDistance(s, t));
+
+         return connection;
+      }
+
+      protected override void OnModelCreating(ModelBuilder modelBuilder)
+      {
+         modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string) }));
       }
 
       public static async Task MigrateAsync(SqliteContext context)
