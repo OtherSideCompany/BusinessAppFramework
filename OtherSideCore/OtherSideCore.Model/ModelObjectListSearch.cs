@@ -18,7 +18,7 @@ namespace OtherSideCore.Model
       private MultiTextFilter m_MultiTextFilter;
       private ModelObject m_SelectedModelObject;
 
-      private Func<Task> m_SelectedSearchResultChangedAsync;
+      private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
 
       #endregion
 
@@ -48,7 +48,7 @@ namespace OtherSideCore.Model
          set => SetProperty(ref m_SelectedModelObject, value);
       }
 
-      public Func<Task> SelectedSearchResultChangedAsync
+      public Func<CancellationToken, Task> SelectedSearchResultChangedAsync
       {
          get => m_SelectedSearchResultChangedAsync;
          set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
@@ -68,7 +68,7 @@ namespace OtherSideCore.Model
 
       #region Methods
 
-      public virtual async Task SearchAsync()
+      public virtual async Task SearchAsync(CancellationToken cancellationToken)
       {
          Unload();
       }
@@ -100,10 +100,14 @@ namespace OtherSideCore.Model
                 !modelObject.Equals(SelectedModelObject);
       }
 
-      public async virtual Task SelectModelObjectAsync(ModelObject modelObject)
+      public async virtual Task SelectModelObjectAsync(ModelObject modelObject, CancellationToken cancellationToken)
       {
          SelectedModelObject = modelObject;
-         await SelectedSearchResultChangedAsync?.Invoke();
+
+         if (SelectedSearchResultChangedAsync != null)
+         {
+            await SelectedSearchResultChangedAsync(cancellationToken);
+         }
       }
 
       public void Dispose()

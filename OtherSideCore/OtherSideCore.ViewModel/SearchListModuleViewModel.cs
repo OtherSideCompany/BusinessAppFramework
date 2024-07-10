@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace OtherSideCore.ViewModel
 {
@@ -54,7 +55,7 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-      protected async Task SelectedSearchResultChangedAsync()
+      protected async Task SelectedSearchResultChangedAsync(CancellationToken cancellation)
       {
          RegisterDatabaseFields();
       }

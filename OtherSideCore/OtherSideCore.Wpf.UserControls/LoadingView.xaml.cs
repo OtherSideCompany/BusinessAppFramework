@@ -47,6 +47,15 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(LoadingView_DisplayCaptionProperty, value); }
       }
 
+      public static readonly DependencyProperty LoadingView_CancelCommandProperty =
+          DependencyProperty.Register("LoadingView_CancelCommand", typeof(ICommand), typeof(LoadingView), new UIPropertyMetadata(null));
+
+      public ICommand LoadingView_CancelCommand
+      {
+         get { return (ICommand)GetValue(LoadingView_CancelCommandProperty); }
+         set { SetValue(LoadingView_CancelCommandProperty, value); }
+      }
+
       public LoadingView()
       {
          InitializeComponent();

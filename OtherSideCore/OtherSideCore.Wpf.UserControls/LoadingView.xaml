@@ -15,19 +15,19 @@
       </Storyboard>
    </UserControl.Resources>
 
-   <Grid>
+   <Grid HorizontalAlignment="Center">
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
       <customcontrols:SvgViewer Grid.Row="0"
-                                   SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
-                                   SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
-                                   SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                   SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                   RenderTransformOrigin="0.5 0.5"
-                                   x:Name="OuterRing">
+                                SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
+                                SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
+                                SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                RenderTransformOrigin="0.5 0.5"
+                                x:Name="OuterRing">
          <customcontrols:SvgViewer.RenderTransform>
             <RotateTransform />
          </customcontrols:SvgViewer.RenderTransform>
@@ -47,9 +47,21 @@
          </customcontrols:SvgViewer.Style>
       </customcontrols:SvgViewer>
 
-      <TextBlock Grid.Row="1" Text="Chargement..." HorizontalAlignment="Center" FontSize="10" Margin="0,3,0,0"
-                 Visibility="{Binding LoadingView_DisplayCaption, ElementName=LoadingViewUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"
-                 Foreground="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"/>
+      <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,3,0,0">
+
+         <TextBlock Text="Chargement" FontSize="10"
+                    Visibility="{Binding LoadingView_DisplayCaption, ElementName=LoadingViewUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                    Foreground="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"/>
+
+         <customcontrols:SvgImageButton FontSize="10"
+                                        Width="16" Height="16"
+                                        Margin="2,2,0,0"
+                                        SvgImageButton_IconGeometry="{StaticResource icon_close}"
+                                        SvgImageButton_ImageSize="12" 
+                                        Visibility="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"/>
+
+      </StackPanel>      
 
    </Grid>
    

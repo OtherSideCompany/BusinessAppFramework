@@ -51,9 +51,9 @@ namespace OtherSideCore.Wpf.CustomControls
          {
             var modelObjectListSearchViewModel = listView.DataContext as ModelObjectListSearchViewModel;
 
-            if (modelObjectListSearchViewModel != null && modelObjectListSearchViewModel.SelectModelObjectCommand.CanExecute(selectedModelObjectViewModel))
+            if (modelObjectListSearchViewModel != null && modelObjectListSearchViewModel.SelectModelObjectCommandAsync.CanExecute(selectedModelObjectViewModel))
             {
-               modelObjectListSearchViewModel.SelectModelObjectCommand.Execute(selectedModelObjectViewModel);
+               modelObjectListSearchViewModel.SelectModelObjectCommandAsync.Execute(selectedModelObjectViewModel);
             }
          }
       }

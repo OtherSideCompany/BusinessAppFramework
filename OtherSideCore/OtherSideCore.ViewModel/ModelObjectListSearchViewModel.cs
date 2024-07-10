@@ -63,7 +63,9 @@ namespace OtherSideCore.ViewModel
       #region Commands
 
       public AsyncRelayCommand SearchCommandAsync { get; private set; }
-      public AsyncRelayCommand<ModelObjectViewModel> SelectModelObjectCommand { get; private set; }
+      public RelayCommand CancelSearchCommand { get; private set; }
+      public AsyncRelayCommand<ModelObjectViewModel> SelectModelObjectCommandAsync { get; private set; }
+      public RelayCommand CancelSelectModelObjectCommand { get; private set; }
 
       #endregion
 
@@ -72,7 +74,9 @@ namespace OtherSideCore.ViewModel
       public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch)
       {
          SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
-         SelectModelObjectCommand = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
+         CancelSearchCommand = new RelayCommand(CancelSearch);
+         SelectModelObjectCommandAsync = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
+         CancelSelectModelObjectCommand = new RelayCommand(CancelSelectModelObject);
 
          ModelObjectListSearch = modelObjectListSearch;
          MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter, SearchCommandAsync);
@@ -108,29 +112,43 @@ namespace OtherSideCore.ViewModel
          OnPropertyChanged(nameof(SelectedSearchResultViewModel));
       }
 
-      public async Task SelectSearchResultAsync(ModelObjectViewModel modelObjectViewModel)
+      public async Task SelectSearchResultAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
       {
          UnselectSearchResult();
 
          if (modelObjectViewModel != null)
          {
             modelObjectViewModel.IsSelected = true;
-            await ModelObjectListSearch.SelectModelObjectAsync(modelObjectViewModel.ModelObject);            
             OnPropertyChanged(nameof(SelectedSearchResultViewModel));
+            await ModelObjectListSearch.SelectModelObjectAsync(modelObjectViewModel.ModelObject, cancellationToken);            
          }
       }
 
-      private async Task SearchAsync()
-      {         
-         UnloadSearchResultViewModels();
-
-         await ModelObjectListSearch.SearchAsync();
-         var viewModels = await ConstructSearchResultViewModels();
-
-         foreach (var viewModel in viewModels)
+      private async Task SearchAsync(CancellationToken cancellationToken)
+      {
+         try
          {
-            SearchResultViewModels.Add(viewModel);
+            UnloadSearchResultViewModels();
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await ModelObjectListSearch.SearchAsync(cancellationToken);
+            var viewModels = await ConstructSearchResultViewModels();
+
+            foreach (var viewModel in viewModels)
+            {
+               SearchResultViewModels.Add(viewModel);
+            }
          }
+         catch (OperationCanceledException)
+         {
+            UnloadSearchResultViewModels();
+         }
+      }
+
+      private void CancelSearch()
+      {
+         SearchCommandAsync.Cancel();
       }
 
       private bool CanSelectModelObject(ModelObjectViewModel modelObjectViewModel)
@@ -138,9 +156,21 @@ namespace OtherSideCore.ViewModel
          return modelObjectViewModel != null && ModelObjectListSearch.CanSelectModelObject(modelObjectViewModel.ModelObject);
       }
 
-      private async Task SelectModelObjectAsync(ModelObjectViewModel modelObjectViewModel)
+      private async Task SelectModelObjectAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
       {
-         await SelectSearchResultAsync(modelObjectViewModel);
+         try
+         {
+            await SelectSearchResultAsync(modelObjectViewModel, cancellationToken);
+         }
+         catch (OperationCanceledException)
+         {
+            UnselectSearchResult();
+         }
+      }
+
+      private void CancelSelectModelObject()
+      {
+         SelectModelObjectCommandAsync.Cancel();
       }
 
       public void UnselectSearchResult()
