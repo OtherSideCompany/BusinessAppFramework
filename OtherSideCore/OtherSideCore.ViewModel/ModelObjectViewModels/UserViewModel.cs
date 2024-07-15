@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Model;
+﻿using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel.ModelObjectViewModels
 {
-   public class UserViewModel : ModelObjectViewModel
+    public abstract class UserViewModel : ModelObjectViewModel
    {
       #region Fields
 
@@ -29,7 +29,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
 
       #region Constructor
 
-      public UserViewModel(User user) : base(user) 
+      public UserViewModel(User user, User authenticatedUser) : base(user, authenticatedUser) 
       {
 
       }

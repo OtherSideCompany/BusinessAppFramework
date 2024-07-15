@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OtherSideCore.Model.Services;
 using System;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class OtherSideCoreMainWindowViewModel : ObservableObject, IDisposable
+   public abstract class MainWindowViewModel : ObservableObject, IDisposable
    {
       #region Fields
+
+      protected IUserAuthenticationService m_UserAuthenticationService;
 
       private string m_ApplicationLogoImageSource;
       private string m_ApplicationName;
@@ -50,8 +53,10 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public OtherSideCoreMainWindowViewModel()
+      public MainWindowViewModel(IUserAuthenticationService userAuthenticationService)
       {
+         m_UserAuthenticationService = userAuthenticationService;
+
          ApplicationName = "Unnamed App";
       }
 

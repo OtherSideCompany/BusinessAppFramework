@@ -6,12 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Model.ModelObjects
 {
    public abstract class User : ModelObject
    {
       #region Fields
 
+      private const int SUPERADMINID = 1;
+
+      private BoolDatabaseField m_IsSuperAdmin;
       private StringDatabaseField m_FirstName;
       private StringDatabaseField m_LastName;
       private StringDatabaseField m_UserName;
@@ -20,22 +23,28 @@ namespace OtherSideCore.Model
 
       #region Properties
 
+      public BoolDatabaseField IsSuperAdmin
+      {
+         get => m_IsSuperAdmin;
+         private set => SetProperty(ref m_IsSuperAdmin, value);
+      }
+
       public StringDatabaseField FirstName
       {
          get => m_FirstName;
-         set => SetProperty(ref m_FirstName, value);
+         private set => SetProperty(ref m_FirstName, value);
       }
 
       public StringDatabaseField LastName
       {
          get => m_LastName;
-         set => SetProperty(ref m_LastName, value);
+         private set => SetProperty(ref m_LastName, value);
       }
 
       public StringDatabaseField UserName
       {
          get => m_UserName;
-         set => SetProperty(ref m_UserName, value);
+         private set => SetProperty(ref m_UserName, value);
       }
 
       #endregion
@@ -50,6 +59,7 @@ namespace OtherSideCore.Model
 
       public User() : base()
       {
+         IsSuperAdmin = new BoolDatabaseField("IsSuperAdmin");
          FirstName = new StringDatabaseField("FirstName", 50);
          LastName = new StringDatabaseField("LastName", 50);
          UserName = new StringDatabaseField("UserName", 50);
@@ -59,7 +69,7 @@ namespace OtherSideCore.Model
 
       #region Methods
 
-      public abstract bool Authenticate(string passwordHash);
+      public abstract Task<bool> Authenticate(string passwordHash);
 
       #endregion
    }

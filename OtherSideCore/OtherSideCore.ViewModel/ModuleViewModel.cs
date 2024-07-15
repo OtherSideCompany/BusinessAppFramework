@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Model;
+using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-      
+
 
       #endregion
 
       #region Properties
 
-      
+
 
       #endregion
 
@@ -29,7 +30,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleViewModel(Module module, Type viewModelType,  string viewAssembly, string viewType, object iconResource) : base(module, viewModelType, viewAssembly, viewType, iconResource)
+      public ModuleViewModel(User authenticatedUser, ModelViewModel modelViewModel, Module module, Type viewModelType, string viewAssembly, string viewType, object iconResource) : base(authenticatedUser, modelViewModel, module, viewModelType, viewAssembly, viewType, iconResource)
       {
 
       }

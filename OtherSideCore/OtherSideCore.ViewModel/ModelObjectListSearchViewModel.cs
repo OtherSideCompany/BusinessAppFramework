@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Model;
+using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,8 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
+      private User m_AuthenticatedUser;
+
       private ModelObjectListSearch m_ModelObjectListSearch;
       private MultiTextFilterViewModel m_MultiTextFilterViewModel;
 
@@ -26,6 +29,12 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Properties
+
+      public User AuthenticatedUser
+      {
+         get => m_AuthenticatedUser;
+         set => SetProperty(ref m_AuthenticatedUser, value);
+      }
 
       public ModelObjectListSearch ModelObjectListSearch
       {
@@ -71,12 +80,14 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch)
+      public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch, User authenticatedUser)
       {
          SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
          SelectModelObjectCommandAsync = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
          CancelSelectModelObjectCommand = new RelayCommand(CancelSelectModelObject);
+
+         AuthenticatedUser = authenticatedUser;
 
          ModelObjectListSearch = modelObjectListSearch;
          MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter, SearchCommandAsync);

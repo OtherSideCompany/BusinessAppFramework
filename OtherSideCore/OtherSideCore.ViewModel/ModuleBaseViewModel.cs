@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Threading.Tasks;
+using OtherSideCore.Model.ModelObjects;
 
 namespace OtherSideCore.ViewModel
 {
@@ -11,6 +12,8 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
+      private User m_AuthenticatedUser;
+      private ModelViewModel m_ModelViewModel;
       private ModuleBase m_ModuleBase;
       private Type m_ViewModelType;
       private string m_ViewType;
@@ -21,6 +24,18 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Properties
+
+      public User AuthenticatedUser
+      {
+         get => m_AuthenticatedUser;
+         set => SetProperty(ref m_AuthenticatedUser, value);
+      }
+
+      public ModelViewModel ModelViewModel
+      {
+         get => m_ModelViewModel;
+         set => SetProperty(ref m_ModelViewModel, value);
+      }
 
       public ModuleBase ModuleBase
       {
@@ -68,8 +83,10 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleBaseViewModel(ModuleBase moduleBase, Type viewModelType, string viewAssembly, string viewType, object iconResource)
+      public ModuleBaseViewModel(User authenticatedUser, ModelViewModel modelViewModel, ModuleBase moduleBase, Type viewModelType, string viewAssembly, string viewType, object iconResource)
       {
+         AuthenticatedUser = authenticatedUser;
+         ModelViewModel = modelViewModel;
          ModuleBase = moduleBase;
          ViewModelType = viewModelType;
          ViewAssembly = viewAssembly;
@@ -91,7 +108,7 @@ namespace OtherSideCore.ViewModel
          }
          else
          {
-            var moduleViewModel = Activator.CreateInstance(ViewModelType);
+            var moduleViewModel = Activator.CreateInstance(ViewModelType, AuthenticatedUser);
             ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
             ModuleView.DataContext = moduleViewModel;
          }
@@ -99,7 +116,7 @@ namespace OtherSideCore.ViewModel
 
       public void Load(List<string> filters)
       {
-         var moduleViewModel = Activator.CreateInstance(ViewModelType, filters);
+         var moduleViewModel = Activator.CreateInstance(ViewModelType, AuthenticatedUser, filters);
          ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
          ModuleView.DataContext = moduleViewModel;
       }

@@ -6,14 +6,23 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using OtherSideCore.Model.ModelObjects;
 
 namespace OtherSideCore.Model
 {
-   public abstract class ModelObject : ObservableObject, IDisposable
+    public abstract class ModelObject : ObservableObject, IDisposable
    {
       #region Fields
 
       private IntegerDatabaseField m_Id;
+      private DateTimeDatabaseField m_CreationDate;
+      private IntegerDatabaseField m_CreatedById;
+      private DateTimeDatabaseField m_LastModifiedDateTime;
+      private IntegerDatabaseField m_LastModifiedById;
+
+      private User m_CreatedBy;
+      private User m_LastModifiedBy;
+
       private bool m_IsDirty;
 
       protected static Data.Entities.EntityBase m_EntityBase;
@@ -27,7 +36,31 @@ namespace OtherSideCore.Model
       public IntegerDatabaseField Id
       {
          get => m_Id;
-         set { SetProperty(ref m_Id, value); OnPropertyChanged(nameof(IsCreated)); }
+         private set { SetProperty(ref m_Id, value); OnPropertyChanged(nameof(IsCreated)); }
+      }
+
+      public DateTimeDatabaseField CreationDate
+      {
+         get => m_CreationDate;
+         private set { SetProperty(ref m_CreationDate, value); }
+      }
+
+      public IntegerDatabaseField CreatedById
+      {
+         get => m_CreatedById;
+         private set { SetProperty(ref m_CreatedById, value); }
+      }
+
+      public DateTimeDatabaseField LastModifiedDateTime
+      {
+         get => m_LastModifiedDateTime;
+         private set { SetProperty(ref m_LastModifiedDateTime, value); }
+      }
+
+      public IntegerDatabaseField LastModifiedById
+      {
+         get => m_LastModifiedById;
+         private set { SetProperty(ref m_LastModifiedById, value); }
       }
 
       public bool IsCreated
@@ -38,6 +71,18 @@ namespace OtherSideCore.Model
          }
       }
 
+      public User CreatedBy 
+      { 
+         get => m_CreatedBy;
+         protected set { SetProperty(ref m_CreatedBy, value); }
+      }
+
+      public User LastModifiedBy
+      {
+         get => m_LastModifiedBy;
+         protected set { SetProperty(ref m_LastModifiedBy, value); }
+      }
+
       #endregion
 
       #region Constructor
@@ -45,7 +90,12 @@ namespace OtherSideCore.Model
       public ModelObject()
       {
          guid = Guid.NewGuid();
+
          Id = new IntegerDatabaseField("Id");
+         CreationDate = new DateTimeDatabaseField("CreationDate");
+         CreatedById = new IntegerDatabaseField("CreatedById");
+         LastModifiedDateTime = new DateTimeDatabaseField("LastModifiedDateTime");
+         LastModifiedById = new IntegerDatabaseField("LastModifiedById");
       }
 
       #endregion
@@ -57,7 +107,7 @@ namespace OtherSideCore.Model
          return false;
       }
 
-      protected void LoadPropertiesFromEntity(Data.Entities.EntityBase entity)
+      protected async Task LoadPropertiesFromEntityAsync(Data.Entities.EntityBase entity)
       {
          var databaseFieldProperties = entity.GetDatabaseFieldProperties();
 
@@ -74,18 +124,31 @@ namespace OtherSideCore.Model
                case StringDatabaseField stringDatabaseField:
                   stringDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.StringDatabaseField).Value);
                   break;
+               case DateTimeDatabaseField dateTimeDatabaseField:
+                  dateTimeDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.DateTimeDatabaseField).Value);
+                  break;
+               case DateOnlyDatabaseField dateOnlyDatabaseField:
+                  dateOnlyDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.DateOnlyDatabaseField).Value);
+                  break;
+               case BoolDatabaseField boolDatabaseField:
+                  boolDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.BoolDatabaseField).Value);
+                  break;
                default:
                   throw new Exception("Unrecognized type " + databaseField.GetType());
             }
          }
+
+         await LoadModelObjectPropertiesFromEntityAsync(entity);
       }
+
+      protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(Data.Entities.EntityBase entity) { }
 
       public async Task LoadAsync()
       {
          LockDatabasePropertiesEdition();
 
-         var userEntity = await m_EntityBase.GetAsync(Id.Value);
-         LoadPropertiesFromEntity(userEntity);
+         var userEntity = await m_EntityBase.GetAsync(Id.Value, CancellationToken.None);
+         await LoadPropertiesFromEntityAsync(userEntity);
 
          UnlockDatabasePropertiesEdition();
 
@@ -100,7 +163,7 @@ namespace OtherSideCore.Model
       public bool CanCancelChanges()
       {
          return GetDatabaseFields().Any(dbf => dbf.IsDirty);
-      }      
+      }
 
       private void LockDatabasePropertiesEdition()
       {
@@ -118,10 +181,16 @@ namespace OtherSideCore.Model
          }
       }
 
-      public async Task SaveAsync()
-      {       
+      public async Task SaveAsync(int userId)
+      {
+         LastModifiedById.Value = userId;
+         LastModifiedDateTime.Value = DateTime.Now;
+
          if (Id.Value == 0)
          {
+            CreatedById.Value = userId;
+            CreationDate.Value = DateTime.Now;
+
             Id.Value = await m_EntityBase.CreateAsync(ConvertPropertiesToDataProperties());
          }
          else
@@ -131,9 +200,9 @@ namespace OtherSideCore.Model
             await m_EntityBase.SaveAsync(Id.Value, ConvertDirtyPropertiesToDataProperties());
 
             UnlockDatabasePropertiesEdition();
-         }         
+         }
 
-         ResetDatabaseFieldsDirtyState();         
+         ResetDatabaseFieldsDirtyState();
       }
 
       public bool CanBeDeleted()
@@ -195,10 +264,14 @@ namespace OtherSideCore.Model
          {
             case StringDatabaseField stringDatabaseField:
                return new Data.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName);
-               break;
             case IntegerDatabaseField integerDatabaseField:
                return new Data.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName);
-               break;
+            case DateTimeDatabaseField dateTimeDatabaseField:
+               return new Data.DatabaseFields.DateTimeDatabaseField(dateTimeDatabaseField.Value, dateTimeDatabaseField.DatabaseFieldName);
+            case DateOnlyDatabaseField dateOnlyDatabaseField:
+               return new Data.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
+            case BoolDatabaseField boolDatabaseField:
+               return new Data.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
             default:
                throw new Exception("Unrecognized type " + databaseField.GetType());
          }
@@ -239,7 +312,7 @@ namespace OtherSideCore.Model
       {
          m_EntityBase = null;
       }
-      
+
       #endregion
    }
 }

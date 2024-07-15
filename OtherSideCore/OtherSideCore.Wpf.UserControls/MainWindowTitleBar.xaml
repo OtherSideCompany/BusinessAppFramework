@@ -136,7 +136,7 @@
                                         SvgImageButton_ImageColor="White"
                                         SvgImageButton_OverBackgroundColor="{StaticResource CaptionButtonHoverColor}"
                                         SvgImageButton_MouseDownBackgroundColor="{StaticResource CaptionButtonIsPressedColor}"
-                                        Command="{Binding DisconnectAuthenticatedUserCommand}"
+                                        Command="{Binding DisconnectAuthenticatedUserAsyncCommand}"
                                         Visibility="{Binding ModelViewModel.Model.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
          <Button Grid.Column="2" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
          <Button Grid.Column="3" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />

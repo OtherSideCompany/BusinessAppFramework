@@ -1,0 +1,87 @@
+﻿using OtherSideCore.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OtherSideCore.Model.DatabaseFields
+{
+   public class DateTimeDatabaseField : DatabaseField
+   {
+      #region Fields
+
+      private DateTime m_Value;
+      private string m_Buffer;
+
+      #endregion
+
+      #region Properties
+
+      public DateTime Value
+      {
+         get => m_Value;
+         set
+         {
+            var updateDirtySate = !m_IsLoading && value != m_Value;
+
+            if (IsEditable)
+            {
+               SetProperty(ref m_Value, value);
+
+               if (updateDirtySate) IsDirty = true;
+            }
+         }
+      }
+
+      public string Buffer
+      {
+         get => m_Buffer;
+         set => SetProperty(ref m_Buffer, value);
+      }
+
+      #endregion
+
+      #region Commands
+
+
+
+      #endregion
+
+      #region Constructor
+
+      public DateTimeDatabaseField(string databaseFieldName) : base(databaseFieldName)
+      {
+         m_IsLoading = true;
+
+         Value = DateTime.Now;
+
+         m_IsLoading = false;
+      }
+
+      #endregion
+
+      #region Methods
+
+      public void LoadBuffer()
+      {
+
+      }
+
+      public void UpdateBuffer()
+      {
+
+      }
+
+      public override void LoadValue(object value)
+      {
+         m_IsLoading = true;
+
+         Value = (DateTime)value;
+
+         m_IsLoading = false;
+      }
+
+      #endregion
+   }
+}

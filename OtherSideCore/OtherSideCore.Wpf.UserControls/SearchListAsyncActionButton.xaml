@@ -12,7 +12,7 @@
       <customcontrols:SvgImageTextButton SvgImageTextButton_IconGeometry="{Binding SearchListAsyncActionButton_IconGeometry, ElementName=SearchListAsyncActionUserControl}"
                                          SvgImageTextButton_Text="{Binding SearchListAsyncActionButton_Text, ElementName=SearchListAsyncActionUserControl}" 
                                          SvgImageTextButton_ImageColor="{Binding SearchListAsyncActionButton_ImageColor, ElementName=SearchListAsyncActionUserControl}"
-                                         SvgImageTextButton_ImageSize="24"
+                                         SvgImageTextButton_ImageSize="{Binding SearchListAsyncActionButton_IconSize, ElementName=SearchListAsyncActionUserControl}"
                                          Command="{Binding SearchListAsyncActionButton_Command, ElementName=SearchListAsyncActionUserControl}"
                                          CommandParameter="{Binding SearchListAsyncActionButton_CommandParameter, ElementName=SearchListAsyncActionUserControl}"
                                          Visibility="{Binding SearchListAsyncActionButton_Command.IsRunning, ElementName=SearchListAsyncActionUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>

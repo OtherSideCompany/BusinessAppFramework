@@ -75,6 +75,15 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(SearchListAsyncActionButton_ExecutingTaskTextProperty, value); }
       }
 
+      public static readonly DependencyProperty SearchListAsyncActionButton_IconSizeProperty =
+        DependencyProperty.Register("SearchListAsyncActionButton_IconSize", typeof(int), typeof(SearchListAsyncActionButton), new UIPropertyMetadata(24));
+
+      public int SearchListAsyncActionButton_IconSize
+      {
+         get { return (int)GetValue(SearchListAsyncActionButton_IconSizeProperty); }
+         set { SetValue(SearchListAsyncActionButton_IconSizeProperty, value); }
+      }
+
       public SearchListAsyncActionButton()
       {
          InitializeComponent();

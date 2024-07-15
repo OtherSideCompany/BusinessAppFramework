@@ -1,12 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
-   public abstract class Model : ObservableObject, IDisposable
+    public abstract class Model : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -46,9 +48,10 @@ namespace OtherSideCore.Model
 
       #region Constructor
 
-      public Model()
+      public Model(User authenticatedUser)
       {
          ModuleBases = new ObservableCollection<ModuleBase>();
+         AuthenticatedUser = authenticatedUser;
       }
 
       #endregion
@@ -59,17 +62,8 @@ namespace OtherSideCore.Model
 
       public bool CanLoadModule(ModuleBase moduleBase)
       {
-         return moduleBase != LoadedModule && !moduleBase.IsLoaded;
-      }
-
-      private void UnloadLoadModule()
-      {
-         if (LoadedModule != null)
-         {
-            LoadedModule.Unload();
-            LoadedModule = null;
-         }
-      }
+         return moduleBase != LoadedModule && !moduleBase.IsLoaded && AuthenticatedUser != null;
+      }      
 
       public void LoadModule(ModuleBase moduleBase, List<string> filters)
       {
@@ -90,28 +84,13 @@ namespace OtherSideCore.Model
          }
       }
 
-      public bool CanAuthenticateUser()
+      private void UnloadLoadModule()
       {
-         return AuthenticatedUser == null;
-      }
-
-      public bool AuthenticateUser(User user, string passwordHash)
-      {
-         if (CanAuthenticateUser())
+         if (LoadedModule != null)
          {
-            if (user.Authenticate(passwordHash))
-            {
-               AuthenticatedUser = user;
-            }
+            LoadedModule.Unload();
+            LoadedModule = null;
          }
-
-         return false;
-      }
-
-      public void DisconnectAuthenticatedUser()
-      {
-         UnloadLoadModule();
-         AuthenticatedUser = null;
       }
 
       public void Dispose()

@@ -7,12 +7,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
+using OtherSideCore.Model.ModelObjects;
 
 namespace OtherSideCore.ViewModel
 {
    public abstract class SearchListModuleViewModel : ObservableObject, IDisposable
    {
       #region Fields
+
+      protected User m_AuthenticatedUser;
 
       private List<DatabaseField> m_DatabaseFields;
 
@@ -36,6 +39,12 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref m_ModelObjectListSearchViewModel, value);
       }
 
+      public User AuthenticatedUser
+      {
+         get => m_AuthenticatedUser;
+         set => SetProperty(ref m_AuthenticatedUser, value);
+      }
+
       #endregion
 
       #region Commands
@@ -46,8 +55,9 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public SearchListModuleViewModel()
+      public SearchListModuleViewModel(User authenticatedUser)
       {
+         AuthenticatedUser = authenticatedUser;
          m_DatabaseFields = new List<DatabaseField>();
       }
 
@@ -55,7 +65,7 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
-      protected async Task SelectedSearchResultChangedAsync(CancellationToken cancellation)
+      protected virtual async Task SelectedSearchResultChangedAsync(CancellationToken cancellation)
       {
          RegisterDatabaseFields();
       }

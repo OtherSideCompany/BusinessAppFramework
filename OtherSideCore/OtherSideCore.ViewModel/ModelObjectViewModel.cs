@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Model;
-using System;
-using System.Collections.Generic;
+using OtherSideCore.Model.ModelObjects;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -14,6 +11,8 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
+      private User m_AuthenticatedUser;
+
       private ModelObject m_ModelObject;
 
       private ModelObjectViewModel m_ParentModelObjectViewModelBase;
@@ -22,6 +21,12 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Properties
+
+      public User AuthenticatedUser
+      {
+         get => m_AuthenticatedUser;
+         set => SetProperty(ref m_AuthenticatedUser, value);
+      }
 
       public ModelObject ModelObject
       {
@@ -54,18 +59,20 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectViewModel(ModelObject modelObject) : base()
+      public ModelObjectViewModel(ModelObject modelObject, User authenticatedUser) : base()
       {
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
          DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanExecuteDelete);
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
 
+         AuthenticatedUser = authenticatedUser;
+
          ModelObject = modelObject;
          ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
       }
 
-      public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel) : this(modelObject)
+      public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel, User authenticatedUser) : this(modelObject, authenticatedUser)
       {
          ParentModelObjectViewModelBase = parentModelObjectViewModel;
       }
@@ -88,7 +95,7 @@ namespace OtherSideCore.ViewModel
 
       public virtual async Task SaveChangesAsync()
       {
-         await ModelObject.SaveAsync();
+         await ModelObject.SaveAsync(AuthenticatedUser.Id.Value);
          await ModelObject.LoadAsync();
       }
 

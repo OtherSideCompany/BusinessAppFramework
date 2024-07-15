@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
+using OtherSideCore.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -42,6 +44,12 @@ namespace OtherSideCore.Data.Context
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
          modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string) }));
+
+         modelBuilder.Entity<EntityBase>().UseTpcMappingStrategy();
+
+         modelBuilder.Entity<User>().UseTpcMappingStrategy();         
+         modelBuilder.Entity<User>().HasOne(u => u.CreatedBy).WithMany().HasForeignKey(u => u.CreatedById).OnDelete(DeleteBehavior.Restrict);
+         modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
       }
 
       public static async Task MigrateAsync(SqliteContext context)

@@ -1,16 +1,27 @@
 ﻿using OtherSideCore.Data.DatabaseFields;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace OtherSideCore.Data.Entities
 {
-   public abstract class EntityBase
+   public abstract class EntityBase : IEntityBase
    {
-      public abstract List<DatabaseField> GetDatabaseFieldProperties();
+      [Key]
+      [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+      public int Id { get; set; }
+      public DateTime CreationDate { get; set; }
+      public int CreatedById { get; set; }
+      public virtual User CreatedBy { get; set; }
+      public DateTime LastModifiedDateTime { get; set; }
+      public int LastModifiedById { get; set; }
+      public virtual User LastModifiedBy { get; set; }
 
       protected void SetProperties(List<DatabaseField> databaseFields)
       {
@@ -21,25 +32,45 @@ namespace OtherSideCore.Data.Entities
             switch (databaseField)
             {
                case IntegerDatabaseField integerDatabaseField:
-                  propertyInfo.SetValue(this, integerDatabaseField.Value, null);
+                  propertyInfo.SetValue(this, integerDatabaseField.Value);
                   break;
                case StringDatabaseField stringDatabaseField:
-                  propertyInfo.SetValue(this, stringDatabaseField.Value, null);
+                  propertyInfo.SetValue(this, stringDatabaseField.Value);
+                  break;
+               case DateOnlyDatabaseField dateOnlyDatabaseField:
+                  propertyInfo.SetValue(this, dateOnlyDatabaseField.Value);
+                  break;
+               case DateTimeDatabaseField dateTimeDatabaseField:
+                  propertyInfo.SetValue(this, dateTimeDatabaseField.Value);
+                  break;
+               case BoolDatabaseField boolDatabaseField:
+                  propertyInfo.SetValue(this, boolDatabaseField.Value);
                   break;
                default:
                   throw new Exception("Unrecognized type " + databaseField.GetType());
-                  break;
             }
          }
       }
 
+      public virtual List<DatabaseField> GetDatabaseFieldProperties()
+      {
+         return new List<DatabaseField>
+            {
+               new IntegerDatabaseField(Id, "Id"),
+               new DateTimeDatabaseField(CreationDate, "CreationDate"),
+               new IntegerDatabaseField(CreatedById, "CreatedById"),
+               new DateTimeDatabaseField(LastModifiedDateTime, "LastModifiedDateTime"),
+               new IntegerDatabaseField(LastModifiedById, "LastModifiedById")
+            };
+      }
+
       public abstract Task<int> CreateAsync(List<DatabaseField> databaseFields);
 
-      public abstract Task SaveAsync(int id, List<DatabaseField> databaseFields);
+      public abstract Task SaveAsync(int entityId, List<DatabaseField> databaseFields);
 
-      public abstract Task<EntityBase> GetAsync(int id);
+      public abstract Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken);
 
-      public abstract Task DeleteAsync(int id);
-      
+      public abstract Task DeleteAsync(int entityId);
+
    }
 }

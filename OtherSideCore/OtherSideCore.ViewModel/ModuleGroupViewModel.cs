@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Model;
+using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,7 +51,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModuleGroupViewModel(ModuleGroup moduleGroup, Type viewModelType, string viewAssembly, string viewType, object iconResource) : base(moduleGroup, viewModelType, viewAssembly, viewType, iconResource)
+      public ModuleGroupViewModel(User authenticatedUser, ModelViewModel modelViewModel, ModuleGroup moduleGroup, Type viewModelType, string viewAssembly, string viewType, object iconResource) : base(authenticatedUser, modelViewModel, moduleGroup, viewModelType, viewAssembly, viewType, iconResource)
       {
          ModuleViewModels = new ObservableCollection<ModuleViewModel>();
       }
