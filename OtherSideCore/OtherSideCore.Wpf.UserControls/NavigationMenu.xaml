@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf.CustomControls"
              xmlns:viewmodel="clr-namespace:OtherSideCore.ViewModel;assembly=OtherSideCore.ViewModel" 
+             xmlns:model="clr-namespace:OtherSideCore.Model;assembly=OtherSideCore.Model"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="NavigationMenuUserControl">
@@ -48,7 +49,7 @@
                                                  SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"/>
          </Border>
 
-         <ItemsControl Grid.Row="1" ItemsSource="{Binding ModelViewModel.QuickNavigationModuleViewModels}">
+         <ItemsControl Grid.Row="1" ItemsSource="{Binding QuickNavigationViews}">
             <ItemsControl.ItemsPanel>
                <ItemsPanelTemplate>
                   <StackPanel Orientation="Vertical" />
@@ -64,10 +65,10 @@
 
                      <ContentPresenter Content="{Binding}">
                         <ContentPresenter.Resources>
-                           
-                           <DataTemplate DataType="{x:Type viewmodel:ModuleViewModel}">
-                              <Button Cursor="Hand" Content="{Binding ModuleBase.IsLoaded, Mode=OneWay}"
-                                      Command="{Binding DataContext.ModelViewModel.LoadModuleCommand, ElementName=NavigationMenuUserControl}"
+
+                           <DataTemplate DataType="{x:Type model:View}">
+                              <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
+                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
                                  <Button.Style>
                                     <Style TargetType="{x:Type Button}">
@@ -86,7 +87,7 @@
                                                                              SvgViewer_ImageColor="{StaticResource ForegroundColor}" 
                                                                              SvgViewer_ImageGeometry="{Binding IconResource}" />
 
-                                                   <TextBlock Grid.Column="1" Text="{Binding ModuleBase.Name}" FontSize="14" VerticalAlignment="Center"
+                                                   <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="14" VerticalAlignment="Center"
                                                               Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}"
                                                               Foreground="{StaticResource ForegroundColor}" Margin="0,0,15,0"/>
                                                 </Grid>
@@ -94,7 +95,7 @@
                                           </Setter.Value>
                                        </Setter>
                                        <Style.Triggers>
-                                          <DataTrigger Binding="{Binding ModuleBase.IsLoaded, Mode=OneWay}" Value="True">
+                                          <DataTrigger Binding="{Binding IsLoaded, Mode=OneWay}" Value="True">
                                              <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
                                           </DataTrigger>
                                           <Trigger Property="IsMouseOver" Value="True">
@@ -105,10 +106,10 @@
                                  </Button.Style>
                               </Button>
                            </DataTemplate>
-                           
-                           <DataTemplate DataType="{x:Type viewmodel:ModuleGroupViewModel}">
+
+                           <DataTemplate DataType="{x:Type model:ViewGroup}">
                               <Button Cursor="Hand"
-                                      Command="{Binding DataContext.WhiteRabbitViewModel.LoadModuleCommand, ElementName=NavigationMenuUserControl}"
+                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
                                  <Button.Style>
                                     <Style TargetType="{x:Type Button}">
@@ -128,7 +129,7 @@
                                                                              SvgViewer_ImageColor="{StaticResource ForegroundColor}" 
                                                                              SvgViewer_ImageGeometry="{Binding IconResource}" />
 
-                                                   <TextBlock Grid.Column="1" Text="{Binding ModuleBase.Name}" FontSize="14" VerticalAlignment="Center"
+                                                   <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="14" VerticalAlignment="Center"
                                                               Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}"
                                                               Foreground="{StaticResource ForegroundColor}" Margin="0,0,15,0"/>
 
@@ -148,14 +149,14 @@
                                                 <ControlTemplate.Triggers>
                                                    <MultiDataTrigger>
                                                       <MultiDataTrigger.Conditions>
-                                                         <Condition Binding="{Binding ModuleGroup.IsSubModuleLoaded, Mode=OneWay}" Value="True" />
+                                                         <Condition Binding="{Binding IsSubViewLoaded, Mode=OneWay}" Value="True" />
                                                          <Condition Binding="{Binding IsExpanded}" Value="False" />
                                                       </MultiDataTrigger.Conditions>
                                                       <MultiDataTrigger.Setters>
                                                          <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
                                                       </MultiDataTrigger.Setters>
                                                    </MultiDataTrigger>
-                                                   <DataTrigger Binding="{Binding ModuleBase.IsLoaded, Mode=OneWay}" Value="True">
+                                                   <DataTrigger Binding="{Binding IsLoaded, Mode=OneWay}" Value="True">
                                                       <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
                                                    </DataTrigger>
                                                    <Trigger Property="IsMouseOver" Value="True">
@@ -175,12 +176,12 @@
 
                      <ContentPresenter Grid.Row="1" Content="{Binding}">
                         <ContentPresenter.Resources>
-                           
-                           <DataTemplate DataType="{x:Type viewmodel:ModuleViewModel}"/>
-                           
-                           <DataTemplate DataType="{x:Type viewmodel:ModuleGroupViewModel}">
+
+                           <DataTemplate DataType="{x:Type model:View}"/>
+
+                           <DataTemplate DataType="{x:Type model:ViewGroup}">
                               <Grid Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisibleOrCollapsed}, ElementName=MenuToggleButton}">
-                                 <ItemsControl ItemsSource="{Binding ModuleViewModels}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                 <ItemsControl ItemsSource="{Binding SubViews}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <ItemsControl.ItemsPanel>
                                        <ItemsPanelTemplate>
                                           <StackPanel Orientation="Vertical" />
@@ -188,9 +189,10 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                        <DataTemplate>
-                                          <ToggleButton Command="{Binding DataContext.WhiteRabbitViewModel.LoadModuleCommand, ElementName=NavigationMenuUserControl}" 
-                                               CommandParameter="{Binding}"
-                                               IsChecked="{Binding ModuleBase.IsLoaded, Mode=OneWay}">
+                                          <ToggleButton Cursor="Hand" 
+                                                        Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}" 
+                                                        CommandParameter="{Binding}"
+                                                        IsChecked="{Binding IsLoaded, Mode=OneWay}">
                                              <ToggleButton.Style>
                                                 <Style TargetType="{x:Type ToggleButton}">
                                                    <Setter Property="Background" Value="Transparent" />
@@ -199,12 +201,12 @@
                                                          <ControlTemplate TargetType="{x:Type ToggleButton}">
                                                             <Border Background="{TemplateBinding Background}" x:Name="ModuleGrid" Height="36">
                                                                <TextBlock x:Name="Text" 
-                                                                 Grid.Column="1"
-                                                                 Margin="38,0,15,0"
-                                                                 Text="{Binding ModuleBase.Name}"  
-                                                                 Foreground="{StaticResource ForegroundColor}" 
-                                                                 FontSize="14" 
-                                                                 VerticalAlignment="Center" />
+                                                                          Grid.Column="1"
+                                                                          Margin="38,0,15,0"
+                                                                          Text="{Binding Name}"  
+                                                                          Foreground="{StaticResource ForegroundColor}" 
+                                                                          FontSize="14" 
+                                                                          VerticalAlignment="Center" />
                                                             </Border>
                                                             <ControlTemplate.Triggers>
                                                                <Trigger Property="IsChecked" Value="True">

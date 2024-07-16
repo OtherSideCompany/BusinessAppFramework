@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
 using OtherSideCore.Model.ModelObjects;
 using Microsoft.EntityFrameworkCore;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OtherSideCore.Model.Services
 {
-   public abstract class AuthenticationService<T, U, V> : IAuthenticationService<T> where T : User, new() 
-                                                                                    where U : Data.Entities.User, new()
-                                                                                    where V : DbContext
+   public abstract class AuthenticationService<T, U, V> : ObservableObject, IAuthenticationService<T> where T : User, new() 
+                                                                                                      where U : Data.Entities.User, new()
+                                                                                                      where V : DbContext
    {
       #region Fields
 
@@ -20,7 +21,7 @@ namespace OtherSideCore.Model.Services
       public T AuthenticatedUser
       {
          get => m_AuthenticatedUser;
-         private set => m_AuthenticatedUser = value;
+         private set => SetProperty(ref m_AuthenticatedUser, value);
       }
 
       #endregion
@@ -47,9 +48,9 @@ namespace OtherSideCore.Model.Services
          return AuthenticatedUser == null;
       }
 
-      public async Task<T> AuthenticateUserAsync(string userName, string passwordHash)
+      public async Task AuthenticateUserAsync(string userName, string passwordHash)
       {
-         return CanAuthenticateUser() ? await GetUserByCredentials(userName, passwordHash) : null;
+         AuthenticatedUser = CanAuthenticateUser() ? await GetUserByCredentials(userName, passwordHash) : null;
       }
 
       public bool CanLogoutUser()

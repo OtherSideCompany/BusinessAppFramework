@@ -11,7 +11,7 @@ namespace OtherSideCore.Model.Services
    {
       T AuthenticatedUser { get; }
       bool CanAuthenticateUser();
-      Task<T> AuthenticateUserAsync(string userName, string password);
+      Task AuthenticateUserAsync(string userName, string password);
       bool CanLogoutUser();
       Task<bool> LogoutUserAsync();
    }

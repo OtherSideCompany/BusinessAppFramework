@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace OtherSideCore.Wpf.UserControls
 {
    /// <summary>
-   /// Interaction logic for ModuleGroupModuleListView.xaml
+   /// Interaction logic for ViewGroupView.xaml
    /// </summary>
-   public partial class ModuleGroupModuleListView : UserControl
+   public partial class ViewGroupView : UserControl
    {
-      public ModuleGroupModuleListView()
+      public ViewGroupView()
       {
          InitializeComponent();
       }

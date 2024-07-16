@@ -105,8 +105,8 @@
 
          <TextBlock Grid.Column="0" Text="{Binding ApplicationName}" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0" />
          <TextBlock Grid.Column="1" Text="|" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="7,0,7,0"
-                    Visibility="{Binding ModelViewModel.LoadedModuleBaseViewModel, Converter={StaticResource NullToVisibilityConverter}}"/>
-         <TextBlock Grid.Column="2" Text="{Binding ModelViewModel.LoadedModuleBaseViewModel.ModuleBase.ModuleNavigationPath}" 
+                    Visibility="{Binding LoadedView, Converter={StaticResource NullToVisibilityConverter}}"/>
+         <TextBlock Grid.Column="2" Text="{Binding LoadedView.ViewNavigationPath}" 
                     Foreground="{StaticResource TextForeGroundColor}" FontSize="14" />
 
       </Grid>
@@ -128,8 +128,8 @@
          </Grid.ColumnDefinitions>
 
          <TextBlock Grid.Column="0" Foreground="{StaticResource TextForeGroundColor}" Margin="0,0,10,0">
-            <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.FirstName.Value}" />
-            <Run Text="{Binding ModelViewModel.Model.AuthenticatedUser.LastName.Value}" />
+            <Run Text="{Binding AuthenticationService.AuthenticatedUser.FirstName.Value}" />
+            <Run Text="{Binding AuthenticationService.AuthenticatedUser.LastName.Value}" />
          </TextBlock>
          <customcontrols:SvgImageButton Grid.Column="1" Width="44" Height="32"
                                         SvgImageButton_IconGeometry="{StaticResource icon_log-out}"
@@ -137,7 +137,7 @@
                                         SvgImageButton_OverBackgroundColor="{StaticResource CaptionButtonHoverColor}"
                                         SvgImageButton_MouseDownBackgroundColor="{StaticResource CaptionButtonIsPressedColor}"
                                         Command="{Binding DisconnectAuthenticatedUserAsyncCommand}"
-                                        Visibility="{Binding ModelViewModel.Model.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                                        Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
          <Button Grid.Column="2" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />
          <Button Grid.Column="3" Style="{StaticResource MaximizeButtonStyle}" Click="MaximizeButton_Click" x:Name="MaximizeButton" />
          <Button Grid.Column="4" Style="{StaticResource RestoreButtonStyle}" Click="RestoreButton_Click" x:Name="RestoreButton" />         

@@ -19,7 +19,7 @@
 
          <Grid>
 
-            <Grid Visibility="{Binding ModelViewModel.Model.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="*" />
@@ -29,12 +29,12 @@
 
                <!-- content -->
                <Border Grid.Column="1">
-                  <ContentPresenter Content="{Binding ModelViewModel.LoadedModuleBaseViewModel.ModuleView}" />
+                  <ContentPresenter Content="{Binding MainWindowContent}" />
                </Border>
 
             </Grid>
 
-            <Grid Visibility="{Binding ModelViewModel.Model.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
+            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
 
                <Button Command="{Binding AuthenticateUserAsyncCommand}" Content="Connexion" VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
