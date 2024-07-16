@@ -7,12 +7,11 @@ using OtherSideCore.Model.ModelObjects;
 
 namespace OtherSideCore.Model.Services
 {
-    public interface IUserAuthenticationService
+   public interface IAuthenticationService<T> where T : User
    {
-      User AuthenticatedUser { get; }
-
+      T AuthenticatedUser { get; }
       bool CanAuthenticateUser();
-      Task<User> AuthenticateUserAsync(string userName, string password);
+      Task<T> AuthenticateUserAsync(string userName, string password);
       bool CanLogoutUser();
       Task<bool> LogoutUserAsync();
    }

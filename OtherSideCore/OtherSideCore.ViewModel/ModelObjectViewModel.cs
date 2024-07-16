@@ -95,8 +95,8 @@ namespace OtherSideCore.ViewModel
 
       public virtual async Task SaveChangesAsync()
       {
-         await ModelObject.SaveAsync(AuthenticatedUser.Id.Value);
-         await ModelObject.LoadAsync();
+         //await ModelObject.SaveAsync(AuthenticatedUser.Id.Value);
+         //await ModelObject.LoadAsync();
       }
 
       public virtual bool CanCancelChanges()
@@ -106,7 +106,7 @@ namespace OtherSideCore.ViewModel
 
       public virtual async Task CancelChangesAsync()
       {
-         await ModelObject.LoadAsync();
+         //await ModelObject.LoadAsync();
       }
 
       private bool CanExecuteDelete()
@@ -116,7 +116,7 @@ namespace OtherSideCore.ViewModel
 
       private async Task DeleteAsync()
       {
-         await ModelObject.DeleteAsync();
+         //await ModelObject.DeleteAsync();
       }
 
       protected abstract void DisplayInExternalWindow();

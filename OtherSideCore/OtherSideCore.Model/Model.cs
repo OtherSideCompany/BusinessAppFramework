@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Model
 {
-    public abstract class Model : ObservableObject, IDisposable
+   public abstract class Model : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -63,7 +63,7 @@ namespace OtherSideCore.Model
       public bool CanLoadModule(ModuleBase moduleBase)
       {
          return moduleBase != LoadedModule && !moduleBase.IsLoaded && AuthenticatedUser != null;
-      }      
+      }
 
       public void LoadModule(ModuleBase moduleBase, List<string> filters)
       {

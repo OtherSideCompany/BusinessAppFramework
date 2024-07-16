@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Threading.Tasks;
 using OtherSideCore.Model.ModelObjects;
+using System.Windows;
 
 namespace OtherSideCore.ViewModel
 {
@@ -108,9 +109,9 @@ namespace OtherSideCore.ViewModel
          }
          else
          {
-            var moduleViewModel = Activator.CreateInstance(ViewModelType, AuthenticatedUser);
+            //var moduleViewModel = Activator.CreateInstance(ViewModelType);
             ModuleView = (UserControl)Activator.CreateInstance(ViewAssembly, ViewType).Unwrap();
-            ModuleView.DataContext = moduleViewModel;
+            //ModuleView.DataContext = moduleViewModel;
          }
       }
 

@@ -1,5 +1,4 @@
 ﻿using OtherSideCore.Model.DatabaseFields;
-using OtherSideCore.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +6,24 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
+using OtherSideCore.Model.Services;
 using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Model.Repositories;
+using OtherSideCore.Model;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class SearchListModuleViewModel : ObservableObject, IDisposable
+   public abstract class SearchListModuleViewModel<T> : ObservableObject, IDisposable where T : ModelObject
    {
       #region Fields
 
-      protected User m_AuthenticatedUser;
+      //protected User _authenticatedUser;
 
-      private List<DatabaseField> m_DatabaseFields;
+      private List<DatabaseField> _databaseFields;
 
-      private ModelObjectListSearchViewModel m_ModelObjectListSearchViewModel;
+      private RepositoryManager<T> _repositoryManager;
+
+      //private Repository<ModelObject, Data.Entities.EntityBase> _repository;
 
       #endregion
 
@@ -29,21 +33,21 @@ namespace OtherSideCore.ViewModel
       {
          get
          {
-            return m_DatabaseFields.Any(dbf => dbf.IsDirty);
+            return _databaseFields.Any(dbf => dbf.IsDirty);
          }
       }
 
-      public ModelObjectListSearchViewModel ModelObjectListSearchViewModel
+      public RepositoryManager<T> RepositoryManager
       {
-         get => m_ModelObjectListSearchViewModel;
-         set => SetProperty(ref m_ModelObjectListSearchViewModel, value);
+         get => _repositoryManager;
+         set => SetProperty(ref _repositoryManager, value);
       }
 
-      public User AuthenticatedUser
-      {
-         get => m_AuthenticatedUser;
-         set => SetProperty(ref m_AuthenticatedUser, value);
-      }
+      //public User AuthenticatedUser
+      //{
+      //   get => _authenticatedUser;
+      //   set => SetProperty(ref _authenticatedUser, value);
+      //}
 
       #endregion
 
@@ -55,10 +59,11 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public SearchListModuleViewModel(User authenticatedUser)
+      public SearchListModuleViewModel()
       {
-         AuthenticatedUser = authenticatedUser;
-         m_DatabaseFields = new List<DatabaseField>();
+         //AuthenticatedUser = authenticatedUser;
+         _databaseFields = new List<DatabaseField>();
+         //_repository = repository;
       }
 
       #endregion
@@ -72,49 +77,49 @@ namespace OtherSideCore.ViewModel
 
       private void UnregisterDatabaseFields()
       {
-         foreach (var databaseField in m_DatabaseFields)
+         foreach (var databaseField in _databaseFields)
          {
             databaseField.PropertyChanged -= DatabaseField_OnPropertyChanged;
          }
 
-         m_DatabaseFields.Clear();
+         _databaseFields.Clear();
       }
 
       private void RegisterDatabaseFields()
       {
-         UnregisterDatabaseFields();
+         //UnregisterDatabaseFields();
 
-         foreach (var databaseField in ModelObjectListSearchViewModel.SelectedSearchResultViewModel.ModelObject.GetDatabaseFields())
-         {
-            databaseField.PropertyChanged += DatabaseField_OnPropertyChanged;
-            m_DatabaseFields.Add(databaseField);
-         }
+         //foreach (var databaseField in RepositorySearch.SelectedModelObject.GetDatabaseFields())
+         //{
+         //   databaseField.PropertyChanged += DatabaseField_OnPropertyChanged;
+         //   _databaseFields.Add(databaseField);
+         //}
       }
 
       private void DatabaseField_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
       {
-         if (e.PropertyName.Equals(nameof(DatabaseField.IsDirty)))
-         {
-            OnPropertyChanged(nameof(IsAnyDatabaseFieldDirty));
+         //if (e.PropertyName.Equals(nameof(DatabaseField.IsDirty)))
+         //{
+         //   OnPropertyChanged(nameof(IsAnyDatabaseFieldDirty));
 
-            ModelObjectListSearchViewModel.SelectedSearchResultViewModel.NotifyCommandsCanExecuteChanged();
+         //   RepositorySearchViewModel.SelectedSearchResultViewModel.NotifyCommandsCanExecuteChanged();
 
-            if (IsAnyDatabaseFieldDirty)
-            {
-               ModelObjectListSearchViewModel.ModelObjectListSearch.LockSelection();
-            }
-            else
-            {
-               ModelObjectListSearchViewModel.ModelObjectListSearch.UnlockSelection();
-            }
-         }
+         //   if (IsAnyDatabaseFieldDirty)
+         //   {
+         //      RepositorySearch.LockSelection();
+         //   }
+         //   else
+         //   {
+         //      RepositorySearch.UnlockSelection();
+         //   }
+         //}
       }
 
       public virtual void Dispose()
       {
-         ModelObjectListSearchViewModel.Dispose();
+         //RepositorySearch.Dispose();
 
-         UnregisterDatabaseFields();
+         //UnregisterDatabaseFields();
       }
 
       #endregion

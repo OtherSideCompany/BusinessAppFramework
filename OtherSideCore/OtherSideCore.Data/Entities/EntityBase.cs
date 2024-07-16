@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace OtherSideCore.Data.Entities
 {
-   public abstract class EntityBase : IEntityBase
+   public abstract class EntityBase
    {
       [Key]
       [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,7 +23,7 @@ namespace OtherSideCore.Data.Entities
       public int LastModifiedById { get; set; }
       public virtual User LastModifiedBy { get; set; }
 
-      protected void SetProperties(List<DatabaseField> databaseFields)
+      internal void SetProperties(List<DatabaseField> databaseFields)
       {
          foreach (var databaseField in databaseFields)
          {
@@ -63,14 +63,6 @@ namespace OtherSideCore.Data.Entities
                new IntegerDatabaseField(LastModifiedById, "LastModifiedById")
             };
       }
-
-      public abstract Task<int> CreateAsync(List<DatabaseField> databaseFields);
-
-      public abstract Task SaveAsync(int entityId, List<DatabaseField> databaseFields);
-
-      public abstract Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken);
-
-      public abstract Task DeleteAsync(int entityId);
 
    }
 }

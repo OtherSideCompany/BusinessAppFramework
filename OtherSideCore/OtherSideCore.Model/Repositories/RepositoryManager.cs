@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Model.Repositories
 {
-   public abstract class ModelObjectListSearch : ObservableObject, IDisposable
+   public abstract class RepositoryManager<T> : ObservableObject, IDisposable where T : ModelObject
    {
       #region Fields
 
@@ -19,6 +19,8 @@ namespace OtherSideCore.Model
       private ModelObject m_SelectedModelObject;
 
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
+
+      protected IRepository<T> _repository;
 
       #endregion
 
@@ -54,12 +56,19 @@ namespace OtherSideCore.Model
          set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
       }
 
+      public IRepository<T> Repository
+      {
+         get => _repository;
+         set => SetProperty(ref _repository, value);
+      }
+
       #endregion
 
       #region Constructor
 
-      public ModelObjectListSearch()
+      public RepositoryManager(IRepository<T> repository)
       {
+         Repository = repository;
          SearchResults = new ObservableCollection<ModelObject>();
          MultiTextFilter = new MultiTextFilter(true);
       }
@@ -95,9 +104,14 @@ namespace OtherSideCore.Model
 
       public bool CanSelectModelObject(ModelObject modelObject)
       {
-         return !IsSelectionLocked && 
+         return !IsSelectionLocked &&
                 modelObject != null &&
                 !modelObject.Equals(SelectedModelObject);
+      }
+
+      public void UnselectModelObject()
+      {
+         SelectedModelObject = null;
       }
 
       public async virtual Task SelectModelObjectAsync(ModelObject modelObject, CancellationToken cancellationToken)
@@ -110,10 +124,20 @@ namespace OtherSideCore.Model
          }
       }
 
+      public void RemoveSearchResult(ModelObject modelObject)
+      {
+         if (SelectedModelObject.Equals(modelObject))
+         {
+            UnselectModelObject();
+         }
+
+         SearchResults.Remove(modelObject);
+      }
+
       public void Dispose()
       {
          Unload();
-      }      
+      }
 
       #endregion
    }

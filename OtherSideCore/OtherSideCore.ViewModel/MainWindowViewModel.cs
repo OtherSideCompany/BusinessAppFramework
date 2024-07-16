@@ -1,14 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Model.Services;
 using System;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class MainWindowViewModel : ObservableObject, IDisposable
+   public abstract class MainWindowViewModel<T, U> : ObservableObject, IDisposable where T : User where U : DbContext
    {
       #region Fields
 
-      protected IUserAuthenticationService m_UserAuthenticationService;
+      protected IAuthenticationService<T> _authenticationService;
+      protected IDbContextFactory<U> _contextFactory;
 
       private string m_ApplicationLogoImageSource;
       private string m_ApplicationName;
@@ -53,9 +56,10 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public MainWindowViewModel(IUserAuthenticationService userAuthenticationService)
+      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IDbContextFactory<U> contextFactory)
       {
-         m_UserAuthenticationService = userAuthenticationService;
+         _authenticationService = authenticationService;
+         _contextFactory = contextFactory;
 
          ApplicationName = "Unnamed App";
       }

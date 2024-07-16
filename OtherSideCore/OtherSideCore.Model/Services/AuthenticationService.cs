@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using OtherSideCore.Model.ModelObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace OtherSideCore.Model.Services
 {
-    public abstract class UserAuthenticationService : IUserAuthenticationService
+   public abstract class AuthenticationService<T, U, V> : IAuthenticationService<T> where T : User, new() 
+                                                                                    where U : Data.Entities.User, new()
+                                                                                    where V : DbContext
    {
       #region Fields
 
-      private User m_AuthenticatedUser;
+      private T m_AuthenticatedUser;
+      private Repositories.UserRepository<T, U, V> _userRepository;
 
       #endregion
 
       #region Properties
 
-      public User AuthenticatedUser
+      public T AuthenticatedUser
       {
          get => m_AuthenticatedUser;
          private set => m_AuthenticatedUser = value;
@@ -33,9 +33,9 @@ namespace OtherSideCore.Model.Services
 
       #region Constructor
 
-      public UserAuthenticationService()
+      public AuthenticationService(Repositories.UserRepository<T, U, V> userRepository)
       {
-
+         _userRepository = userRepository;
       }
 
       #endregion
@@ -47,7 +47,7 @@ namespace OtherSideCore.Model.Services
          return AuthenticatedUser == null;
       }
 
-      public async Task<User> AuthenticateUserAsync(string userName, string passwordHash)
+      public async Task<T> AuthenticateUserAsync(string userName, string passwordHash)
       {
          return CanAuthenticateUser() ? await GetUserByCredentials(userName, passwordHash) : null;
       }
@@ -68,7 +68,10 @@ namespace OtherSideCore.Model.Services
          return false;
       }
 
-      protected abstract Task<User> GetUserByCredentials(string userName, string passwordHash);
+      protected async Task<T> GetUserByCredentials(string userName, string passwordHash)
+      {
+         return await _userRepository.GetSuperAdminUserAsync();
+      }
 
       #endregion
    }

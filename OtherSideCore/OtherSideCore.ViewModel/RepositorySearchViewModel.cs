@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model;
 using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,17 +14,17 @@ using System.Windows.Data;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class ModelObjectListSearchViewModel : ViewModelBase
+   public abstract class RepositorySearchViewModel<T> : ViewModelBase where T : Model.ModelObject
    {
       #region Fields
 
-      private User m_AuthenticatedUser;
+      private User _authenticatedUser;
 
-      private ModelObjectListSearch m_ModelObjectListSearch;
-      private MultiTextFilterViewModel m_MultiTextFilterViewModel;
+      private RepositoryManager<T> _repositorySearch;
+      private MultiTextFilterViewModel _multiTextFilterViewModel;
 
-      private ObservableCollection<ModelObjectViewModel> m_SearchResultViewModels;
-      private CollectionViewSource m_SearchResultViewModelsCollection;
+      private ObservableCollection<ModelObjectViewModel> m_searchResultViewModels;
+      private CollectionViewSource _searchResultViewModelsCollection;
 
       #endregion
 
@@ -32,31 +32,31 @@ namespace OtherSideCore.ViewModel
 
       public User AuthenticatedUser
       {
-         get => m_AuthenticatedUser;
-         set => SetProperty(ref m_AuthenticatedUser, value);
+         get => _authenticatedUser;
+         set => SetProperty(ref _authenticatedUser, value);
       }
 
-      public ModelObjectListSearch ModelObjectListSearch
+      public RepositoryManager<T> RepositorySearch
       {
-         get => m_ModelObjectListSearch;
-         set => SetProperty(ref m_ModelObjectListSearch, value);
+         get => _repositorySearch;
+         set => SetProperty(ref _repositorySearch, value);
       }
 
       public MultiTextFilterViewModel MultiTextFilterViewModel
       {
-         get => m_MultiTextFilterViewModel;
-         set => SetProperty(ref m_MultiTextFilterViewModel, value);
+         get => _multiTextFilterViewModel;
+         set => SetProperty(ref _multiTextFilterViewModel, value);
       }
 
       public ObservableCollection<ModelObjectViewModel> SearchResultViewModels
       {
-         get => m_SearchResultViewModels;
-         set => SetProperty(ref m_SearchResultViewModels, value);
+         get => m_searchResultViewModels;
+         set => SetProperty(ref m_searchResultViewModels, value);
       }
 
       public ICollectionView SearchResultViewModelsCollection
       {
-         get => m_SearchResultViewModelsCollection.View;
+         get => _searchResultViewModelsCollection.View;
       }
 
       public ModelObjectViewModel SelectedSearchResultViewModel
@@ -80,7 +80,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectListSearchViewModel(ModelObjectListSearch modelObjectListSearch, User authenticatedUser)
+      public RepositorySearchViewModel(RepositoryManager<T> repositorySearch, User authenticatedUser)
       {
          SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
@@ -89,11 +89,11 @@ namespace OtherSideCore.ViewModel
 
          AuthenticatedUser = authenticatedUser;
 
-         ModelObjectListSearch = modelObjectListSearch;
-         MultiTextFilterViewModel = new MultiTextFilterViewModel(ModelObjectListSearch.MultiTextFilter, SearchCommandAsync);
+         RepositorySearch = repositorySearch;
+         MultiTextFilterViewModel = new MultiTextFilterViewModel(RepositorySearch.MultiTextFilter, SearchCommandAsync);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
-         m_SearchResultViewModelsCollection = new CollectionViewSource();
-         m_SearchResultViewModelsCollection.Source = SearchResultViewModels;
+         _searchResultViewModelsCollection = new CollectionViewSource();
+         _searchResultViewModelsCollection.Source = SearchResultViewModels;
       }
 
       #endregion
@@ -131,7 +131,7 @@ namespace OtherSideCore.ViewModel
          {
             modelObjectViewModel.IsSelected = true;
             OnPropertyChanged(nameof(SelectedSearchResultViewModel));
-            await ModelObjectListSearch.SelectModelObjectAsync(modelObjectViewModel.ModelObject, cancellationToken);            
+            await RepositorySearch.SelectModelObjectAsync(modelObjectViewModel.ModelObject, cancellationToken);
          }
       }
 
@@ -143,7 +143,7 @@ namespace OtherSideCore.ViewModel
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await ModelObjectListSearch.SearchAsync(cancellationToken);
+            await RepositorySearch.SearchAsync(cancellationToken);
             var viewModels = await ConstructSearchResultViewModels();
 
             foreach (var viewModel in viewModels)
@@ -164,7 +164,7 @@ namespace OtherSideCore.ViewModel
 
       private bool CanSelectModelObject(ModelObjectViewModel modelObjectViewModel)
       {
-         return modelObjectViewModel != null && ModelObjectListSearch.CanSelectModelObject(modelObjectViewModel.ModelObject);
+         return modelObjectViewModel != null && RepositorySearch.CanSelectModelObject(modelObjectViewModel.ModelObject);
       }
 
       private async Task SelectModelObjectAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
@@ -197,7 +197,7 @@ namespace OtherSideCore.ViewModel
       {
          UnloadSearchResultViewModels();
 
-         ModelObjectListSearch.Dispose();
+         RepositorySearch.Dispose();
          MultiTextFilterViewModel.Dispose();
       }
 

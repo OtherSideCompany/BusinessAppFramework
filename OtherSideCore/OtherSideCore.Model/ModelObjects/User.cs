@@ -1,10 +1,14 @@
-﻿using OtherSideCore.Model.DatabaseFields;
+﻿using OtherSideCore.Data.Entities;
+using OtherSideCore.Data;
+using OtherSideCore.Model.DatabaseFields;
 using OtherSideCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace OtherSideCore.Model.ModelObjects
 {
@@ -69,7 +73,7 @@ namespace OtherSideCore.Model.ModelObjects
 
       #region Methods
 
-      public abstract Task<bool> Authenticate(string passwordHash);
+
 
       #endregion
    }

@@ -7,6 +7,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Data;
+using OtherSideCore.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace OtherSideCore.Model
 {
@@ -20,12 +23,10 @@ namespace OtherSideCore.Model
       private DateTimeDatabaseField m_LastModifiedDateTime;
       private IntegerDatabaseField m_LastModifiedById;
 
-      private User m_CreatedBy;
-      private User m_LastModifiedBy;
+      private ModelObjects.User m_CreatedBy;
+      private ModelObjects.User m_LastModifiedBy;
 
       private bool m_IsDirty;
-
-      protected static Data.Entities.EntityBase m_EntityBase;
 
       #endregion
 
@@ -71,13 +72,13 @@ namespace OtherSideCore.Model
          }
       }
 
-      public User CreatedBy 
+      public ModelObjects.User CreatedBy 
       { 
          get => m_CreatedBy;
          protected set { SetProperty(ref m_CreatedBy, value); }
       }
 
-      public User LastModifiedBy
+      public ModelObjects.User LastModifiedBy
       {
          get => m_LastModifiedBy;
          protected set { SetProperty(ref m_LastModifiedBy, value); }
@@ -107,7 +108,7 @@ namespace OtherSideCore.Model
          return false;
       }
 
-      protected async Task LoadPropertiesFromEntityAsync(Data.Entities.EntityBase entity)
+      internal async Task LoadPropertiesFromEntityAsync(Data.Entities.EntityBase entity)
       {
          var databaseFieldProperties = entity.GetDatabaseFieldProperties();
 
@@ -143,18 +144,6 @@ namespace OtherSideCore.Model
 
       protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(Data.Entities.EntityBase entity) { }
 
-      public async Task LoadAsync()
-      {
-         LockDatabasePropertiesEdition();
-
-         var userEntity = await m_EntityBase.GetAsync(Id.Value, CancellationToken.None);
-         await LoadPropertiesFromEntityAsync(userEntity);
-
-         UnlockDatabasePropertiesEdition();
-
-         ResetDatabaseFieldsDirtyState();
-      }
-
       public bool CanSaveChanges()
       {
          return GetDatabaseFields().Any(dbf => dbf.IsDirty);
@@ -165,7 +154,7 @@ namespace OtherSideCore.Model
          return GetDatabaseFields().Any(dbf => dbf.IsDirty);
       }
 
-      private void LockDatabasePropertiesEdition()
+      internal void LockDatabasePropertiesEdition()
       {
          foreach (var databaseProperty in GetDatabaseFields())
          {
@@ -173,7 +162,7 @@ namespace OtherSideCore.Model
          }
       }
 
-      private void UnlockDatabasePropertiesEdition()
+      internal void UnlockDatabasePropertiesEdition()
       {
          foreach (var databaseProperty in GetDatabaseFields())
          {
@@ -181,46 +170,12 @@ namespace OtherSideCore.Model
          }
       }
 
-      public async Task SaveAsync(int userId)
-      {
-         LastModifiedById.Value = userId;
-         LastModifiedDateTime.Value = DateTime.Now;
-
-         if (Id.Value == 0)
-         {
-            CreatedById.Value = userId;
-            CreationDate.Value = DateTime.Now;
-
-            Id.Value = await m_EntityBase.CreateAsync(ConvertPropertiesToDataProperties());
-         }
-         else
-         {
-            LockDatabasePropertiesEdition();
-
-            await m_EntityBase.SaveAsync(Id.Value, ConvertDirtyPropertiesToDataProperties());
-
-            UnlockDatabasePropertiesEdition();
-         }
-
-         ResetDatabaseFieldsDirtyState();
-      }
-
       public bool CanBeDeleted()
       {
          return true;
       }
 
-      public async Task DeleteAsync()
-      {
-         LockDatabasePropertiesEdition();
-
-         await m_EntityBase.DeleteAsync(Id.Value);
-         Id.Value = 0;
-
-         UnlockDatabasePropertiesEdition();
-      }
-
-      protected void ResetDatabaseFieldsDirtyState()
+      internal void ResetDatabaseFieldsDirtyState()
       {
          GetDirtyDatabaseFields().ForEach(dbf => dbf.IsDirty = false);
       }
@@ -248,12 +203,12 @@ namespace OtherSideCore.Model
                                          .ToList();
       }
 
-      protected List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
+      internal List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
       {
          return ConvertDatabaseFieldsToDataProperties(GetDirtyDatabaseFields());
       }
 
-      protected List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
+      internal List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
       {
          return ConvertDatabaseFieldsToDataProperties(GetDatabaseFields());
       }
@@ -308,10 +263,7 @@ namespace OtherSideCore.Model
          }
       }
 
-      public virtual void Dispose()
-      {
-         m_EntityBase = null;
-      }
+      public abstract void Dispose();
 
       #endregion
    }
