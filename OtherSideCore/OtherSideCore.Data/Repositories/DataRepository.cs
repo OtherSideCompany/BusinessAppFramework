@@ -6,7 +6,6 @@ using System.Threading;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace OtherSideCore.Data.Repositories
 {
@@ -62,7 +61,8 @@ namespace OtherSideCore.Data.Repositories
       {
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<T>().FindAsync(entityId, cancellationToken);
+            return await context.Set<T>()
+                                .FirstAsync(e => e.Id == entityId, cancellationToken);
          }
       }
 

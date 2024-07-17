@@ -44,31 +44,31 @@ namespace OtherSideCore.Model.Repositories
 
       public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {
-         var users = new List<T>();
-         var userEntities = await _entityDataRepository.GetAllAsync(filters, extendedSearch, cancellationToken);
+         var modelObjects = new List<T>();
+         var entities = await _entityDataRepository.GetAllAsync(filters, extendedSearch, cancellationToken);
 
-         foreach (var userEntity in userEntities)
+         foreach (var entity in entities)
          {
-            var user = new T();
-            await user.LoadPropertiesFromEntityAsync(userEntity);
-            users.Add(user);
+            var modelObject = new T();
+            await modelObject.LoadPropertiesFromEntityAsync(entity);
+            modelObjects.Add(modelObject);
          }
 
-         return users;
+         return modelObjects;
       }
 
       public async Task<T> GetAsync(int id, CancellationToken cancellationToken)
       {
-         var user = new T();
-         var userEntity = await _entityDataRepository.GetAsync(id, cancellationToken);
-         await user.LoadPropertiesFromEntityAsync(userEntity);
-         return user;
+         var modelObject = new T();
+         var entity = await _entityDataRepository.GetAsync(id, cancellationToken);
+         await modelObject.LoadPropertiesFromEntityAsync(entity);
+         return modelObject;
       }
 
       public async Task LoadAsync(ModelObject modelObject)
       {
-         var userEntity = await _entityDataRepository.GetAsync(modelObject.Id.Value, CancellationToken.None);
-         await modelObject.LoadPropertiesFromEntityAsync(userEntity);
+         var entity = await _entityDataRepository.GetAsync(modelObject.Id.Value, CancellationToken.None);
+         await modelObject.LoadPropertiesFromEntityAsync(entity);
 
          modelObject.ResetDatabaseFieldsDirtyState();
       }
@@ -106,7 +106,7 @@ namespace OtherSideCore.Model.Repositories
 
          modelObject.UnlockDatabasePropertiesEdition();
       }
-
+   
       public void Dispose()
       {
          _entityDataRepository.Dispose();

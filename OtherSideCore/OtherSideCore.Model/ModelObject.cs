@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OtherSideCore.Model
 {
-    public abstract class ModelObject : ObservableObject, IDisposable
+   public abstract class ModelObject : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -72,16 +72,16 @@ namespace OtherSideCore.Model
          }
       }
 
-      public ModelObjects.User CreatedBy 
-      { 
+      public ModelObjects.User CreatedBy
+      {
          get => m_CreatedBy;
-         protected set { SetProperty(ref m_CreatedBy, value); }
+         set { SetProperty(ref m_CreatedBy, value); }
       }
 
       public ModelObjects.User LastModifiedBy
       {
          get => m_LastModifiedBy;
-         protected set { SetProperty(ref m_LastModifiedBy, value); }
+         set { SetProperty(ref m_LastModifiedBy, value); }
       }
 
       #endregion
@@ -108,7 +108,7 @@ namespace OtherSideCore.Model
          return false;
       }
 
-      internal async Task LoadPropertiesFromEntityAsync(Data.Entities.EntityBase entity)
+      public async Task LoadPropertiesFromEntityAsync(EntityBase entity)
       {
          var databaseFieldProperties = entity.GetDatabaseFieldProperties();
 
@@ -142,7 +142,7 @@ namespace OtherSideCore.Model
          await LoadModelObjectPropertiesFromEntityAsync(entity);
       }
 
-      protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(Data.Entities.EntityBase entity) { }
+      protected abstract Task LoadModelObjectPropertiesFromEntityAsync(Data.Entities.EntityBase entity);
 
       public bool CanSaveChanges()
       {
@@ -263,7 +263,11 @@ namespace OtherSideCore.Model
          }
       }
 
-      public abstract void Dispose();
+      public virtual void Dispose()
+      {
+         CreatedBy?.Dispose();
+         LastModifiedBy?.Dispose();
+      }
 
       #endregion
    }

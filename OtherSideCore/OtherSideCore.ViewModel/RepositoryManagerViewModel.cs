@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Model;
+using OtherSideCore.Model.DatabaseFields;
 using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Model.Repositories;
 using System;
@@ -18,7 +20,11 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-      private User _authenticationUser;
+      private List<DatabaseField> _databaseFields;
+
+      private bool m_IsSelectionLocked;
+      private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
+
       private IModelObjectViewModeFactory _modelObjectViewModeFactory;
 
       private RepositoryManager<T> _repositoryManager;
@@ -30,6 +36,26 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Properties
+
+      public bool IsAnyDatabaseFieldDirty
+      {
+         get
+         {
+            return _databaseFields.Any(dbf => dbf.IsDirty);
+         }
+      }
+
+      public bool IsSelectionLocked
+      {
+         get => m_IsSelectionLocked;
+         set => SetProperty(ref m_IsSelectionLocked, value);
+      }
+
+      public Func<CancellationToken, Task> SelectedSearchResultChangedAsync
+      {
+         get => m_SelectedSearchResultChangedAsync;
+         set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
+      }
 
       public RepositoryManager<T> RepositoryManager
       {
@@ -68,12 +94,12 @@ namespace OtherSideCore.ViewModel
 
       public AsyncRelayCommand SearchCommandAsync { get; private set; }
       public RelayCommand CancelSearchCommand { get; private set; }
-      public AsyncRelayCommand<ModelObjectViewModel> SelectModelObjectCommandAsync { get; private set; }
-      public RelayCommand CancelSelectModelObjectCommand { get; private set; }
+      public AsyncRelayCommand<ModelObjectViewModel> SelectSearchResultCommandAsync { get; private set; }
+      public RelayCommand CancelSelectSearchResultCommand { get; private set; }
       public AsyncRelayCommand CreateAsyncCommand { get; private set; }
-      public AsyncRelayCommand SaveSelectedObjectChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand CancelSelectedObjectChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand DeleteSelectedObjectAsyncCommand { get; private set; }
+      public AsyncRelayCommand SaveSelectedSearchResultChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand CancelSelectedSearchResultChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand DeleteSelectedSearchResultAsyncCommand { get; private set; }
 
       #endregion
 
@@ -81,17 +107,17 @@ namespace OtherSideCore.ViewModel
 
       public RepositoryManagerViewModel(RepositoryManager<T> repositoryManager, User autenticatedUser, IModelObjectViewModeFactory modelObjectViewModeFactory)
       {
-         _authenticationUser = autenticatedUser;
          _modelObjectViewModeFactory = modelObjectViewModeFactory;
+         _databaseFields = new List<DatabaseField>();
 
          SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
-         SelectModelObjectCommandAsync = new AsyncRelayCommand<ModelObjectViewModel>(SelectModelObjectAsync, CanSelectModelObject);
-         CancelSelectModelObjectCommand = new RelayCommand(CancelSelectModelObject);
+         SelectSearchResultCommandAsync = new AsyncRelayCommand<ModelObjectViewModel>(SelectSearchResultAsync, CanSelectSearchResult);
+         CancelSelectSearchResultCommand = new RelayCommand(CancelSelectSearchResult);
          CreateAsyncCommand = new AsyncRelayCommand(CreateAsync);
-         SaveSelectedObjectChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedObjectChangesAsync, CanSaveSelectedObjectChanges);
-         CancelSelectedObjectChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedObjectChangesAsync, CanCancelSelectedObjectChanges);
-         DeleteSelectedObjectAsyncCommand = new AsyncRelayCommand(DeleteSelectedObjectAsync, CanExecuteDeleteSelectedObject);
+         SaveSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedSearchResultChangesAsync, CanSaveSelectedSearchResultChanges);
+         CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
+         DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
 
          RepositoryManager = repositoryManager;
          MultiTextFilterViewModel = new MultiTextFilterViewModel(RepositoryManager.MultiTextFilter, SearchCommandAsync);
@@ -104,16 +130,68 @@ namespace OtherSideCore.ViewModel
 
       #region Methods
 
+      private void RegisterDatabaseFields()
+      {
+         UnregisterDatabaseFields();
+
+         foreach (var databaseField in SelectedSearchResultViewModel.ModelObject.GetDatabaseFields())
+         {
+            databaseField.PropertyChanged += DatabaseField_OnPropertyChanged;
+            _databaseFields.Add(databaseField);
+         }
+      }
+
+      private void DatabaseField_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+      {
+         if (e.PropertyName.Equals(nameof(DatabaseField.IsDirty)))
+         {
+            OnPropertyChanged(nameof(IsAnyDatabaseFieldDirty));
+
+            NotifyCommandsCanExecuteChanged();
+
+            if (IsAnyDatabaseFieldDirty)
+            {
+               LockSelection();
+            }
+            else
+            {
+               UnlockSelection();
+            }
+         }
+      }
+
+      private void UnregisterDatabaseFields()
+      {
+         foreach (var databaseField in _databaseFields)
+         {
+            databaseField.PropertyChanged -= DatabaseField_OnPropertyChanged;
+         }
+
+         _databaseFields.Clear();
+
+         OnPropertyChanged(nameof(IsAnyDatabaseFieldDirty));
+      }
+
+      public void LockSelection()
+      {
+         IsSelectionLocked = true;
+      }
+
+      public void UnlockSelection()
+      {
+         IsSelectionLocked = false;
+      }
+
       public void NotifyCommandsCanExecuteChanged()
       {
          SearchCommandAsync.NotifyCanExecuteChanged();
          CancelSearchCommand.NotifyCanExecuteChanged();
-         SelectModelObjectCommandAsync.NotifyCanExecuteChanged();
-         CancelSelectModelObjectCommand.NotifyCanExecuteChanged();
+         SelectSearchResultCommandAsync.NotifyCanExecuteChanged();
+         CancelSelectSearchResultCommand.NotifyCanExecuteChanged();
          CreateAsyncCommand.NotifyCanExecuteChanged();
-         SaveSelectedObjectChangesAsyncCommand.NotifyCanExecuteChanged();
-         CancelSelectedObjectChangesAsyncCommand.NotifyCanExecuteChanged();
-         DeleteSelectedObjectAsyncCommand.NotifyCanExecuteChanged();
+         SaveSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
+         CancelSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
+         DeleteSelectedSearchResultAsyncCommand.NotifyCanExecuteChanged();
       }
 
       protected List<ModelObjectViewModel> ConstructSearchResultViewModels()
@@ -150,15 +228,45 @@ namespace OtherSideCore.ViewModel
          OnPropertyChanged(nameof(SelectedSearchResultViewModel));
       }
 
-      public async Task SelectSearchResultAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
+      public bool CanSelectSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
-         UnselectSearchResult();
+         return !IsSelectionLocked && modelObjectViewModel != null && !modelObjectViewModel.IsSelected;
+      }
 
-         if (modelObjectViewModel != null)
+      private void UnselectSearchResult()
+      {
+         if (SelectedSearchResultViewModel != null)
          {
-            modelObjectViewModel.IsSelected = true;
+            SelectedSearchResultViewModel.IsSelected = false;
             OnPropertyChanged(nameof(SelectedSearchResultViewModel));
-            await RepositoryManager.SelectModelObjectAsync(modelObjectViewModel.ModelObject, cancellationToken);
+            UnregisterDatabaseFields();
+         }
+
+         NotifyCommandsCanExecuteChanged();
+      }
+
+      private async Task SelectSearchResultAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
+      {
+         try
+         {
+            UnselectSearchResult();
+
+            if (modelObjectViewModel != null && !IsSelectionLocked)
+            {
+               modelObjectViewModel.IsSelected = true;
+               OnPropertyChanged(nameof(SelectedSearchResultViewModel));
+
+               RegisterDatabaseFields();
+
+               if (SelectedSearchResultChangedAsync != null)
+               {
+                  await SelectedSearchResultChangedAsync(cancellationToken);
+               }
+            }
+         }
+         catch (OperationCanceledException)
+         {
+            UnselectSearchResult();
          }
 
          NotifyCommandsCanExecuteChanged();
@@ -169,8 +277,6 @@ namespace OtherSideCore.ViewModel
          try
          {
             UnloadSearchResultViewModels();
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             await RepositoryManager.SearchAsync(cancellationToken);
             var viewModels = ConstructSearchResultViewModels();
@@ -191,96 +297,75 @@ namespace OtherSideCore.ViewModel
          SearchCommandAsync.Cancel();
       }
 
-      private bool CanSelectModelObject(ModelObjectViewModel modelObjectViewModel)
+      private void CancelSelectSearchResult()
       {
-         return modelObjectViewModel != null && RepositoryManager.CanSelectModelObject(modelObjectViewModel.ModelObject);
-      }
-
-      private async Task SelectModelObjectAsync(ModelObjectViewModel modelObjectViewModel, CancellationToken cancellationToken)
-      {
-         try
-         {
-            await SelectSearchResultAsync(modelObjectViewModel, cancellationToken);
-         }
-         catch (OperationCanceledException)
-         {
-            UnselectSearchResult();
-         }
-      }
-
-      private void CancelSelectModelObject()
-      {
-         SelectModelObjectCommandAsync.Cancel();
-      }
-
-      public void UnselectSearchResult()
-      {
-         if (SelectedSearchResultViewModel != null)
-         {
-            SelectedSearchResultViewModel.IsSelected = false;
-            OnPropertyChanged(nameof(SelectedSearchResultViewModel));
-         }
-
-         NotifyCommandsCanExecuteChanged();
+         SelectSearchResultCommandAsync.Cancel();
       }
 
       private async Task CreateAsync()
       {
-         RepositoryManager.UnselectModelObject();
-         RepositoryManager.LockSelection();
+         if (!IsSelectionLocked)
+         {
+            UnselectSearchResult();
+         }
 
-         var modelObject = RepositoryManager.CreateModelObjectInstance();
+         var wasSelectionLocked = IsSelectionLocked;
 
-         await RepositoryManager.Repository.SaveAsync(modelObject, _authenticationUser.Id.Value);
-         await RepositoryManager.SelectModelObjectAsync(modelObject, CancellationToken.None);
+         LockSelection();
+
+         var modelObject = await RepositoryManager.CreateAsync();
 
          var viewModel = _modelObjectViewModeFactory.CreateViewModel(modelObject);
-         SearchResultViewModels.Add(viewModel);
+         AddSearchResult(viewModel);
 
-         RepositoryManager.UnlockSelection();
+         if (!wasSelectionLocked)
+         {
+            await SelectSearchResultAsync(viewModel, CancellationToken.None);
+            UnlockSelection();
+         }         
       }
 
-      public virtual bool CanSaveSelectedObjectChanges()
+      public virtual bool CanSaveSelectedSearchResultChanges()
       {
-         return RepositoryManager.SelectedModelObject != null && RepositoryManager.SelectedModelObject.CanSaveChanges();
+         return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanSaveChanges();
       }
 
-      public virtual async Task SaveSelectedObjectChangesAsync()
+      public virtual async Task SaveSelectedSearchResultChangesAsync()
       {
-         await RepositoryManager.Repository.SaveAsync(RepositoryManager.SelectedModelObject, _authenticationUser.Id.Value);
-         await RepositoryManager.Repository.LoadAsync(RepositoryManager.SelectedModelObject);
+         await RepositoryManager.SaveAsync(SelectedSearchResultViewModel.ModelObject);
       }
 
-      public virtual bool CanCancelSelectedObjectChanges()
+      public virtual bool CanCancelSelectedSearchResultChanges()
       {
-         return RepositoryManager.SelectedModelObject != null && RepositoryManager.SelectedModelObject.CanCancelChanges();
+         return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanCancelChanges();
       }
 
-      public virtual async Task CancelSelectedObjectChangesAsync()
+      public virtual async Task CancelSelectedSearchResultChangesAsync()
       {
-         await RepositoryManager.Repository.LoadAsync(RepositoryManager.SelectedModelObject);
+         await RepositoryManager.Repository.LoadAsync(SelectedSearchResultViewModel.ModelObject);
       }
 
-      private bool CanExecuteDeleteSelectedObject()
+      private bool CanExecuteDeleteSelectedSearchResult()
       {
-         return RepositoryManager.SelectedModelObject != null && RepositoryManager.SelectedModelObject.CanBeDeleted();
+         return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanBeDeleted();
       }
 
-      private async Task DeleteSelectedObjectAsync()
+      private async Task DeleteSelectedSearchResultAsync()
       {
          var result = MessageBox.Show("Confirmez-vous la suppression ? ", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
          if (result == MessageBoxResult.Yes)
          {
-            RepositoryManager.LockSelection();
+            LockSelection();
 
-            await RepositoryManager.Repository.DeleteAsync(RepositoryManager.SelectedModelObject);
-            RepositoryManager.RemoveSearchResult(RepositoryManager.SelectedModelObject);
+            await RepositoryManager.DeleteAsync(SelectedSearchResultViewModel.ModelObject);
 
+            var selectedSearchResultViewModel = SelectedSearchResultViewModel;            
             SelectedSearchResultViewModel.Dispose();
-            RemoveSearchResult(SelectedSearchResultViewModel);
+            UnselectSearchResult();
+            RemoveSearchResult(selectedSearchResultViewModel);
 
-            RepositoryManager.UnlockSelection();
+            UnlockSelection();
 
             NotifyCommandsCanExecuteChanged();
          }

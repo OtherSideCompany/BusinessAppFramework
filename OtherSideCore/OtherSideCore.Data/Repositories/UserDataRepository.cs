@@ -53,10 +53,11 @@ namespace OtherSideCore.Data.Repositories
                      var lowerFilter = filter.ToLower();
                      var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
 
-                     users.AddRange(await context.Set<T>().Where(u => (Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
-                                                                       Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance) &&
-                                                                       !u.IsSuperAdmin)
-                                                             .ToListAsync(cancellationToken));
+                     users.AddRange(await context.Set<T>()
+                                                 .Where(u => (Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
+                                                              Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance) &&
+                                                              !u.IsSuperAdmin)
+                                                 .ToListAsync(cancellationToken));
                   }
                }
                else
@@ -65,16 +66,18 @@ namespace OtherSideCore.Data.Repositories
                   {
                      var lowerFilter = filter.ToLower();
 
-                     users.AddRange(await context.Set<T>().Where(u => (u.FirstName.ToLower().Contains(lowerFilter) ||
-                                                                       u.LastName.ToLower().Contains(lowerFilter)) &&
-                                                                       !u.IsSuperAdmin)
-                                                             .ToListAsync(cancellationToken));
+                     users.AddRange(await context.Set<T>()
+                                                 .Where(u => (u.FirstName.ToLower().Contains(lowerFilter) ||
+                                                              u.LastName.ToLower().Contains(lowerFilter)) &&
+                                                              !u.IsSuperAdmin)
+                                                 .ToListAsync(cancellationToken));
                   }
                }
             }
             else
             {
-               users = await context.Set<T>().Where(u => !u.IsSuperAdmin).ToListAsync(cancellationToken);
+               users = await context.Set<T>()
+                                    .Where(u => !u.IsSuperAdmin).ToListAsync(cancellationToken);
             }
          }
 

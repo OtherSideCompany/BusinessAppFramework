@@ -11,8 +11,6 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-      private User m_AuthenticatedUser;
-
       private ModelObject m_ModelObject;
 
       private ModelObjectViewModel m_ParentModelObjectViewModelBase;
@@ -21,12 +19,6 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Properties
-
-      public User AuthenticatedUser
-      {
-         get => m_AuthenticatedUser;
-         set => SetProperty(ref m_AuthenticatedUser, value);
-      }
 
       public ModelObject ModelObject
       {
@@ -50,9 +42,6 @@ namespace OtherSideCore.ViewModel
 
       #region Commands
 
-      public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
       public RelayCommand DisplayInExternalWindowCommand { get; private set; }
 
       #endregion
@@ -61,9 +50,6 @@ namespace OtherSideCore.ViewModel
 
       public ModelObjectViewModel(ModelObject modelObject) : base()
       {
-         SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
-         CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
-         DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanExecuteDelete);
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
 
          ModelObject = modelObject;
@@ -78,44 +64,6 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Methods
-
-      public void NotifyCommandsCanExecuteChanged()
-      {
-         SaveChangesAsyncCommand.NotifyCanExecuteChanged();
-         CancelChangesAsyncCommand.NotifyCanExecuteChanged();
-         DeleteAsyncCommand.NotifyCanExecuteChanged();
-      }
-
-      public virtual bool CanSaveChanges()
-      {
-         return ModelObject.CanSaveChanges();
-      }
-
-      public virtual async Task SaveChangesAsync()
-      {
-         //await ModelObject.SaveAsync(AuthenticatedUser.Id.Value);
-         //await ModelObject.LoadAsync();
-      }
-
-      public virtual bool CanCancelChanges()
-      {
-         return ModelObject.CanCancelChanges();
-      }
-
-      public virtual async Task CancelChangesAsync()
-      {
-         //await ModelObject.LoadAsync();
-      }
-
-      private bool CanExecuteDelete()
-      {
-         return ModelObject.CanBeDeleted();
-      }
-
-      private async Task DeleteAsync()
-      {
-         //await ModelObject.DeleteAsync();
-      }
 
       protected abstract void DisplayInExternalWindow();
 

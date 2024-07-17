@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,24 +14,14 @@ namespace OtherSideCore.Model.Repositories
    {
       #region Fields
 
-      private bool m_IsSelectionLocked;
+      private User _authenticatedUser;
       private ObservableCollection<ModelObject> m_SearchResults;
-      private MultiTextFilter m_MultiTextFilter;
-      private ModelObject m_SelectedModelObject;
-
-      private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
-
+      private MultiTextFilter m_MultiTextFilter;  
       protected IRepository<T> _repository;
 
       #endregion
 
       #region Properties
-
-      public bool IsSelectionLocked
-      {
-         get => m_IsSelectionLocked;
-         set => SetProperty(ref m_IsSelectionLocked, value);
-      }
 
       public ObservableCollection<ModelObject> SearchResults
       {
@@ -44,18 +35,6 @@ namespace OtherSideCore.Model.Repositories
          set => SetProperty(ref m_MultiTextFilter, value);
       }
 
-      public ModelObject SelectedModelObject
-      {
-         get => m_SelectedModelObject;
-         set => SetProperty(ref m_SelectedModelObject, value);
-      }
-
-      public Func<CancellationToken, Task> SelectedSearchResultChangedAsync
-      {
-         get => m_SelectedSearchResultChangedAsync;
-         set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
-      }
-
       public IRepository<T> Repository
       {
          get => _repository;
@@ -66,8 +45,9 @@ namespace OtherSideCore.Model.Repositories
 
       #region Constructor
 
-      public RepositoryManager(IRepository<T> repository)
+      public RepositoryManager(IRepository<T> repository, User authenticatedUser)
       {
+         _authenticatedUser = authenticatedUser;
          Repository = repository;
          SearchResults = new ObservableCollection<ModelObject>();
          MultiTextFilter = new MultiTextFilter(true);
@@ -76,11 +56,6 @@ namespace OtherSideCore.Model.Repositories
       #endregion
 
       #region Methods
-
-      public T CreateModelObjectInstance()
-      {
-         return new T();
-      }
 
       public async Task SearchAsync(CancellationToken cancellationToken)
       {
@@ -104,45 +79,25 @@ namespace OtherSideCore.Model.Repositories
          SearchResults.Clear();
       }
 
-      public void LockSelection()
+      public async Task<T> CreateAsync()
       {
-         IsSelectionLocked = true;
+         var modelObject = new T();
+         SearchResults.Add(modelObject);
+
+         await Repository.SaveAsync(modelObject, _authenticatedUser.Id.Value);
+
+         return modelObject;
       }
 
-      public void UnlockSelection()
+      public async Task SaveAsync(ModelObject modelObject)
       {
-         IsSelectionLocked = false;
+         await Repository.SaveAsync(modelObject, _authenticatedUser.Id.Value);
+         await Repository.LoadAsync(modelObject);
       }
 
-      public bool CanSelectModelObject(ModelObject modelObject)
+      public async Task DeleteAsync(ModelObject modelObject)
       {
-         return !IsSelectionLocked &&
-                modelObject != null &&
-                !modelObject.Equals(SelectedModelObject);
-      }
-
-      public void UnselectModelObject()
-      {
-         SelectedModelObject = null;
-      }
-
-      public async virtual Task SelectModelObjectAsync(ModelObject modelObject, CancellationToken cancellationToken)
-      {
-         SelectedModelObject = modelObject;
-
-         if (SelectedSearchResultChangedAsync != null)
-         {
-            await SelectedSearchResultChangedAsync(cancellationToken);
-         }
-      }
-
-      public void RemoveSearchResult(ModelObject modelObject)
-      {
-         if (SelectedModelObject.Equals(modelObject))
-         {
-            UnselectModelObject();
-         }
-
+         await Repository.DeleteAsync(modelObject);
          SearchResults.Remove(modelObject);
       }
 

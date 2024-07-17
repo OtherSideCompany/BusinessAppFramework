@@ -51,9 +51,9 @@ namespace OtherSideCore.Wpf.CustomControls
          {
             var repositoryManagerViewModel = listView.DataContext as IRepositoryManagerViewModel;
 
-            if (repositoryManagerViewModel != null && repositoryManagerViewModel.SelectModelObjectCommandAsync.CanExecute(selectedModelObjectViewModel))
+            if (repositoryManagerViewModel != null && repositoryManagerViewModel.SelectSearchResultCommandAsync.CanExecute(selectedModelObjectViewModel))
             {
-               repositoryManagerViewModel.SelectModelObjectCommandAsync.Execute(selectedModelObjectViewModel);
+               repositoryManagerViewModel.SelectSearchResultCommandAsync.Execute(selectedModelObjectViewModel);
             }
          }
       }
