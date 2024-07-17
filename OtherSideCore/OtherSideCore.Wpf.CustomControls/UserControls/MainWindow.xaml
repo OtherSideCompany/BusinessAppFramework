@@ -1,0 +1,52 @@
+﻿<Window x:Class="OtherSideCore.Wpf.UserControls.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls" 
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Style="{StaticResource MainWindow}">
+   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="White">
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto" />
+         <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <local:MainWindowTitleBar Grid.Row="0" MainWindowTitleBar_ApplicationLogoColor="{StaticResource WhiteRabbit_Purple}" />
+
+      <Border Grid.Row="1" BorderThickness="0,0,1,1">
+
+         <Grid>
+
+            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
+               <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+               </Grid.ColumnDefinitions>
+
+               <local:NavigationMenu Grid.Column="0" />
+
+               <!-- content -->
+               <Border Grid.Column="1">
+                  <ContentPresenter Content="{Binding MainWindowContent}" />
+               </Border>
+
+            </Grid>
+
+            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
+
+               <Button Command="{Binding AuthenticateUserAsyncCommand}" Content="Connexion" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
+
+               <local:LoadingView VerticalAlignment="Center"
+                                  Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
+
+            </Grid>
+
+         </Grid>
+
+      </Border>
+
+   </Grid>
+</Window>

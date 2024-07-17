@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Page Update="Icons\Icons.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\LoadingView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\LoginView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\MainWindowTitleBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\MultiTextFilterView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\NavigationMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\SaveCancelChangesAsyncView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\SearchListAsyncActionButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Styles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ViewGroupView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

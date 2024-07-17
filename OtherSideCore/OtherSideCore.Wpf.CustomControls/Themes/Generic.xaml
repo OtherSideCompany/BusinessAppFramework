@@ -4,9 +4,9 @@
     xmlns:local="clr-namespace:OtherSideCore.Wpf.CustomControls">
 
    <ResourceDictionary.MergedDictionaries>
-      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.CustomControls;component/Converters/Converters.xaml"/>
-      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.CustomControls;component/Styles.xaml"/>
-      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.Icons;component/Icons.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Converters/Converters.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/CustomControls/Styles.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Icons/Icons.xaml"/>
    </ResourceDictionary.MergedDictionaries>
 
    <!-- SvgViewer-->

@@ -9,8 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OtherSideCore.Utils\OtherSideCore.Utils.csproj" />
     <ProjectReference Include="..\OtherSideCore.ViewModel\OtherSideCore.ViewModel.csproj" />
-    <ProjectReference Include="..\OtherSideCore.Wpf.CustomControls\OtherSideCore.Wpf.CustomControls.csproj" />
-    <ProjectReference Include="..\OtherSideCore.Wpf.Icons\OtherSideCore.Wpf.Icons.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Wpf.CustomControls\OtherSideCore.Wpf.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

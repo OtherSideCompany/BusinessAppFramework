@@ -5,7 +5,7 @@
                     xmlns:extensions="clr-namespace:OtherSideCore.Wpf.CustomControls.Extensions">
 
    <ResourceDictionary.MergedDictionaries>
-      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf.Icons;component/Icons.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Icons/Icons.xaml"/>
    </ResourceDictionary.MergedDictionaries>
 
    <!-- Colors -->

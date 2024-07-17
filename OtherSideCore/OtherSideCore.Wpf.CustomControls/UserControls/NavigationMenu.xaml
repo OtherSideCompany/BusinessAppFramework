@@ -1,0 +1,241 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.NavigationMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:viewmodel="clr-namespace:OtherSideCore.ViewModel;assembly=OtherSideCore.ViewModel" 
+             xmlns:model="clr-namespace:OtherSideCore.Model;assembly=OtherSideCore.Model"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="NavigationMenuUserControl">
+   <UserControl.Resources>
+      <ResourceDictionary>
+         <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Converters/Converters.xaml"/>
+            <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Icons/Icons.xaml"/>
+         </ResourceDictionary.MergedDictionaries>
+
+         <SolidColorBrush Color="#ededed" x:Key="NavigationMenuBackgroundColor" />
+         <SolidColorBrush Color="White" x:Key="ButtonOverBackgroundColor" />
+         <SolidColorBrush Color="White" x:Key="ButtonIsPressedBackgroundColor" />
+         <SolidColorBrush Color="White" x:Key="ButtonIsCheckedBackgroundColor" />
+         <SolidColorBrush Color="#777676" x:Key="ForegroundColor" />
+         <SolidColorBrush Color="#e8e7e8" x:Key="NavigationMenuBorderBrushForegroundColor" />     
+
+      </ResourceDictionary>
+   </UserControl.Resources>
+   <Border Visibility="{Binding IsNavigationMenuDisplayed, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+           Background="{StaticResource NavigationMenuBackgroundColor}"
+           BorderThickness="0,0,1,0"
+           BorderBrush="{StaticResource NavigationMenuBorderBrushForegroundColor}">
+      <Grid>
+         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+         </Grid.RowDefinitions>
+
+         <Border Grid.Row="0" >
+            <customcontrols:SvgImageToggleButton x:Name="MenuToggleButton"
+                                                 Background="Transparent" 
+                                                 Height="32"
+                                                 Width="38"
+                                                 HorizontalAlignment="Left"
+                                                 SvgImageToggleButton_ImageSize="24"
+                                                 SvgImageToggleButton_IconGeometry="{StaticResource icon_menu}"
+                                                 SvgImageToggleButton_OverBackgroundColor="{StaticResource ButtonOverBackgroundColor}"
+                                                 SvgImageToggleButton_MouseDownBackgroundColor="{StaticResource ButtonIsPressedBackgroundColor}"
+                                                 SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                 SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"/>
+         </Border>
+
+         <ItemsControl Grid.Row="1" ItemsSource="{Binding QuickNavigationViews}">
+            <ItemsControl.ItemsPanel>
+               <ItemsPanelTemplate>
+                  <StackPanel Orientation="Vertical" />
+               </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+               <DataTemplate>
+                  <Grid>
+                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                     </Grid.RowDefinitions>
+
+                     <ContentPresenter Content="{Binding}">
+                        <ContentPresenter.Resources>
+
+                           <DataTemplate DataType="{x:Type model:View}">
+                              <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
+                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
+                                      CommandParameter="{Binding}">
+                                 <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                       <Setter Property="Background" Value="Transparent" />
+                                       <Setter Property="Template">
+                                          <Setter.Value>
+                                             <ControlTemplate TargetType="{x:Type Button}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                   <Grid.ColumnDefinitions>
+                                                      <ColumnDefinition Width="Auto" />
+                                                      <ColumnDefinition Width="*" />
+                                                   </Grid.ColumnDefinitions>
+
+                                                   <customcontrols:SvgViewer Grid.Column="0" Width="38" Height="38"
+                                                                             SvgViewer_ImageWidth="20"
+                                                                             SvgViewer_ImageColor="{StaticResource ForegroundColor}" 
+                                                                             SvgViewer_ImageGeometry="{Binding IconResource}" />
+
+                                                   <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="14" VerticalAlignment="Center"
+                                                              Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                                                              Foreground="{StaticResource ForegroundColor}" Margin="0,0,15,0"/>
+                                                </Grid>
+                                             </ControlTemplate>
+                                          </Setter.Value>
+                                       </Setter>
+                                       <Style.Triggers>
+                                          <DataTrigger Binding="{Binding IsLoaded, Mode=OneWay}" Value="True">
+                                             <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
+                                          </DataTrigger>
+                                          <Trigger Property="IsMouseOver" Value="True">
+                                             <Setter Property="Background" Value="{StaticResource ButtonOverBackgroundColor}"/>
+                                          </Trigger>
+                                       </Style.Triggers>
+                                    </Style>
+                                 </Button.Style>
+                              </Button>
+                           </DataTemplate>
+
+                           <DataTemplate DataType="{x:Type model:ViewGroup}">
+                              <Button Cursor="Hand"
+                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
+                                      CommandParameter="{Binding}">
+                                 <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                       <Setter Property="Background" Value="Transparent" />
+                                       <Setter Property="Template">
+                                          <Setter.Value>
+                                             <ControlTemplate TargetType="{x:Type Button}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                   <Grid.ColumnDefinitions>
+                                                      <ColumnDefinition Width="Auto" />
+                                                      <ColumnDefinition Width="*" />
+                                                      <ColumnDefinition Width="Auto" />
+                                                   </Grid.ColumnDefinitions>
+
+                                                   <customcontrols:SvgViewer Grid.Column="0" Width="38" Height="38"
+                                                                             SvgViewer_ImageWidth="20"
+                                                                             SvgViewer_ImageColor="{StaticResource ForegroundColor}" 
+                                                                             SvgViewer_ImageGeometry="{Binding IconResource}" />
+
+                                                   <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="14" VerticalAlignment="Center"
+                                                              Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                                                              Foreground="{StaticResource ForegroundColor}" Margin="0,0,15,0"/>
+
+
+                                                   <Grid Grid.Column="2" Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                                      <customcontrols:SvgImageToggleButton Width="32" Background="Transparent"
+                                                                                           SvgImageToggleButton_ImageSize="16"
+                                                                                           SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                                                           SvgImageToggleButton_OverBackgroundColor="Transparent"
+                                                                                           SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-up}"
+                                                                                           SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
+                                                                                           SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"
+                                                                                           IsChecked="{Binding IsExpanded}" />
+                                                   </Grid>
+
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                   <MultiDataTrigger>
+                                                      <MultiDataTrigger.Conditions>
+                                                         <Condition Binding="{Binding IsSubViewLoaded, Mode=OneWay}" Value="True" />
+                                                         <Condition Binding="{Binding IsExpanded}" Value="False" />
+                                                      </MultiDataTrigger.Conditions>
+                                                      <MultiDataTrigger.Setters>
+                                                         <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
+                                                      </MultiDataTrigger.Setters>
+                                                   </MultiDataTrigger>
+                                                   <DataTrigger Binding="{Binding IsLoaded, Mode=OneWay}" Value="True">
+                                                      <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}"/>
+                                                   </DataTrigger>
+                                                   <Trigger Property="IsMouseOver" Value="True">
+                                                      <Setter Property="Background" Value="{StaticResource ButtonOverBackgroundColor}"/>
+                                                   </Trigger>
+                                                </ControlTemplate.Triggers>
+                                             </ControlTemplate>
+                                          </Setter.Value>
+                                       </Setter>
+                                    </Style>
+                                 </Button.Style>
+                              </Button>
+                           </DataTemplate>
+                           
+                        </ContentPresenter.Resources>
+                     </ContentPresenter>
+
+                     <ContentPresenter Grid.Row="1" Content="{Binding}">
+                        <ContentPresenter.Resources>
+
+                           <DataTemplate DataType="{x:Type model:View}"/>
+
+                           <DataTemplate DataType="{x:Type model:ViewGroup}">
+                              <Grid Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisibleOrCollapsed}, ElementName=MenuToggleButton}">
+                                 <ItemsControl ItemsSource="{Binding SubViews}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                    <ItemsControl.ItemsPanel>
+                                       <ItemsPanelTemplate>
+                                          <StackPanel Orientation="Vertical" />
+                                       </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                       <DataTemplate>
+                                          <ToggleButton Cursor="Hand" 
+                                                        Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}" 
+                                                        CommandParameter="{Binding}"
+                                                        IsChecked="{Binding IsLoaded, Mode=OneWay}">
+                                             <ToggleButton.Style>
+                                                <Style TargetType="{x:Type ToggleButton}">
+                                                   <Setter Property="Background" Value="Transparent" />
+                                                   <Setter Property="Template">
+                                                      <Setter.Value>
+                                                         <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                            <Border Background="{TemplateBinding Background}" x:Name="ModuleGrid" Height="36">
+                                                               <TextBlock x:Name="Text" 
+                                                                          Grid.Column="1"
+                                                                          Margin="38,0,15,0"
+                                                                          Text="{Binding Name}"  
+                                                                          Foreground="{StaticResource ForegroundColor}" 
+                                                                          FontSize="14" 
+                                                                          VerticalAlignment="Center" />
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                               <Trigger Property="IsChecked" Value="True">
+                                                                  <Setter Property="Background" Value="{StaticResource ButtonIsCheckedBackgroundColor}" TargetName="ModuleGrid"/>
+                                                               </Trigger>
+                                                               <Trigger Property="IsMouseOver" Value="True">
+                                                                  <Setter Property="Background" Value="{StaticResource ButtonOverBackgroundColor}" TargetName="ModuleGrid"/>
+                                                               </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                         </ControlTemplate>
+                                                      </Setter.Value>
+                                                   </Setter>
+                                                </Style>
+                                             </ToggleButton.Style>
+                                          </ToggleButton>
+                                       </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                 </ItemsControl>
+                              </Grid>
+                           </DataTemplate>
+                           
+                        </ContentPresenter.Resources>
+                     </ContentPresenter>
+
+                  </Grid>
+               </DataTemplate>
+            </ItemsControl.ItemTemplate>
+         </ItemsControl>
+
+      </Grid>
+   </Border>
+</UserControl>
