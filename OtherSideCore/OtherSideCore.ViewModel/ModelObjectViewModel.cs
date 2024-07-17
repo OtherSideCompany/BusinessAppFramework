@@ -59,20 +59,18 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ModelObjectViewModel(ModelObject modelObject, User authenticatedUser) : base()
+      public ModelObjectViewModel(ModelObject modelObject) : base()
       {
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
          DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanExecuteDelete);
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
 
-         AuthenticatedUser = authenticatedUser;
-
          ModelObject = modelObject;
          ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
       }
 
-      public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel, User authenticatedUser) : this(modelObject, authenticatedUser)
+      public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel) : this(modelObject)
       {
          ParentModelObjectViewModelBase = parentModelObjectViewModel;
       }

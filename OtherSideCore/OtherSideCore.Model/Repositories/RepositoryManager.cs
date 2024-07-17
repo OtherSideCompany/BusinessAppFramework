@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Model.Repositories
 {
-   public abstract class RepositoryManager<T> : ObservableObject, IDisposable where T : ModelObject
+   public class RepositoryManager<T> : ObservableObject, IDisposable where T : ModelObject, new()
    {
       #region Fields
 
@@ -77,9 +77,21 @@ namespace OtherSideCore.Model.Repositories
 
       #region Methods
 
-      public virtual async Task SearchAsync(CancellationToken cancellationToken)
+      public T CreateModelObjectInstance()
+      {
+         return new T();
+      }
+
+      public async Task SearchAsync(CancellationToken cancellationToken)
       {
          Unload();
+
+         var searchResults = await _repository.GetAllAsync(MultiTextFilter.StringFilters, MultiTextFilter.ExtendSearch, cancellationToken);
+
+         foreach (var searchResult in searchResults)
+         {
+            SearchResults.Add(searchResult);
+         }
       }
 
       protected virtual void Unload()

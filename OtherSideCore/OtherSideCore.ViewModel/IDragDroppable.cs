@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
-   interface IDragDroppable
+   public interface IDragDroppable
    {
       bool IsDropBeforeIndicatorVisible { get; set; }
 

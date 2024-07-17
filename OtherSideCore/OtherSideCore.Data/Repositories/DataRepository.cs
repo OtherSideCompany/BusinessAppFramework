@@ -10,74 +10,76 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace OtherSideCore.Data.Repositories
 {
-    public abstract class DataRepository<T, U> : IDisposable, IDataRepository<T> where T : EntityBase, new() where U : DbContext
-    {
-        #region
+   public abstract class DataRepository<T> : IDisposable, IDataRepository<T> where T : EntityBase, new()
+   {
+      #region
 
-        protected IDbContextFactory<U> _dbContextFactory { get; set; }
+      protected IDbContextFactory<DbContext> _dbContextFactory { get; set; }
 
-        #endregion
+      #endregion
 
-        #region Contructor
+      #region Contructor
 
-        public DataRepository(IDbContextFactory<U> dbContextFactory)
-        {
-            _dbContextFactory = dbContextFactory;
-        }
+      public DataRepository(IDbContextFactory<DbContext> dbContextFactory)
+      {
+         _dbContextFactory = dbContextFactory;
+      }
 
-        #endregion
+      #endregion
 
-        #region Methods
+      #region Methods
 
-        public async Task<int> CreateAsync(List<DatabaseField> databaseFields)
-        {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                var entityBase = new T();
+      public abstract Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
 
-                entityBase.SetProperties(databaseFields);
+      public async Task<int> CreateAsync(List<DatabaseField> databaseFields)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var entityBase = new T();
 
-                await context.Set<T>().AddAsync(entityBase);
-                await context.SaveChangesAsync();
+            entityBase.SetProperties(databaseFields);
 
-                return entityBase.Id;
-            }
-        }
+            await context.Set<T>().AddAsync(entityBase);
+            await context.SaveChangesAsync();
 
-        public async Task SaveAsync(int entityId, List<DatabaseField> databaseFields)
-        {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                T entity = context.Set<T>().First(u => u.Id == entityId);
+            return entityBase.Id;
+         }
+      }
 
-                entity.SetProperties(databaseFields);
+      public async Task SaveAsync(int entityId, List<DatabaseField> databaseFields)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            T entity = context.Set<T>().First(u => u.Id == entityId);
 
-                await context.SaveChangesAsync();
-            }
-        }
+            entity.SetProperties(databaseFields);
 
-        public async Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken)
-        {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                return await context.Set<T>().FindAsync(entityId, cancellationToken);
-            }
-        }
+            await context.SaveChangesAsync();
+         }
+      }
 
-        public async Task DeleteAsync(int entityId)
-        {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                context.Set<T>().Remove(context.Set<T>().Find(entityId));
-                await context.SaveChangesAsync();
-            }
-        }
+      public async Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            return await context.Set<T>().FindAsync(entityId, cancellationToken);
+         }
+      }
 
-        public void Dispose()
-        {
+      public async Task DeleteAsync(int entityId)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            context.Set<T>().Remove(context.Set<T>().Find(entityId));
+            await context.SaveChangesAsync();
+         }
+      }
 
-        }
+      public void Dispose()
+      {
 
-        #endregion
-    }
+      }
+
+      #endregion
+   }
 }

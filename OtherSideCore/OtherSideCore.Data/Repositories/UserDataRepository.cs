@@ -7,8 +7,7 @@ using System.Threading;
 
 namespace OtherSideCore.Data.Repositories
 {
-   public abstract class UserDataRepository<T, U> : DataRepository<T, U>, IUserDataRepository<T> where T : User, new() 
-                                                                                                 where U : DbContext
+   public class UserDataRepository<T> : DataRepository<T>, IUserDataRepository<T> where T : User, new()
    {
       #region Fields
 
@@ -30,7 +29,7 @@ namespace OtherSideCore.Data.Repositories
 
       #region Constructor
 
-      public UserDataRepository(IDbContextFactory<U> dbContextFactory) : base(dbContextFactory)
+      public UserDataRepository(IDbContextFactory<DbContext> dbContextFactory) : base(dbContextFactory)
       {
 
       }
@@ -39,7 +38,7 @@ namespace OtherSideCore.Data.Repositories
 
       #region Methods
 
-      public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      public override async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {
          List<T> users = new List<T>();
 
@@ -55,8 +54,8 @@ namespace OtherSideCore.Data.Repositories
                      var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
 
                      users.AddRange(await context.Set<T>().Where(u => (Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
-                                                                          Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance) &&
-                                                                          !u.IsSuperAdmin)
+                                                                       Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance) &&
+                                                                       !u.IsSuperAdmin)
                                                              .ToListAsync(cancellationToken));
                   }
                }
@@ -67,8 +66,8 @@ namespace OtherSideCore.Data.Repositories
                      var lowerFilter = filter.ToLower();
 
                      users.AddRange(await context.Set<T>().Where(u => (u.FirstName.ToLower().Contains(lowerFilter) ||
-                                                                          u.LastName.ToLower().Contains(lowerFilter)) &&
-                                                                          !u.IsSuperAdmin)
+                                                                       u.LastName.ToLower().Contains(lowerFilter)) &&
+                                                                       !u.IsSuperAdmin)
                                                              .ToListAsync(cancellationToken));
                   }
                }

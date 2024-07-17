@@ -16,7 +16,7 @@
     <Compile Update="MultiTextFilterView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="SaveCancelChangesView.xaml.cs">
+    <Compile Update="SaveCancelChangesAsyncView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="SearchListAsyncActionButton.xaml.cs">
@@ -36,7 +36,7 @@
     <Page Update="MultiTextFilterView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="SaveCancelChangesView.xaml">
+    <Page Update="SaveCancelChangesAsyncView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="SearchListAsyncActionButton.xaml">

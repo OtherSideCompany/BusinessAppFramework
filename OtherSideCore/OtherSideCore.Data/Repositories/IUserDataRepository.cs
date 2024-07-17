@@ -9,8 +9,6 @@ namespace OtherSideCore.Data.Repositories
 {
    public interface IUserDataRepository<T> : IDataRepository<T> where T : Entities.User
    {
-      Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
-
       Task<T> GetSuperAdminUserAsync();
    }
 }

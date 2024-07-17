@@ -11,7 +11,7 @@
    <UserControl.Resources>
       <Storyboard x:Key="Animation0" BeginTime="00:00:00.0" RepeatBehavior="Forever">
          <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                    From="0" To="360" Duration="00:00:01.6" RepeatBehavior="Forever" />
+                          From="0" To="360" Duration="00:00:01.6" RepeatBehavior="Forever" />
       </Storyboard>
    </UserControl.Resources>
 

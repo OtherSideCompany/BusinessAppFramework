@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Data.Repositories
 {
-    public interface IDataRepository<T>
-    {
-        Task<int> CreateAsync(List<DatabaseField> databaseFields);
+   public interface IDataRepository<T> : IDisposable
+   {
+      Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
 
-        Task SaveAsync(int entityId, List<DatabaseField> databaseFields);
+      Task<int> CreateAsync(List<DatabaseField> databaseFields);
 
-        Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken);
+      Task SaveAsync(int entityId, List<DatabaseField> databaseFields);
 
-        Task DeleteAsync(int entityId);
-    }
+      Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken);
+
+      Task DeleteAsync(int entityId);
+   }
 }

@@ -29,7 +29,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
 
       #region Constructor
 
-      public UserViewModel(User user, User authenticatedUser) : base(user, authenticatedUser) 
+      public UserViewModel(User user) : base(user) 
       {
 
       }

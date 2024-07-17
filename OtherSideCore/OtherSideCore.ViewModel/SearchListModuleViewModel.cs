@@ -21,7 +21,7 @@ namespace OtherSideCore.ViewModel
 
       private List<DatabaseField> _databaseFields;
 
-      private RepositoryManager<T> _repositoryManager;
+      //private RepositoryManager<T> _repositoryManager;
 
       //private Repository<ModelObject, Data.Entities.EntityBase> _repository;
 
@@ -37,11 +37,11 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public RepositoryManager<T> RepositoryManager
-      {
-         get => _repositoryManager;
-         set => SetProperty(ref _repositoryManager, value);
-      }
+      //public RepositoryManager<T> RepositoryManager
+      //{
+      //   get => _repositoryManager;
+      //   set => SetProperty(ref _repositoryManager, value);
+      //}
 
       //public User AuthenticatedUser
       //{

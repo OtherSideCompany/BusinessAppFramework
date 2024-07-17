@@ -10,13 +10,12 @@ using OtherSideCore.Data.Repositories;
 
 namespace OtherSideCore.Model.Repositories
 {
-    public abstract class Repository<T, U, V> : IRepository<T>, IDisposable where T : ModelObject, new() 
-                                                                            where U : EntityBase, new()
-                                                                            where V : DbContext
+   public abstract class Repository<T, U> : IRepository<T>, IDisposable where T : ModelObject, new()
+                                                                        where U : EntityBase, new()
    {
       #region Fields
 
-      protected DataRepository<U, V> _entityDataRepository;
+      protected IDataRepository<U> _entityDataRepository;
 
       #endregion
 
@@ -34,7 +33,7 @@ namespace OtherSideCore.Model.Repositories
 
       #region Constructor
 
-      public Repository(DataRepository<U, V> repository)
+      public Repository(IDataRepository<U> repository)
       {
          _entityDataRepository = repository;
       }
@@ -42,6 +41,21 @@ namespace OtherSideCore.Model.Repositories
       #endregion
 
       #region Methods
+
+      public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var users = new List<T>();
+         var userEntities = await _entityDataRepository.GetAllAsync(filters, extendedSearch, cancellationToken);
+
+         foreach (var userEntity in userEntities)
+         {
+            var user = new T();
+            await user.LoadPropertiesFromEntityAsync(userEntity);
+            users.Add(user);
+         }
+
+         return users;
+      }
 
       public async Task<T> GetAsync(int id, CancellationToken cancellationToken)
       {
@@ -53,12 +67,8 @@ namespace OtherSideCore.Model.Repositories
 
       public async Task LoadAsync(ModelObject modelObject)
       {
-         modelObject.LockDatabasePropertiesEdition();
-
          var userEntity = await _entityDataRepository.GetAsync(modelObject.Id.Value, CancellationToken.None);
          await modelObject.LoadPropertiesFromEntityAsync(userEntity);
-
-         modelObject.UnlockDatabasePropertiesEdition();
 
          modelObject.ResetDatabaseFieldsDirtyState();
       }

@@ -49,12 +49,12 @@ namespace OtherSideCore.Wpf.CustomControls
 
          if (selectedModelObjectViewModel != null)
          {
-            //var modelObjectListSearchViewModel = listView.DataContext as RepositorySearchViewModel;
+            var repositoryManagerViewModel = listView.DataContext as IRepositoryManagerViewModel;
 
-            //if (modelObjectListSearchViewModel != null && modelObjectListSearchViewModel.SelectModelObjectCommandAsync.CanExecute(selectedModelObjectViewModel))
-            //{
-            //   modelObjectListSearchViewModel.SelectModelObjectCommandAsync.Execute(selectedModelObjectViewModel);
-            //}
+            if (repositoryManagerViewModel != null && repositoryManagerViewModel.SelectModelObjectCommandAsync.CanExecute(selectedModelObjectViewModel))
+            {
+               repositoryManagerViewModel.SelectModelObjectCommandAsync.Execute(selectedModelObjectViewModel);
+            }
          }
       }
    }

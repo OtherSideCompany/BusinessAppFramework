@@ -5,14 +5,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OtherSideCore.Model.Services
 {
-   public abstract class AuthenticationService<T, U, V> : ObservableObject, IAuthenticationService<T> where T : User, new() 
-                                                                                                      where U : Data.Entities.User, new()
-                                                                                                      where V : DbContext
+   public abstract class AuthenticationService<T> : ObservableObject, IAuthenticationService<T> where T : User, new()
    {
       #region Fields
 
       private T m_AuthenticatedUser;
-      private Repositories.UserRepository<T, U, V> _userRepository;
+      private Repositories.IUserRepository<T> _userRepository;
 
       #endregion
 
@@ -34,7 +32,7 @@ namespace OtherSideCore.Model.Services
 
       #region Constructor
 
-      public AuthenticationService(Repositories.UserRepository<T, U, V> userRepository)
+      public AuthenticationService(Repositories.IUserRepository<T> userRepository)
       {
          _userRepository = userRepository;
       }

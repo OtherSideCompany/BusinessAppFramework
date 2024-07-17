@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Model;
 using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Model.Services;
@@ -15,8 +16,9 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
+      private readonly IServiceProvider _serviceProvider;
+
       protected IAuthenticationService<T> _authenticationService;
-      protected IDbContextFactory<U> _contextFactory;
 
       private string _applicationLogoImageSource;
       private string _applicationName;
@@ -92,10 +94,10 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IDbContextFactory<U> contextFactory)
+      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IServiceProvider serviceProvider)
       {
          AuthenticationService = authenticationService;
-         _contextFactory = contextFactory;
+         _serviceProvider = serviceProvider;
 
          Views = new List<ViewBase>();
          QuickNavigationViews = new List<ViewBase>();
@@ -138,7 +140,14 @@ namespace OtherSideCore.ViewModel
 
          viewBase.IsLoaded = true;
 
-         InstanciatedViewModel = viewBase is ViewGroup ? viewBase : (IDisposable)Activator.CreateInstance(viewBase.ViewModelType);
+         if (viewBase is ViewGroup)
+         {
+            InstanciatedViewModel = viewBase;
+         }
+         else
+         {
+            InstanciatedViewModel = (IDisposable)_serviceProvider.GetService(viewBase.ViewModelType);
+         }
 
          OnPropertyChanged(nameof(LoadedView));
       }
