@@ -79,7 +79,7 @@ namespace OtherSideCore.Data.Repositories
       {
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return context.Set<T>().First(e => e.Id == entityId).LastModifiedDateTime;
+            return await context.Set<T>().Where(e => e.Id == entityId).Select(e => e.LastModifiedDateTime).FirstAsync();
          }
       }
 
