@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Model.Repositories
 {
-   public interface IRepository<T> : IDisposable where T : ModelObject
+    public interface IRepository<T> : IDisposable where T : ModelObject
    {
       Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
 
       Task<T> GetAsync(int id, CancellationToken cancellationToken);
 
-      Task LoadAsync(ModelObject modelObject);
+      Task LoadAsync(T modelObject);
 
-      Task SaveAsync(ModelObject modelObject, int userId);
+      Task<T> CreateAsync(int userId);
 
-      Task DeleteAsync(ModelObject modelObject);
+      Task SaveAsync(T modelObject, int userId);
+
+      Task DeleteAsync(T modelObject);
    }
 }

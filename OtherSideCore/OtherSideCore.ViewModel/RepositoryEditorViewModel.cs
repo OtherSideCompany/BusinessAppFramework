@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model;
 using OtherSideCore.Model.DatabaseFields;
 using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Model.Repositories;
@@ -16,18 +15,20 @@ using System.Windows.Data;
 
 namespace OtherSideCore.ViewModel
 {
-   public class RepositoryManagerViewModel<T> : ObservableObject, IRepositoryManagerViewModel where T : Model.ModelObject, new()
+    public class RepositoryEditorViewModel<T> : ObservableObject, IRepositoryEditorViewModel where T : ModelObject, new()
    {
       #region Fields
 
       private List<DatabaseField> _databaseFields;
+      private IRepositoryFactory _repositoryFactory;
+      private User _authenticatedUser;
+      private RepositorySearch<T> _repositorySearch;
 
       private bool m_IsSelectionLocked;
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
 
       private IModelObjectViewModeFactory _modelObjectViewModeFactory;
-
-      private RepositoryManager<T> _repositoryManager;
+      
       private MultiTextFilterViewModel _multiTextFilterViewModel;
 
       private ObservableCollection<ModelObjectViewModel> m_searchResultViewModels;
@@ -55,12 +56,6 @@ namespace OtherSideCore.ViewModel
       {
          get => m_SelectedSearchResultChangedAsync;
          set => SetProperty(ref m_SelectedSearchResultChangedAsync, value);
-      }
-
-      public RepositoryManager<T> RepositoryManager
-      {
-         get => _repositoryManager;
-         set => SetProperty(ref _repositoryManager, value);
       }
 
       public MultiTextFilterViewModel MultiTextFilterViewModel
@@ -105,10 +100,13 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public RepositoryManagerViewModel(RepositoryManager<T> repositoryManager, User autenticatedUser, IModelObjectViewModeFactory modelObjectViewModeFactory)
+      public RepositoryEditorViewModel(IRepositoryFactory repositoryFactory, User autenticatedUser, IModelObjectViewModeFactory modelObjectViewModeFactory)
       {
          _modelObjectViewModeFactory = modelObjectViewModeFactory;
          _databaseFields = new List<DatabaseField>();
+         _repositoryFactory = repositoryFactory;
+         _authenticatedUser = autenticatedUser;
+         _repositorySearch = new RepositorySearch<T>(repositoryFactory.CreateRepository<T>());
 
          SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
@@ -118,9 +116,8 @@ namespace OtherSideCore.ViewModel
          SaveSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedSearchResultChangesAsync, CanSaveSelectedSearchResultChanges);
          CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
          DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
-
-         RepositoryManager = repositoryManager;
-         MultiTextFilterViewModel = new MultiTextFilterViewModel(RepositoryManager.MultiTextFilter, SearchCommandAsync);
+         
+         MultiTextFilterViewModel = new MultiTextFilterViewModel(_repositorySearch.MultiTextFilter, SearchCommandAsync);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
          _searchResultViewModelsCollection = new CollectionViewSource();
          _searchResultViewModelsCollection.Source = SearchResultViewModels;
@@ -198,7 +195,7 @@ namespace OtherSideCore.ViewModel
       {
          var viewModels = new List<ModelObjectViewModel>();
 
-         foreach (var searchResult in RepositoryManager.SearchResults)
+         foreach (var searchResult in _repositorySearch.SearchResults)
          {
             var viewModel = _modelObjectViewModeFactory.CreateViewModel(searchResult as T);
             viewModels.Add(viewModel);
@@ -251,7 +248,7 @@ namespace OtherSideCore.ViewModel
          {
             UnselectSearchResult();
 
-            if (modelObjectViewModel != null && !IsSelectionLocked)
+            if (modelObjectViewModel != null)
             {
                modelObjectViewModel.IsSelected = true;
                OnPropertyChanged(nameof(SelectedSearchResultViewModel));
@@ -278,7 +275,7 @@ namespace OtherSideCore.ViewModel
          {
             UnloadSearchResultViewModels();
 
-            await RepositoryManager.SearchAsync(cancellationToken);
+            await _repositorySearch.SearchAsync(cancellationToken);
             var viewModels = ConstructSearchResultViewModels();
 
             foreach (var viewModel in viewModels)
@@ -313,7 +310,8 @@ namespace OtherSideCore.ViewModel
 
          LockSelection();
 
-         var modelObject = await RepositoryManager.CreateAsync();
+         using var repository = _repositoryFactory.CreateRepository<T>();
+         var modelObject = await repository.CreateAsync(_authenticatedUser.Id.Value);
 
          var viewModel = _modelObjectViewModeFactory.CreateViewModel(modelObject);
          AddSearchResult(viewModel);
@@ -332,7 +330,8 @@ namespace OtherSideCore.ViewModel
 
       public virtual async Task SaveSelectedSearchResultChangesAsync()
       {
-         await RepositoryManager.SaveAsync(SelectedSearchResultViewModel.ModelObject);
+         using var repository = _repositoryFactory.CreateRepository<T>();
+         await repository.SaveAsync(SelectedSearchResultViewModel.ModelObject as T, _authenticatedUser.Id.Value);
       }
 
       public virtual bool CanCancelSelectedSearchResultChanges()
@@ -342,7 +341,8 @@ namespace OtherSideCore.ViewModel
 
       public virtual async Task CancelSelectedSearchResultChangesAsync()
       {
-         await RepositoryManager.Repository.LoadAsync(SelectedSearchResultViewModel.ModelObject);
+         using var repository = _repositoryFactory.CreateRepository<T>();
+         await repository.LoadAsync(SelectedSearchResultViewModel.ModelObject as T);
       }
 
       private bool CanExecuteDeleteSelectedSearchResult()
@@ -358,7 +358,8 @@ namespace OtherSideCore.ViewModel
          {
             LockSelection();
 
-            await RepositoryManager.DeleteAsync(SelectedSearchResultViewModel.ModelObject);
+            using var repository = _repositoryFactory.CreateRepository<T>();
+            await repository.DeleteAsync(SelectedSearchResultViewModel.ModelObject as T);
 
             var selectedSearchResultViewModel = SelectedSearchResultViewModel;            
             SelectedSearchResultViewModel.Dispose();
@@ -374,6 +375,10 @@ namespace OtherSideCore.ViewModel
       public void Dispose()
       {
          UnloadSearchResultViewModels();
+
+         UnregisterDatabaseFields();
+
+         _repositorySearch.Dispose();
 
          MultiTextFilterViewModel.Dispose();
       }

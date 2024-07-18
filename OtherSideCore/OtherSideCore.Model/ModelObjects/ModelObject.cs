@@ -6,16 +6,17 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Data;
 using OtherSideCore.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Model.ModelObjects
 {
    public abstract class ModelObject : ObservableObject, IDisposable
    {
       #region Fields
+
+      private IModelObjectFactory _modelObjectFactory;
 
       private IntegerDatabaseField m_Id;
       private DateTimeDatabaseField m_CreationDate;
@@ -23,8 +24,8 @@ namespace OtherSideCore.Model
       private DateTimeDatabaseField m_LastModifiedDateTime;
       private IntegerDatabaseField m_LastModifiedById;
 
-      private ModelObjects.User m_CreatedBy;
-      private ModelObjects.User m_LastModifiedBy;
+      private User m_CreatedBy;
+      private User m_LastModifiedBy;
 
       private bool m_IsDirty;
 
@@ -72,13 +73,13 @@ namespace OtherSideCore.Model
          }
       }
 
-      public ModelObjects.User CreatedBy
+      public User CreatedBy
       {
          get => m_CreatedBy;
          set { SetProperty(ref m_CreatedBy, value); }
       }
 
-      public ModelObjects.User LastModifiedBy
+      public User LastModifiedBy
       {
          get => m_LastModifiedBy;
          set { SetProperty(ref m_LastModifiedBy, value); }
@@ -103,12 +104,17 @@ namespace OtherSideCore.Model
 
       #region Methods
 
+      public void SetModelObjectFactory(IModelObjectFactory modelObjectFactory)
+      {
+         _modelObjectFactory = modelObjectFactory;
+      }
+
       public virtual bool MatchFilter(List<string> filters, bool extendedSearch)
       {
          return false;
       }
 
-      public async Task LoadPropertiesFromEntityAsync(EntityBase entity)
+      public async Task LoadPropertiesFromEntityAsync(EntityBase entity, bool cascade = true)
       {
          var databaseFieldProperties = entity.GetDatabaseFieldProperties();
 
@@ -139,10 +145,28 @@ namespace OtherSideCore.Model
             }
          }
 
-         await LoadModelObjectPropertiesFromEntityAsync(entity);
+         if (cascade)
+         {
+            await LoadModelObjectPropertiesFromEntityAsync(entity);
+         }
       }
 
-      protected abstract Task LoadModelObjectPropertiesFromEntityAsync(Data.Entities.EntityBase entity);
+      protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(EntityBase entity)
+      {
+         if (entity.CreatedBy != null)
+         {
+            CreatedBy = _modelObjectFactory.CreateUser();
+            CreatedBy.SetModelObjectFactory(_modelObjectFactory);
+            await CreatedBy.LoadPropertiesFromEntityAsync(entity.CreatedBy, false);            
+         }
+
+         if (entity.LastModifiedBy != null)
+         {
+            LastModifiedBy = _modelObjectFactory.CreateUser();
+            LastModifiedBy.SetModelObjectFactory(_modelObjectFactory);
+            await LastModifiedBy.LoadPropertiesFromEntityAsync(entity.LastModifiedBy, false);
+         }
+      }
 
       public bool CanSaveChanges()
       {
@@ -234,7 +258,7 @@ namespace OtherSideCore.Model
 
       private List<Data.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
       {
-         var entityDataProperties = new List<OtherSideCore.Data.DatabaseFields.DatabaseField>();
+         var entityDataProperties = new List<Data.DatabaseFields.DatabaseField>();
 
          foreach (var databaseField in databaseFields)
          {

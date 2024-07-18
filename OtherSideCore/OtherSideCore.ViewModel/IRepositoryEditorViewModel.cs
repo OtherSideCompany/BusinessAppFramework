@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
-   public interface IRepositoryManagerViewModel : IDisposable
+   public interface IRepositoryEditorViewModel : IDisposable
    {
       AsyncRelayCommand SearchCommandAsync { get; }
       RelayCommand CancelSearchCommand { get; }

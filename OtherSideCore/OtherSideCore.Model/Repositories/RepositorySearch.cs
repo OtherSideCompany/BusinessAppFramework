@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Model.Repositories
 {
-   public class RepositoryManager<T> : ObservableObject, IDisposable where T : ModelObject, new()
+    public class RepositorySearch<T> : ObservableObject, IRepositorySearch<T> where T : ModelObject, new()
    {
       #region Fields
 
-      private User _authenticatedUser;
       private ObservableCollection<ModelObject> m_SearchResults;
       private MultiTextFilter m_MultiTextFilter;  
       protected IRepository<T> _repository;
@@ -45,9 +44,8 @@ namespace OtherSideCore.Model.Repositories
 
       #region Constructor
 
-      public RepositoryManager(IRepository<T> repository, User authenticatedUser)
+      public RepositorySearch(IRepository<T> repository)
       {
-         _authenticatedUser = authenticatedUser;
          Repository = repository;
          SearchResults = new ObservableCollection<ModelObject>();
          MultiTextFilter = new MultiTextFilter(true);
@@ -79,25 +77,13 @@ namespace OtherSideCore.Model.Repositories
          SearchResults.Clear();
       }
 
-      public async Task<T> CreateAsync()
+      public void AddSearchResult(T modelObject)
       {
-         var modelObject = new T();
          SearchResults.Add(modelObject);
-
-         await Repository.SaveAsync(modelObject, _authenticatedUser.Id.Value);
-
-         return modelObject;
       }
 
-      public async Task SaveAsync(ModelObject modelObject)
+      public void RemoveSearchResult(T modelObject)
       {
-         await Repository.SaveAsync(modelObject, _authenticatedUser.Id.Value);
-         await Repository.LoadAsync(modelObject);
-      }
-
-      public async Task DeleteAsync(ModelObject modelObject)
-      {
-         await Repository.DeleteAsync(modelObject);
          SearchResults.Remove(modelObject);
       }
 

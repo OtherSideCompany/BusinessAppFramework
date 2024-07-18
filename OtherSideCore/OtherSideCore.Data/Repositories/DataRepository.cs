@@ -75,6 +75,14 @@ namespace OtherSideCore.Data.Repositories
          }
       }
 
+      public async Task<DateTime> GetModificatonTimeAsync(int entityId)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            return context.Set<T>().First(e => e.Id == entityId).LastModifiedDateTime;
+         }
+      }
+
       public void Dispose()
       {
 

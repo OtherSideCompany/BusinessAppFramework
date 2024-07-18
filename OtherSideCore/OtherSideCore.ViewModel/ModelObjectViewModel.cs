@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model;
 using OtherSideCore.Model.ModelObjects;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -7,7 +6,7 @@ using System.Windows.Input;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class ModelObjectViewModel : ViewModelBase
+    public abstract class ModelObjectViewModel : ViewModelBase
    {
       #region Fields
 

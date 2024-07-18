@@ -20,5 +20,7 @@ namespace OtherSideCore.Data.Repositories
       Task<EntityBase> GetAsync(int entityId, CancellationToken cancellationToken);
 
       Task DeleteAsync(int entityId);
+
+      Task<DateTime> GetModificatonTimeAsync(int entityId);
    }
 }

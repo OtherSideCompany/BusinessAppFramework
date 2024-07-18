@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace OtherSideCore.Model.ModelObjects
 {
-   public abstract class User : ModelObject
+    public abstract class User : ModelObject
    {
       #region Fields
 

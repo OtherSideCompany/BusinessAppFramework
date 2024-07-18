@@ -2,6 +2,7 @@
 using OtherSideCore.Model.ModelObjects;
 using Microsoft.EntityFrameworkCore;
 using CommunityToolkit.Mvvm.ComponentModel;
+using OtherSideCore.Model.Repositories;
 
 namespace OtherSideCore.Model.Services
 {
@@ -9,14 +10,14 @@ namespace OtherSideCore.Model.Services
    {
       #region Fields
 
-      private T m_AuthenticatedUser;
-      private Repositories.IUserRepository<T> _userRepository;
+      private User m_AuthenticatedUser;
+      private Repositories.IRepositoryFactory _repositoryFactory;
 
       #endregion
 
       #region Properties
 
-      public T AuthenticatedUser
+      public User AuthenticatedUser
       {
          get => m_AuthenticatedUser;
          private set => SetProperty(ref m_AuthenticatedUser, value);
@@ -32,9 +33,9 @@ namespace OtherSideCore.Model.Services
 
       #region Constructor
 
-      public AuthenticationService(Repositories.IUserRepository<T> userRepository)
+      public AuthenticationService(Repositories.IRepositoryFactory repositoryFactory)
       {
-         _userRepository = userRepository;
+         _repositoryFactory = repositoryFactory;
       }
 
       #endregion
@@ -69,7 +70,8 @@ namespace OtherSideCore.Model.Services
 
       protected async Task<T> GetUserByCredentials(string userName, string passwordHash)
       {
-         return await _userRepository.GetSuperAdminUserAsync();
+         using var repository = _repositoryFactory.CreateUserRepository<T>();
+         return await repository.GetSuperAdminUserAsync();
       }
 
       #endregion

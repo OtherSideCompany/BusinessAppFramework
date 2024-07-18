@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Model;
+﻿using OtherSideCore.Model.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
-   public interface IModelObjectViewModeFactory
+    public interface IModelObjectViewModeFactory
    {
       ModelObjectViewModel CreateViewModel(ModelObject modelObject);
    }
