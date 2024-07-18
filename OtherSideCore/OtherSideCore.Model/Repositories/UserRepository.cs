@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Model.Repositories
 {
-    public class UserRepository<T, U> : Repository<T, U>, IUserRepository<T> where T : User, new() 
-                                                                            where U : Data.Entities.User, new()                         
+   public class UserRepository<T, U> : Repository<T, U>, IUserRepository<T> where T : User, new()
+                                                                            where U : Data.Entities.User, new()
    {
       #region Fields
 

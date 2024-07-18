@@ -11,8 +11,8 @@ using OtherSideCore.Model.ModelObjects;
 
 namespace OtherSideCore.Model.Repositories
 {
-    public abstract class Repository<T, U> : IRepository<T>, IDisposable where T : ModelObject, new()
-                                                                        where U : EntityBase, new()
+   public class Repository<T, U> : IRepository<T>, IDisposable where T : ModelObject, new()
+                                                               where U : EntityBase, new()
    {
       #region Fields
 
@@ -99,7 +99,7 @@ namespace OtherSideCore.Model.Repositories
       }
 
       public async Task SaveAsync(T modelObject, int userId)
-      {       
+      {
          if (modelObject.Id.Value == 0)
          {
             await CreateAsync(modelObject, userId);
@@ -116,7 +116,7 @@ namespace OtherSideCore.Model.Repositories
             modelObject.LastModifiedById.Value = userId;
             modelObject.LastModifiedDateTime.Value = DateTime.Now;
 
-            modelObject.LockDatabasePropertiesEdition();                       
+            modelObject.LockDatabasePropertiesEdition();
 
             await _entityDataRepository.SaveAsync(modelObject.Id.Value, modelObject.ConvertDirtyPropertiesToDataProperties());
 
@@ -135,7 +135,7 @@ namespace OtherSideCore.Model.Repositories
 
          modelObject.UnlockDatabasePropertiesEdition();
       }
-   
+
       public void Dispose()
       {
          _entityDataRepository.Dispose();

@@ -27,7 +27,7 @@ namespace OtherSideCore.ViewModel
       private bool m_IsSelectionLocked;
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
 
-      private IModelObjectViewModeFactory _modelObjectViewModeFactory;
+      private IModelObjectViewModelFactory _modelObjectViewModeFactory;
       
       private MultiTextFilterViewModel _multiTextFilterViewModel;
 
@@ -100,7 +100,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public RepositoryEditorViewModel(IRepositoryFactory repositoryFactory, User autenticatedUser, IModelObjectViewModeFactory modelObjectViewModeFactory)
+      public RepositoryEditorViewModel(IRepositoryFactory repositoryFactory, User autenticatedUser, IModelObjectViewModelFactory modelObjectViewModeFactory)
       {
          _modelObjectViewModeFactory = modelObjectViewModeFactory;
          _databaseFields = new List<DatabaseField>();

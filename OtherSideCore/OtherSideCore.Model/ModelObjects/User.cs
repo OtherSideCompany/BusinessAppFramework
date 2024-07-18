@@ -12,16 +12,16 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace OtherSideCore.Model.ModelObjects
 {
-    public abstract class User : ModelObject
+   public class User : ModelObject
    {
       #region Fields
 
       private const int SUPERADMINID = 1;
 
-      private BoolDatabaseField m_IsSuperAdmin;
-      private StringDatabaseField m_FirstName;
-      private StringDatabaseField m_LastName;
-      private StringDatabaseField m_UserName;
+      private BoolDatabaseField _isSuperAdmin;
+      private StringDatabaseField _firstName;
+      private StringDatabaseField _lastName;
+      private StringDatabaseField _userName;
 
       #endregion
 
@@ -29,26 +29,26 @@ namespace OtherSideCore.Model.ModelObjects
 
       public BoolDatabaseField IsSuperAdmin
       {
-         get => m_IsSuperAdmin;
-         private set => SetProperty(ref m_IsSuperAdmin, value);
+         get => _isSuperAdmin;
+         private set => SetProperty(ref _isSuperAdmin, value);
       }
 
       public StringDatabaseField FirstName
       {
-         get => m_FirstName;
-         private set => SetProperty(ref m_FirstName, value);
+         get => _firstName;
+         private set => SetProperty(ref _firstName, value);
       }
 
       public StringDatabaseField LastName
       {
-         get => m_LastName;
-         private set => SetProperty(ref m_LastName, value);
+         get => _lastName;
+         private set => SetProperty(ref _lastName, value);
       }
 
       public StringDatabaseField UserName
       {
-         get => m_UserName;
-         private set => SetProperty(ref m_UserName, value);
+         get => _userName;
+         private set => SetProperty(ref _userName, value);
       }
 
       #endregion

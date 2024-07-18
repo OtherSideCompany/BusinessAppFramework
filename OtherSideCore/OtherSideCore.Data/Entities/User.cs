@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Data.Entities
 {
-   public abstract class User : EntityBase
+   public class User : EntityBase
    {
       public bool IsSuperAdmin { get; set; }
       public string FirstName { get; set; }
