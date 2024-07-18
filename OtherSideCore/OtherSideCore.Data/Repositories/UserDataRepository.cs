@@ -40,48 +40,33 @@ namespace OtherSideCore.Data.Repositories
 
       public override async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {
-         List<T> users = new List<T>();
-
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            if (filters != null && filters.Any())
+            var query = context.Set<T>()
+                               .Where(u => !u.IsSuperAdmin);
+
+            if (filters != null)
             {
-               if (extendedSearch)
+               foreach (var filter in filters)
                {
-                  foreach (var filter in filters)
-                  {
-                     var lowerFilter = filter.ToLower();
-                     var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
+                  var lowerFilter = filter.ToLower();
+                  var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
 
-                     users.AddRange(await context.Set<T>()
-                                                 .Where(u => (Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
-                                                              Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance) &&
-                                                              !u.IsSuperAdmin)
-                                                 .ToListAsync(cancellationToken));
+                  if (extendedSearch)
+                  {
+                     query = query.Where(u => Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
+                                              Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance);
                   }
-               }
-               else
-               {
-                  foreach (var filter in filters)
+                  else
                   {
-                     var lowerFilter = filter.ToLower();
-
-                     users.AddRange(await context.Set<T>()
-                                                 .Where(u => (u.FirstName.ToLower().Contains(lowerFilter) ||
-                                                              u.LastName.ToLower().Contains(lowerFilter)) &&
-                                                              !u.IsSuperAdmin)
-                                                 .ToListAsync(cancellationToken));
+                     query = query.Where(u => u.FirstName.ToLower().Contains(lowerFilter) ||
+                                              u.LastName.ToLower().Contains(lowerFilter));
                   }
                }
             }
-            else
-            {
-               users = await context.Set<T>()
-                                    .Where(u => !u.IsSuperAdmin).ToListAsync(cancellationToken);
-            }
+
+            return await query.Distinct().ToListAsync(cancellationToken);
          }
-
-         return users.DistinctBy(u => u.Id).ToList();
       }
 
       public async Task<T> GetSuperAdminUserAsync()
