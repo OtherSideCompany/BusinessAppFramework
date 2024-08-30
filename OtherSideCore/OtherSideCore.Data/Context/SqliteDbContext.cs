@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Data.Context
 {
-   public abstract class SqliteContext : DbContext
+   public abstract class SqliteDbContext : DbContext
    {
       public string DatabasePath { get; set; }
 
@@ -52,7 +52,7 @@ namespace OtherSideCore.Data.Context
          modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
       }
 
-      public static async Task MigrateAsync(SqliteContext context)
+      public static async Task MigrateAsync(SqliteDbContext context)
       {
          await context.Database.MigrateAsync();
       }
