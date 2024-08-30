@@ -37,7 +37,7 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Methods
 
-
+      public abstract string GetFormattedValue();
 
       #endregion
    }

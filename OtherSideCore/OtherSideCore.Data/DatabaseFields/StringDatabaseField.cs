@@ -37,7 +37,10 @@ namespace OtherSideCore.Data.DatabaseFields
 
       #region Methods
 
-
+      public override string GetFormattedValue()
+      {
+         return Value.ToString();
+      }
 
       #endregion
    }

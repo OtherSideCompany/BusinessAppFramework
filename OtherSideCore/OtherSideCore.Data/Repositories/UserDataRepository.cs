@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace OtherSideCore.Data.Repositories
 {
@@ -29,7 +30,7 @@ namespace OtherSideCore.Data.Repositories
 
       #region Constructor
 
-      public UserDataRepository(IDbContextFactory<DbContext> dbContextFactory) : base(dbContextFactory)
+      public UserDataRepository(IDbContextFactory<DbContext> dbContextFactory, ILoggerFactory loggerFactory) : base(dbContextFactory, loggerFactory)
       {
 
       }
@@ -40,7 +41,9 @@ namespace OtherSideCore.Data.Repositories
 
       public override async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {
-         using (var context = _dbContextFactory.CreateDbContext())
+         LogGetAllAsync(filters, extendedSearch);
+
+         using (var context = _dbContextFactory.CreateDbContext()) 
          {
             var query = context.Set<T>()
                                .Where(u => !u.IsSuperAdmin);

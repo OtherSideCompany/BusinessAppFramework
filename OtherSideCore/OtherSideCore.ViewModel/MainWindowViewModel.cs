@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OtherSideCore.Model;
 using OtherSideCore.Model.ModelObjects;
 using OtherSideCore.Model.Services;
@@ -17,8 +18,9 @@ namespace OtherSideCore.ViewModel
       #region Fields
 
       private readonly IServiceProvider _serviceProvider;
-
       protected IAuthenticationService<T> _authenticationService;
+      protected ILoggerFactory _loggerFactory;
+      protected ILogger _logger;
 
       private string _applicationLogoImageSource;
       private string _applicationName;
@@ -94,10 +96,12 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IServiceProvider serviceProvider)
+      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
       {
          AuthenticationService = authenticationService;
          _serviceProvider = serviceProvider;
+         _loggerFactory = loggerFactory;
+         _logger = loggerFactory.CreateLogger(GetType());
 
          Views = new List<ViewBase>();
          QuickNavigationViews = new List<ViewBase>();
@@ -138,14 +142,16 @@ namespace OtherSideCore.ViewModel
 
          Views.ForEach(v => v.IsLoaded = false);
 
-         viewBase.IsLoaded = true;
+         viewBase.IsLoaded = true;         
 
          if (viewBase is ViewGroup)
          {
+            _logger.LogInformation("Displaying view group {ViewName}", viewBase.Name);
             InstanciatedViewModel = viewBase;
          }
          else
          {
+            _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", viewBase.Name, viewBase.ViewModelType.Name);
             InstanciatedViewModel = (IDisposable)_serviceProvider.GetService(viewBase.ViewModelType);
          }
 

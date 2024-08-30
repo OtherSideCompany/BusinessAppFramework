@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OtherSideCore.Data.Repositories;
 using OtherSideCore.Model.ModelObjects;
 using System;
@@ -13,11 +14,13 @@ namespace OtherSideCore.Model.Repositories
    {
       protected IDbContextFactory<DbContext> _dbContextFactory;
       protected IModelObjectFactory _modelObjectFactory;
+      protected ILoggerFactory _loggerFactory;
 
-      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IModelObjectFactory modelObjectFactory)
+      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IModelObjectFactory modelObjectFactory, ILoggerFactory loggerFactory)
       {
          _dbContextFactory = dbContextFactory;
          _modelObjectFactory = modelObjectFactory;
+         _loggerFactory = loggerFactory;
       }
 
       public virtual IRepository<T> CreateRepository<T>() where T : ModelObject, new()
@@ -39,7 +42,7 @@ namespace OtherSideCore.Model.Repositories
 
       public virtual IUserRepository<T> CreateUserRepository<T>() where T : User, new()
       {
-         var userDataRepository = new UserDataRepository<Data.Entities.User>(_dbContextFactory);
+         var userDataRepository = new UserDataRepository<Data.Entities.User>(_dbContextFactory, _loggerFactory);
          return new UserRepository<T, Data.Entities.User>(userDataRepository, _modelObjectFactory);
       }
    }
