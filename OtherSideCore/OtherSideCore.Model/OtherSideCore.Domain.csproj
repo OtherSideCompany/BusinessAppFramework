@@ -10,8 +10,7 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OtherSideCore.Data\OtherSideCore.Data.csproj" />
-    <ProjectReference Include="..\OtherSideCore.Utils\OtherSideCore.Utils.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Data\OtherSideCore.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />

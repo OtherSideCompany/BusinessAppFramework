@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OtherSideCore.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using OtherSideCore.Data.Repositories;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Domain.ModelObjects;
+using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Infrastructure.Repositories;
 
-namespace OtherSideCore.Model.Repositories
+namespace OtherSideCore.Domain.Repositories
 {
    public class Repository<T, U> : IRepository<T>, IDisposable where T : ModelObject, new()
                                                                where U : EntityBase, new()

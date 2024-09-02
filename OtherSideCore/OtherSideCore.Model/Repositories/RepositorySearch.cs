@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Domain.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model.Repositories
+namespace OtherSideCore.Domain.Repositories
 {
     public class RepositorySearch<T> : ObservableObject, IRepositorySearch<T> where T : ModelObject, new()
    {

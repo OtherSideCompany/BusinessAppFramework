@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.Migrations
+namespace OtherSideCore.Infrastructure.Migrations
 {
    public static class MigrationFunctions
    {

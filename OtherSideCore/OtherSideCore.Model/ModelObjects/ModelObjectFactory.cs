@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model.ModelObjects
+namespace OtherSideCore.Domain.ModelObjects
 {
    public class ModelObjectFactory : IModelObjectFactory
    {

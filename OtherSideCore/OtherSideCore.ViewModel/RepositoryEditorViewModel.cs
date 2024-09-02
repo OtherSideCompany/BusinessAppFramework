@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model.DatabaseFields;
-using OtherSideCore.Model.ModelObjects;
-using OtherSideCore.Model.Repositories;
+using OtherSideCore.Domain.DatabaseFields;
+using OtherSideCore.Domain.ModelObjects;
+using OtherSideCore.Domain.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

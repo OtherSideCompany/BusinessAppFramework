@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Domain.ModelObjects;
 
-namespace OtherSideCore.Model.Repositories
+namespace OtherSideCore.Domain.Repositories
 {
     public interface IRepositorySearch<T> : IDisposable where T : ModelObject
    {

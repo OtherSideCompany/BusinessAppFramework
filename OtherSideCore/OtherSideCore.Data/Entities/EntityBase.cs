@@ -1,5 +1,4 @@
-﻿using OtherSideCore.Data.DatabaseFields;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using OtherSideCore.Infrastructure.DatabaseFields;
 
-namespace OtherSideCore.Data.Entities
+namespace OtherSideCore.Infrastructure.Entities
 {
    public abstract class EntityBase
    {

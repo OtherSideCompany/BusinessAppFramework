@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model;
+using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

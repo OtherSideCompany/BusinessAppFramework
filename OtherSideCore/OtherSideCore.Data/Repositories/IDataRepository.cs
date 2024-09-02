@@ -1,5 +1,5 @@
-﻿using OtherSideCore.Data.DatabaseFields;
-using OtherSideCore.Data.Entities;
+﻿using OtherSideCore.Infrastructure.DatabaseFields;
+using OtherSideCore.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.Repositories
+namespace OtherSideCore.Infrastructure.Repositories
 {
    public interface IDataRepository<T> : IDisposable
    {

@@ -1,14 +1,14 @@
-﻿using OtherSideCore.Data.DatabaseFields;
-using OtherSideCore.Data.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Logging;
+using OtherSideCore.Infrastructure.DatabaseFields;
+using OtherSideCore.Infrastructure.Entities;
 
-namespace OtherSideCore.Data.Repositories
+namespace OtherSideCore.Infrastructure.Repositories
 {
    public abstract class DataRepository<T> : IDisposable, IDataRepository<T> where T : EntityBase, new()
    {
@@ -37,9 +37,9 @@ namespace OtherSideCore.Data.Repositories
 
       protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
       {
-         _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}", 
+         _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
             GetType(), nameof(GetAllAsync), filters.Any() ? string.Join(',', filters) : "none", extendedSearch.ToString());
-      }   
+      }
 
       public async Task<int> CreateAsync(List<DatabaseField> databaseFields)
       {
@@ -60,10 +60,10 @@ namespace OtherSideCore.Data.Repositories
 
       public async Task SaveAsync(int entityId, List<DatabaseField> databaseFields)
       {
-         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}, databaseFields : {DatabaseFields}", 
-                                GetType(), 
-                                nameof(SaveAsync), 
-                                entityId, 
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}, databaseFields : {DatabaseFields}",
+                                GetType(),
+                                nameof(SaveAsync),
+                                entityId,
                                 string.Join(", ", databaseFields.Select(dbf => dbf.DatabaseFieldName + " = " + dbf.GetFormattedValue())));
 
          using (var context = _dbContextFactory.CreateDbContext())

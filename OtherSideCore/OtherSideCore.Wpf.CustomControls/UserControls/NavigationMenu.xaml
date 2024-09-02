@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
              xmlns:viewmodel="clr-namespace:OtherSideCore.ViewModel;assembly=OtherSideCore.ViewModel" 
-             xmlns:model="clr-namespace:OtherSideCore.Model;assembly=OtherSideCore.Model"
+             xmlns:model="clr-namespace:OtherSideCore.Domain;assembly=OtherSideCore.Domain"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="NavigationMenuUserControl">

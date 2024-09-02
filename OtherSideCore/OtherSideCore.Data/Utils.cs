@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data
+namespace OtherSideCore.Infrastructure
 {
    public class Utils
    {
@@ -57,7 +57,7 @@ namespace OtherSideCore.Data
          {
             for (int j = 1; j <= t.Length; j++)
             {
-               int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+               int cost = t[j - 1] == s[i - 1] ? 0 : 1;
                d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
             }
          }

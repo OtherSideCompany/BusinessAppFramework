@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.DatabaseFields
+namespace OtherSideCore.Infrastructure.DatabaseFields
 {
    public abstract class DatabaseField
    {

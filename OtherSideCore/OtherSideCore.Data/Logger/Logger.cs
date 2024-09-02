@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.Logger
+namespace OtherSideCore.Infrastructure.Logger
 {
    public static class Logger
    {

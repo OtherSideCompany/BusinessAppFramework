@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Domain
 {
    public class MultiTextFilter : ObservableObject
    {

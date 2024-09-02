@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Domain
 {
    public abstract class ViewBase : ObservableObject, IDisposable
    {

@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OtherSideCore.Data.Repositories;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Infrastructure.Repositories;
+using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Domain.ModelObjects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OtherSideCore.Model.Repositories
+namespace OtherSideCore.Domain.Repositories
 {
    public class RepositoryFactory : IRepositoryFactory
    {
@@ -25,9 +22,9 @@ namespace OtherSideCore.Model.Repositories
 
       public virtual IRepository<T> CreateRepository<T>() where T : ModelObject, new()
       {
-         if (typeof(T) == typeof(User))
+         if (typeof(T) == typeof(ModelObjects.User))
          {
-            return CreateUserRepository<User>() as IRepository<T>;
+            return CreateUserRepository<ModelObjects.User>() as IRepository<T>;
          }
          else
          {
@@ -40,10 +37,10 @@ namespace OtherSideCore.Model.Repositories
          throw new ArgumentException("Unknown repository type", typeof(T).ToString());
       }
 
-      public virtual IUserRepository<T> CreateUserRepository<T>() where T : User, new()
+      public virtual IUserRepository<T> CreateUserRepository<T>() where T : ModelObjects.User, new()
       {
-         var userDataRepository = new UserDataRepository<Data.Entities.User>(_dbContextFactory, _loggerFactory);
-         return new UserRepository<T, Data.Entities.User>(userDataRepository, _modelObjectFactory);
+         var userDataRepository = new UserDataRepository<Infrastructure.Entities.User>(_dbContextFactory, _loggerFactory);
+         return new UserRepository<T, Infrastructure.Entities.User>(userDataRepository, _modelObjectFactory);
       }
    }
 }

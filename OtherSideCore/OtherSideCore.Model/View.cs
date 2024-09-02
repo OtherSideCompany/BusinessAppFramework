@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Domain
 {
    public class View : ViewBase
    {

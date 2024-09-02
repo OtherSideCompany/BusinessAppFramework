@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
-using OtherSideCore.Data.Entities;
+using OtherSideCore.Infrastructure;
+using OtherSideCore.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.Context
+namespace OtherSideCore.Infrastructure.Context
 {
    public abstract class SqliteDbContext : DbContext
    {
@@ -47,7 +48,7 @@ namespace OtherSideCore.Data.Context
 
          modelBuilder.Entity<EntityBase>().UseTpcMappingStrategy();
 
-         modelBuilder.Entity<User>().UseTpcMappingStrategy();         
+         modelBuilder.Entity<User>().UseTpcMappingStrategy();
          modelBuilder.Entity<User>().HasOne(u => u.CreatedBy).WithMany().HasForeignKey(u => u.CreatedById).OnDelete(DeleteBehavior.Restrict);
          modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
       }

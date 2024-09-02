@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Domain
 {
    public class ViewGroup : ViewBase
    {

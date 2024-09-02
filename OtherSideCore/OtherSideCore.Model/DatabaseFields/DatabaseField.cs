@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace OtherSideCore.Model.DatabaseFields
+namespace OtherSideCore.Domain.DatabaseFields
 {
    public abstract class DatabaseField : ObservableObject
    {

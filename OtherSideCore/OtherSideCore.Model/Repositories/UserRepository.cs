@@ -1,19 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OtherSideCore.Data;
-using OtherSideCore.Model.ModelObjects;
-using System;
-using System.Collections.Generic;
+﻿using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Infrastructure.Repositories;
+using OtherSideCore.Domain.ModelObjects;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model.Repositories
+namespace OtherSideCore.Domain.Repositories
 {
-   public class UserRepository<T, U> : Repository<T, U>, IUserRepository<T> where T : User, new()
-                                                                            where U : Data.Entities.User, new()
+   public class UserRepository<T, U> : Repository<T, U>, IUserRepository<T> where T : ModelObjects.User, new()
+                                                                            where U : Infrastructure.Entities.User, new()
    {
       #region Fields
 
-      protected Data.Repositories.IUserDataRepository<U> _userRepository;
+      protected IUserDataRepository<U> _userRepository;
 
       #endregion
 
@@ -31,7 +29,7 @@ namespace OtherSideCore.Model.Repositories
 
       #region Constructor
 
-      public UserRepository(Data.Repositories.IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory) : base(userRepository, modelObjectFactory)
+      public UserRepository(IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory) : base(userRepository, modelObjectFactory)
       {
          _userRepository = userRepository;
       }

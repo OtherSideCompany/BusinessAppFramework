@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Model.ModelObjects;
+﻿using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.ViewModel.ModelObjectViewModels;
 using System;
 using System.CodeDom;

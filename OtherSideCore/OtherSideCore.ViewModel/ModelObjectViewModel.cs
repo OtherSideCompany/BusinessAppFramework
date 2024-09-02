@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Domain.ModelObjects;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;

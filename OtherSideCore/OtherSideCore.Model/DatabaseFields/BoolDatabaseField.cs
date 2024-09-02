@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Model.DatabaseFields
+namespace OtherSideCore.Domain.DatabaseFields
 {
    public class BoolDatabaseField : DatabaseField
    {

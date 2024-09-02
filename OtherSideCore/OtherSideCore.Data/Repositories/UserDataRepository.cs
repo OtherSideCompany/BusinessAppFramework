@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OtherSideCore.Data.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using OtherSideCore.Infrastructure;
+using OtherSideCore.Infrastructure.Entities;
 
-namespace OtherSideCore.Data.Repositories
+namespace OtherSideCore.Infrastructure.Repositories
 {
    public class UserDataRepository<T> : DataRepository<T>, IUserDataRepository<T> where T : User, new()
    {
@@ -43,7 +44,7 @@ namespace OtherSideCore.Data.Repositories
       {
          LogGetAllAsync(filters, extendedSearch);
 
-         using (var context = _dbContextFactory.CreateDbContext()) 
+         using (var context = _dbContextFactory.CreateDbContext())
          {
             var query = context.Set<T>()
                                .Where(u => !u.IsSuperAdmin);

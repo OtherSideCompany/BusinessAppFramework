@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace OtherSideCore.Model
+namespace OtherSideCore.Domain
 {
    public class TextFilter : ObservableObject
    {

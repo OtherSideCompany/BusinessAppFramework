@@ -1,16 +1,6 @@
-﻿using OtherSideCore.Data.Entities;
-using OtherSideCore.Data;
-using OtherSideCore.Model.DatabaseFields;
-using OtherSideCore.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using OtherSideCore.Domain.DatabaseFields;
 
-namespace OtherSideCore.Model.ModelObjects
+namespace OtherSideCore.Domain.ModelObjects
 {
    public class User : ModelObject
    {

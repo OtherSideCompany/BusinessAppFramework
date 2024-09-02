@@ -1,12 +1,7 @@
-﻿using OtherSideCore.Data.DatabaseFields;
-using OtherSideCore.Data.Entities;
-using System;
+﻿using OtherSideCore.Infrastructure.DatabaseFields;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OtherSideCore.Data.Entities
+namespace OtherSideCore.Infrastructure.Entities
 {
    public class User : EntityBase
    {

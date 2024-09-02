@@ -1,16 +1,13 @@
-﻿using OtherSideCore.Model.DatabaseFields;
+﻿using OtherSideCore.Domain.DatabaseFields;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using OtherSideCore.Data;
-using OtherSideCore.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Infrastructure.Entities;
 
-namespace OtherSideCore.Model.ModelObjects
+namespace OtherSideCore.Domain.ModelObjects
 {
    public abstract class ModelObject : ObservableObject, IDisposable
    {
@@ -126,19 +123,19 @@ namespace OtherSideCore.Model.ModelObjects
             switch (databaseField)
             {
                case IntegerDatabaseField integerDatabaseField:
-                  integerDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.IntegerDatabaseField).Value);
+                  integerDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.IntegerDatabaseField).Value);
                   break;
                case StringDatabaseField stringDatabaseField:
-                  stringDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.StringDatabaseField).Value);
+                  stringDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.StringDatabaseField).Value);
                   break;
                case DateTimeDatabaseField dateTimeDatabaseField:
-                  dateTimeDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.DateTimeDatabaseField).Value);
+                  dateTimeDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateTimeDatabaseField).Value);
                   break;
                case DateOnlyDatabaseField dateOnlyDatabaseField:
-                  dateOnlyDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.DateOnlyDatabaseField).Value);
+                  dateOnlyDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateOnlyDatabaseField).Value);
                   break;
                case BoolDatabaseField boolDatabaseField:
-                  boolDatabaseField.LoadValue((databaseFieldProperty as Data.DatabaseFields.BoolDatabaseField).Value);
+                  boolDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.BoolDatabaseField).Value);
                   break;
                default:
                   throw new Exception("Unrecognized type " + databaseField.GetType());
@@ -227,38 +224,38 @@ namespace OtherSideCore.Model.ModelObjects
                                          .ToList();
       }
 
-      internal List<Data.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
+      internal List<Infrastructure.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
       {
          return ConvertDatabaseFieldsToDataProperties(GetDirtyDatabaseFields());
       }
 
-      internal List<Data.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
+      internal List<Infrastructure.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
       {
          return ConvertDatabaseFieldsToDataProperties(GetDatabaseFields());
       }
 
-      protected Data.DatabaseFields.DatabaseField ConvertDatabaseFieldToDataProperty(DatabaseField databaseField)
+      protected Infrastructure.DatabaseFields.DatabaseField ConvertDatabaseFieldToDataProperty(DatabaseField databaseField)
       {
          switch (databaseField)
          {
             case StringDatabaseField stringDatabaseField:
-               return new Data.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName);
+               return new Infrastructure.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName);
             case IntegerDatabaseField integerDatabaseField:
-               return new Data.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName);
+               return new Infrastructure.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName);
             case DateTimeDatabaseField dateTimeDatabaseField:
-               return new Data.DatabaseFields.DateTimeDatabaseField(dateTimeDatabaseField.Value, dateTimeDatabaseField.DatabaseFieldName);
+               return new Infrastructure.DatabaseFields.DateTimeDatabaseField(dateTimeDatabaseField.Value, dateTimeDatabaseField.DatabaseFieldName);
             case DateOnlyDatabaseField dateOnlyDatabaseField:
-               return new Data.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
+               return new Infrastructure.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
             case BoolDatabaseField boolDatabaseField:
-               return new Data.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
+               return new Infrastructure.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
             default:
                throw new Exception("Unrecognized type " + databaseField.GetType());
          }
       }
 
-      private List<Data.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
+      private List<Infrastructure.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
       {
-         var entityDataProperties = new List<Data.DatabaseFields.DatabaseField>();
+         var entityDataProperties = new List<Infrastructure.DatabaseFields.DatabaseField>();
 
          foreach (var databaseField in databaseFields)
          {

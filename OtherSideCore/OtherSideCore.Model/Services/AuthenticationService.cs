@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using OtherSideCore.Model.ModelObjects;
+using OtherSideCore.Domain.ModelObjects;
 using Microsoft.EntityFrameworkCore;
 using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Model.Repositories;
+using OtherSideCore.Domain.Repositories;
 
-namespace OtherSideCore.Model.Services
+namespace OtherSideCore.Domain.Services
 {
    public abstract class AuthenticationService<T> : ObservableObject, IAuthenticationService<T> where T : User, new()
    {
