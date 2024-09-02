@@ -5,15 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        Style="{StaticResource MainWindow}">
+        Title="MainWindow" 
+        x:Name="MainWindowUserControl"
+        Height="450" Width="800"
+        WindowStyle="None"
+        WindowState="Maximized">
+   <WindowChrome.WindowChrome>
+      <WindowChrome CaptionHeight="0" CornerRadius="0" ResizeBorderThickness="10" GlassFrameThickness="0"/>
+   </WindowChrome.WindowChrome>
+   
    <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="White">
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
-      <local:MainWindowTitleBar Grid.Row="0" MainWindowTitleBar_ApplicationLogoColor="{StaticResource WhiteRabbit_Purple}" />
+      <local:MainWindowTitleBar Grid.Row="0" MainWindowTitleBar_ApplicationLogoColor="{Binding MainWindow_ApplicationLogoColor, ElementName=MainWindowUserControl}" />
 
       <Border Grid.Row="1" BorderThickness="0,0,1,1">
 

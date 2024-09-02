@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OtherSideCore.Wpf.UserControls
 {
@@ -22,6 +11,33 @@ namespace OtherSideCore.Wpf.UserControls
    /// </summary>
    public partial class MultiTextFilterView : UserControl
    {
+      public static readonly DependencyProperty MultiTextFilterViewButton_ImageColorProperty =
+        DependencyProperty.Register("MultiTextFilterViewButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.Blue));
+      
+      public SolidColorBrush MultiTextFilterViewButton_ImageColor
+      {
+         get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }
+         set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty MultiTextFilterViewCheckedButton_ImageColorProperty =
+        DependencyProperty.Register("MultiTextFilterViewCheckedButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.AliceBlue));
+
+      public SolidColorBrush MultiTextFilterViewCheckedButton_ImageColor
+      {
+         get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }
+         set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty MultiTextFilterViewMouseDownButton_ImageColorProperty =
+        DependencyProperty.Register("MultiTextFilterViewMouseDownButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.AliceBlue));
+
+      public SolidColorBrush MultiTextFilterViewMouseDownButton_ImageColor
+      {
+         get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }
+         set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
+      }
+
       public MultiTextFilterView()
       {
          InitializeComponent();

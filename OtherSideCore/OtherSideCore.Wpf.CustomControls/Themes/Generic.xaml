@@ -5,7 +5,7 @@
 
    <ResourceDictionary.MergedDictionaries>
       <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Converters/Converters.xaml"/>
-      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/CustomControls/Styles.xaml"/>
+      <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Styles.xaml"/>
       <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Icons/Icons.xaml"/>
    </ResourceDictionary.MergedDictionaries>
 

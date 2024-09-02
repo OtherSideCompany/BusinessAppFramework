@@ -19,6 +19,15 @@ namespace OtherSideCore.Wpf.UserControls
    /// </summary>
    public partial class MainWindow : Window
    {
+      public static readonly DependencyProperty MainWindow_ApplicationLogoColorProperty =
+          DependencyProperty.Register("MainWindow_ApplicationLogoColor", typeof(SolidColorBrush), typeof(MainWindow), new UIPropertyMetadata(Brushes.Blue));
+
+      public SolidColorBrush MainWindow_ApplicationLogoColor
+      {
+         get { return (SolidColorBrush)GetValue(MainWindow_ApplicationLogoColorProperty); }
+         set { SetValue(MainWindow_ApplicationLogoColorProperty, value); }
+      }
+
       public MainWindow()
       {
          InitializeComponent();

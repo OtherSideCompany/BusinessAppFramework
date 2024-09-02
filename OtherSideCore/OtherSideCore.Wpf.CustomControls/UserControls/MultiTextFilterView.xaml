@@ -22,7 +22,7 @@
                                      ToolTip="Ajouter filtre"
                                      SvgImageButton_ImageSize="16"
                                      SvgImageButton_IconGeometry="{StaticResource icon_filter-plus-outline}" 
-                                     SvgImageButton_ImageColor="{StaticResource WhiteRabbit_DarkGreen}"
+                                     SvgImageButton_ImageColor="{Binding MultiTextFilterViewButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"
                                      Command="{Binding AddFilterCommand}"
                                      CommandParameter="{Binding ElementName=FiltersItemsControl}"/>
 
@@ -32,9 +32,9 @@
                                            Background="Transparent"
                                            SvgImageToggleButton_ImageSize="16"
                                            SvgImageToggleButton_IconGeometry="{StaticResource icon_arrow-expand-all}"
-                                           SvgImageToggleButton_ImageColor="{StaticResource WhiteRabbit_DarkGreen}"
-                                           SvgImageToggleButton_CheckedBackgroundColor="{StaticResource WhiteRabbit_LightGreen}"
-                                           SvgImageToggleButton_MouseDownBackgroundColor="{StaticResource WhiteRabbit_LightGreen}"
+                                           SvgImageToggleButton_ImageColor="{Binding MultiTextFilterViewButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"
+                                           SvgImageToggleButton_CheckedBackgroundColor="{Binding MultiTextFilterViewCheckedButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"
+                                           SvgImageToggleButton_MouseDownBackgroundColor="{Binding MultiTextFilterViewMouseDownButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"
                                            Visibility="{Binding MultiTextFilter.AllowExtendedSearch, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
 
       <customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" VerticalAlignment="Top" 
@@ -42,7 +42,7 @@
                                      ToolTip="Lancer la recherche"
                                      SvgImageButton_ImageSize="16"
                                      SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
-                                     SvgImageButton_ImageColor="{StaticResource WhiteRabbit_DarkGreen}"
+                                     SvgImageButton_ImageColor="{Binding MultiTextFilterViewButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"
                                      Command="{Binding SearchCommandAsync}"/>
 
       <ItemsControl Grid.Column="3" ItemsSource="{Binding MultiTextFilter.Filters}" x:Name="FiltersItemsControl">
@@ -60,11 +60,11 @@
                         <ColumnDefinition Width="Auto" />
                      </Grid.ColumnDefinitions>
 
-                     <customcontrols:ClickSelectTextBox Background="Transparent" 
-                                                        Grid.Column="0" 
+                     <customcontrols:ClickSelectTextBox Background="Transparent"
+                                                        Grid.Column="0"
                                                         x:Name="FilterTextBox"
                                                         Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                        VerticalAlignment="Center" 
+                                                        VerticalAlignment="Center"
                                                         Margin="10,0,5,0"/>
 
                      <customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32"
