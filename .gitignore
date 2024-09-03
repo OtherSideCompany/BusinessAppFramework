@@ -2,19 +2,13 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/OtherSideCore/OtherSideCore.Wpf.UserControls/obj
-/OtherSideCore/OtherSideCore.Wpf.UserControls/bin
-/OtherSideCore/OtherSideCore.Data/bin
-/OtherSideCore/OtherSideCore.Data/obj
-/OtherSideCore/OtherSideCore.Model/bin
-/OtherSideCore/OtherSideCore.Model/obj
+/OtherSideCore/OtherSideCore.Wpf/obj
+/OtherSideCore/OtherSideCore.Wpf/bin
+/OtherSideCore/OtherSideCore.Infrastructure/bin
+/OtherSideCore/OtherSideCore.Infrastructure/obj
+/OtherSideCore/OtherSideCore.Domain/bin
+/OtherSideCore/OtherSideCore.Domain/obj
 /OtherSideCore/OtherSideCore.ViewModel/bin
 /OtherSideCore/OtherSideCore.ViewModel/obj
-/OtherSideCore/OtherSideCore.Utils/bin
-/OtherSideCore/OtherSideCore.Utils/obj
-/OtherSideCore/OtherSideCore.Wpf.CustomControls/obj
-/OtherSideCore/OtherSideCore.Wpf.CustomControls/bin
 /OtherSideCore/.vs
-/OtherSideCore/OtherSideCore.Wpf.Icons/bin/Debug
-/OtherSideCore/OtherSideCore.Wpf.Icons/obj
 /.vs

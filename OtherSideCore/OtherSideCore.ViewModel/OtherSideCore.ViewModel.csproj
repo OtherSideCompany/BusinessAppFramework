@@ -12,6 +12,6 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OtherSideCore.Model\OtherSideCore.Domain.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
   </ItemGroup>
 </Project>
