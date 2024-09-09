@@ -12,3 +12,11 @@
 /OtherSideCore/OtherSideCore.ViewModel/obj
 /OtherSideCore/.vs
 /.vs
+/OtherSideCore/OtherSideCore.Domain.Tests/bin/Debug/net8.0
+/OtherSideCore/OtherSideCore.Domain.Tests/obj
+/OtherSideCore/OtherSideCore.Infrastructure.Tests/bin/Debug/net8.0
+/OtherSideCore/OtherSideCore.Infrastructure.Tests/obj
+/OtherSideCore/OtherSideCore.Test/bin/Debug/net8.0
+/OtherSideCore/OtherSideCore.Test/obj
+/OtherSideCore/OtherSideCore.ViewModel.Tests/bin/Debug/net8.0-windows
+/OtherSideCore/OtherSideCore.ViewModel.Tests/obj
