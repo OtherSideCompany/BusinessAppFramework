@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OtherSideCore.Domain
+namespace OtherSideCore.ViewModel
 {
    public class ViewGroup : ViewBase
    {
@@ -46,7 +47,7 @@ namespace OtherSideCore.Domain
 
       #region Constructor
 
-      public ViewGroup(string name, object iconResource) : base(name, null, iconResource)
+      public ViewGroup(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, string name, object iconResource) : base(serviceProvider, loggerFactory, name, null, iconResource)
       {
          SubViews = new ObservableCollection<View>();
 
@@ -57,7 +58,23 @@ namespace OtherSideCore.Domain
 
       #endregion
 
-      #region Methods
+      #region Public Methods   
+
+      public override void Dispose()
+      {
+         base.Dispose();
+
+         SubViews.CollectionChanged -= SubViews_CollectionChanged;
+
+         foreach (var module in SubViews)
+         {
+            module.PropertyChanged -= View_PropertyChanged;
+         }
+      }      
+
+      #endregion
+
+      #region Private Methods
 
       private void SubViews_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
       {
@@ -85,18 +102,6 @@ namespace OtherSideCore.Domain
          if (e.PropertyName.Equals(nameof(IsLoaded)))
          {
             OnPropertyChanged(nameof(IsSubViewLoaded));
-         }
-      }
-
-      public override void Dispose()
-      {
-         base.Dispose();
-
-         SubViews.CollectionChanged -= SubViews_CollectionChanged;
-
-         foreach (var module in SubViews)
-         {
-            module.PropertyChanged -= View_PropertyChanged;
          }
       }
 

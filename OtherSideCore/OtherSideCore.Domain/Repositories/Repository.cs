@@ -43,7 +43,7 @@ namespace OtherSideCore.Domain.Repositories
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {
@@ -63,11 +63,21 @@ namespace OtherSideCore.Domain.Repositories
 
       public async Task<T> GetAsync(int id, CancellationToken cancellationToken)
       {
-         var modelObject = new T();
-         modelObject.SetModelObjectFactory(_modelObjectFactory);
          var entity = await _entityDataRepository.GetAsync(id, cancellationToken);
-         await modelObject.LoadPropertiesFromEntityAsync(entity);
-         return modelObject;
+
+         if (entity != null)
+         {
+            var modelObject = new T();
+            modelObject.SetModelObjectFactory(_modelObjectFactory);
+
+            await modelObject.LoadPropertiesFromEntityAsync(entity);
+
+            return modelObject;
+         }
+         else
+         {
+            return null;
+         }        
       }
 
       public async Task LoadAsync(T modelObject)
@@ -83,19 +93,6 @@ namespace OtherSideCore.Domain.Repositories
          var modelObject = new T();
          modelObject.SetModelObjectFactory(_modelObjectFactory);
          return await CreateAsync(modelObject, userId);
-      }
-
-      private async Task<T> CreateAsync(T modelObject, int userId)
-      {
-         modelObject.LastModifiedById.Value = userId;
-         modelObject.LastModifiedDateTime.Value = DateTime.Now;
-
-         modelObject.CreatedById.Value = userId;
-         modelObject.CreationDate.Value = DateTime.Now;
-
-         modelObject.Id.Value = await _entityDataRepository.CreateAsync(modelObject.ConvertPropertiesToDataProperties());
-
-         return modelObject;
       }
 
       public async Task SaveAsync(T modelObject, int userId)
@@ -130,15 +127,35 @@ namespace OtherSideCore.Domain.Repositories
       {
          modelObject.LockDatabasePropertiesEdition();
 
-         await _entityDataRepository.DeleteAsync(modelObject.Id.Value);
-         modelObject.Id.Value = 0;
+         await _entityDataRepository.DeleteAsync(modelObject.Id.Value);         
 
          modelObject.UnlockDatabasePropertiesEdition();
+
+         modelObject.Id.Value = 0;
       }
 
       public void Dispose()
       {
          _entityDataRepository.Dispose();
+      }
+
+      #endregion
+
+      #region Private Methods
+
+      private async Task<T> CreateAsync(T modelObject, int userId)
+      {
+         modelObject.LastModifiedById.Value = userId;
+         modelObject.LastModifiedDateTime.Value = DateTime.Now;
+
+         modelObject.CreatedById.Value = userId;
+         modelObject.CreationDate.Value = DateTime.Now;
+
+         modelObject.Id.Value = await _entityDataRepository.CreateAsync(modelObject.ConvertPropertiesToDataProperties());
+
+         modelObject.ResetDatabaseFieldsDirtyState();
+
+         return modelObject;
       }
 
       #endregion

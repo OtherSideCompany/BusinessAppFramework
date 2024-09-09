@@ -38,7 +38,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public override async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
       {

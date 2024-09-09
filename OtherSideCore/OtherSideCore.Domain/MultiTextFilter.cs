@@ -59,7 +59,7 @@ namespace OtherSideCore.Domain
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public void AddFilter()
       {
@@ -70,8 +70,6 @@ namespace OtherSideCore.Domain
       {
          Filters.Remove(textFilter);
       }
-
-
 
       #endregion
    }

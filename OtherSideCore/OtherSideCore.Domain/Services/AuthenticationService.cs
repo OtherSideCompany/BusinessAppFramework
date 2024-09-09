@@ -10,14 +10,14 @@ namespace OtherSideCore.Domain.Services
    {
       #region Fields
 
-      private User m_AuthenticatedUser;
-      private Repositories.IRepositoryFactory _repositoryFactory;
+      private T m_AuthenticatedUser;
+      private IRepositoryFactory _repositoryFactory;
 
       #endregion
 
       #region Properties
 
-      public User AuthenticatedUser
+      public T AuthenticatedUser
       {
          get => m_AuthenticatedUser;
          private set => SetProperty(ref m_AuthenticatedUser, value);
@@ -33,14 +33,14 @@ namespace OtherSideCore.Domain.Services
 
       #region Constructor
 
-      public AuthenticationService(Repositories.IRepositoryFactory repositoryFactory)
+      public AuthenticationService(IRepositoryFactory repositoryFactory)
       {
          _repositoryFactory = repositoryFactory;
       }
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public bool CanAuthenticateUser()
       {
@@ -67,6 +67,10 @@ namespace OtherSideCore.Domain.Services
 
          return false;
       }
+
+      #endregion
+
+      #region Prvate Methods
 
       protected async Task<T> GetUserByCredentials(string userName, string passwordHash)
       {

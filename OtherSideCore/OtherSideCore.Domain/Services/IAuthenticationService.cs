@@ -9,7 +9,7 @@ namespace OtherSideCore.Domain.Services
 {
    public interface IAuthenticationService<T> where T : User
    {
-      User AuthenticatedUser { get; }
+      T AuthenticatedUser { get; }
       bool CanAuthenticateUser();
       Task AuthenticateUserAsync(string userName, string password);
       bool CanLogoutUser();

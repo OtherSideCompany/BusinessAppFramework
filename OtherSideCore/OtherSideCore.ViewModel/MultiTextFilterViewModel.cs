@@ -57,7 +57,7 @@ namespace OtherSideCore.ViewModel
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       private void AddFilter()
       {

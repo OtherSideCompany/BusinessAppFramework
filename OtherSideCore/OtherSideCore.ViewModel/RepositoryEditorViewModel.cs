@@ -15,7 +15,7 @@ using System.Windows.Data;
 
 namespace OtherSideCore.ViewModel
 {
-    public class RepositoryEditorViewModel<T> : ObservableObject, IRepositoryEditorViewModel where T : ModelObject, new()
+   public class RepositoryEditorViewModel<T> : ObservableObject, IRepositoryEditorViewModel where T : ModelObject, new()
    {
       #region Fields
 
@@ -28,7 +28,7 @@ namespace OtherSideCore.ViewModel
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
 
       private IModelObjectViewModelFactory _modelObjectViewModeFactory;
-      
+
       private MultiTextFilterViewModel _multiTextFilterViewModel;
 
       private ObservableCollection<ModelObjectViewModel> m_searchResultViewModels;
@@ -116,7 +116,7 @@ namespace OtherSideCore.ViewModel
          SaveSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedSearchResultChangesAsync, CanSaveSelectedSearchResultChanges);
          CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
          DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
-         
+
          MultiTextFilterViewModel = new MultiTextFilterViewModel(_repositorySearch.MultiTextFilter, SearchCommandAsync);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
          _searchResultViewModelsCollection = new CollectionViewSource();
@@ -125,7 +125,22 @@ namespace OtherSideCore.ViewModel
 
       #endregion
 
-      #region Methods
+      #region Public Methods
+
+      public void Dispose()
+      {
+         UnloadSearchResultViewModels();
+
+         UnregisterDatabaseFields();
+
+         _repositorySearch.Dispose();
+
+         MultiTextFilterViewModel.Dispose();
+      }
+
+      #endregion
+
+      #region Public Methods
 
       private void RegisterDatabaseFields()
       {
@@ -169,17 +184,17 @@ namespace OtherSideCore.ViewModel
          OnPropertyChanged(nameof(IsAnyDatabaseFieldDirty));
       }
 
-      public void LockSelection()
+      private void LockSelection()
       {
          IsSelectionLocked = true;
       }
 
-      public void UnlockSelection()
+      private void UnlockSelection()
       {
          IsSelectionLocked = false;
       }
 
-      public void NotifyCommandsCanExecuteChanged()
+      private void NotifyCommandsCanExecuteChanged()
       {
          SearchCommandAsync.NotifyCanExecuteChanged();
          CancelSearchCommand.NotifyCanExecuteChanged();
@@ -214,18 +229,18 @@ namespace OtherSideCore.ViewModel
          SearchResultViewModels.Clear();
       }
 
-      public void AddSearchResult(ModelObjectViewModel modelObjectViewModel)
+      private void AddSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
          SearchResultViewModels.Add(modelObjectViewModel);
       }
 
-      public void RemoveSearchResult(ModelObjectViewModel modelObjectViewModel)
+      private void RemoveSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
          SearchResultViewModels.Remove(modelObjectViewModel);
          OnPropertyChanged(nameof(SelectedSearchResultViewModel));
       }
 
-      public bool CanSelectSearchResult(ModelObjectViewModel modelObjectViewModel)
+      private bool CanSelectSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
          return !IsSelectionLocked && modelObjectViewModel != null && !modelObjectViewModel.IsSelected;
       }
@@ -320,26 +335,26 @@ namespace OtherSideCore.ViewModel
          {
             await SelectSearchResultAsync(viewModel, CancellationToken.None);
             UnlockSelection();
-         }         
+         }
       }
 
-      public virtual bool CanSaveSelectedSearchResultChanges()
+      protected virtual bool CanSaveSelectedSearchResultChanges()
       {
          return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanSaveChanges();
       }
 
-      public virtual async Task SaveSelectedSearchResultChangesAsync()
+      protected virtual async Task SaveSelectedSearchResultChangesAsync()
       {
          using var repository = _repositoryFactory.CreateRepository<T>();
          await repository.SaveAsync(SelectedSearchResultViewModel.ModelObject as T, _authenticatedUser.Id.Value);
       }
 
-      public virtual bool CanCancelSelectedSearchResultChanges()
+      protected virtual bool CanCancelSelectedSearchResultChanges()
       {
          return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanCancelChanges();
       }
 
-      public virtual async Task CancelSelectedSearchResultChangesAsync()
+      protected virtual async Task CancelSelectedSearchResultChangesAsync()
       {
          using var repository = _repositoryFactory.CreateRepository<T>();
          await repository.LoadAsync(SelectedSearchResultViewModel.ModelObject as T);
@@ -361,7 +376,7 @@ namespace OtherSideCore.ViewModel
             using var repository = _repositoryFactory.CreateRepository<T>();
             await repository.DeleteAsync(SelectedSearchResultViewModel.ModelObject as T);
 
-            var selectedSearchResultViewModel = SelectedSearchResultViewModel;            
+            var selectedSearchResultViewModel = SelectedSearchResultViewModel;
             SelectedSearchResultViewModel.Dispose();
             UnselectSearchResult();
             RemoveSearchResult(selectedSearchResultViewModel);
@@ -370,17 +385,6 @@ namespace OtherSideCore.ViewModel
 
             NotifyCommandsCanExecuteChanged();
          }
-      }
-
-      public void Dispose()
-      {
-         UnloadSearchResultViewModels();
-
-         UnregisterDatabaseFields();
-
-         _repositorySearch.Dispose();
-
-         MultiTextFilterViewModel.Dispose();
       }
 
       #endregion

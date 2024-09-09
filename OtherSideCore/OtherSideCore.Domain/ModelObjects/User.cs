@@ -53,15 +53,15 @@ namespace OtherSideCore.Domain.ModelObjects
 
       public User() : base()
       {
-         IsSuperAdmin = new BoolDatabaseField("IsSuperAdmin");
-         FirstName = new StringDatabaseField("FirstName", 50);
-         LastName = new StringDatabaseField("LastName", 50);
-         UserName = new StringDatabaseField("UserName", 50);
+         IsSuperAdmin = new BoolDatabaseField(nameof(IsSuperAdmin));
+         FirstName = new StringDatabaseField(nameof(FirstName), 50);
+         LastName = new StringDatabaseField(nameof(LastName), 50);
+         UserName = new StringDatabaseField(nameof(UserName), 50);
       }
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
 
 

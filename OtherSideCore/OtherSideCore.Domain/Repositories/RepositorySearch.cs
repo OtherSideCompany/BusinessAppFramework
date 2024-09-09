@@ -53,7 +53,7 @@ namespace OtherSideCore.Domain.Repositories
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public async Task SearchAsync(CancellationToken cancellationToken)
       {
@@ -63,19 +63,9 @@ namespace OtherSideCore.Domain.Repositories
 
          foreach (var searchResult in searchResults)
          {
-            SearchResults.Add(searchResult);
+            AddSearchResult(searchResult);
          }
-      }
-
-      protected virtual void Unload()
-      {
-         foreach (var searchResult in SearchResults)
-         {
-            searchResult.Dispose();
-         }
-
-         SearchResults.Clear();
-      }
+      }      
 
       public void AddSearchResult(T modelObject)
       {
@@ -90,6 +80,20 @@ namespace OtherSideCore.Domain.Repositories
       public void Dispose()
       {
          Unload();
+      }
+
+      #endregion
+
+      #region Private Methods
+
+      protected virtual void Unload()
+      {
+         foreach (var searchResult in SearchResults)
+         {
+            searchResult.Dispose();
+         }
+
+         SearchResults.Clear();
       }
 
       #endregion

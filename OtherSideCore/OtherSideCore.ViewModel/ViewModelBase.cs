@@ -79,7 +79,7 @@ namespace OtherSideCore.ViewModel
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public void HideDropIndicators()
       {

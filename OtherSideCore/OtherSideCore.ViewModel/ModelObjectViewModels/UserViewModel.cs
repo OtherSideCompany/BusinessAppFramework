@@ -36,7 +36,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       protected override void DisplayInExternalWindow()
       {

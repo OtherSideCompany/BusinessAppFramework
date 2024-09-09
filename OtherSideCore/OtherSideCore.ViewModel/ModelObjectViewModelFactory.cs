@@ -19,7 +19,7 @@ namespace OtherSideCore.ViewModel
          }
          else
          {
-            throw new ArgumentException("Cannot instanciate view model for type ", modelObject.GetType().Name);
+            return new ModelObjectViewModel(modelObject);
          }
       }
 

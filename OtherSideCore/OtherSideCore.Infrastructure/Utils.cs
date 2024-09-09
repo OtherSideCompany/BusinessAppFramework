@@ -34,7 +34,7 @@ namespace OtherSideCore.Infrastructure
 
       public static int GetMaxSearchDistance(string s)
       {
-         return Math.Max((int)Math.Round(s.Length / 2.0), 1);
+         return string.IsNullOrEmpty(s) ? 0 : Math.Max((int)Math.Round(s.Length / 2.0), 1);
       }
 
       public static int LevenshteinDistance(string s, string t)
@@ -42,9 +42,9 @@ namespace OtherSideCore.Infrastructure
          if (s == t)
             return 0;
          if (string.IsNullOrEmpty(s))
-            return t.Length;
+            return string.IsNullOrEmpty(t) ? 0 : t.Length;
          if (string.IsNullOrEmpty(t))
-            return s.Length;
+            return string.IsNullOrEmpty(s) ? 0 : s.Length;
 
          int[,] d = new int[s.Length + 1, t.Length + 1];
 

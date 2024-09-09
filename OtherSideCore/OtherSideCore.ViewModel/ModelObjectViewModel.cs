@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace OtherSideCore.ViewModel
 {
-    public abstract class ModelObjectViewModel : ViewModelBase
+   public class ModelObjectViewModel : ViewModelBase
    {
       #region Fields
 
@@ -62,9 +62,9 @@ namespace OtherSideCore.ViewModel
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
-      protected abstract void DisplayInExternalWindow();
+      protected virtual void DisplayInExternalWindow() { }
 
       protected override void ExecuteToggleExpandCommand()
       {

@@ -14,10 +14,10 @@ namespace OtherSideCore.Infrastructure.Entities
       {
          var databaseFieldProperties = base.GetDatabaseFieldProperties();
 
-         databaseFieldProperties.Add(new BoolDatabaseField(IsSuperAdmin, "IsSuperAdmin"));
-         databaseFieldProperties.Add(new StringDatabaseField(FirstName, "FirstName"));
-         databaseFieldProperties.Add(new StringDatabaseField(LastName, "LastName"));
-         databaseFieldProperties.Add(new StringDatabaseField(UserName, "UserName"));
+         databaseFieldProperties.Add(new BoolDatabaseField(IsSuperAdmin, nameof(IsSuperAdmin)));
+         databaseFieldProperties.Add(new StringDatabaseField(FirstName, nameof(FirstName)));
+         databaseFieldProperties.Add(new StringDatabaseField(LastName, nameof(LastName)));
+         databaseFieldProperties.Add(new StringDatabaseField(UserName, nameof(UserName)));
 
          return databaseFieldProperties;
       }

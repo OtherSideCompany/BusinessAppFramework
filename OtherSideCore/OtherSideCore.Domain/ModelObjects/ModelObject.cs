@@ -24,8 +24,6 @@ namespace OtherSideCore.Domain.ModelObjects
       private User m_CreatedBy;
       private User m_LastModifiedBy;
 
-      private bool m_IsDirty;
-
       #endregion
 
       #region Properties
@@ -99,7 +97,7 @@ namespace OtherSideCore.Domain.ModelObjects
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public void SetModelObjectFactory(IModelObjectFactory modelObjectFactory)
       {
@@ -108,43 +106,46 @@ namespace OtherSideCore.Domain.ModelObjects
 
       public virtual bool MatchFilter(List<string> filters, bool extendedSearch)
       {
-         return false;
+         throw new NotImplementedException();
       }
 
       public async Task LoadPropertiesFromEntityAsync(EntityBase entity, bool cascade = true)
       {
-         var databaseFieldProperties = entity.GetDatabaseFieldProperties();
+         var databaseFieldProperties = entity?.GetDatabaseFieldProperties();
 
-         foreach (var databaseFieldProperty in databaseFieldProperties)
+         if (databaseFieldProperties != null)
          {
-            PropertyInfo propertyInfo = GetDatabaseFieldsPropertyInfos().First(dbf => (dbf.GetValue(this) as DatabaseField).DatabaseFieldName.Equals(databaseFieldProperty.DatabaseFieldName));
-            var databaseField = propertyInfo.GetValue(this);
-
-            switch (databaseField)
+            foreach (var databaseFieldProperty in databaseFieldProperties)
             {
-               case IntegerDatabaseField integerDatabaseField:
-                  integerDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.IntegerDatabaseField).Value);
-                  break;
-               case StringDatabaseField stringDatabaseField:
-                  stringDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.StringDatabaseField).Value);
-                  break;
-               case DateTimeDatabaseField dateTimeDatabaseField:
-                  dateTimeDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateTimeDatabaseField).Value);
-                  break;
-               case DateOnlyDatabaseField dateOnlyDatabaseField:
-                  dateOnlyDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateOnlyDatabaseField).Value);
-                  break;
-               case BoolDatabaseField boolDatabaseField:
-                  boolDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.BoolDatabaseField).Value);
-                  break;
-               default:
-                  throw new Exception("Unrecognized type " + databaseField.GetType());
-            }
-         }
+               PropertyInfo propertyInfo = GetDatabaseFieldsPropertyInfos().First(dbf => (dbf.GetValue(this) as DatabaseField).DatabaseFieldName.Equals(databaseFieldProperty.DatabaseFieldName));
+               var databaseField = propertyInfo.GetValue(this);
 
-         if (cascade)
-         {
-            await LoadModelObjectPropertiesFromEntityAsync(entity);
+               switch (databaseField)
+               {
+                  case IntegerDatabaseField integerDatabaseField:
+                     integerDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.IntegerDatabaseField).Value);
+                     break;
+                  case StringDatabaseField stringDatabaseField:
+                     stringDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.StringDatabaseField).Value);
+                     break;
+                  case DateTimeDatabaseField dateTimeDatabaseField:
+                     dateTimeDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateTimeDatabaseField).Value);
+                     break;
+                  case DateOnlyDatabaseField dateOnlyDatabaseField:
+                     dateOnlyDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DateOnlyDatabaseField).Value);
+                     break;
+                  case BoolDatabaseField boolDatabaseField:
+                     boolDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.BoolDatabaseField).Value);
+                     break;
+                  default:
+                     throw new ArgumentException("Unrecognized type " + databaseField.GetType());
+               }
+            }
+
+            if (cascade)
+            {
+               await LoadModelObjectPropertiesFromEntityAsync(entity);
+            }
          }
       }
 
@@ -280,7 +281,7 @@ namespace OtherSideCore.Domain.ModelObjects
          }
          else
          {
-            return Id == item.Id;
+            return Id.Value == item.Id.Value;
          }
       }
 

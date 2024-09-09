@@ -62,7 +62,7 @@
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public void LoadBuffer()
       {

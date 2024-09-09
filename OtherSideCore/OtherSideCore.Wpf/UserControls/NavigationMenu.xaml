@@ -66,7 +66,7 @@
                      <ContentPresenter Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type model:View}">
+                           <DataTemplate DataType="{x:Type viewmodel:View}">
                               <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
                                       Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -107,7 +107,7 @@
                               </Button>
                            </DataTemplate>
 
-                           <DataTemplate DataType="{x:Type model:ViewGroup}">
+                           <DataTemplate DataType="{x:Type viewmodel:ViewGroup}">
                               <Button Cursor="Hand"
                                       Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -177,9 +177,9 @@
                      <ContentPresenter Grid.Row="1" Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type model:View}"/>
+                           <DataTemplate DataType="{x:Type viewmodel:View}"/>
 
-                           <DataTemplate DataType="{x:Type model:ViewGroup}">
+                           <DataTemplate DataType="{x:Type viewmodel:ViewGroup}">
                               <Grid Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisibleOrCollapsed}, ElementName=MenuToggleButton}">
                                  <ItemsControl ItemsSource="{Binding SubViews}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <ItemsControl.ItemsPanel>

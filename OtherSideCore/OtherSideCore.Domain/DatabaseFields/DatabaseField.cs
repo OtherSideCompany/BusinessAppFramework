@@ -51,7 +51,7 @@ namespace OtherSideCore.Domain.DatabaseFields
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public virtual bool IsValid()
       {

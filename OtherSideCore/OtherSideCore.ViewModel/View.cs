@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 
-namespace OtherSideCore.Domain
+namespace OtherSideCore.ViewModel
 {
    public class View : ViewBase
    {
@@ -32,7 +30,7 @@ namespace OtherSideCore.Domain
 
       #region Constructor
 
-      public View(string name, Type viewModelType, object iconResource, ViewGroup parent = null) : base(name, viewModelType, iconResource)
+      public View(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, string name, Type viewModelType, object iconResource, ViewGroup parent = null) : base(serviceProvider, loggerFactory, name, viewModelType, iconResource)
       {
          ParentViewGroup = parent;
 
@@ -48,9 +46,9 @@ namespace OtherSideCore.Domain
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
-
+      
 
       #endregion
    }

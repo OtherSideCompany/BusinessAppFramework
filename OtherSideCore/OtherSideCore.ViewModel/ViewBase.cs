@@ -1,18 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
-namespace OtherSideCore.Domain
+namespace OtherSideCore.ViewModel
 {
    public abstract class ViewBase : ObservableObject, IDisposable
    {
       #region Fields
-
+      
       private bool _isLoaded;
       private string _name;
-      private string _viewNavigationPath;
-      private Type _viewModelType;
+      private string _viewNavigationPath;      
+      private ViewModelBase _viewModel;
       private object _iconResource;
+
+      protected Type _viewModelType;
+      protected IServiceProvider _serviceProvider;
+      protected ILoggerFactory _loggerFactory;
+      protected ILogger _logger;
 
       #endregion
 
@@ -36,10 +43,10 @@ namespace OtherSideCore.Domain
          set => SetProperty(ref _viewNavigationPath, value);
       }
 
-      public Type ViewModelType
+      public ViewModelBase ViewModel
       {
-         get => _viewModelType;
-         protected set => SetProperty(ref _viewModelType, value);
+         get => _viewModel;
+         set => SetProperty(ref _viewModel, value);
       }
 
       public object IconResource
@@ -58,16 +65,20 @@ namespace OtherSideCore.Domain
 
       #region Constructor
 
-      public ViewBase(string name, Type viewModelType, object iconResource)
+      public ViewBase(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, string name, Type viewModelType, object iconResource)
       {
+         _serviceProvider = serviceProvider;
+         _loggerFactory = loggerFactory;
+         _logger = loggerFactory.CreateLogger(GetType());
+
          Name = name;
-         ViewModelType = viewModelType;
+         _viewModelType = viewModelType;
          IconResource = iconResource;
       }
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public void Load(List<string> filters = null)
       {
@@ -76,7 +87,16 @@ namespace OtherSideCore.Domain
 
       public void Unload()
       {
+         ViewModel?.Dispose();
+         ViewModel = null;
+
          IsLoaded = false;
+      }
+
+      public void InstanciateViewModel()
+      {
+         ViewModel = (ViewModelBase)_serviceProvider.GetService(_viewModelType);
+         _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", Name, _viewModelType.Name);
       }
 
       public virtual void Dispose()

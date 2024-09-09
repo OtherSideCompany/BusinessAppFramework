@@ -31,14 +31,22 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public abstract Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
 
       protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
       {
-         _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
-            GetType(), nameof(GetAllAsync), filters.Any() ? string.Join(',', filters) : "none", extendedSearch.ToString());
+         if (filters == null || !filters.Any())
+         {
+            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
+            GetType(), nameof(GetAllAsync), "none", extendedSearch.ToString());
+         }
+         else
+         {
+            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
+            GetType(), nameof(GetAllAsync), string.Join(',', filters), extendedSearch.ToString());
+         }         
       }
 
       public async Task<int> CreateAsync(List<DatabaseField> databaseFields)
@@ -68,11 +76,18 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            T entity = context.Set<T>().First(u => u.Id == entityId);
+            T entity = await context.Set<T>().FindAsync(entityId);
 
-            entity.SetProperties(databaseFields);
+            if (entity != null)
+            {
+               entity.SetProperties(databaseFields);
 
-            await context.SaveChangesAsync();
+               await context.SaveChangesAsync();
+            }
+            else
+            {
+               throw new ArgumentNullException($"Entity with Id {entityId} not found in data repository {nameof(T).ToString()}");            
+            }
          }
       }
 
@@ -82,8 +97,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<T>()
-                                .FirstAsync(e => e.Id == entityId, cancellationToken);
+            return await context.Set<T>().FindAsync(entityId, cancellationToken);
          }
       }
 
@@ -93,8 +107,17 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            context.Set<T>().Remove(context.Set<T>().Find(entityId));
-            await context.SaveChangesAsync();
+            var entity = context.Set<T>().Find(entityId);
+
+            if (entity != null)
+            {
+               context.Set<T>().Remove(entity);
+               await context.SaveChangesAsync();
+            }
+            else
+            {
+               throw new ArgumentNullException($"Entity with Id {entityId} not found in data repository {nameof(T).ToString()}");
+            }
          }
       }
 
@@ -102,7 +125,16 @@ namespace OtherSideCore.Infrastructure.Repositories
       {
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<T>().Where(e => e.Id == entityId).Select(e => e.LastModifiedDateTime).FirstAsync();
+            var entity = await context.Set<T>().FindAsync(entityId);
+
+            if (entity != null)
+            {
+               return entity.LastModifiedDateTime;
+            }
+            else
+            {
+               throw new ArgumentNullException($"Entity with Id {entityId} not found in data repository {nameof(T).ToString()}");
+            }
          }
       }
 

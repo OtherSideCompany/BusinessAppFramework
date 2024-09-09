@@ -29,25 +29,32 @@ namespace OtherSideCore.Infrastructure.Entities
          {
             PropertyInfo propertyInfo = GetType().GetProperty(databaseField.DatabaseFieldName);
 
-            switch (databaseField)
+            if (propertyInfo != null)
             {
-               case IntegerDatabaseField integerDatabaseField:
-                  propertyInfo.SetValue(this, integerDatabaseField.Value);
-                  break;
-               case StringDatabaseField stringDatabaseField:
-                  propertyInfo.SetValue(this, stringDatabaseField.Value);
-                  break;
-               case DateOnlyDatabaseField dateOnlyDatabaseField:
-                  propertyInfo.SetValue(this, dateOnlyDatabaseField.Value);
-                  break;
-               case DateTimeDatabaseField dateTimeDatabaseField:
-                  propertyInfo.SetValue(this, dateTimeDatabaseField.Value);
-                  break;
-               case BoolDatabaseField boolDatabaseField:
-                  propertyInfo.SetValue(this, boolDatabaseField.Value);
-                  break;
-               default:
-                  throw new Exception("Unrecognized type " + databaseField.GetType());
+               switch (databaseField)
+               {
+                  case IntegerDatabaseField integerDatabaseField:
+                     propertyInfo.SetValue(this, integerDatabaseField.Value);
+                     break;
+                  case StringDatabaseField stringDatabaseField:
+                     propertyInfo.SetValue(this, stringDatabaseField.Value);
+                     break;
+                  case DateOnlyDatabaseField dateOnlyDatabaseField:
+                     propertyInfo.SetValue(this, dateOnlyDatabaseField.Value);
+                     break;
+                  case DateTimeDatabaseField dateTimeDatabaseField:
+                     propertyInfo.SetValue(this, dateTimeDatabaseField.Value);
+                     break;
+                  case BoolDatabaseField boolDatabaseField:
+                     propertyInfo.SetValue(this, boolDatabaseField.Value);
+                     break;
+                  default:
+                     throw new ArgumentException("Unrecognized DatabaseField type " + databaseField.GetType());
+               }
+            }
+            else
+            {
+               throw new ArgumentException("Cannot find property '" + databaseField.DatabaseFieldName + "' in entity " + GetType().Name);
             }
          }
       }
@@ -56,11 +63,11 @@ namespace OtherSideCore.Infrastructure.Entities
       {
          return new List<DatabaseField>
             {
-               new IntegerDatabaseField(Id, "Id"),
-               new DateTimeDatabaseField(CreationDate, "CreationDate"),
-               new IntegerDatabaseField(CreatedById, "CreatedById"),
-               new DateTimeDatabaseField(LastModifiedDateTime, "LastModifiedDateTime"),
-               new IntegerDatabaseField(LastModifiedById, "LastModifiedById")
+               new IntegerDatabaseField(Id, nameof(Id)),
+               new DateTimeDatabaseField(CreationDate, nameof(CreationDate)),
+               new IntegerDatabaseField(CreatedById, nameof(CreatedById)),
+               new DateTimeDatabaseField(LastModifiedDateTime, nameof(LastModifiedDateTime)),
+               new IntegerDatabaseField(LastModifiedById, nameof(LastModifiedById))
             };
       }
 

@@ -29,7 +29,7 @@ namespace OtherSideCore.Domain
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
 
 

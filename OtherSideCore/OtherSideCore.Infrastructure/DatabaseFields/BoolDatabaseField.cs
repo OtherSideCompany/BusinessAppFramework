@@ -29,7 +29,7 @@
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public override string GetFormattedValue()
       {

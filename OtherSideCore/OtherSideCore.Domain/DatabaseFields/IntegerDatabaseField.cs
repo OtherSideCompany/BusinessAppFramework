@@ -47,6 +47,10 @@ namespace OtherSideCore.Domain.DatabaseFields
 
       }
 
+      #endregion
+
+      #region Public Methods
+
       public override void LoadValue(object value)
       {
          m_IsLoading = true;
@@ -55,12 +59,6 @@ namespace OtherSideCore.Domain.DatabaseFields
 
          m_IsLoading = false;
       }
-
-      #endregion
-
-      #region Methods
-
-
 
       #endregion
    }

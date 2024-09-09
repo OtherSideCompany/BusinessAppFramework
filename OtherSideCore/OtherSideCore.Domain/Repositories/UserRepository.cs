@@ -36,7 +36,7 @@ namespace OtherSideCore.Domain.Repositories
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public async Task<T> GetSuperAdminUserAsync()
       {

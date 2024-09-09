@@ -6,17 +6,25 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Context
 {
-   public abstract class SqliteDbContext : DbContext
+   public abstract class SqliteDbContext : OtherSideCoreDbContext
    {
-      public string DatabasePath { get; set; }
+      public string DatabasePath { get; }
+
+      public SqliteDbContext(string databasePath)
+      {
+         DatabasePath = databasePath;
+      }
 
       protected override void OnConfiguring(DbContextOptionsBuilder options)
       {
-         var directoryPath = Path.GetDirectoryName(DatabasePath);
-
-         if (!Path.Exists(directoryPath))
+         if (!string.IsNullOrEmpty(DatabasePath) && !DatabasePath.Equals(":memory:"))
          {
-            Directory.CreateDirectory(directoryPath);
+            var directoryPath = Path.GetDirectoryName(DatabasePath);
+
+            if (!Path.Exists(directoryPath))
+            {
+               Directory.CreateDirectory(directoryPath);
+            }
          }
 
          var connection = CreateConfiguredConnection();
@@ -33,20 +41,6 @@ namespace OtherSideCore.Infrastructure.Context
          return connection;
       }
 
-      protected override void OnModelCreating(ModelBuilder modelBuilder)
-      {
-         modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string) }));
-
-         modelBuilder.Entity<EntityBase>().UseTpcMappingStrategy();
-
-         modelBuilder.Entity<User>().UseTpcMappingStrategy();
-         modelBuilder.Entity<User>().HasOne(u => u.CreatedBy).WithMany().HasForeignKey(u => u.CreatedById).OnDelete(DeleteBehavior.Restrict);
-         modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
-      }
-
-      public static async Task MigrateAsync(SqliteDbContext context)
-      {
-         await context.Database.MigrateAsync();
-      }
+      
    }
 }

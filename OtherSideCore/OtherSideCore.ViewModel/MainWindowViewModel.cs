@@ -13,14 +13,12 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class MainWindowViewModel<T, U> : ObservableObject, IDisposable where T : User where U : DbContext
+   public abstract class MainWindowViewModel<T> : ObservableObject, IDisposable where T : User
    {
       #region Fields
 
       private readonly IServiceProvider _serviceProvider;
       protected IAuthenticationService<T> _authenticationService;
-      protected ILoggerFactory _loggerFactory;
-      protected ILogger _logger;
 
       private string _applicationLogoImageSource;
       private string _applicationName;
@@ -70,12 +68,6 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref _quickNavigationViews, value);
       }
 
-      public IDisposable InstanciatedViewModel
-      {
-         get => _instanciatedViewModel;
-         set => SetProperty(ref _instanciatedViewModel, value);
-      }
-
       public System.Windows.Controls.UserControl MainWindowContent
       {
          get => _mainWindowContent;
@@ -100,8 +92,6 @@ namespace OtherSideCore.ViewModel
       {
          AuthenticationService = authenticationService;
          _serviceProvider = serviceProvider;
-         _loggerFactory = loggerFactory;
-         _logger = loggerFactory.CreateLogger(GetType());
 
          Views = new List<ViewBase>();
          QuickNavigationViews = new List<ViewBase>();
@@ -115,7 +105,7 @@ namespace OtherSideCore.ViewModel
 
       #endregion
 
-      #region Methods
+      #region Public Methods
 
       public async Task AuthenticateUserAsync()
       {
@@ -123,7 +113,16 @@ namespace OtherSideCore.ViewModel
          {
             await AuthenticationService.AuthenticateUserAsync(null, "");
          }
+      }      
+
+      public void Dispose()
+      {
+         
       }
+
+      #endregion
+
+      #region Private Methods
 
       private async Task DisconnectAuthenticatedUserAsync()
       {
@@ -135,32 +134,15 @@ namespace OtherSideCore.ViewModel
 
       private void DisplayView(ViewBase viewBase)
       {
-         if (InstanciatedViewModel != null)
-         {
-            InstanciatedViewModel.Dispose();
-         }
+         LoadedView?.Dispose();
 
          Views.ForEach(v => v.IsLoaded = false);
 
-         viewBase.IsLoaded = true;         
+         viewBase.IsLoaded = true;
 
-         if (viewBase is ViewGroup)
-         {
-            _logger.LogInformation("Displaying view group {ViewName}", viewBase.Name);
-            InstanciatedViewModel = viewBase;
-         }
-         else
-         {
-            _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", viewBase.Name, viewBase.ViewModelType.Name);
-            InstanciatedViewModel = (IDisposable)_serviceProvider.GetService(viewBase.ViewModelType);
-         }
+         LoadedView.InstanciateViewModel();
 
          OnPropertyChanged(nameof(LoadedView));
-      }
-
-      public void Dispose()
-      {
-         
       }
 
       #endregion
