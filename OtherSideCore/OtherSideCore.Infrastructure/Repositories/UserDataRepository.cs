@@ -46,8 +46,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var query = context.Set<T>()
-                               .Where(u => !u.IsSuperAdmin);
+            var query = context.Set<T>().AsQueryable();
 
             if (filters != null)
             {
@@ -73,11 +72,13 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task<T> GetSuperAdminUserAsync()
+      public virtual async Task<T> GetUserByCredentials(string userName, string passwordHash)
       {
+         _logger.LogInformation("{Type}, {MethodName}, user name : {userName}", GetType(), nameof(GetUserByCredentials), userName);
+
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<T>().FirstOrDefaultAsync(u => u.IsSuperAdmin);
+            return await context.Set<T>().Where(u => u.UserName.Equals(userName) && u.PasswordHash.Equals(passwordHash)).FirstOrDefaultAsync();
          }
       }
 

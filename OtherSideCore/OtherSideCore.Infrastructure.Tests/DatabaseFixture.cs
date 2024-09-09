@@ -6,6 +6,7 @@ using OtherSideCore.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,10 +41,10 @@ namespace OtherSideCore.Infrastructure.Tests
             CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
             LastModifiedById = 1,
-            IsSuperAdmin = true,
             FirstName = "Super",
             LastName = "Admin",
-            UserName = "superadmin"
+            UserName = "administrator",
+            PasswordHash = "abcdefgh"
          };
 
          var anthony = new User
@@ -53,10 +54,10 @@ namespace OtherSideCore.Infrastructure.Tests
             CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
             LastModifiedById = 1,
-            IsSuperAdmin = false,
             FirstName = "Anthony",
             LastName = "Thonon",
-            UserName = "anth"
+            UserName = "anth",
+            PasswordHash = "abcdefgh"
          };
 
          var joy = new User
@@ -66,10 +67,10 @@ namespace OtherSideCore.Infrastructure.Tests
             CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
             LastModifiedById = 2,
-            IsSuperAdmin = false,
             FirstName = "Joy",
             LastName = "Malcourant",
-            UserName = "joma"
+            UserName = "joma",
+            PasswordHash = "abcdefgh"
          };
 
          var pierre = new User
@@ -79,10 +80,10 @@ namespace OtherSideCore.Infrastructure.Tests
             CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
             LastModifiedById = 2,
-            IsSuperAdmin = false,
             FirstName = "Pierre",
             LastName = "Malcourant",
-            UserName = "pima"
+            UserName = "pima",
+            PasswordHash = "abcdefgh"
          };
 
          var userRepository = new UserDataRepository<User>(InfrastructureTestsDbContextFactory, LoggerFactoryMock.Object);

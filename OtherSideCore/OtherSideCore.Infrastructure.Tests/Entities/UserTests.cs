@@ -15,25 +15,22 @@ namespace OtherSideCore.Infrastructure.Tests.Entities
       {
          var user = new User();
 
-         Assert.False(user.IsSuperAdmin);
-         Assert.NotEqual("SuperUserFirstName", user.FirstName);
-         Assert.NotEqual("SuperUserLastName", user.LastName);
-         Assert.NotEqual("SuperUserUserName", user.UserName);
+         Assert.NotEqual("UserFirstName", user.FirstName);
+         Assert.NotEqual("UserLastName", user.LastName);
+         Assert.NotEqual("UserUserName", user.UserName);
 
          var databaseFields = new List<DatabaseField>
                {
-                   new BoolDatabaseField(true, nameof(User.IsSuperAdmin)),
-                   new StringDatabaseField("SuperUserFirstName", nameof(User.FirstName)),
-                   new StringDatabaseField("SuperUserLastName", nameof(User.LastName)),
-                   new StringDatabaseField("SuperUserUserName", nameof(User.UserName))
+                   new StringDatabaseField("UserFirstName", nameof(User.FirstName)),
+                   new StringDatabaseField("UserLastName", nameof(User.LastName)),
+                   new StringDatabaseField("UserUserName", nameof(User.UserName))
                };
 
          user.SetProperties(databaseFields);
 
-         Assert.True(user.IsSuperAdmin);
-         Assert.Equal("SuperUserFirstName", user.FirstName);
-         Assert.Equal("SuperUserLastName", user.LastName);
-         Assert.Equal("SuperUserUserName", user.UserName);
+         Assert.Equal("UserFirstName", user.FirstName);
+         Assert.Equal("UserLastName", user.LastName);
+         Assert.Equal("UserUserName", user.UserName);
       }
 
       [Fact]

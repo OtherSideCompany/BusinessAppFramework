@@ -8,12 +8,7 @@ namespace OtherSideCore.Infrastructure.Context
 {
    public abstract class SqliteDbContext : OtherSideCoreDbContext
    {
-      public string DatabasePath { get; }
-
-      public SqliteDbContext(string databasePath)
-      {
-         DatabasePath = databasePath;
-      }
+      public string DatabasePath { get; set; }
 
       protected override void OnConfiguring(DbContextOptionsBuilder options)
       {

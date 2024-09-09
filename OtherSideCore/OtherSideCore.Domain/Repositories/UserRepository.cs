@@ -11,7 +11,7 @@ namespace OtherSideCore.Domain.Repositories
    {
       #region Fields
 
-      protected IUserDataRepository<U> _userRepository;
+      private IUserDataRepository<U> _userDataRepository { get => (IUserDataRepository<U>)_entityDataRepository;}
 
       #endregion
 
@@ -31,26 +31,36 @@ namespace OtherSideCore.Domain.Repositories
 
       public UserRepository(IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory) : base(userRepository, modelObjectFactory)
       {
-         _userRepository = userRepository;
+         
       }
 
       #endregion
 
       #region Public Methods
 
-      public async Task<T> GetSuperAdminUserAsync()
-      {
-         var superAdminUserEntity = await _userRepository.GetSuperAdminUserAsync();
-         var user = new T();
-         user.SetModelObjectFactory(_modelObjectFactory);
-         await user.LoadPropertiesFromEntityAsync(superAdminUserEntity);
-         return user;
-      }
-
       public async Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken)
       {
          modelObject.CreatedBy = await GetAsync(modelObject.CreatedById.Value, cancellationToken);
          modelObject.LastModifiedBy = await GetAsync(modelObject.LastModifiedById.Value, cancellationToken);
+      }
+
+      public async Task<T> GetUserByCredentials(string userName, string passwordHash)
+      {
+         var entity = await _userDataRepository.GetUserByCredentials(userName, passwordHash);
+
+         if (entity != null)
+         {
+            var modelObject = new T();
+            modelObject.SetModelObjectFactory(_modelObjectFactory);
+
+            await modelObject.LoadPropertiesFromEntityAsync(entity);
+
+            return modelObject;
+         }
+         else
+         {
+            return null;
+         }
       }
 
       #endregion

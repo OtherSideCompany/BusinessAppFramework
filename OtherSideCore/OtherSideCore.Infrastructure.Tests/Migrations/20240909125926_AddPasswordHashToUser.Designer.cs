@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OtherSideCore.Infrastructure.Tests;
 
@@ -10,9 +11,11 @@ using OtherSideCore.Infrastructure.Tests;
 namespace OtherSideCore.Infrastructure.Tests.Migrations
 {
     [DbContext(typeof(InfrastructureTestsDbContext))]
-    partial class InfrastructureTestsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240909125926_AddPasswordHashToUser")]
+    partial class AddPasswordHashToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");

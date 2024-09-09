@@ -95,8 +95,16 @@ namespace OtherSideCore.ViewModel
 
       public void InstanciateViewModel()
       {
-         ViewModel = (ViewModelBase)_serviceProvider.GetService(_viewModelType);
-         _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", Name, _viewModelType.Name);
+         if (_viewModelType == null)
+         {
+            _logger.LogInformation("Displaying view {ViewName}", Name);
+         }
+         else
+         {
+            ViewModel = (ViewModelBase)_serviceProvider.GetService(_viewModelType);
+            _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", Name, _viewModelType.Name);
+         }
+         
       }
 
       public virtual void Dispose()

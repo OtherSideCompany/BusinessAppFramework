@@ -23,7 +23,7 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
       {
          var users = await _userRepository.GetAllAsync(null, false, CancellationToken.None);
 
-         Assert.Equal(3, users.Count);
+         Assert.Equal(4, users.Count);
       }
 
       [Fact]
@@ -40,6 +40,22 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
          var users = await _userRepository.GetAllAsync(new List<string> { "Malcpurant" }, true, CancellationToken.None);
 
          Assert.Equal(2, users.Count);
+      }
+
+      [Fact] async Task GetUserByCredentials_UserIsReturned()
+      {
+         var user = await _userRepository.GetUserByCredentials("anth", "abcdefgh");
+
+         Assert.NotNull(user);
+         Assert.Equal(2, user.Id);
+      }
+
+      [Fact]
+      async Task GetUserByCredentials_UserIsNotReturnedIfWrongPassword()
+      {
+         var user = await _userRepository.GetUserByCredentials("anth", "kuhlkihliuh");
+
+         Assert.Null(user);
       }
    }
 }

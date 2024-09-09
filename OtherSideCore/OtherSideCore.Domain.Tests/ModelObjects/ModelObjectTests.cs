@@ -7,7 +7,7 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
    public class ModelObjectTests
    {
       [Fact]
-      public async void LoadPropertiesFromEntity_PropertiesWellSet()
+      public async Task LoadPropertiesFromEntity_PropertiesWellSet()
       {
          var sooner = DateTime.Now.AddDays(-1);
          var evenSooner = DateTime.Now.AddDays(-1);
@@ -32,7 +32,7 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
       }
 
       [Fact]
-      public async void LoadPropertiesFromEntity_UnrecognizedPropertyThrowException()
+      public async Task LoadPropertiesFromEntity_UnrecognizedPropertyThrowException()
       {
          var sooner = DateTime.Now.AddDays(-1);
          var evenSooner = DateTime.Now.AddDays(-1);
@@ -44,7 +44,7 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
       }
 
       [Fact]
-      public async void LoadPropertiesFromEntity_UsersAreWellSet()
+      public async Task LoadPropertiesFromEntity_UsersAreWellSet()
       {
          var sooner = DateTime.Now.AddDays(-1);
          var evenSooner = DateTime.Now.AddDays(-1);

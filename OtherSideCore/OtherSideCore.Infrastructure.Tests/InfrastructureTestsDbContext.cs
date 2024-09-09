@@ -14,7 +14,7 @@ namespace OtherSideCore.Infrastructure.Tests
       public virtual DbSet<TestEntity> TestEntities { get; set; }
       public virtual DbSet<User> Users { get; set; }
 
-      public InfrastructureTestsDbContext(string databasePath) : base(databasePath)
+      public InfrastructureTestsDbContext() : base()
       {
       }
 

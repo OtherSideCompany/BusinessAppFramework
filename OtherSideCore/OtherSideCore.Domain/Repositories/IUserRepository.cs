@@ -10,10 +10,8 @@ namespace OtherSideCore.Domain.Repositories
 {
     public interface IUserRepository<T> : IRepository<T> where T : User
    {
-      Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
-
-      Task<T> GetSuperAdminUserAsync();
-
       Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken);
+
+      Task<T> GetUserByCredentials(string userName, string passwordHash);
    }
 }

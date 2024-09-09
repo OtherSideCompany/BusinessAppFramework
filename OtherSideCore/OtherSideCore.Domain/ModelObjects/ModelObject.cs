@@ -192,7 +192,7 @@ namespace OtherSideCore.Domain.ModelObjects
          }
       }
 
-      public bool CanBeDeleted()
+      public virtual bool CanBeDeleted()
       {
          return true;
       }

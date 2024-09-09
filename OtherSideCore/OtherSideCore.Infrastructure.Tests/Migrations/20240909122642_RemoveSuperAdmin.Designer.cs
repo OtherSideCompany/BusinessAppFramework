@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OtherSideCore.Infrastructure.Tests;
 
@@ -10,9 +11,11 @@ using OtherSideCore.Infrastructure.Tests;
 namespace OtherSideCore.Infrastructure.Tests.Migrations
 {
     [DbContext(typeof(InfrastructureTestsDbContext))]
-    partial class InfrastructureTestsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240909122642_RemoveSuperAdmin")]
+    partial class RemoveSuperAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -53,9 +56,6 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserName")

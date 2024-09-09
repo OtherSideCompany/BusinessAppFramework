@@ -16,7 +16,7 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
              columns: table => new
              {
                 Id = table.Column<int>(type: "INTEGER", nullable: false)
-                     .Annotation("Sqlite:Autoincrement", true),
+                          .Annotation("Sqlite:Autoincrement", true),
                 CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                 CreatedById = table.Column<int>(type: "INTEGER", nullable: false),
                 LastModifiedDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),

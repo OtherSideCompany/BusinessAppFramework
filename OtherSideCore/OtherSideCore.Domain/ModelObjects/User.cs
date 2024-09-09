@@ -6,21 +6,20 @@ namespace OtherSideCore.Domain.ModelObjects
    {
       #region Fields
 
-      private const int SUPERADMINID = 1;
-
-      private BoolDatabaseField _isSuperAdmin;
+      private BoolDatabaseField _isActive;
       private StringDatabaseField _firstName;
       private StringDatabaseField _lastName;
       private StringDatabaseField _userName;
+      private StringDatabaseField _passwordHash;
 
       #endregion
 
       #region Properties
 
-      public BoolDatabaseField IsSuperAdmin
+      public BoolDatabaseField IsActive
       {
-         get => _isSuperAdmin;
-         private set => SetProperty(ref _isSuperAdmin, value);
+         get => _isActive;
+         private set => SetProperty(ref _isActive, value);
       }
 
       public StringDatabaseField FirstName
@@ -41,6 +40,12 @@ namespace OtherSideCore.Domain.ModelObjects
          private set => SetProperty(ref _userName, value);
       }
 
+      public StringDatabaseField PasswordHash
+      {
+         get => _passwordHash;
+         private set => SetProperty(ref _passwordHash, value);
+      }
+
       #endregion
 
       #region Commands
@@ -53,17 +58,23 @@ namespace OtherSideCore.Domain.ModelObjects
 
       public User() : base()
       {
-         IsSuperAdmin = new BoolDatabaseField(nameof(IsSuperAdmin));
+         IsActive = new BoolDatabaseField(nameof(IsActive));
          FirstName = new StringDatabaseField(nameof(FirstName), 50);
          LastName = new StringDatabaseField(nameof(LastName), 50);
          UserName = new StringDatabaseField(nameof(UserName), 50);
+         PasswordHash = new StringDatabaseField(nameof(PasswordHash), 512);
+
+         IsActive.Value = true;
       }
 
       #endregion
 
       #region Public Methods
 
-
+      public override bool CanBeDeleted()
+      {
+         return false;
+      }
 
       #endregion
    }

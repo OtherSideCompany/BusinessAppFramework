@@ -20,7 +20,8 @@ namespace OtherSideCore.Infrastructure.Tests
       {
          if (_instance == null)
          {
-            _instance = new InfrastructureTestsDbContext(":memory:");
+            _instance = new InfrastructureTestsDbContext();
+            _instance.DatabasePath = ":memory:";
          }
  
          return _instance;         

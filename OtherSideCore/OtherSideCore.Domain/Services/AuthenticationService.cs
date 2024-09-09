@@ -6,7 +6,7 @@ using OtherSideCore.Domain.Repositories;
 
 namespace OtherSideCore.Domain.Services
 {
-   public abstract class AuthenticationService<T> : ObservableObject, IAuthenticationService<T> where T : User, new()
+   public class AuthenticationService<T> : ObservableObject, IAuthenticationService<T> where T : User, new()
    {
       #region Fields
 
@@ -49,7 +49,8 @@ namespace OtherSideCore.Domain.Services
 
       public async Task AuthenticateUserAsync(string userName, string passwordHash)
       {
-         AuthenticatedUser = CanAuthenticateUser() ? await GetUserByCredentials(userName, passwordHash) : null;
+         using var repository = _repositoryFactory.CreateUserRepository<T>();
+         AuthenticatedUser = CanAuthenticateUser() ? await repository.GetUserByCredentials(userName, passwordHash) : null;
       }
 
       public bool CanLogoutUser()
@@ -72,11 +73,7 @@ namespace OtherSideCore.Domain.Services
 
       #region Prvate Methods
 
-      protected async Task<T> GetUserByCredentials(string userName, string passwordHash)
-      {
-         using var repository = _repositoryFactory.CreateUserRepository<T>();
-         return await repository.GetSuperAdminUserAsync();
-      }
+
 
       #endregion
    }
