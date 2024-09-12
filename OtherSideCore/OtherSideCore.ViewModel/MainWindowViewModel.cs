@@ -10,29 +10,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class MainWindowViewModel<T> : ObservableObject, IDisposable where T : User
+   public abstract class MainWindowViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
       private readonly IServiceProvider _serviceProvider;
-      protected IAuthenticationService<T> _authenticationService;
+      protected IAuthenticationService _authenticationService;
 
       private string _applicationLogoImageSource;
+      private string _companyLogoImageSource;
       private string _applicationName;
       private bool _isNavigationMenuDisplayed;
-      private List<ViewBase> _views;
-      private List<ViewBase> _quickNavigationViews;
+      private List<ViewDescriptionBase> _viewDescriptions;
+      private List<ViewDescriptionBase> _quickNavigationViewescriptions;
       private IDisposable _instanciatedViewModel;
       private System.Windows.Controls.UserControl _mainWindowContent;
+      private ViewDescriptionBase _defaultViewDescription;
+
+      private string _connexionUserName;
+      private string _connexionPassword;
+      private bool _rememberUserName;
 
       #endregion
 
       #region Properties
 
-      public IAuthenticationService<T> AuthenticationService
+      public IAuthenticationService AuthenticationService
       {
          get => _authenticationService;
          set => SetProperty(ref _authenticationService, value);
@@ -42,6 +50,12 @@ namespace OtherSideCore.ViewModel
       {
          get => _applicationLogoImageSource;
          set => SetProperty(ref _applicationLogoImageSource, value);
+      }
+
+      public string CompanyLogoImageSource
+      {
+         get => _companyLogoImageSource;
+         set => SetProperty(ref _companyLogoImageSource, value);
       }
 
       public string ApplicationName
@@ -56,16 +70,16 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref _isNavigationMenuDisplayed, value);
       }
 
-      public List<ViewBase> Views
+      public List<ViewDescriptionBase> ViewDescriptions
       {
-         get => _views;
-         set => SetProperty(ref _views, value);
+         get => _viewDescriptions;
+         set => SetProperty(ref _viewDescriptions, value);
       }
 
-      public List<ViewBase> QuickNavigationViews
+      public List<ViewDescriptionBase> QuickNavigationViewDescriptions
       {
-         get => _quickNavigationViews;
-         set => SetProperty(ref _quickNavigationViews, value);
+         get => _quickNavigationViewescriptions;
+         set => SetProperty(ref _quickNavigationViewescriptions, value);
       }
 
       public System.Windows.Controls.UserControl MainWindowContent
@@ -74,7 +88,31 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref _mainWindowContent, value);
       }
 
-      public ViewBase LoadedView => Views.FirstOrDefault(v => v.IsLoaded);
+      public string ConnexionUserName
+      {
+         get => _connexionUserName;
+         set => SetProperty(ref _connexionUserName, value);
+      }
+
+      public string ConnexionPassword
+      {
+         get => _connexionPassword;
+         set => SetProperty(ref _connexionPassword, value);
+      }
+
+      public bool RememberUserName
+      {
+         get => _rememberUserName;
+         set => SetProperty(ref _rememberUserName, value);
+      }
+
+      public ViewDescriptionBase DefaultViewDescription
+      {
+         get => _defaultViewDescription;
+         set => SetProperty(ref _defaultViewDescription, value);
+      }
+
+      public ViewDescriptionBase LoadedViewDescription => ViewDescriptions.FirstOrDefault(vd => vd.IsLoaded);
 
       #endregion
 
@@ -82,25 +120,27 @@ namespace OtherSideCore.ViewModel
 
       public AsyncRelayCommand AuthenticateUserAsyncCommand { get; set; }
       public AsyncRelayCommand DisconnectAuthenticatedUserAsyncCommand { get; set; }
-      public RelayCommand<ViewBase> DisplayViewCommand { get; set; }
+      public RelayCommand<ViewDescriptionBase> DisplayViewCommand { get; set; }
 
       #endregion
 
       #region Constructor
 
-      public MainWindowViewModel(IAuthenticationService<T> authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+      public MainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
       {
          AuthenticationService = authenticationService;
          _serviceProvider = serviceProvider;
 
-         Views = new List<ViewBase>();
-         QuickNavigationViews = new List<ViewBase>();
+         ViewDescriptions = new List<ViewDescriptionBase>();
+         QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
 
          AuthenticateUserAsyncCommand = new AsyncRelayCommand(AuthenticateUserAsync);
          DisconnectAuthenticatedUserAsyncCommand = new AsyncRelayCommand(DisconnectAuthenticatedUserAsync);
-         DisplayViewCommand = new RelayCommand<ViewBase>(DisplayView);
+         DisplayViewCommand = new RelayCommand<ViewDescriptionBase>(DisplayView);
 
          ApplicationName = "Unnamed App";
+
+         LoadSettings();
       }
 
       #endregion
@@ -109,9 +149,29 @@ namespace OtherSideCore.ViewModel
 
       public async Task AuthenticateUserAsync()
       {
-         if (AuthenticationService.CanAuthenticateUser())
+         if (AuthenticationService.CanAuthenticateUser(ConnexionUserName, ConnexionPassword))
          {
-            await AuthenticationService.AuthenticateUserAsync(null, "");
+            await AuthenticationService.AuthenticateUserAsync(ConnexionUserName, ConnexionPassword);         
+            
+            if (!AuthenticationService.IsUserAuthenticated())
+            {
+               MessageBox.Show("Nom d'utilisateur ou mot de passe invalide", "Erreur d'authentification", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+               SaveSettings();
+
+               if (DefaultViewDescription != null)
+               {
+                  DisplayView(DefaultViewDescription);
+               }
+            }
+
+            ResetConnexionInfos();
+         }
+         else
+         {
+            MessageBox.Show("Veuillez entrer un nom d'utilisateur et un mot de passe valides.", "Erreur d'authentification", MessageBoxButton.OK, MessageBoxImage.Error);
          }
       }      
 
@@ -124,25 +184,59 @@ namespace OtherSideCore.ViewModel
 
       #region Private Methods
 
+      private void LoadSettings()
+      {
+         RememberUserName = Properties.Settings.Default.RememberUserName;
+
+         if (RememberUserName)
+         {
+            ConnexionUserName = Properties.Settings.Default.UserName;
+         }
+      }
+
+      private void SaveSettings()
+      {
+         if (RememberUserName)
+         {
+            Properties.Settings.Default.UserName = ConnexionUserName;
+            Properties.Settings.Default.RememberUserName = RememberUserName;
+         }
+         else
+         {
+            Properties.Settings.Default.UserName = string.Empty;
+            Properties.Settings.Default.RememberUserName = false;
+         }
+
+         Properties.Settings.Default.Save();
+      }
+
+      private void ResetConnexionInfos()
+      {
+         ConnexionUserName = "";
+         ConnexionPassword = "";
+      }
+
       private async Task DisconnectAuthenticatedUserAsync()
       {
          if (AuthenticationService.CanLogoutUser())
          {
             await AuthenticationService.LogoutUserAsync();
          }
+
+         LoadSettings();
       }
 
-      private void DisplayView(ViewBase viewBase)
+      private void DisplayView(ViewDescriptionBase viewBase)
       {
-         LoadedView?.Dispose();
+         LoadedViewDescription?.Dispose();
 
-         Views.ForEach(v => v.IsLoaded = false);
+         ViewDescriptions.ForEach(v => v.IsLoaded = false);
 
          viewBase.IsLoaded = true;
 
-         LoadedView.InstanciateViewModel();
+         LoadedViewDescription.InstanciateViewModel();
 
-         OnPropertyChanged(nameof(LoadedView));
+         OnPropertyChanged(nameof(LoadedViewDescription));
       }
 
       #endregion

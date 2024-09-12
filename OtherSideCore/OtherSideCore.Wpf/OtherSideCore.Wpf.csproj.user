@@ -29,7 +29,7 @@
     <Page Update="UserControls\SearchListAsyncActionButton.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ViewGroupView.xaml">
+    <Page Update="UserControls\DashboardBaseView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

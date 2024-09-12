@@ -6,14 +6,13 @@ using System.Windows.Controls;
 
 namespace OtherSideCore.ViewModel
 {
-   public abstract class ViewBase : ObservableObject, IDisposable
+   public abstract class ViewDescriptionBase : ObservableObject, IDisposable
    {
       #region Fields
-      
+
       private bool _isLoaded;
       private string _name;
-      private string _viewNavigationPath;      
-      private ViewModelBase _viewModel;
+      private string _viewNavigationPath;
       private object _iconResource;
 
       protected Type _viewModelType;
@@ -43,12 +42,6 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref _viewNavigationPath, value);
       }
 
-      public ViewModelBase ViewModel
-      {
-         get => _viewModel;
-         set => SetProperty(ref _viewModel, value);
-      }
-
       public object IconResource
       {
          get => _iconResource;
@@ -65,7 +58,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ViewBase(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, string name, Type viewModelType, object iconResource)
+      public ViewDescriptionBase(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, string name, Type viewModelType, object iconResource)
       {
          _serviceProvider = serviceProvider;
          _loggerFactory = loggerFactory;
@@ -85,27 +78,12 @@ namespace OtherSideCore.ViewModel
          IsLoaded = true;
       }
 
-      public void Unload()
+      public virtual void Unload()
       {
-         ViewModel?.Dispose();
-         ViewModel = null;
-
          IsLoaded = false;
       }
 
-      public void InstanciateViewModel()
-      {
-         if (_viewModelType == null)
-         {
-            _logger.LogInformation("Displaying view {ViewName}", Name);
-         }
-         else
-         {
-            ViewModel = (ViewModelBase)_serviceProvider.GetService(_viewModelType);
-            _logger.LogInformation("Displaying view {ViewName} in {ViewModelType}", Name, _viewModelType.Name);
-         }
-         
-      }
+      public abstract void InstanciateViewModel();
 
       public virtual void Dispose()
       {

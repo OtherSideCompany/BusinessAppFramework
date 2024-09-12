@@ -14,6 +14,7 @@
    <SolidColorBrush Color="#FFE6E6E6" x:Key="OtherSide_LightGray"/>
    <SolidColorBrush Color="#FFE6E6E6" x:Key="OtherSide_LightLightGray" Opacity="0.3"/>
    <SolidColorBrush Color="#FFE6E6E6" x:Key="OtherSide_SuperLightGray" Opacity="0.1"/>
+   <SolidColorBrush Color="#FF2EA2F8" x:Key="Selected_Color"/>
 
    <!-- default textblock -->
    <Style TargetType="{x:Type TextBlock}">
@@ -395,6 +396,37 @@
             <Setter Property="Cursor" Value="Arrow" />
          </Trigger>
       </Style.Triggers>
+   </Style>
+
+   <!-- checkbox custom style -->
+   <Style TargetType="{x:Type CheckBox}">
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type CheckBox}">
+               <BulletDecorator Background="Transparent" SnapsToDevicePixels="true">
+                  <BulletDecorator.Bullet>
+                     <Border x:Name="Border" Width="16" Height="16" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="White">
+                        <Path Visibility="Collapsed" Width="12" Height="12" x:Name="CheckMark" SnapsToDevicePixels="False" StrokeThickness="2" Data="M 2,5 L 5,9 L 10,3" Stroke="Black" />
+                     </Border>
+                  </BulletDecorator.Bullet>
+                  <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+               </BulletDecorator>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource Selected_Color}"/>
+                  </Trigger>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                  </Trigger>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.3" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
    </Style>
 
 </ResourceDictionary>

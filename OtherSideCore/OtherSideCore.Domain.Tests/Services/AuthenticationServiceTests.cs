@@ -4,6 +4,7 @@ using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
 using OtherSideCore.Domain.Services;
+using OtherSideCore.Infrastructure.Repositories;
 
 namespace OtherSideCore.Domain.Tests.Services
 {
@@ -23,7 +24,7 @@ namespace OtherSideCore.Domain.Tests.Services
          _anthony.FirstName.Value = "Anthony";
          _anthony.LastName.Value = "Thonon";
          _anthony.UserName.Value = "anth";
-         _anthony.PasswordHash.Value = "abcdefgh";
+         _anthony.PasswordHash.Value = PasswordService.HashPassword("abcdefgh");
 
          var mockDbContextFactory = new Mock<IDbContextFactory<DbContext>>();
 
@@ -33,7 +34,8 @@ namespace OtherSideCore.Domain.Tests.Services
 
          var repositoryFactory = new Mock<RepositoryFactory>(mockDbContextFactory.Object, modelObjectFactory, mockLogger.Object);
          var userRepository = new Mock<IUserRepository<User>>();
-         userRepository.Setup(x => x.GetUserByCredentials(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_anthony);
+         userRepository.Setup(x => x.GetUserPasswordHashAsync("anth")).ReturnsAsync((_anthony.Id.Value, _anthony.PasswordHash.Value));
+         userRepository.Setup(x => x.GetAsync(2, CancellationToken.None)).ReturnsAsync(_anthony);
 
          repositoryFactory.Setup(x => x.CreateUserRepository<User>()).Returns(userRepository.Object);
 
@@ -43,29 +45,41 @@ namespace OtherSideCore.Domain.Tests.Services
       [Fact]
       public void CanAuthenticateUser_ReturnsTrueWhenServiceIsInitialized()
       {
-         Assert.True(_authenticationService.CanAuthenticateUser());
+         Assert.True(_authenticationService.CanAuthenticateUser("user", "pwdHash"));
+      }
+
+      [Theory]
+      [InlineData("","")]
+      [InlineData(null, null)]
+      [InlineData("test", "")]
+      [InlineData("test", null)]
+      [InlineData("", "test")]
+      [InlineData(null, "test")]
+      public void CanAuthenticateUser_ReturnsFalseWhenArgsAreNullOrEmpty(string username, string passwordHash)
+      {
+         Assert.False(_authenticationService.CanAuthenticateUser(username, passwordHash));
       }
 
       [Fact]
       public async Task AuthenticateUserAsync_UserIsAuthenticated()
       {
-         await _authenticationService.AuthenticateUserAsync("test", "test");
+         await _authenticationService.AuthenticateUserAsync("anth", "abcdefgh");
 
-         Assert.NotNull(_authenticationService.AuthenticatedUser);
-         Assert.False(_authenticationService.CanAuthenticateUser());
+         Assert.True(_authenticationService.IsUserAuthenticated());
+         Assert.False(_authenticationService.CanAuthenticateUser("anth", "abcdefgh"));
       }
 
       [Fact]
       public async Task AuthenticateUserAsync_UserCanBeLoggedOutAfterAuthentication()
       {
-         await _authenticationService.AuthenticateUserAsync("test", "test");
+         await _authenticationService.AuthenticateUserAsync("anth", "abcdefgh");
 
          Assert.True(_authenticationService.CanLogoutUser());
 
          await _authenticationService.LogoutUserAsync();
 
          Assert.False(_authenticationService.CanLogoutUser());
-         Assert.True(_authenticationService.CanAuthenticateUser());
+         Assert.True(_authenticationService.CanAuthenticateUser("test", "abcdefgh"));
       }
    }
 }

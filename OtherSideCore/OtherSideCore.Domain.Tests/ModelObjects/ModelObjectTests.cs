@@ -32,6 +32,31 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
       }
 
       [Fact]
+      public async Task LoadPropertiesFromEntity_PropertiesWellSetWithNullTracking()
+      {
+         var sooner = DateTime.Now.AddDays(-1);
+         var evenSooner = DateTime.Now.AddDays(-1);
+
+         var modelObject = new DefaultModelObect();
+         var entity = new DefaultEntity()
+         {
+            Id = 10,
+            CreatedById = null,
+            LastModifiedById = null,
+            CreationDate = evenSooner,
+            LastModifiedDateTime = sooner
+         };
+
+         await modelObject.LoadPropertiesFromEntityAsync(entity, false);
+
+         Assert.Equal(entity.Id, modelObject.Id.Value);
+         Assert.Equal(entity.CreatedById, modelObject.CreatedById.Value);
+         Assert.Equal(entity.LastModifiedById, modelObject.LastModifiedById.Value);
+         Assert.Equal(entity.CreationDate, modelObject.CreationDate.Value);
+         Assert.Equal(entity.LastModifiedDateTime, modelObject.LastModifiedDateTime.Value);
+      }
+
+      [Fact]
       public async Task LoadPropertiesFromEntity_UnrecognizedPropertyThrowException()
       {
          var sooner = DateTime.Now.AddDays(-1);

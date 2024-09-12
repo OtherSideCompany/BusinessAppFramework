@@ -3,10 +3,11 @@ using OtherSideCore.Domain.ModelObjects;
 using Microsoft.EntityFrameworkCore;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OtherSideCore.Domain.Repositories;
+using System.Threading;
 
 namespace OtherSideCore.Domain.Services
 {
-   public class AuthenticationService<T> : ObservableObject, IAuthenticationService<T> where T : User, new()
+   public class AuthenticationService<T> : ObservableObject, IAuthenticationService where T : User, new()
    {
       #region Fields
 
@@ -42,20 +43,43 @@ namespace OtherSideCore.Domain.Services
 
       #region Public Methods
 
-      public bool CanAuthenticateUser()
+      public bool IsUserAuthenticated()
       {
-         return AuthenticatedUser == null;
+         return AuthenticatedUser != null;
       }
 
-      public async Task AuthenticateUserAsync(string userName, string passwordHash)
+      public ModelObject GetAuthenticatedUser()
+      {
+         return AuthenticatedUser;
+      }
+
+      public bool CanAuthenticateUser(string userName, string password)
+      {
+         return !IsUserAuthenticated() && !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password);
+      }
+
+      public async Task AuthenticateUserAsync(string userName, string password)
       {
          using var repository = _repositoryFactory.CreateUserRepository<T>();
-         AuthenticatedUser = CanAuthenticateUser() ? await repository.GetUserByCredentials(userName, passwordHash) : null;
+
+         if (CanAuthenticateUser(userName, password))
+         {
+            (var userId, var passwordHash) = await repository.GetUserPasswordHashAsync(userName);
+
+            if (userId > 0 && PasswordService.VerifyPassword(passwordHash, password))
+            {
+               AuthenticatedUser = await repository.GetAsync(userId, CancellationToken.None);
+            }
+         }
+         else
+         {
+            AuthenticatedUser = null;
+         }
       }
 
       public bool CanLogoutUser()
       {
-         return AuthenticatedUser != null;
+         return IsUserAuthenticated();
       }
       public async Task<bool> LogoutUserAsync()
       {

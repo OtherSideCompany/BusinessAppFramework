@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace OtherSideCore.Wpf.CustomControls.Converters
+namespace OtherSideCore.Wpf.Converters
 {
    public class BoolInverter : IValueConverter
    {

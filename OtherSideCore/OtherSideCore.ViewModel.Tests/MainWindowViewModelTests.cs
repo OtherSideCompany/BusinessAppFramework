@@ -11,14 +11,14 @@ namespace OtherSideCore.ViewModel.Tests
 {
    public class MainWindowViewModelTests
    {
-      private MainWindowViewModel<User> _mainWindowViewModel;
-      private View _view1;
-      private View _view2;
-      private ViewGroup _viewGroup;
+      private MainWindowViewModel _mainWindowViewModel;
+      private ViewDescription _view1;
+      private ViewDescription _view2;
+      private DashboardDescription _viewGroup;
 
       public MainWindowViewModelTests()
       {
-         var authenticationService = new Mock<IAuthenticationService<User>>();
+         var authenticationService = new Mock<IAuthenticationService>();
          var serviceCollection = new ServiceCollection();
          serviceCollection.AddTransient<DefaultViewModel>();
          var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -28,15 +28,15 @@ namespace OtherSideCore.ViewModel.Tests
 
          _mainWindowViewModel = new CustomMainWindowViewModel(authenticationService.Object, serviceProvider, loggerFactory.Object);
 
-         _view1 = new View(serviceProvider, loggerFactory.Object, "view 1", typeof(DefaultViewModel), null);
-         _view2 = new View(serviceProvider, loggerFactory.Object, "view 2", typeof(DefaultViewModel), null);
-         _viewGroup = new ViewGroup(serviceProvider, loggerFactory.Object, "view group", null);
+         _view1 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 1", typeof(DefaultViewModel), null);
+         _view2 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 2", typeof(DefaultViewModel), null);
+         _viewGroup = new DashboardDescription(serviceProvider, loggerFactory.Object, "view group", typeof(DefaultDashboardViewModel), null);
 
-         _viewGroup.SubViews.Add(_view1);
-         _viewGroup.SubViews.Add(_view2);
+         _viewGroup.SubViewDescriptions.Add(_view1);
+         _viewGroup.SubViewDescriptions.Add(_view2);
 
-         _mainWindowViewModel.Views.Add(_view1);
-         _mainWindowViewModel.Views.Add(_view2);
+         _mainWindowViewModel.ViewDescriptions.Add(_view1);
+         _mainWindowViewModel.ViewDescriptions.Add(_view2);
       }
 
       [Fact]
@@ -47,11 +47,11 @@ namespace OtherSideCore.ViewModel.Tests
             _mainWindowViewModel.DisplayViewCommand.Execute(_view1);
          }
 
-         Assert.NotNull(_mainWindowViewModel.LoadedView);
+         Assert.NotNull(_mainWindowViewModel.LoadedViewDescription);
          Assert.True(_view1.IsLoaded);
          Assert.False(_view2.IsLoaded);
-         Assert.NotNull(_view1.ViewModel);
-         Assert.Null(_view2.ViewModel);
+         Assert.NotNull(_view1.ViewViewModelBase);
+         Assert.Null(_view2.ViewViewModelBase);
 
          if (_mainWindowViewModel.DisplayViewCommand.CanExecute(_view2))
          {
@@ -60,8 +60,8 @@ namespace OtherSideCore.ViewModel.Tests
 
          Assert.False(_view1.IsLoaded);
          Assert.True(_view2.IsLoaded);
-         Assert.Null(_view1.ViewModel);
-         Assert.NotNull(_view2.ViewModel);
+         Assert.Null(_view1.ViewViewModelBase);
+         Assert.NotNull(_view2.ViewViewModelBase);
       }
 
       [Fact]
@@ -75,18 +75,26 @@ namespace OtherSideCore.ViewModel.Tests
          Assert.True(_viewGroup.IsSubViewLoaded);
       }
 
-      private class CustomMainWindowViewModel : MainWindowViewModel<User>
+      private class CustomMainWindowViewModel : MainWindowViewModel
       {
-         public CustomMainWindowViewModel(IAuthenticationService<User> authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory) : base(authenticationService, serviceProvider, loggerFactory)
+         public CustomMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory) : base(authenticationService, serviceProvider, loggerFactory)
          {
          }
       }
 
-      private class DefaultViewModel : ViewModelBase
+      private class DefaultViewModel : ViewViewModelBase
       {
          public override void Dispose()
          {
             
+         }
+      }
+
+      private class DefaultDashboardViewModel : DashboardViewModelBase
+      {
+         public override void Dispose()
+         {
+
          }
       }
    }

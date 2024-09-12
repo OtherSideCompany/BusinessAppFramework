@@ -12,6 +12,6 @@ namespace OtherSideCore.Domain.Repositories
    {
       Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken);
 
-      Task<T> GetUserByCredentials(string userName, string passwordHash);
+      Task<(int, string)> GetUserPasswordHashAsync(string userName);
    }
 }

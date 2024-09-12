@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
 using System;
@@ -44,7 +45,7 @@ namespace OtherSideCore.Infrastructure.Tests
             FirstName = "Super",
             LastName = "Admin",
             UserName = "administrator",
-            PasswordHash = "abcdefgh"
+            PasswordHash = PasswordService.HashPassword("abcdefgh")
          };
 
          var anthony = new User
@@ -57,7 +58,7 @@ namespace OtherSideCore.Infrastructure.Tests
             FirstName = "Anthony",
             LastName = "Thonon",
             UserName = "anth",
-            PasswordHash = "abcdefgh"
+            PasswordHash = PasswordService.HashPassword("abcdefgh")
          };
 
          var joy = new User
@@ -70,7 +71,7 @@ namespace OtherSideCore.Infrastructure.Tests
             FirstName = "Joy",
             LastName = "Malcourant",
             UserName = "joma",
-            PasswordHash = "abcdefgh"
+            PasswordHash = PasswordService.HashPassword("abcdefgh")
          };
 
          var pierre = new User
@@ -83,7 +84,7 @@ namespace OtherSideCore.Infrastructure.Tests
             FirstName = "Pierre",
             LastName = "Malcourant",
             UserName = "pima",
-            PasswordHash = "abcdefgh"
+            PasswordHash = PasswordService.HashPassword("abcdefgh")
          };
 
          var userRepository = new UserDataRepository<User>(InfrastructureTestsDbContextFactory, LoggerFactoryMock.Object);

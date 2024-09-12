@@ -49,7 +49,7 @@
                                                  SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"/>
          </Border>
 
-         <ItemsControl Grid.Row="1" ItemsSource="{Binding QuickNavigationViews}">
+         <ItemsControl Grid.Row="1" ItemsSource="{Binding QuickNavigationViewDescriptions}">
             <ItemsControl.ItemsPanel>
                <ItemsPanelTemplate>
                   <StackPanel Orientation="Vertical" />
@@ -66,7 +66,7 @@
                      <ContentPresenter Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type viewmodel:View}">
+                           <DataTemplate DataType="{x:Type viewmodel:ViewDescription}">
                               <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
                                       Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -107,7 +107,7 @@
                               </Button>
                            </DataTemplate>
 
-                           <DataTemplate DataType="{x:Type viewmodel:ViewGroup}">
+                           <DataTemplate DataType="{x:Type viewmodel:DashboardDescription}">
                               <Button Cursor="Hand"
                                       Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -134,8 +134,10 @@
                                                               Foreground="{StaticResource ForegroundColor}" Margin="0,0,15,0"/>
 
 
-                                                   <Grid Grid.Column="2" Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                                   <Grid Grid.Column="2" 
+                                                         Visibility="{Binding IsChecked, ElementName=MenuToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                                       <customcontrols:SvgImageToggleButton Width="32" Background="Transparent"
+                                                                                           Visibility="{Binding SubViewDescriptions.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
                                                                                            SvgImageToggleButton_ImageSize="16"
                                                                                            SvgImageToggleButton_CheckedBackgroundColor="Transparent"
                                                                                            SvgImageToggleButton_OverBackgroundColor="Transparent"
@@ -177,11 +179,11 @@
                      <ContentPresenter Grid.Row="1" Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type viewmodel:View}"/>
+                           <DataTemplate DataType="{x:Type viewmodel:ViewDescription}"/>
 
-                           <DataTemplate DataType="{x:Type viewmodel:ViewGroup}">
+                           <DataTemplate DataType="{x:Type viewmodel:DashboardDescription}">
                               <Grid Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisibleOrCollapsed}, ElementName=MenuToggleButton}">
-                                 <ItemsControl ItemsSource="{Binding SubViews}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                 <ItemsControl ItemsSource="{Binding SubViewDescriptions}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <ItemsControl.ItemsPanel>
                                        <ItemsPanelTemplate>
                                           <StackPanel Orientation="Vertical" />

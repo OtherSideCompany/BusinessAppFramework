@@ -1,8 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                    xmlns:converters="clr-namespace:OtherSideCore.Wpf.CustomControls.Converters">
+                    xmlns:converters="clr-namespace:OtherSideCore.Wpf.Converters">
    <converters:NullOrEmptyStringToVisibilityConverter x:Key="NullOrEmptyStringToVisibilityConverter" />
    <converters:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
+   <converters:BoolToVisibleOrHidden x:Key="BoolToVisibleOrHidden" />
    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
    <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
    <converters:BoolInverter x:Key="BoolInverter" />

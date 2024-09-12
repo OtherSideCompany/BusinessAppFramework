@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
     <ProjectReference Include="..\OtherSideCore.Infrastructure\OtherSideCore.Infrastructure.csproj" />
   </ItemGroup>
 

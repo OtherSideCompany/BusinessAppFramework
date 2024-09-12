@@ -11,7 +11,7 @@ namespace OtherSideCore.Domain.Repositories
    {
       #region Fields
 
-      private IUserDataRepository<U> _userDataRepository { get => (IUserDataRepository<U>)_entityDataRepository;}
+      private IUserDataRepository<U> _userDataRepository { get => (IUserDataRepository<U>)_entityDataRepository; }
 
       #endregion
 
@@ -31,7 +31,7 @@ namespace OtherSideCore.Domain.Repositories
 
       public UserRepository(IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory) : base(userRepository, modelObjectFactory)
       {
-         
+
       }
 
       #endregion
@@ -40,27 +40,14 @@ namespace OtherSideCore.Domain.Repositories
 
       public async Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken)
       {
-         modelObject.CreatedBy = await GetAsync(modelObject.CreatedById.Value, cancellationToken);
-         modelObject.LastModifiedBy = await GetAsync(modelObject.LastModifiedById.Value, cancellationToken);
+
+         modelObject.CreatedBy = modelObject.CreatedById.Value.HasValue ? await GetAsync((int)modelObject.CreatedById.Value, cancellationToken) : null;
+         modelObject.LastModifiedBy = modelObject.LastModifiedById.Value.HasValue ? await GetAsync((int)modelObject.LastModifiedById.Value, cancellationToken) : null;
       }
 
-      public async Task<T> GetUserByCredentials(string userName, string passwordHash)
+      public async Task<(int, string)> GetUserPasswordHashAsync(string userName)
       {
-         var entity = await _userDataRepository.GetUserByCredentials(userName, passwordHash);
-
-         if (entity != null)
-         {
-            var modelObject = new T();
-            modelObject.SetModelObjectFactory(_modelObjectFactory);
-
-            await modelObject.LoadPropertiesFromEntityAsync(entity);
-
-            return modelObject;
-         }
-         else
-         {
-            return null;
-         }
+         return await _userDataRepository.GetUserPasswordHashAsync(userName);
       }
 
       #endregion

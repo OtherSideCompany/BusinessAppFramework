@@ -16,9 +16,6 @@ namespace OtherSideCore.Infrastructure.Context
       {
          modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string) }));
 
-         modelBuilder.Entity<EntityBase>().UseTpcMappingStrategy();
-
-         modelBuilder.Entity<User>().UseTpcMappingStrategy();
          modelBuilder.Entity<User>().HasOne(u => u.CreatedBy).WithMany().HasForeignKey(u => u.CreatedById).OnDelete(DeleteBehavior.Restrict);
          modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
       }

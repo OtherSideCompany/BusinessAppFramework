@@ -13,8 +13,8 @@
    <WindowChrome.WindowChrome>
       <WindowChrome CaptionHeight="0" CornerRadius="0" ResizeBorderThickness="10" GlassFrameThickness="0"/>
    </WindowChrome.WindowChrome>
-   
-   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="White">
+
+   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="#FFDADADA">
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="*" />
@@ -35,7 +35,7 @@
                <local:NavigationMenu Grid.Column="0" />
 
                <!-- content -->
-               <Border Grid.Column="1">
+               <Border Grid.Column="1" Background="White">
                   <ContentPresenter Content="{Binding MainWindowContent}" />
                </Border>
 
@@ -43,11 +43,7 @@
 
             <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
 
-               <Button Command="{Binding AuthenticateUserAsyncCommand}" Content="Connexion" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
-
-               <local:LoadingView VerticalAlignment="Center"
-                                  Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
+               <local:LoginView HorizontalAlignment="Center" VerticalAlignment="Center" />
 
             </Grid>
 

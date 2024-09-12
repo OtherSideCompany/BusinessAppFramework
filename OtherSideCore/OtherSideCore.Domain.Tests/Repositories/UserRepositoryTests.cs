@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -26,14 +27,14 @@ namespace OtherSideCore.Domain.Tests.Repositories
          FirstName = "Anthony",
          LastName = "Thonon",
          UserName = "anth",
-         PasswordHash = "abcdefgh"
+         PasswordHash = PasswordService.HashPassword("abcdefgh")
       };
 
       public UserRepositoryTests()
       {
          var userDataRepository = new Mock<UserDataRepository<Infrastructure.Entities.User>>(new Mock<IDbContextFactory<DbContext>>().Object, new Mock<Microsoft.Extensions.Logging.ILoggerFactory>().Object);
 
-         userDataRepository.Setup(x => x.GetUserByCredentials("anth", "abcdefgh")).ReturnsAsync(_anthony);
+         userDataRepository.Setup(x => x.GetUserPasswordHashAsync("anth")).ReturnsAsync((_anthony.Id, _anthony.PasswordHash));
 
          _userRepository = new UserRepository<User, Infrastructure.Entities.User>(userDataRepository.Object, new ModelObjectFactory());
       }
@@ -41,18 +42,20 @@ namespace OtherSideCore.Domain.Tests.Repositories
       [Fact]
       async Task GetUserByCredentials_UserIsReturned()
       {
-         var user = await _userRepository.GetUserByCredentials("anth", "abcdefgh");
-
-         Assert.NotNull(user);
-         Assert.Equal(2, user.Id.Value);
+         var (id, passwordHash) = await _userRepository.GetUserPasswordHashAsync("anth");
+         
+         Assert.Equal(2, id);
+         Assert.NotNull(passwordHash);
+         Assert.NotEqual("abcdefgh", passwordHash);
       }
 
       [Fact]
       async Task GetUserByCredentials_UserIsNotReturnedIfWrongPassword()
       {
-         var user = await _userRepository.GetUserByCredentials("anth", "kuhlkihliuh");
+         var (id, passwordHash) = await _userRepository.GetUserPasswordHashAsync("test");
 
-         Assert.Null(user);
+         Assert.Equal(0, id);
+         Assert.True(string.IsNullOrEmpty(passwordHash));
       }
    }
 }

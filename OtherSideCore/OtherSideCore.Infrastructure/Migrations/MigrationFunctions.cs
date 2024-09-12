@@ -26,12 +26,12 @@ namespace OtherSideCore.Infrastructure.Migrations
 
       public static string CreateTSqlLevenshteinDistanceFunctionScript()
       {
-         return ReadSqlScript("OtherSideCore.Data.Migrations.CreateTSqlLevenshteinDistanceFunction.sql");
+         return ReadSqlScript(typeof(MigrationFunctions).Namespace + ".CreateTSqlLevenshteinDistanceFunction.sql");
       }
 
       public static string CreateTSqlEditDistanceFunctionScript()
       {
-         return ReadSqlScript("OtherSideCore.Data.Migrations.CreateTSqlEditDistanceFunction.sql");
+         return ReadSqlScript(typeof(MigrationFunctions).Namespace + ".CreateTSqlEditDistanceFunction.sql");
       }
    }
 }

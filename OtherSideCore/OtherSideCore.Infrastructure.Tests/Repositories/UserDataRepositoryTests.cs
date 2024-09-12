@@ -42,20 +42,22 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
          Assert.Equal(2, users.Count);
       }
 
-      [Fact] async Task GetUserByCredentials_UserIsReturned()
+      [Fact] async Task GetUserPasswordHashAsync_PasswordHashIsReturned()
       {
-         var user = await _userRepository.GetUserByCredentials("anth", "abcdefgh");
+         var (id, passwordHash) = await _userRepository.GetUserPasswordHashAsync("anth");
 
-         Assert.NotNull(user);
-         Assert.Equal(2, user.Id);
+         Assert.Equal(2, id);
+         Assert.NotNull(passwordHash);
+         Assert.NotEqual("abcdefgh", passwordHash);
       }
 
       [Fact]
-      async Task GetUserByCredentials_UserIsNotReturnedIfWrongPassword()
+      async Task GetUserPasswordHashAsync_UserIsNotReturnedIfNotExists()
       {
-         var user = await _userRepository.GetUserByCredentials("anth", "kuhlkihliuh");
+         var (id, passwordHash) = await _userRepository.GetUserPasswordHashAsync("test");
 
-         Assert.Null(user);
+         Assert.Equal(0, id);
+         Assert.True(string.IsNullOrEmpty(passwordHash));
       }
    }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtherSideCore.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,45 @@ namespace OtherSideCore.Wpf.UserControls
       public LoginView()
       {
          InitializeComponent();
+
+         this.Loaded += ConnexionView_Loaded;
+      }
+
+      public void SetFocusOnInputFields()
+      {
+         if (string.IsNullOrEmpty(UserNameTextBox.Text))
+         {
+            Keyboard.Focus(UserNameTextBox);
+         }
+         else
+         {
+            Keyboard.Focus(PasswordTextBox);
+         }
+      }
+
+      private void ConnexionView_Loaded(object sender, RoutedEventArgs e)
+      {
+         SetFocusOnInputFields();
+      }
+
+      private void ConnectionButton_Click(object sender, RoutedEventArgs e)
+      {
+         SetConnexionPassword();
+      }
+
+      private void OnKeyDownHandler(object sender, KeyEventArgs e)
+      {
+         if (e.Key == Key.Return)
+         {
+            SetConnexionPassword();
+            ((MainWindowViewModel)DataContext).AuthenticateUserAsyncCommand.Execute(null);
+         }
+      }
+
+      private void SetConnexionPassword()
+      {
+         ((MainWindowViewModel)DataContext).ConnexionPassword = PasswordTextBox.Password;
+         PasswordTextBox.Password = "";
       }
    }
 }

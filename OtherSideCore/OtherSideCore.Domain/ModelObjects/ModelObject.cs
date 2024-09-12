@@ -13,13 +13,13 @@ namespace OtherSideCore.Domain.ModelObjects
    {
       #region Fields
 
-      private IModelObjectFactory _modelObjectFactory;
+      protected IModelObjectFactory _modelObjectFactory;
 
       private IntegerDatabaseField m_Id;
       private DateTimeDatabaseField m_CreationDate;
-      private IntegerDatabaseField m_CreatedById;
+      private NullableIntegerDatabaseField m_CreatedById;
       private DateTimeDatabaseField m_LastModifiedDateTime;
-      private IntegerDatabaseField m_LastModifiedById;
+      private NullableIntegerDatabaseField m_LastModifiedById;
 
       private User m_CreatedBy;
       private User m_LastModifiedBy;
@@ -42,7 +42,7 @@ namespace OtherSideCore.Domain.ModelObjects
          private set { SetProperty(ref m_CreationDate, value); }
       }
 
-      public IntegerDatabaseField CreatedById
+      public NullableIntegerDatabaseField CreatedById
       {
          get => m_CreatedById;
          private set { SetProperty(ref m_CreatedById, value); }
@@ -54,7 +54,7 @@ namespace OtherSideCore.Domain.ModelObjects
          private set { SetProperty(ref m_LastModifiedDateTime, value); }
       }
 
-      public IntegerDatabaseField LastModifiedById
+      public NullableIntegerDatabaseField LastModifiedById
       {
          get => m_LastModifiedById;
          private set { SetProperty(ref m_LastModifiedById, value); }
@@ -89,10 +89,10 @@ namespace OtherSideCore.Domain.ModelObjects
          guid = Guid.NewGuid();
 
          Id = new IntegerDatabaseField("Id");
-         CreationDate = new DateTimeDatabaseField("CreationDate");
-         CreatedById = new IntegerDatabaseField("CreatedById");
-         LastModifiedDateTime = new DateTimeDatabaseField("LastModifiedDateTime");
-         LastModifiedById = new IntegerDatabaseField("LastModifiedById");
+         CreationDate = new DateTimeDatabaseField(nameof(CreationDate));
+         CreatedById = new NullableIntegerDatabaseField(nameof(CreatedById));
+         LastModifiedDateTime = new DateTimeDatabaseField(nameof(LastModifiedDateTime));
+         LastModifiedById = new NullableIntegerDatabaseField(nameof(LastModifiedById));
       }
 
       #endregion
@@ -136,6 +136,9 @@ namespace OtherSideCore.Domain.ModelObjects
                      break;
                   case BoolDatabaseField boolDatabaseField:
                      boolDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.BoolDatabaseField).Value);
+                     break;
+                  case NullableIntegerDatabaseField nullableIntegerDatabaseField:
+                     nullableIntegerDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.NullableIntegerDatabaseField).Value);
                      break;
                   default:
                      throw new ArgumentException("Unrecognized type " + databaseField.GetType());
@@ -249,6 +252,8 @@ namespace OtherSideCore.Domain.ModelObjects
                return new Infrastructure.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
             case BoolDatabaseField boolDatabaseField:
                return new Infrastructure.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
+            case NullableIntegerDatabaseField nullableIntegerDatabaseField:
+               return new Infrastructure.DatabaseFields.NullableIntegerDatabaseField(nullableIntegerDatabaseField.Value, nullableIntegerDatabaseField.DatabaseFieldName);
             default:
                throw new Exception("Unrecognized type " + databaseField.GetType());
          }

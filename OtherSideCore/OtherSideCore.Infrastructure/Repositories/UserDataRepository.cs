@@ -72,13 +72,22 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public virtual async Task<T> GetUserByCredentials(string userName, string passwordHash)
+      public virtual async Task<(int, string)> GetUserPasswordHashAsync(string userName)
       {
-         _logger.LogInformation("{Type}, {MethodName}, user name : {userName}", GetType(), nameof(GetUserByCredentials), userName);
+         _logger.LogInformation("{Type}, {MethodName}, user name : {userName}", GetType(), nameof(GetUserPasswordHashAsync), userName);
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<T>().Where(u => u.UserName.Equals(userName) && u.PasswordHash.Equals(passwordHash)).FirstOrDefaultAsync();
+            var entity = await context.Set<T>().Where(u => u.UserName.Equals(userName)).FirstOrDefaultAsync();
+
+            if (entity != null)
+            {
+               return (entity.Id, entity.PasswordHash);
+            }
+            else
+            {
+               return (0, string.Empty);
+            }
          }
       }
 

@@ -60,7 +60,8 @@
                                         SvgImageButton_IconGeometry="{StaticResource icon_close}"
                                         SvgImageButton_ImageSize="12" 
                                         Visibility="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"
-                                        Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"/>
+                                        Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"
+                                        IsDefault="True"/>
 
       </StackPanel>      
 

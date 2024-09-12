@@ -21,7 +21,6 @@ namespace OtherSideCore.Domain.ModelObjects
          get => _isActive;
          private set => SetProperty(ref _isActive, value);
       }
-
       public StringDatabaseField FirstName
       {
          get => _firstName;
@@ -62,7 +61,7 @@ namespace OtherSideCore.Domain.ModelObjects
          FirstName = new StringDatabaseField(nameof(FirstName), 50);
          LastName = new StringDatabaseField(nameof(LastName), 50);
          UserName = new StringDatabaseField(nameof(UserName), 50);
-         PasswordHash = new StringDatabaseField(nameof(PasswordHash), 512);
+         PasswordHash = new StringDatabaseField(nameof(PasswordHash), 64);
 
          IsActive.Value = true;
       }

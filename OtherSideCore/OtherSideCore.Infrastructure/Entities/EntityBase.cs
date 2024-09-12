@@ -17,10 +17,10 @@ namespace OtherSideCore.Infrastructure.Entities
       [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
       public int Id { get; set; }
       public DateTime CreationDate { get; set; }
-      public int CreatedById { get; set; }
+      public int? CreatedById { get; set; }
       public virtual User CreatedBy { get; set; }
       public DateTime LastModifiedDateTime { get; set; }
-      public int LastModifiedById { get; set; }
+      public int? LastModifiedById { get; set; }
       public virtual User LastModifiedBy { get; set; }
 
       internal void SetProperties(List<DatabaseField> databaseFields)
@@ -48,6 +48,9 @@ namespace OtherSideCore.Infrastructure.Entities
                   case BoolDatabaseField boolDatabaseField:
                      propertyInfo.SetValue(this, boolDatabaseField.Value);
                      break;
+                  case NullableIntegerDatabaseField nullableIntegerDatabaseField:
+                     propertyInfo.SetValue(this, nullableIntegerDatabaseField.Value);
+                     break;
                   default:
                      throw new ArgumentException("Unrecognized DatabaseField type " + databaseField.GetType());
                }
@@ -65,9 +68,9 @@ namespace OtherSideCore.Infrastructure.Entities
             {
                new IntegerDatabaseField(Id, nameof(Id)),
                new DateTimeDatabaseField(CreationDate, nameof(CreationDate)),
-               new IntegerDatabaseField(CreatedById, nameof(CreatedById)),
+               new NullableIntegerDatabaseField(CreatedById, nameof(CreatedById)),
                new DateTimeDatabaseField(LastModifiedDateTime, nameof(LastModifiedDateTime)),
-               new IntegerDatabaseField(LastModifiedById, nameof(LastModifiedById))
+               new NullableIntegerDatabaseField(LastModifiedById, nameof(LastModifiedById))
             };
       }
 
