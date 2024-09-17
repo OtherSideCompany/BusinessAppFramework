@@ -34,8 +34,6 @@ namespace OtherSideCore.ViewModel
 
       }
 
-
-
       #endregion
 
       #region Public Methods

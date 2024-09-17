@@ -57,7 +57,7 @@ namespace OtherSideCore.Infrastructure.Context
          connectionString += "Integrated Security=SSPI;";
          connectionString += $"Initial Catalog={InitialCatalog};";
          connectionString += "TrustServerCertificate = True;";
-         connectionString += "App=EntityFramework";        
+         connectionString += "App=EntityFramework";
 
          optionsBuilder.UseSqlServer(connectionString);
       }

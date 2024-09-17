@@ -1,4 +1,6 @@
 ﻿using OtherSideCore.Domain.DatabaseFields;
+using OtherSideCore.Domain.Services;
+using System;
 
 namespace OtherSideCore.Domain.ModelObjects
 {
@@ -73,6 +75,11 @@ namespace OtherSideCore.Domain.ModelObjects
       public override bool CanBeDeleted()
       {
          return false;
+      }
+
+      public void ResetPassword()
+      {
+         PasswordHash.Value = PasswordService.HashPassword("1111");
       }
 
       #endregion

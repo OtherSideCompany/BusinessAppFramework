@@ -31,7 +31,7 @@ namespace OtherSideCore.Infrastructure.Context
          connection.Open();
 
          connection.CreateFunction("Levenshtein", (string s, string t) => Utils.LevenshteinDistance(s, t));
-         connection.CreateFunction("EditDistance", (string s, string t) => Utils.EditDistance(s, t));
+         connection.CreateFunction("EditDistance", (string s, string t, int maxSearchDistance) => Utils.EditDistance(s, t, maxSearchDistance));
 
          return connection;
       }

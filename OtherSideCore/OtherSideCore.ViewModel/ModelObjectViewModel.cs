@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Domain.ModelObjects;
+using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -37,6 +39,10 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref m_ChildrenModelObjectViewModelBase, value);
       }
 
+      public string CreationDescription => GetHistoryDescription(ModelObject.CreationDate.Value, ModelObject.CreatedBy);
+
+      public string ModificationDescription => GetHistoryDescription(ModelObject.LastModifiedDateTime.Value, ModelObject.LastModifiedBy);
+
       #endregion
 
       #region Commands
@@ -53,6 +59,8 @@ namespace OtherSideCore.ViewModel
 
          ModelObject = modelObject;
          ChildrenModelObjectViewModelBase = new ObservableCollection<ModelObjectViewModel>();
+
+         ModelObject.PropertyChanged += ModelObject_PropertyChanged;
       }
 
       public ModelObjectViewModel(ModelObject modelObject, ModelObjectViewModel parentModelObjectViewModel) : this(modelObject)
@@ -63,6 +71,31 @@ namespace OtherSideCore.ViewModel
       #endregion
 
       #region Public Methods
+
+      public virtual void ExpandChildren()
+      {
+         foreach (var viewModel in ChildrenModelObjectViewModelBase)
+         {
+            viewModel.IsExpanded = true;
+            viewModel.ExpandChildren();
+         }
+      }
+
+      public override void Dispose()
+      {
+         ModelObject.PropertyChanged -= ModelObject_PropertyChanged;
+
+         foreach (var viewModel in ChildrenModelObjectViewModelBase)
+         {
+            viewModel.Dispose();
+         }
+
+         ChildrenModelObjectViewModelBase.Clear();
+      }
+
+      #endregion
+
+      #region private Methods
 
       protected virtual void DisplayInExternalWindow() { }
 
@@ -79,23 +112,26 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      public virtual void ExpandChildren()
+      private void ModelObject_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
       {
-         foreach (var viewModel in ChildrenModelObjectViewModelBase)
-         {
-            viewModel.IsExpanded = true;
-            viewModel.ExpandChildren();
-         }
+         OnPropertyChanged(nameof(CreationDescription));
+         OnPropertyChanged(nameof(ModificationDescription));
       }
 
-      public override void Dispose()
+      private string GetHistoryDescription(DateTime dateTime, User user)
       {
-         foreach (var viewModel in ChildrenModelObjectViewModelBase)
+         var creationDescription = dateTime.ToString("dd/MM/yyyy, HH:mm, ");
+
+         if (user != null)
          {
-            viewModel.Dispose();
+            creationDescription += user.FirstName.Value + " " + user.LastName.Value;
+         }
+         else
+         {
+            creationDescription += "Inconnu";
          }
 
-         ChildrenModelObjectViewModelBase.Clear();
+         return creationDescription;
       }
 
       #endregion

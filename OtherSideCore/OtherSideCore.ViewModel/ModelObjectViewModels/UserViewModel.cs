@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain.ModelObjects;
+﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Domain.ModelObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
    {
       #region Fields
 
-
+      private User _user => (User)ModelObject;
 
       #endregion
 
@@ -23,7 +24,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
 
       #region Commands
 
-
+      
 
       #endregion
 
@@ -31,7 +32,7 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
 
       public UserViewModel(User user) : base(user)
       {
-
+         
       }
 
       #endregion
@@ -42,6 +43,12 @@ namespace OtherSideCore.ViewModel.ModelObjectViewModels
       {
          throw new NotImplementedException();
       }
+
+      #endregion
+
+      #region Private Methods
+
+      
 
       #endregion
    }

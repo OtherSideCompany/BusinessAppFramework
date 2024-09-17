@@ -57,6 +57,15 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(SearchListAsyncActionButton_ImageColorProperty, value); }
       }
 
+      public static readonly DependencyProperty SearchListAsyncActionButton_OverBackgroundColorProperty =
+        DependencyProperty.Register("SearchListAsyncActionButton_OverBackgroundColor", typeof(SolidColorBrush), typeof(SearchListAsyncActionButton), new UIPropertyMetadata(Brushes.Black));
+
+      public SolidColorBrush SearchListAsyncActionButton_OverBackgroundColor
+      {
+         get { return (SolidColorBrush)GetValue(SearchListAsyncActionButton_OverBackgroundColorProperty); }
+         set { SetValue(SearchListAsyncActionButton_OverBackgroundColorProperty, value); }
+      }
+
       public static readonly DependencyProperty SearchListAsyncActionButton_TextProperty =
         DependencyProperty.Register("SearchListAsyncActionButton_Text", typeof(string), typeof(SearchListAsyncActionButton), new UIPropertyMetadata(""));
 
@@ -76,7 +85,7 @@ namespace OtherSideCore.Wpf.UserControls
       }
 
       public static readonly DependencyProperty SearchListAsyncActionButton_IconSizeProperty =
-        DependencyProperty.Register("SearchListAsyncActionButton_IconSize", typeof(int), typeof(SearchListAsyncActionButton), new UIPropertyMetadata(24));
+        DependencyProperty.Register("SearchListAsyncActionButton_IconSize", typeof(int), typeof(SearchListAsyncActionButton), new UIPropertyMetadata(20));
 
       public int SearchListAsyncActionButton_IconSize
       {

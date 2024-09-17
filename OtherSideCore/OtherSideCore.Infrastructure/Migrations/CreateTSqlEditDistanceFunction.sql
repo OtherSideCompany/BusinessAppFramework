@@ -2,7 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE FUNCTION [dbo].[Edit_Distance](@s nvarchar(3999), @t nvarchar(3999), @max int)
+CREATE FUNCTION [dbo].[EditDistance](@s nvarchar(3999), @t nvarchar(3999), @max int)
 RETURNS int
 AS
 BEGIN

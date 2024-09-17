@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -21,7 +22,7 @@ namespace OtherSideCore.Wpf.CustomControls
       }
 
       public static readonly DependencyProperty SvgImageTextButton_TextMarginProperty =
-        DependencyProperty.Register("SvgImageTextButton_TextMargin", typeof(Thickness), typeof(SvgImageTextButton), new UIPropertyMetadata(new Thickness(0, 0, 5, 0)));
+        DependencyProperty.Register("SvgImageTextButton_TextMargin", typeof(Thickness), typeof(SvgImageTextButton), new UIPropertyMetadata(new Thickness(4, 0, 4, 0)));
 
       public Thickness SvgImageTextButton_TextMargin
       {
@@ -72,6 +73,15 @@ namespace OtherSideCore.Wpf.CustomControls
       {
          get { return (SolidColorBrush)GetValue(SvgImageTextButton_ImageColorProperty); }
          set { SetValue(SvgImageTextButton_ImageColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty SvgImageTextButton_OrientationProperty =
+        DependencyProperty.Register("SvgImageTextButton_Orientation", typeof(OrientationType), typeof(SvgImageTextButton), new UIPropertyMetadata(OrientationType.Horizontal));
+
+      public OrientationType SvgImageTextButton_Orientation
+      {
+         get { return (OrientationType)GetValue(SvgImageTextButton_OrientationProperty); }
+         set { SetValue(SvgImageTextButton_OrientationProperty, value); }
       }
 
       static SvgImageTextButton()

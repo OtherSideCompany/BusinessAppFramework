@@ -42,12 +42,13 @@
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
-                       x:Name="Border">
+                       x:Name="Border"
+                       CornerRadius="5">
                   <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageSize}"
-                                      SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageSize}"
-                                      SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageColor}"
-                                      SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_IconGeometry}" 
-                                      x:Name="Image"/>
+                                   SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageSize}"
+                                   SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageColor}"
+                                   SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_IconGeometry}" 
+                                   x:Name="Image"/>
                </Border>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
@@ -71,33 +72,38 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="SvgImageTextButton_ImageSize" Value="20" />
       <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="SvgImageTextButton_MouseDownBackgroundColor" Value="{Binding SvgImageTextButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextButton_OverBackgroundColor" Value="LightGray" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextButton}">
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
-                       x:Name="Border">
-                  <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
-                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                     </Grid.ColumnDefinitions>
+                       x:Name="Border"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       CornerRadius="5"
+                       Padding="10,0,10,0">
+                  <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Orientation="Horizontal"
+                              x:Name="StackPanel">
 
                      <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
                                       SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
                                       SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageColor}"
-                                      SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}" 
+                                      SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}"
                                       x:Name="Image"/>
 
-                     <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="{TemplateBinding SvgImageTextButton_TextMargin}"
-                                   Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
-                                   TextTrimming="CharacterEllipsis" TextWrapping="Wrap"></TextBlock>
+                     <TextBlock Margin="{TemplateBinding SvgImageTextButton_TextMargin}"
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
+                                TextTrimming="CharacterEllipsis" 
+                                TextWrapping="NoWrap"/>
 
-                  </Grid>
+                  </StackPanel>
                </Border>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
@@ -109,6 +115,10 @@
                   <Trigger Property="IsEnabled" Value="False">
                      <Setter Property="Opacity" Value="0.3"/>
                      <Setter Property="Opacity" Value="0.3" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="SvgImageTextButton_Orientation" Value="Vertical">
+                     <Setter Property="Orientation" Value="Vertical" TargetName="StackPanel" />
+                     <Setter Property="Padding" Value="10" TargetName="Border" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -127,7 +137,8 @@
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
-                       x:Name="Border">
+                       x:Name="Border"
+                       CornerRadius="5">
 
                   <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageToggleButton_ImageSize}"
                                    SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageToggleButton_ImageSize}"
@@ -158,21 +169,25 @@
    <!-- SvgImageTextToggleButton -->
    <Style TargetType="{x:Type local:SvgImageTextToggleButton}">
       <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="SvgImageTextToggleButton_CheckedIconGeometry" Value="{Binding SvgImageTextToggleButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageTextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextToggleButton}">
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
-                       x:Name="Border">
-                  <Grid>
-                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                     </Grid.ColumnDefinitions>
+                       x:Name="Border"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       CornerRadius="5"
+                       Padding="5,0,10,0">
+                  <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Orientation="Horizontal"
+                              x:Name="StackPanel">
 
                      <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextToggleButton_ImageSize}"
                                       SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextToggleButton_ImageSize}"
@@ -180,10 +195,12 @@
                                       SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextToggleButton_IconGeometry}" 
                                       x:Name="Image"/>
 
-                     <TextBlock Grid.Column="1" Margin="{TemplateBinding SvgImageTextToggleButton_TextMargin}" VerticalAlignment="Center"
-                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ImageTextToggleButton_Text}" />
+                     <TextBlock Margin="{TemplateBinding SvgImageTextToggleButton_TextMargin}" 
+                                VerticalAlignment="Center"
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextToggleButton_Text}" 
+                                TextWrapping="NoWrap"/>
 
-                  </Grid>
+                  </StackPanel>
                </Border>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
@@ -192,11 +209,16 @@
                   </Trigger>
                   <Trigger Property="IsChecked" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageTextToggleButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageTextToggleButton_CheckedIconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
                   </Trigger>
                   <Trigger Property="IsPressed" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageTextToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageTextToggleButton_IconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="SvgImageTextToggleButton_Orientation" Value="Vertical">
+                     <Setter Property="Orientation" Value="Vertical" TargetName="StackPanel" />
+                     <Setter Property="Padding" Value="10" TargetName="Border" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -207,11 +229,12 @@
    <!-- Info Panel Category -->
    <Style TargetType="{x:Type ToggleButton}"  x:Key="InfoPanelCategoryHeaderToggleButton">
       <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="FontSize" Value="16" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type ToggleButton}">
-               <Grid Background="Transparent">
+               <Grid>
                   <Grid.RowDefinitions>
                      <RowDefinition Height="Auto" />
                      <RowDefinition Height="Auto" />
@@ -253,9 +276,8 @@
                      <RowDefinition Height="Auto" />
                   </Grid.RowDefinitions>
 
-                  <Border Grid.Row="0">
-                     <ToggleButton Grid.Row="0" Height="42"
-                                   x:Name="HeaderToggleButton"
+                  <Border Grid.Row="0" Margin="16,0,16,0">
+                     <ToggleButton x:Name="HeaderToggleButton"
                                    VerticalAlignment="Center"
                                    IsChecked="{Binding InfoPanelCategory_IsExpanded, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
                                    Style="{StaticResource InfoPanelCategoryHeaderToggleButton}"
@@ -263,10 +285,14 @@
                   </Border>
 
                   <ContentPresenter Grid.Row="1" 
-                                    Margin="0,10,0,10"
+                                    Margin="16,0,16,8"
                                     Visibility="{Binding IsChecked, ElementName=HeaderToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
 
-                  <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Height="1" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}"                              
+                  <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" 
+                          Height="1" 
+                          BorderThickness="1" 
+                          BorderBrush="{StaticResource OtherSide_LightGray}"   
+                          Margin="0,4,0,0"
                           Visibility="{Binding InfoPanelCategory_DisplaySeparator, Converter={StaticResource BoolToVisibleOrCollapsed}, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
 
                </Grid>

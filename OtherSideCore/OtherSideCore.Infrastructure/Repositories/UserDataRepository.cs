@@ -57,8 +57,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                   if (extendedSearch)
                   {
-                     query = query.Where(u => Utils.EditDistance(lowerFilter, u.FirstName.ToLower()) <= maxSearchDistance ||
-                                              Utils.EditDistance(lowerFilter, u.LastName.ToLower()) <= maxSearchDistance);
+                     query = query.Where(u => Utils.EditDistance(lowerFilter, u.FirstName.ToLower(), maxSearchDistance) <= maxSearchDistance ||
+                                              Utils.EditDistance(lowerFilter, u.LastName.ToLower(), maxSearchDistance) <= maxSearchDistance);
                   }
                   else
                   {

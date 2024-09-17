@@ -20,19 +20,21 @@ namespace OtherSideCore.ViewModel
       #region Fields
 
       private List<DatabaseField> _databaseFields;
-      private IRepositoryFactory _repositoryFactory;
-      private User _authenticatedUser;
+      protected IRepositoryFactory _repositoryFactory;
+      protected User _authenticatedUser;
       private RepositorySearch<T> _repositorySearch;
 
       private bool m_IsSelectionLocked;
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
 
-      private IModelObjectViewModelFactory _modelObjectViewModeFactory;
+      protected IModelObjectViewModelFactory _modelObjectViewModelFactory;
 
       private MultiTextFilterViewModel _multiTextFilterViewModel;
 
       private ObservableCollection<ModelObjectViewModel> m_searchResultViewModels;
       private CollectionViewSource _searchResultViewModelsCollection;
+
+      private List<RepositoryView> _repositoryViews;
 
       #endregion
 
@@ -70,6 +72,12 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref m_searchResultViewModels, value);
       }
 
+      public List<RepositoryView> RepositoryViews
+      {
+         get => _repositoryViews;
+         set => SetProperty(ref _repositoryViews, value);
+      }
+
       public ICollectionView SearchResultViewModelsCollection
       {
          get => _searchResultViewModelsCollection.View;
@@ -100,9 +108,9 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public RepositoryEditorViewModel(IRepositoryFactory repositoryFactory, User autenticatedUser, IModelObjectViewModelFactory modelObjectViewModeFactory)
+      public RepositoryEditorViewModel(IRepositoryFactory repositoryFactory, User autenticatedUser, IModelObjectViewModelFactory modelObjectViewModelFactory)
       {
-         _modelObjectViewModeFactory = modelObjectViewModeFactory;
+         _modelObjectViewModelFactory = modelObjectViewModelFactory;
          _databaseFields = new List<DatabaseField>();
          _repositoryFactory = repositoryFactory;
          _authenticatedUser = autenticatedUser;
@@ -212,7 +220,7 @@ namespace OtherSideCore.ViewModel
 
          foreach (var searchResult in _repositorySearch.SearchResults)
          {
-            var viewModel = _modelObjectViewModeFactory.CreateViewModel(searchResult as T);
+            var viewModel = _modelObjectViewModelFactory.CreateViewModel(searchResult as T);
             viewModels.Add(viewModel);
          }
 
@@ -288,6 +296,8 @@ namespace OtherSideCore.ViewModel
       {
          try
          {
+            UnselectSearchResult();
+
             UnloadSearchResultViewModels();
 
             await _repositorySearch.SearchAsync(cancellationToken);
@@ -328,7 +338,7 @@ namespace OtherSideCore.ViewModel
          using var repository = _repositoryFactory.CreateRepository<T>();
          var modelObject = await repository.CreateAsync(_authenticatedUser.Id.Value);
 
-         var viewModel = _modelObjectViewModeFactory.CreateViewModel(modelObject);
+         var viewModel = _modelObjectViewModelFactory.CreateViewModel(modelObject);
          AddSearchResult(viewModel);
 
          if (!wasSelectionLocked)

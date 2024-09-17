@@ -14,7 +14,7 @@
       <WindowChrome CaptionHeight="0" CornerRadius="0" ResizeBorderThickness="10" GlassFrameThickness="0"/>
    </WindowChrome.WindowChrome>
 
-   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="#FFDADADA">
+   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="{StaticResource OtherSide_LightGray}">
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="*" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
@@ -21,7 +22,7 @@ namespace OtherSideCore.Wpf.CustomControls
       }
 
       public static readonly DependencyProperty SvgImageTextToggleButton_TextMarginProperty =
-        DependencyProperty.Register("SvgImageTextToggleButton_TextMargin", typeof(Thickness), typeof(SvgImageTextToggleButton), new UIPropertyMetadata(new Thickness(0, 0, 5, 0)));
+        DependencyProperty.Register("SvgImageTextToggleButton_TextMargin", typeof(Thickness), typeof(SvgImageTextToggleButton), new UIPropertyMetadata(new Thickness(4, 0, 4, 0)));
 
       public Thickness SvgImageTextToggleButton_TextMargin
       {
@@ -30,7 +31,7 @@ namespace OtherSideCore.Wpf.CustomControls
       }
 
       public static readonly DependencyProperty SvgImageTextToggleButton_ImageSizeProperty =
-        DependencyProperty.Register("SvgImageTextToggleButton_ImageSize", typeof(int), typeof(SvgImageTextToggleButton), new UIPropertyMetadata((int)24));
+        DependencyProperty.Register("SvgImageTextToggleButton_ImageSize", typeof(int), typeof(SvgImageTextToggleButton), new UIPropertyMetadata((int)20));
 
       public int SvgImageTextToggleButton_ImageSize
       {
@@ -93,6 +94,15 @@ namespace OtherSideCore.Wpf.CustomControls
       {
          get { return (SolidColorBrush)GetValue(SvgImageTextToggleButton_ImageColorProperty); }
          set { SetValue(SvgImageTextToggleButton_ImageColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty SvgImageTextToggleButton_OrientationProperty =
+        DependencyProperty.Register("SvgImageTextToggleButton_Orientation", typeof(OrientationType), typeof(SvgImageTextToggleButton), new UIPropertyMetadata(OrientationType.Horizontal));
+
+      public OrientationType SvgImageTextToggleButton_Orientation
+      {
+         get { return (OrientationType)GetValue(SvgImageTextToggleButton_OrientationProperty); }
+         set { SetValue(SvgImageTextToggleButton_OrientationProperty, value); }
       }
 
       static SvgImageTextToggleButton()

@@ -41,6 +41,8 @@ namespace OtherSideCore.ViewModel
 
       public RelayCommand<TextFilter> RemoveFilterCommand { get; private set; }
 
+      public RelayCommand ClearFiltersCommand { get; private set; }
+
       #endregion
 
       #region Constructor
@@ -49,6 +51,7 @@ namespace OtherSideCore.ViewModel
       {
          AddFilterCommand = new RelayCommand(AddFilter);
          RemoveFilterCommand = new RelayCommand<TextFilter>(RemoveFilter, CanRemoveFilter);
+         ClearFiltersCommand = new RelayCommand(ClearFilters);
 
          SearchCommandAsync = searchCommandAsync;
 
@@ -59,9 +62,18 @@ namespace OtherSideCore.ViewModel
 
       #region Public Methods
 
+      public override void Dispose()
+      {
+         
+      }
+
+      #endregion
+
+      #region Private Methods
+
       private void AddFilter()
       {
-         MultiTextFilter.AddFilter();         
+         MultiTextFilter.AddFilter();
       }
 
       private bool CanRemoveFilter(TextFilter textFilter)
@@ -74,9 +86,9 @@ namespace OtherSideCore.ViewModel
          MultiTextFilter.RemoveFilter(textFilter);
       }
 
-      public override void Dispose()
+      private void ClearFilters()
       {
-         
+         MultiTextFilter.ClearFilters();
       }
 
       #endregion

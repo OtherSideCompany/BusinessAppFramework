@@ -57,5 +57,15 @@ namespace OtherSideCore.Wpf.CustomControls
             }
          }
       }
+
+      private void ComboBox_ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+      {
+         var combobox = (sender as ScrollViewer).TemplatedParent as ComboBox;
+      }
+
+      private void ComboBoxItem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+      {
+         e.Handled = true;
+      }
    }
 }

@@ -24,6 +24,8 @@ namespace OtherSideCore.Domain.ModelObjects
       private User m_CreatedBy;
       private User m_LastModifiedBy;
 
+      protected bool _isLoading;
+
       #endregion
 
       #region Properties
@@ -111,6 +113,8 @@ namespace OtherSideCore.Domain.ModelObjects
 
       public async Task LoadPropertiesFromEntityAsync(EntityBase entity, bool cascade = true)
       {
+         _isLoading = true;
+
          var databaseFieldProperties = entity?.GetDatabaseFieldProperties();
 
          if (databaseFieldProperties != null)
@@ -150,6 +154,8 @@ namespace OtherSideCore.Domain.ModelObjects
                await LoadModelObjectPropertiesFromEntityAsync(entity);
             }
          }
+
+         _isLoading = false;
       }
 
       protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(EntityBase entity)

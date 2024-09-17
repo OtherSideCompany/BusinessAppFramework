@@ -8,7 +8,7 @@ namespace OtherSideCore.Infrastructure
 {
    public class Utils
    {
-      public static int EditDistance(string s, string t)
+      public static int EditDistance(string s, string t, int maxSearchDistance)
       {
          if (s.Length == t.Length)
          {

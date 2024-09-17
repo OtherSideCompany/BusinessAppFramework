@@ -2,7 +2,18 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="UserControls\BoolDatabaseFieldEditionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\StringDatabaseFieldEditionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Icons\Icons.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\BoolDatabaseFieldEditionView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">
@@ -30,6 +41,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\DashboardBaseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\StringDatabaseFieldEditionView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

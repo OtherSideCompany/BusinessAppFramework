@@ -21,6 +21,7 @@ namespace OtherSideCore.ViewModel
 
       private readonly IServiceProvider _serviceProvider;
       protected IAuthenticationService _authenticationService;
+      protected IGlobalDataService _globalDataService;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -126,10 +127,11 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public MainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+      public MainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IGlobalDataService globalDataService)
       {
          AuthenticationService = authenticationService;
          _serviceProvider = serviceProvider;
+         _globalDataService = globalDataService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
@@ -141,6 +143,7 @@ namespace OtherSideCore.ViewModel
          ApplicationName = "Unnamed App";
 
          LoadSettings();
+         _globalDataService = globalDataService;
       }
 
       #endregion
@@ -164,6 +167,7 @@ namespace OtherSideCore.ViewModel
                if (DefaultViewDescription != null)
                {
                   DisplayView(DefaultViewDescription);
+                  await _globalDataService.LoadGlobalDataAsync();
                }
             }
 

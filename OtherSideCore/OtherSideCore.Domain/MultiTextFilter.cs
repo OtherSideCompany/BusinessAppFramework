@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -69,6 +70,11 @@ namespace OtherSideCore.Domain
       public void RemoveFilter(TextFilter textFilter)
       {
          Filters.Remove(textFilter);
+      }
+
+      public void ClearFilters()
+      {
+         Filters.Clear();
       }
 
       #endregion

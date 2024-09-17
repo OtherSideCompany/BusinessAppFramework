@@ -21,6 +21,15 @@ namespace OtherSideCore.Wpf.UserControls
    /// </summary>
    public partial class LoginView : UserControl
    {
+      public static readonly DependencyProperty LoginView_ConnectionButtonColorProperty =
+          DependencyProperty.Register("LoginView_ConnectionButtonColor", typeof(SolidColorBrush), typeof(LoginView), new UIPropertyMetadata(Brushes.Blue));
+
+      public SolidColorBrush LoginView_ConnectionButtonColor
+      {
+         get { return (SolidColorBrush)GetValue(LoginView_ConnectionButtonColorProperty); }
+         set { SetValue(LoginView_ConnectionButtonColorProperty, value); }
+      }
+
       public LoginView()
       {
          InitializeComponent();

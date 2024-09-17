@@ -45,16 +45,6 @@ namespace OtherSideCore.Wpf.UserControls
          ((INotifyCollectionChanged)FiltersItemsControl.Items).CollectionChanged += MultiTextFilterView_CollectionChanged;
       }
 
-      private void MultiTextFilterViewUserControl_GotFocus(object sender, RoutedEventArgs e)
-      {
-         SearchButton.IsDefault = true;
-      }
-
-      private void MultiTextFilterViewUserControl_LostFocus(object sender, RoutedEventArgs e)
-      {
-         SearchButton.IsDefault = false;
-      }
-
       private void MultiTextFilterView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
       {
          if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems.Count > 0)
@@ -66,6 +56,16 @@ namespace OtherSideCore.Wpf.UserControls
             var textBox = (TextBox)lastItem.ContentTemplate.FindName("FilterTextBox", lastItem);
             Keyboard.Focus(textBox);
          }
+      }
+
+      private void MultiTextFilterViewUserControl_GotFocus(object sender, RoutedEventArgs e)
+      {
+         SearchButton.IsDefault = true;
+      }
+
+      private void MultiTextFilterViewUserControl_LostFocus(object sender, RoutedEventArgs e)
+      {
+         SearchButton.IsDefault = false;
       }
    }
 }
