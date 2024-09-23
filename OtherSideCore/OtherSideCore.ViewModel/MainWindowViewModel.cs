@@ -5,10 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.ModelObjects;
+using OtherSideCore.Domain.Repositories;
 using OtherSideCore.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -21,6 +23,7 @@ namespace OtherSideCore.ViewModel
 
       private readonly IServiceProvider _serviceProvider;
       protected IAuthenticationService _authenticationService;
+      protected IRepositoryFactory _repositoryFactory;
       protected IGlobalDataService _globalDataService;
 
       private string _applicationLogoImageSource;
@@ -121,16 +124,17 @@ namespace OtherSideCore.ViewModel
 
       public AsyncRelayCommand AuthenticateUserAsyncCommand { get; set; }
       public AsyncRelayCommand DisconnectAuthenticatedUserAsyncCommand { get; set; }
-      public RelayCommand<ViewDescriptionBase> DisplayViewCommand { get; set; }
+      public AsyncRelayCommand<ViewDescriptionBase> DisplayViewCommand { get; set; }
 
       #endregion
 
       #region Constructor
 
-      public MainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IGlobalDataService globalDataService)
+      public MainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IRepositoryFactory repositoryFactory, IGlobalDataService globalDataService)
       {
          AuthenticationService = authenticationService;
          _serviceProvider = serviceProvider;
+         _repositoryFactory = repositoryFactory;
          _globalDataService = globalDataService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
@@ -138,12 +142,11 @@ namespace OtherSideCore.ViewModel
 
          AuthenticateUserAsyncCommand = new AsyncRelayCommand(AuthenticateUserAsync);
          DisconnectAuthenticatedUserAsyncCommand = new AsyncRelayCommand(DisconnectAuthenticatedUserAsync);
-         DisplayViewCommand = new RelayCommand<ViewDescriptionBase>(DisplayView);
+         DisplayViewCommand = new AsyncRelayCommand<ViewDescriptionBase>(DisplayViewAsync);
 
          ApplicationName = "Unnamed App";
 
-         LoadSettings();
-         _globalDataService = globalDataService;
+         LoadSettings();         
       }
 
       #endregion
@@ -166,8 +169,8 @@ namespace OtherSideCore.ViewModel
 
                if (DefaultViewDescription != null)
                {
-                  DisplayView(DefaultViewDescription);
-                  await _globalDataService.LoadGlobalDataAsync();
+                  await DisplayViewAsync(DefaultViewDescription, CancellationToken.None);
+                  await _globalDataService.LoadGlobalDataAsync(_repositoryFactory);
                }
             }
 
@@ -181,7 +184,7 @@ namespace OtherSideCore.ViewModel
 
       public void Dispose()
       {
-         
+         _globalDataService.UnloadData();
       }
 
       #endregion
@@ -225,12 +228,13 @@ namespace OtherSideCore.ViewModel
          if (AuthenticationService.CanLogoutUser())
          {
             await AuthenticationService.LogoutUserAsync();
-         }
+            _globalDataService.UnloadData();
+         }         
 
          LoadSettings();
       }
 
-      private void DisplayView(ViewDescriptionBase viewBase)
+      private async Task DisplayViewAsync(ViewDescriptionBase viewBase, CancellationToken cancellationToken)
       {
          LoadedViewDescription?.Dispose();
 
@@ -239,6 +243,7 @@ namespace OtherSideCore.ViewModel
          viewBase.IsLoaded = true;
 
          LoadedViewDescription.InstanciateViewModel();
+         await LoadedViewDescription.InitializeViewModelAsync(cancellationToken);
 
          OnPropertyChanged(nameof(LoadedViewDescription));
       }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-   <Border Style="{StaticResource DatabaseFieldEditionBorder}"
+   <Border Style="{StaticResource EditableTextBoxBorder}"
            BorderThickness="0"
            Background="Transparent">
       <CheckBox IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 

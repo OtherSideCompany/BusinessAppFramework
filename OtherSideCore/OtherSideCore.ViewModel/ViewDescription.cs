@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -61,13 +63,18 @@ namespace OtherSideCore.ViewModel
          _logger.LogInformation("Displaying view {ViewName} with view model {ViewModelType}", Name, _viewModelType.Name);
       }
 
+      public override async Task InitializeViewModelAsync(CancellationToken cancellationToken)
+      {
+         await ViewViewModelBase.InitializeAsync(cancellationToken);
+      }
+
       public override void Unload()
       {
          base.Unload();
 
          ViewViewModelBase?.Dispose();
          ViewViewModelBase = null;
-      }
+      }      
 
       #endregion
    }

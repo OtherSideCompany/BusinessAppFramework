@@ -131,7 +131,7 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
          {
          }
 
-         public override Task<List<TestEntity>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+         public override Task<List<TestEntity>> GetAllAsync(List<string> filters, List<Constraint<TestEntity>> constraints, bool extendedSearch, CancellationToken cancellationToken)
          {
             throw new NotImplementedException();
          }

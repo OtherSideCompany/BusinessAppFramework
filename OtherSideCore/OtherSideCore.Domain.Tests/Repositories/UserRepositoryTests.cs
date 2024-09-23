@@ -4,18 +4,20 @@ using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
 using OtherSideCore.Domain.Services;
+using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit.Sdk;
 
 namespace OtherSideCore.Domain.Tests.Repositories
 {
    public class UserRepositoryTests
    {
-      private UserRepository<User, Infrastructure.Entities.User> _userRepository { get; }
+      private UserRepository<Domain.ModelObjects.User, Infrastructure.Entities.User> _userRepository { get; }
 
       Infrastructure.Entities.User _anthony = new Infrastructure.Entities.User
       {
@@ -27,8 +29,10 @@ namespace OtherSideCore.Domain.Tests.Repositories
          FirstName = "Anthony",
          LastName = "Thonon",
          UserName = "anth",
-         PasswordHash = PasswordService.HashPassword("abcdefgh")
+         PasswordHash = PasswordService.HashPassword("abcdefgh"),
+         IsActive = true
       };
+      
 
       public UserRepositoryTests()
       {
@@ -36,7 +40,7 @@ namespace OtherSideCore.Domain.Tests.Repositories
 
          userDataRepository.Setup(x => x.GetUserPasswordHashAsync("anth")).ReturnsAsync((_anthony.Id, _anthony.PasswordHash));
 
-         _userRepository = new UserRepository<User, Infrastructure.Entities.User>(userDataRepository.Object, new ModelObjectFactory());
+         _userRepository = new UserRepository<Domain.ModelObjects.User, Infrastructure.Entities.User>(userDataRepository.Object, new ModelObjectFactory());
       }
 
       [Fact]

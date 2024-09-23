@@ -12,6 +12,15 @@ namespace OtherSideCore.Wpf.CustomControls
 {
    public class ClickSelectTextBox : TextBox
    {
+      public static readonly DependencyProperty ClickSelectTextBox_WatermakProperty =
+        DependencyProperty.Register("ClickSelectTextBox_Watermak", typeof(string), typeof(ClickSelectTextBox), new UIPropertyMetadata(String.Empty));
+
+      public string ClickSelectTextBox_Watermak
+      {
+         get { return (string)GetValue(ClickSelectTextBox_WatermakProperty); }
+         set { SetValue(ClickSelectTextBox_WatermakProperty, value); }
+      }
+
       public ClickSelectTextBox()
       {
          AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(SelectivelyIgnoreMouseButton), true);

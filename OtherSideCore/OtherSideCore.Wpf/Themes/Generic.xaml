@@ -36,12 +36,15 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="SvgImageButton_MouseDownBackgroundColor" Value="{Binding SvgImageButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageButton_OverBackgroundColor" Value="LightGray" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageButton}">
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
                        x:Name="Border"
                        CornerRadius="5">
                   <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageButton_ImageSize}"
@@ -131,12 +134,15 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="SvgImageToggleButton_CheckedIconGeometry" Value="{Binding SvgImageToggleButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageToggleButton}">
                <Border Width="{TemplateBinding Width}" 
                        Height="{TemplateBinding Height}" 
                        Background="{TemplateBinding Background}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
                        x:Name="Border"
                        CornerRadius="5">
 
@@ -155,10 +161,71 @@
                   <Trigger Property="IsChecked" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageToggleButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageToggleButton_CheckedIconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
                   </Trigger>
                   <Trigger Property="IsPressed" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageToggleButton_IconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <!-- SvgImageTextRadioButton -->
+   <Style TargetType="{x:Type local:SvgImageTextRadioButton}">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="SvgImageTextRadioButton_CheckedIconGeometry" Value="{Binding SvgImageTextRadioButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="SvgImageTextRadioButton_CheckedBackgroundColor" Value="{Binding SvgImageTextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type local:SvgImageTextRadioButton}">
+               <Border Width="{TemplateBinding Width}" 
+                     Height="{TemplateBinding Height}" 
+                     Background="{TemplateBinding Background}"
+                     x:Name="Border"
+                     BorderBrush="{StaticResource OtherSide_LightGray}"
+                     BorderThickness="{TemplateBinding BorderThickness}"
+                     CornerRadius="5"
+                     Padding="5,0,10,0">
+                  <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Orientation="Horizontal"
+                            x:Name="StackPanel">
+
+                     <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextRadioButton_ImageSize}"
+                                    SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextRadioButton_ImageSize}"
+                                    SvgViewer_ImageColor="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextRadioButton_ImageColor}"
+                                    SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextRadioButton_IconGeometry}" 
+                                    x:Name="Image"/>
+
+                     <TextBlock Margin="{TemplateBinding SvgImageTextRadioButton_TextMargin}" 
+                              VerticalAlignment="Center"
+                              Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextRadioButton_Text}" 
+                              TextWrapping="NoWrap"/>
+
+                  </StackPanel>
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{Binding SvgImageTextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageTextRadioButton_IconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter Property="Background" Value="{Binding SvgImageTextRadioButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
+                     <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageTextRadioButton_CheckedIconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                     <Setter Property="Background" Value="{Binding SvgImageTextRadioButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageTextRadioButton_IconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="SvgImageTextRadioButton_Orientation" Value="Vertical">
+                     <Setter Property="Orientation" Value="Vertical" TargetName="StackPanel" />
+                     <Setter Property="Padding" Value="10" TargetName="Border" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -252,6 +319,7 @@
                                                  SvgImageToggleButton_CheckedBackgroundColor="Transparent"
                                                  SvgImageToggleButton_OverBackgroundColor="Transparent"
                                                  SvgImageToggleButton_ImageSize="20"
+                                                 BorderThickness="0"
                                                  Height="{TemplateBinding Height}"
                                                  Margin="2,4,0,0"
                                                  IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"/>
@@ -285,18 +353,49 @@
                   </Border>
 
                   <ContentPresenter Grid.Row="1" 
-                                    Margin="16,0,16,8"
+                                    Margin="16,8,16,8"
                                     Visibility="{Binding IsChecked, ElementName=HeaderToggleButton, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
 
                   <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" 
                           Height="1" 
                           BorderThickness="1" 
                           BorderBrush="{StaticResource OtherSide_LightGray}"   
-                          Margin="0,4,0,0"
+                          Margin="0,8,0,0"
                           Visibility="{Binding InfoPanelCategory_DisplaySeparator, Converter={StaticResource BoolToVisibleOrCollapsed}, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
 
                </Grid>
             </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <!-- Text Radio Button -->
+   <Style TargetType="{x:Type local:TextRadioButton}">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type RadioButton}">
+               <StackPanel Background="Transparent">
+                  <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_Text}" 
+                             FontWeight="SemiBold" 
+                             Foreground="{StaticResource OtherSide_Gray}"
+                             x:Name="ConstraintName"/>
+                  <Border Height="2" 
+                          SnapsToDevicePixels="True" 
+                          Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_SelectedColor}" 
+                          Margin="0,3,0,0"
+                 x:Name="UnderlineBorder" Visibility="Hidden"/>
+               </StackPanel>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_SelectedColor}" TargetName="ConstraintName" />
+                     <Setter Property="Visibility" Value="Visible" TargetName="UnderlineBorder" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+
          </Setter.Value>
       </Setter>
    </Style>

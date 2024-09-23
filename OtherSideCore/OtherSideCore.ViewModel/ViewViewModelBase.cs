@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
+using OtherSideCore.Domain.Repositories;
+using OtherSideCore.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
@@ -11,12 +15,14 @@ namespace OtherSideCore.ViewModel
    {
       #region Fields
 
-
+      protected IAuthenticationService _authenticationService;
+      protected IRepositoryFactory _repositoryFactory;
+      protected ILoggerFactory _loggerFactory;
+      protected IGlobalDataService _globalDataService;
 
       #endregion
 
       #region Properties
-
 
 
       #endregion
@@ -29,16 +35,19 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ViewViewModelBase()
+      public ViewViewModelBase(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService)
       {
-
+         _authenticationService = authenticationService;
+         _repositoryFactory = repositoryFactory;
+         _loggerFactory = loggerFactory;
+         _globalDataService = globalDataService;
       }
 
       #endregion
 
       #region Public Methods
 
-
+      public abstract Task InitializeAsync(CancellationToken cancellationToken);
 
       #endregion
 

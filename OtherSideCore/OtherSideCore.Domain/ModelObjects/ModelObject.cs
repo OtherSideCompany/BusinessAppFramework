@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Domain.ModelObjects
 {
@@ -14,6 +15,7 @@ namespace OtherSideCore.Domain.ModelObjects
       #region Fields
 
       protected IModelObjectFactory _modelObjectFactory;
+      protected IGlobalDataService _globalDataService;
 
       private IntegerDatabaseField m_Id;
       private DateTimeDatabaseField m_CreationDate;
@@ -101,9 +103,10 @@ namespace OtherSideCore.Domain.ModelObjects
 
       #region Public Methods
 
-      public void SetModelObjectFactory(IModelObjectFactory modelObjectFactory)
+      public void SetServices(IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService)
       {
          _modelObjectFactory = modelObjectFactory;
+         _globalDataService = globalDataService;
       }
 
       public virtual bool MatchFilter(List<string> filters, bool extendedSearch)
@@ -163,14 +166,14 @@ namespace OtherSideCore.Domain.ModelObjects
          if (entity.CreatedBy != null)
          {
             CreatedBy = _modelObjectFactory.CreateUser();
-            CreatedBy.SetModelObjectFactory(_modelObjectFactory);
+            CreatedBy.SetServices(_modelObjectFactory, _globalDataService);
             await CreatedBy.LoadPropertiesFromEntityAsync(entity.CreatedBy, false);            
          }
 
          if (entity.LastModifiedBy != null)
          {
             LastModifiedBy = _modelObjectFactory.CreateUser();
-            LastModifiedBy.SetModelObjectFactory(_modelObjectFactory);
+            LastModifiedBy.SetServices(_modelObjectFactory, _globalDataService);
             await LastModifiedBy.LoadPropertiesFromEntityAsync(entity.LastModifiedBy, false);
          }
       }

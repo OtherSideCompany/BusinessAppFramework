@@ -53,12 +53,11 @@
                                          SvgViewer_ImageGeometry="{StaticResource icon_account}"  
                                          SvgViewer_ImageHeight="24"/>
 
-               <TextBox Grid.Column="1" 
-                        Text="{Binding ConnexionUserName}" 
-                        Style="{StaticResource BorderlessTextbox}" 
-                        Background="Transparent"
-                        MinWidth="200"
-                        x:Name="UserNameTextBox"/>
+               <customcontrols:ClickSelectTextBox Grid.Column="1" 
+                                                  Text="{Binding ConnexionUserName}"
+                                                  Background="Transparent"
+                                                  MinWidth="200"
+                                                  x:Name="UserNameTextBox"/>
             </Grid>
          </Border>
 

@@ -3,6 +3,8 @@ using OtherSideCore.Infrastructure.Repositories;
 using OtherSideCore.Domain.ModelObjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Domain.Repositories
 {
@@ -29,7 +31,7 @@ namespace OtherSideCore.Domain.Repositories
 
       #region Constructor
 
-      public UserRepository(IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory) : base(userRepository, modelObjectFactory)
+      public UserRepository(IUserDataRepository<U> userRepository, IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService) : base(userRepository, modelObjectFactory, globalDataService)
       {
 
       }
@@ -37,6 +39,18 @@ namespace OtherSideCore.Domain.Repositories
       #endregion
 
       #region Public Methods
+
+      public async Task<List<T>> GetInactiveUsers(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var constraints = new List<Constraint<U>> { new Constraint<U>(nameof(ModelObjects.User.IsActive), false) };
+         return await GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
+      }
+
+      public async Task<List<T>> GetActiveUsers(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var constraints = new List<Constraint<U>> { new Constraint<U>(nameof(ModelObjects.User.IsActive), true) };
+         return await GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
+      }
 
       public async Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken)
       {

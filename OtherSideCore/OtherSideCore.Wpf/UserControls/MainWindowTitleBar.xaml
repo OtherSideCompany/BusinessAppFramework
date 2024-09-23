@@ -136,6 +136,7 @@
                                         SvgImageButton_ImageColor="White"
                                         SvgImageButton_OverBackgroundColor="{StaticResource CaptionButtonHoverColor}"
                                         SvgImageButton_MouseDownBackgroundColor="{StaticResource CaptionButtonIsPressedColor}"
+                                        BorderThickness="0"
                                         Command="{Binding DisconnectAuthenticatedUserAsyncCommand}"
                                         Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"/>
          <Button Grid.Column="2" Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" />

@@ -9,13 +9,11 @@ using OtherSideCore.Domain.ModelObjects;
 
 namespace OtherSideCore.Domain.Repositories
 {
-    public interface IRepositorySearch<T> : IDisposable where T : ModelObject
+   public interface IRepositorySearch<T> : IDisposable where T : ModelObject
    {
-      MultiTextFilter MultiTextFilter { get; }
-
       ObservableCollection<ModelObject> SearchResults { get; }
 
-      Task SearchAsync(CancellationToken cancellationToken);
+      Task SearchAsync(List<string> filters, List<Constraint> constraints, bool extendedSearch, CancellationToken cancellationToken);
 
       void AddSearchResult(T modelObject);
 

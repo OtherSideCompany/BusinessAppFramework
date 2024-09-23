@@ -26,6 +26,7 @@
                                                  SvgImageButton_IconGeometry="{StaticResource icon_content-save}"
                                                  SvgImageButton_OverBackgroundColor="Red"
                                                  SvgImageButton_MouseDownBackgroundColor="Red"
+                                                 BorderThickness="0"
                                                  Command="{Binding SaveCancelChangesAsyncView_SaveCommand, ElementName=SaveCancelChangesUserControl}"
                                                  ToolTip="Enregistrer les changements"
                                                  Visibility="{Binding SaveCancelChangesAsyncView_SaveCommand.IsRunning, ElementName=SaveCancelChangesUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
@@ -46,6 +47,7 @@
                                                  SvgImageButton_IconGeometry="{StaticResource icon_undo}" 
                                                  SvgImageButton_OverBackgroundColor="Red"
                                                  SvgImageButton_MouseDownBackgroundColor="Red"
+                                                 BorderThickness="0"
                                                  Command="{Binding SaveCancelChangesAsyncView_CancelCommand, ElementName=SaveCancelChangesUserControl}"
                                                  ToolTip="Annuler les changements"
                                                  Visibility="{Binding SaveCancelChangesAsyncView_CancelCommand.IsRunning, ElementName=SaveCancelChangesUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>

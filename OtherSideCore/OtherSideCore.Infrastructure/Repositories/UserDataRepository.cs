@@ -6,6 +6,10 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Infrastructure;
 using OtherSideCore.Infrastructure.Entities;
+using System.Reflection;
+using System.Linq.Expressions;
+using System;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -40,7 +44,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #region Public Methods
 
-      public override async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      public override async Task<List<T>> GetAllAsync(List<string> filters, List<Constraint<T>> constraints, bool extendedSearch, CancellationToken cancellationToken)
       {
          LogGetAllAsync(filters, extendedSearch);
 
@@ -65,6 +69,14 @@ namespace OtherSideCore.Infrastructure.Repositories
                      query = query.Where(u => u.FirstName.ToLower().Contains(lowerFilter) ||
                                               u.LastName.ToLower().Contains(lowerFilter));
                   }
+               }
+            }
+
+            if (constraints != null)
+            {
+               foreach (var constraint in constraints)
+               {
+                  query = query.Where(constraint.LambdaConstructor());
                }
             }
 

@@ -8,6 +8,7 @@ using System.Threading;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
+using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Domain.Repositories
 {
@@ -18,6 +19,7 @@ namespace OtherSideCore.Domain.Repositories
 
       protected IDataRepository<U> _entityDataRepository;
       protected IModelObjectFactory _modelObjectFactory;
+      protected IGlobalDataService _globalDataService;
 
       #endregion
 
@@ -35,30 +37,32 @@ namespace OtherSideCore.Domain.Repositories
 
       #region Constructor
 
-      public Repository(IDataRepository<U> repository, IModelObjectFactory modelObjectFactory)
+      public Repository(IDataRepository<U> repository, IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService)
       {
          _entityDataRepository = repository;
          _modelObjectFactory = modelObjectFactory;
+         _globalDataService = globalDataService;
       }
 
       #endregion
 
       #region Public Methods
 
-      public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken)
       {
-         var modelObjects = new List<T>();
-         var entities = await _entityDataRepository.GetAllAsync(filters, extendedSearch, cancellationToken);
+         return await GetAllAsync(new List<string>(), new List<Constraint>(), false, cancellationToken);
+      }
 
-         foreach (var entity in entities)
+      public async Task<List<T>> GetAllAsync(List<string> filters, List<Constraint> constraints, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var entityConstraints = new List<Constraint<U>>();
+
+         foreach (var constraint in constraints)
          {
-            var modelObject = new T();
-            modelObject.SetModelObjectFactory(_modelObjectFactory);
-            await modelObject.LoadPropertiesFromEntityAsync(entity);
-            modelObjects.Add(modelObject);
+            entityConstraints.Add(new Constraint<U>(constraint.PropertyName, constraint.Value));
          }
 
-         return modelObjects;
+         return await GetAllAsync(filters, entityConstraints, extendedSearch, cancellationToken);
       }
 
       public async Task<T> GetAsync(int id, CancellationToken cancellationToken)
@@ -68,7 +72,7 @@ namespace OtherSideCore.Domain.Repositories
          if (entity != null)
          {
             var modelObject = new T();
-            modelObject.SetModelObjectFactory(_modelObjectFactory);
+            modelObject.SetServices(_modelObjectFactory, _globalDataService);
 
             await modelObject.LoadPropertiesFromEntityAsync(entity);
 
@@ -91,7 +95,7 @@ namespace OtherSideCore.Domain.Repositories
       public async Task<T> CreateAsync(int userId)
       {
          var modelObject = new T();
-         modelObject.SetModelObjectFactory(_modelObjectFactory);
+         modelObject.SetServices(_modelObjectFactory, _globalDataService);
          return await CreateAsync(modelObject, userId);
       }
 
@@ -142,6 +146,22 @@ namespace OtherSideCore.Domain.Repositories
       #endregion
 
       #region Private Methods
+
+      protected async Task<List<T>> GetAllAsync(List<string> filters, List<Constraint<U>> constraints, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var modelObjects = new List<T>();
+         var entities = await _entityDataRepository.GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
+
+         foreach (var entity in entities)
+         {
+            var modelObject = new T();
+            modelObject.SetServices(_modelObjectFactory, _globalDataService);
+            await modelObject.LoadPropertiesFromEntityAsync(entity);
+            modelObjects.Add(modelObject);
+         }
+
+         return modelObjects;
+      }
 
       private async Task<T> CreateAsync(T modelObject, int userId)
       {

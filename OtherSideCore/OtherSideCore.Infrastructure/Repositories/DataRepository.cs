@@ -12,7 +12,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 {
    public abstract class DataRepository<T> : IDisposable, IDataRepository<T> where T : EntityBase, new()
    {
-      #region
+      #region Fields
 
       protected IDbContextFactory<DbContext> _dbContextFactory { get; set; }
       protected ILoggerFactory _loggerFactory { get; set; }
@@ -33,7 +33,17 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #region Public Methods
 
-      public abstract Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
+      public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken)
+      {
+         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {    
+            return await context.Set<T>().ToListAsync(cancellationToken);
+         }
+      }
+
+      public abstract Task<List<T>> GetAllAsync(List<string> filters, List<Constraint<T>> constraints, bool extendedSearch, CancellationToken cancellationToken);
 
       protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
       {

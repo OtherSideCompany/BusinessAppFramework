@@ -2,6 +2,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -77,6 +79,11 @@ namespace OtherSideCore.ViewModel
          _logger.LogInformation("Displaying view {ViewName} with view model {ViewModelType}", Name, _viewModelType.Name);
       }
 
+      public override async Task InitializeViewModelAsync(CancellationToken cancellationToken)
+      {
+         await DashboardViewModelBase.InitializeAsync(cancellationToken);
+      }
+
       public override void Unload()
       {
          base.Unload();
@@ -128,7 +135,7 @@ namespace OtherSideCore.ViewModel
          {
             OnPropertyChanged(nameof(IsSubViewLoaded));
          }
-      }
+      }      
 
       #endregion
    }

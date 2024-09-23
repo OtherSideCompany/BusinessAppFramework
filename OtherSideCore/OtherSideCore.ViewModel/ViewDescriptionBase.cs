@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace OtherSideCore.ViewModel
@@ -84,6 +86,8 @@ namespace OtherSideCore.ViewModel
       }
 
       public abstract void InstanciateViewModel();
+
+      public abstract Task InitializeViewModelAsync(CancellationToken cancellationToken);
 
       public virtual void Dispose()
       {

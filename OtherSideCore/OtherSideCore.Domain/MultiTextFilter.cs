@@ -11,8 +11,6 @@ namespace OtherSideCore.Domain
       #region Fields
 
       private bool m_AllowExtendedSearch;
-      private bool m_ExtendSearch;      
-
       private ObservableCollection<TextFilter> m_Filters;
 
       #endregion
@@ -23,12 +21,6 @@ namespace OtherSideCore.Domain
       {
          get => m_AllowExtendedSearch;
          set => SetProperty(ref m_AllowExtendedSearch, value);
-      }
-
-      public bool ExtendSearch
-      {
-         get => m_ExtendSearch;
-         set => SetProperty(ref m_ExtendSearch, value);
       }
 
       public ObservableCollection<TextFilter> Filters
@@ -62,9 +54,9 @@ namespace OtherSideCore.Domain
 
       #region Public Methods
 
-      public void AddFilter()
+      public void AddFilter(string searchText)
       {
-         Filters.Add(new TextFilter("Nouveau filtre"));
+         Filters.Add(new TextFilter(searchText));
       }
 
       public void RemoveFilter(TextFilter textFilter)

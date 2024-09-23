@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
+using OtherSideCore.Infrastructure;
 using OtherSideCore.Infrastructure.DatabaseFields;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
@@ -10,12 +12,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Domain.Tests.Repositories
+namespace OtherSideCore.Infrastructure.Repositories
 {
    public class MockDataRepository<T> : IDisposable, IDataRepository<T> where T : EntityBase, new()
    {
-      #region
-      private List<T> _entities;
+      #region Fields
+
+      protected List<T> _entities;
 
       #endregion
 
@@ -30,9 +33,24 @@ namespace OtherSideCore.Domain.Tests.Repositories
 
       #region Public Methods
 
-      public async Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
+      public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken)
       {
          return _entities;
+      }
+
+      public virtual async Task<List<T>> GetAllAsync(List<string> filters, List<Constraint<T>> constraints, bool extendedSearch, CancellationToken cancellationToken)
+      {
+         var query = _entities.AsQueryable();
+
+         if (constraints != null)
+         {
+            foreach (var constraint in constraints)
+            {
+               query = query.Where(constraint.LambdaConstructor());
+            }
+         }
+
+         return query.Distinct().ToList();
       }
 
       public async Task<int> CreateAsync(List<DatabaseField> databaseFields)

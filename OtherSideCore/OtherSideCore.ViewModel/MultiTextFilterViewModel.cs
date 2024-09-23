@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,7 +16,9 @@ namespace OtherSideCore.ViewModel
       #region Fields
 
       private MultiTextFilter m_MultiTextFilter;
-      private AsyncRelayCommand m_SearchCommandAsync;
+      private AsyncRelayCommand<bool> _searchCommandAsync;
+      private string _searchText;
+      private bool _extendedSearch;
 
       #endregion
 
@@ -27,36 +30,53 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref m_MultiTextFilter, value);
       }
 
-      public AsyncRelayCommand SearchCommandAsync
+      public string SearchText
       {
-         get => m_SearchCommandAsync;
-         set => SetProperty(ref m_SearchCommandAsync, value);
+         get => _searchText;
+         set
+         {
+            SetProperty(ref _searchText, value);
+            UpdateCommands();
+         }
+      }
+
+      public bool ExtendedSearch
+      {
+         get => _extendedSearch;
+         set => SetProperty(ref _extendedSearch, value);
+      }
+
+      public AsyncRelayCommand<bool> SearchCommandAsync
+      {
+         get => _searchCommandAsync;
+         set => SetProperty(ref _searchCommandAsync, value);
       }
 
       #endregion
 
       #region Commands
 
-      public RelayCommand AddFilterCommand { get; private set; }
+      public AsyncRelayCommand AddFilterAndSearchAsyncCommand { get; private set; }
 
-      public RelayCommand<TextFilter> RemoveFilterCommand { get; private set; }
+      public AsyncRelayCommand<TextFilter> RemoveFilterAsyncCommand { get; private set; }
 
-      public RelayCommand ClearFiltersCommand { get; private set; }
+      public AsyncRelayCommand ClearFiltersAsyncCommand { get; private set; }
 
       #endregion
 
       #region Constructor
 
-      public MultiTextFilterViewModel(MultiTextFilter multiTextFilter, AsyncRelayCommand searchCommandAsync)
+      public MultiTextFilterViewModel(MultiTextFilter multiTextFilter, AsyncRelayCommand<bool> searchCommandAsync)
       {
-         AddFilterCommand = new RelayCommand(AddFilter);
-         RemoveFilterCommand = new RelayCommand<TextFilter>(RemoveFilter, CanRemoveFilter);
-         ClearFiltersCommand = new RelayCommand(ClearFilters);
+         AddFilterAndSearchAsyncCommand = new AsyncRelayCommand(AddFilterAndSearchAsync, CanAddFilterAndSearch);
+         RemoveFilterAsyncCommand = new AsyncRelayCommand<TextFilter>(RemoveFilterAsync, CanRemoveFilter);
+         ClearFiltersAsyncCommand = new AsyncRelayCommand(ClearFiltersAsync);
 
          SearchCommandAsync = searchCommandAsync;
 
          MultiTextFilter = multiTextFilter;
       }
+
 
       #endregion
 
@@ -71,9 +91,26 @@ namespace OtherSideCore.ViewModel
 
       #region Private Methods
 
-      private void AddFilter()
+      private void UpdateCommands()
       {
-         MultiTextFilter.AddFilter();
+         AddFilterAndSearchAsyncCommand.NotifyCanExecuteChanged();
+         RemoveFilterAsyncCommand.NotifyCanExecuteChanged();
+      }
+
+      private bool CanAddFilterAndSearch()
+      {
+         return !String.IsNullOrEmpty(SearchText);
+      }
+
+      private async Task AddFilterAndSearchAsync()
+      {
+         MultiTextFilter.AddFilter(SearchText);
+
+         if (SearchCommandAsync.CanExecute(ExtendedSearch))
+         {
+            await SearchCommandAsync.ExecuteAsync(ExtendedSearch);
+            SearchText = "";
+         }
       }
 
       private bool CanRemoveFilter(TextFilter textFilter)
@@ -81,12 +118,12 @@ namespace OtherSideCore.ViewModel
          return textFilter != null;
       }
 
-      private void RemoveFilter(TextFilter textFilter)
+      private async Task RemoveFilterAsync(TextFilter textFilter)
       {
          MultiTextFilter.RemoveFilter(textFilter);
       }
 
-      private void ClearFilters()
+      private async Task ClearFiltersAsync()
       {
          MultiTextFilter.ClearFilters();
       }

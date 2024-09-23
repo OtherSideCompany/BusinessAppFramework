@@ -4,6 +4,7 @@ using OtherSideCore.ViewModel;
 using System.Threading.Tasks;
 using OtherSideCore.Domain.ModelObjects;
 using System.Windows;
+using System.Data;
 
 namespace OtherSideCore.ViewModel.RepositoryEditorViewModels
 {

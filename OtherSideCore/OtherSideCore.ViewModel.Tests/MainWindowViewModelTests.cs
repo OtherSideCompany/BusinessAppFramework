@@ -19,14 +19,19 @@ namespace OtherSideCore.ViewModel.Tests
       public MainWindowViewModelTests()
       {
          var authenticationService = new Mock<IAuthenticationService>();
+
          var serviceCollection = new ServiceCollection();
          serviceCollection.AddTransient<DefaultViewModel>();
+
          var serviceProvider = serviceCollection.BuildServiceProvider();
+
          var loggerFactory = new Mock<ILoggerFactory>();
          var loggerMock = new Mock<ILogger>();
          loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(loggerMock.Object);
 
-         _mainWindowViewModel = new CustomMainWindowViewModel(authenticationService.Object, serviceProvider, loggerFactory.Object);
+         var globalDataService = new Mock<IGlobalDataService>();
+
+         _mainWindowViewModel = new CustomMainWindowViewModel(authenticationService.Object, serviceProvider, loggerFactory.Object, globalDataService.Object);
 
          _view1 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 1", typeof(DefaultViewModel), null);
          _view2 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 2", typeof(DefaultViewModel), null);
@@ -77,7 +82,7 @@ namespace OtherSideCore.ViewModel.Tests
 
       private class CustomMainWindowViewModel : MainWindowViewModel
       {
-         public CustomMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory) : base(authenticationService, serviceProvider, loggerFactory)
+         public CustomMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, serviceProvider, loggerFactory, globalDataService)
          {
          }
       }

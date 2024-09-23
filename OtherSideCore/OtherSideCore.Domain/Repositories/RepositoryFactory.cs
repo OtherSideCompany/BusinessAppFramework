@@ -4,6 +4,7 @@ using OtherSideCore.Infrastructure.Repositories;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Domain.ModelObjects;
 using System;
+using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Domain.Repositories
 {
@@ -12,12 +13,14 @@ namespace OtherSideCore.Domain.Repositories
       protected IDbContextFactory<DbContext> _dbContextFactory;
       protected IModelObjectFactory _modelObjectFactory;
       protected ILoggerFactory _loggerFactory;
+      protected IGlobalDataService _globalDataService;
 
-      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IModelObjectFactory modelObjectFactory, ILoggerFactory loggerFactory)
+      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IModelObjectFactory modelObjectFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService)
       {
          _dbContextFactory = dbContextFactory;
          _modelObjectFactory = modelObjectFactory;
          _loggerFactory = loggerFactory;
+         _globalDataService = globalDataService;
       }
 
       public virtual IRepository<T> CreateRepository<T>() where T : ModelObject, new()
@@ -40,7 +43,7 @@ namespace OtherSideCore.Domain.Repositories
       public virtual IUserRepository<T> CreateUserRepository<T>() where T : ModelObjects.User, new()
       {
          var userDataRepository = new UserDataRepository<Infrastructure.Entities.User>(_dbContextFactory, _loggerFactory);
-         return new UserRepository<T, Infrastructure.Entities.User>(userDataRepository, _modelObjectFactory);
+         return new UserRepository<T, Infrastructure.Entities.User>(userDataRepository, _modelObjectFactory, _globalDataService);
       }
    }
 }

@@ -15,7 +15,6 @@ namespace OtherSideCore.Domain.Repositories
       #region Fields
 
       private ObservableCollection<ModelObject> m_SearchResults;
-      private MultiTextFilter m_MultiTextFilter;  
       protected IRepository<T> _repository;
 
       #endregion
@@ -26,12 +25,6 @@ namespace OtherSideCore.Domain.Repositories
       {
          get => m_SearchResults;
          set => SetProperty(ref m_SearchResults, value);
-      }
-
-      public MultiTextFilter MultiTextFilter
-      {
-         get => m_MultiTextFilter;
-         set => SetProperty(ref m_MultiTextFilter, value);
       }
 
       public IRepository<T> Repository
@@ -48,18 +41,17 @@ namespace OtherSideCore.Domain.Repositories
       {
          Repository = repository;
          SearchResults = new ObservableCollection<ModelObject>();
-         MultiTextFilter = new MultiTextFilter(true);
       }
 
       #endregion
 
       #region Public Methods
 
-      public async Task SearchAsync(CancellationToken cancellationToken)
+      public async Task SearchAsync(List<string> filters, List<Constraint> constraints, bool extendedSearch, CancellationToken cancellationToken)
       {
          Unload();
 
-         var searchResults = await _repository.GetAllAsync(MultiTextFilter.StringFilters, MultiTextFilter.ExtendSearch, cancellationToken);
+         var searchResults = await _repository.GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
 
          foreach (var searchResult in searchResults)
          {

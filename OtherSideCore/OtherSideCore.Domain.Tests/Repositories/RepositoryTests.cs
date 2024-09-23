@@ -15,8 +15,8 @@ namespace OtherSideCore.Domain.Tests.Repositories
 
       public RepositoryTests()
       {
-         var defaultEntityRepository = new MockDataRepository<DefaultEntity>();
-         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityRepository, new ModelObjectFactory());
+         var defaultEntityDataRepository = new DefaultEntityDataRepository();
+         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityDataRepository, new ModelObjectFactory());
       }
 
       [Fact]
@@ -112,6 +112,54 @@ namespace OtherSideCore.Domain.Tests.Repositories
          Assert.Equal(lastModificationDate, defaultModelObject.LastModifiedDateTime.Value);
          Assert.Equal(1, defaultModelObject.CreatedById.Value);
          Assert.Equal(1, defaultModelObject.LastModifiedById.Value);
-      }      
+      }
+
+      [Fact]
+      public async Task GetAll_AllObjectsAreReturned()
+      {
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+
+         var modelobjects = await _defaultModelObjectRepository.GetAllAsync(CancellationToken.None);
+
+         Assert.Equal(4, modelobjects.Count);
+      }
+
+      [Fact]
+      public async Task GetAllWithFilter_AllObjectsAreReturned()
+      {
+         var modelObject = await _defaultModelObjectRepository.CreateAsync(1);
+         modelObject.RandomProperty.Value = "test";
+         await _defaultModelObjectRepository.SaveAsync(modelObject, 1);
+
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+
+         var modelobjects = await _defaultModelObjectRepository.GetAllAsync(new List<string>() { "test" }, [], false, CancellationToken.None);
+
+         Assert.Single(modelobjects);
+      }
+
+      [Fact]
+      public async Task GetAllWithConstrained_ConstrainedObjectsAreReturned()
+      {
+         var modelObject = await _defaultModelObjectRepository.CreateAsync(1);
+         modelObject.RandomProperty.Value = "test";
+         await _defaultModelObjectRepository.SaveAsync(modelObject, 1);
+
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+         await _defaultModelObjectRepository.CreateAsync(1);
+
+         var constraints = new List<Constraint>();
+         constraints.Add(new Constraint("Test constraint", nameof(DefaultModelObject.RandomProperty), "test"));
+
+         var modelobjects = await _defaultModelObjectRepository.GetAllAsync([], constraints, false, CancellationToken.None);
+
+         Assert.Single(modelobjects);
+      }
    }
 }

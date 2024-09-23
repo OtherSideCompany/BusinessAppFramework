@@ -35,7 +35,7 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public async Task SearchAsync_ResultsAreFetched()
       {
          var repositorySearch = new RepositorySearch<DefaultModelObject>(_defaultModelObjectRepository);
-         await repositorySearch.SearchAsync(CancellationToken.None);
+         await repositorySearch.SearchAsync(new List<string>(), new List<Constraint>(), false, CancellationToken.None);
 
          Assert.Equal(4, repositorySearch.SearchResults.Count);
       }
@@ -44,7 +44,7 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public async Task Dispose_NoSearchResultAreStored()
       {
          var repositorySearch = new RepositorySearch<DefaultModelObject>(_defaultModelObjectRepository);
-         await repositorySearch.SearchAsync(CancellationToken.None);
+         await repositorySearch.SearchAsync(new List<string>(), new List<Constraint>(), false, CancellationToken.None);
          repositorySearch.Dispose();
 
          Assert.Empty(repositorySearch.SearchResults);
@@ -54,7 +54,7 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public async Task AddSearchResult_ResultIsAdded()
       {
          var repositorySearch = new RepositorySearch<DefaultModelObject>(_defaultModelObjectRepository);
-         await repositorySearch.SearchAsync(CancellationToken.None);
+         await repositorySearch.SearchAsync(new List<string>(), new List<Constraint>(), false, CancellationToken.None);
 
          var defaultModelObject = new DefaultModelObject();
          repositorySearch.AddSearchResult(defaultModelObject);
@@ -66,7 +66,18 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public async Task RemoveSearchResult_ResultIsRemove()
       {
          var repositorySearch = new RepositorySearch<DefaultModelObject>(_defaultModelObjectRepository);
-         await repositorySearch.SearchAsync(CancellationToken.None);
+         await repositorySearch.SearchAsync(new List<string>(), new List<Constraint>(), false, CancellationToken.None);
+
+         repositorySearch.RemoveSearchResult((DefaultModelObject)repositorySearch.SearchResults.First());
+
+         Assert.Equal(3, repositorySearch.SearchResults.Count);
+      }
+
+      [Fact]
+      public async Task GetConstrain_ResultIsRemove()
+      {
+         var repositorySearch = new RepositorySearch<DefaultModelObject>(_defaultModelObjectRepository);
+         await repositorySearch.SearchAsync(new List<string>(), new List<Constraint>(), false, CancellationToken.None);
 
          repositorySearch.RemoveSearchResult((DefaultModelObject)repositorySearch.SearchResults.First());
 

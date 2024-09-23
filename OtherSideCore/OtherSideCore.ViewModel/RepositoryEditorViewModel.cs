@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DatabaseFields;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
+using OtherSideCore.ViewModel.RepositoryEditorViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,6 +25,7 @@ namespace OtherSideCore.ViewModel
       protected IRepositoryFactory _repositoryFactory;
       protected User _authenticatedUser;
       private RepositorySearch<T> _repositorySearch;
+      private ObservableCollection<ConstraintViewModel> _constraintViewModels;
 
       private bool m_IsSelectionLocked;
       private Func<CancellationToken, Task> m_SelectedSearchResultChangedAsync;
@@ -33,8 +36,6 @@ namespace OtherSideCore.ViewModel
 
       private ObservableCollection<ModelObjectViewModel> m_searchResultViewModels;
       private CollectionViewSource _searchResultViewModelsCollection;
-
-      private List<RepositoryView> _repositoryViews;
 
       #endregion
 
@@ -72,10 +73,10 @@ namespace OtherSideCore.ViewModel
          set => SetProperty(ref m_searchResultViewModels, value);
       }
 
-      public List<RepositoryView> RepositoryViews
+      public ObservableCollection<ConstraintViewModel> ConstraintViewModels
       {
-         get => _repositoryViews;
-         set => SetProperty(ref _repositoryViews, value);
+         get => _constraintViewModels;
+         set => SetProperty(ref _constraintViewModels, value);
       }
 
       public ICollectionView SearchResultViewModelsCollection
@@ -91,11 +92,19 @@ namespace OtherSideCore.ViewModel
          }
       }
 
+      public bool IsAnyConstraintSelected
+      {
+         get
+         {
+            return ConstraintViewModels.Any(vm => vm.IsSelected);
+         }
+      }
+
       #endregion
 
       #region Commands
 
-      public AsyncRelayCommand SearchCommandAsync { get; private set; }
+      public AsyncRelayCommand<bool> SearchCommandAsync { get; private set; }
       public RelayCommand CancelSearchCommand { get; private set; }
       public AsyncRelayCommand<ModelObjectViewModel> SelectSearchResultCommandAsync { get; private set; }
       public RelayCommand CancelSelectSearchResultCommand { get; private set; }
@@ -116,7 +125,7 @@ namespace OtherSideCore.ViewModel
          _authenticatedUser = autenticatedUser;
          _repositorySearch = new RepositorySearch<T>(repositoryFactory.CreateRepository<T>());
 
-         SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
+         SearchCommandAsync = new AsyncRelayCommand<bool>(SearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
          SelectSearchResultCommandAsync = new AsyncRelayCommand<ModelObjectViewModel>(SelectSearchResultAsync, CanSelectSearchResult);
          CancelSelectSearchResultCommand = new RelayCommand(CancelSelectSearchResult);
@@ -125,7 +134,8 @@ namespace OtherSideCore.ViewModel
          CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
          DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
 
-         MultiTextFilterViewModel = new MultiTextFilterViewModel(_repositorySearch.MultiTextFilter, SearchCommandAsync);
+         ConstraintViewModels = new ObservableCollection<ConstraintViewModel>();
+         MultiTextFilterViewModel = new MultiTextFilterViewModel(new MultiTextFilter(true), SearchCommandAsync);
          SearchResultViewModels = new ObservableCollection<ModelObjectViewModel>();
          _searchResultViewModelsCollection = new CollectionViewSource();
          _searchResultViewModelsCollection.Source = SearchResultViewModels;
@@ -146,9 +156,53 @@ namespace OtherSideCore.ViewModel
          MultiTextFilterViewModel.Dispose();
       }
 
+      public void SetConstraints(List<Constraint> constraints)
+      {
+         foreach (var constraint in constraints)
+         {
+            ConstraintViewModels.Add(new ConstraintViewModel(constraint));
+         }
+      }
+
+      public void ActivateConstraint(Constraint constraint)
+      {
+         foreach (var constraintViewModel in ConstraintViewModels)
+         {
+            constraintViewModel.IsSelected = constraintViewModel.Constraint.Equals(constraint);
+         }
+
+         OnPropertyChanged(nameof(IsAnyConstraintSelected));
+      }
+
+      public async Task SearchAsync(bool extendedSearch, CancellationToken cancellationToken)
+      {
+         try
+         {
+            UnselectSearchResult();
+
+            UnloadSearchResultViewModels();
+
+            await _repositorySearch.SearchAsync(MultiTextFilterViewModel.MultiTextFilter.StringFilters,
+                                                ConstraintViewModels.Where(vm => vm.IsSelected).Select(vm => vm.Constraint).ToList(),
+                                                extendedSearch,
+                                                cancellationToken);
+
+            var viewModels = ConstructSearchResultViewModels();
+
+            foreach (var viewModel in viewModels)
+            {
+               SearchResultViewModels.Add(viewModel);
+            }
+         }
+         catch (OperationCanceledException)
+         {
+            UnloadSearchResultViewModels();
+         }
+      }
+
       #endregion
 
-      #region Public Methods
+      #region Private Methods
 
       private void RegisterDatabaseFields()
       {
@@ -290,28 +344,6 @@ namespace OtherSideCore.ViewModel
          }
 
          NotifyCommandsCanExecuteChanged();
-      }
-
-      private async Task SearchAsync(CancellationToken cancellationToken)
-      {
-         try
-         {
-            UnselectSearchResult();
-
-            UnloadSearchResultViewModels();
-
-            await _repositorySearch.SearchAsync(cancellationToken);
-            var viewModels = ConstructSearchResultViewModels();
-
-            foreach (var viewModel in viewModels)
-            {
-               SearchResultViewModels.Add(viewModel);
-            }
-         }
-         catch (OperationCanceledException)
-         {
-            UnloadSearchResultViewModels();
-         }
       }
 
       private void CancelSearch()

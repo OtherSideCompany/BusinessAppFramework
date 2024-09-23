@@ -37,7 +37,7 @@ namespace OtherSideCore.ViewModel.Tests
          _repositoryEditorViewModel = new RepositoryEditorViewModel<DefaultModelObject>(repositoryFactory.Object, new Domain.ModelObjects.User(), modelObjectViewModelFactory);
 
          defaultModelObjectRepository.CreateAsync(1).Wait();
-         defaultModelObjectRepository.CreateAsync(1).Wait();
+         defaultModelObjectRepository.CreateAsync(2).Wait();
          defaultModelObjectRepository.CreateAsync(1).Wait();
          defaultModelObjectRepository.CreateAsync(1).Wait();
       }

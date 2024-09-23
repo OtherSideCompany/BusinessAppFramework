@@ -136,7 +136,7 @@
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>                        
+                        </Grid.ColumnDefinitions>
 
                         <Grid Grid.Column="0"
                               Visibility="{Binding Column.IsSorted, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Collapsed}">
@@ -187,7 +187,7 @@
                      <Thumb x:Name="PART_HeaderGripper" HorizontalAlignment="Right" DragDelta="GridViewColumnHeader_ThumbDragDelta" 
                             Style="{StaticResource GridViewThumbStyle}" />
                   </Border>
-                  
+
                </Grid>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
@@ -392,7 +392,7 @@
          </Setter.Value>
       </Setter>
    </Style>
-   
+
    <!-- Repository Editor List View Pannel -->
    <Style x:Key="RepositoryEditorListViewPannel" TargetType="{x:Type Border}">
       <Setter Property="Margin" Value="24,16,0,4" />
@@ -415,8 +415,7 @@
 
    <!-- Model Object Properties Pannel Action button -->
    <Style x:Key="ModelObjectPropertiesPannelActionButton" TargetType="{x:Type customControls:SvgImageTextButton}">
-      <Setter Property="Background" Value="White" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="SvgImageTextButton_ImageSize" Value="32" />
       <Setter Property="SvgImageTextButton_Orientation" Value="Vertical" />
       <Setter Property="SvgImageTextButton_TextMargin" Value="0,4,0,0" />
@@ -425,7 +424,7 @@
    <!-- Model Object Properties Pannel Action Toggle button -->
    <Style x:Key="ModelObjectPropertiesPannelActionToggleButton" TargetType="{x:Type customControls:SvgImageTextToggleButton}">
       <Setter Property="Background" Value="White" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderThickness" Value="0" />
       <Setter Property="SvgImageTextToggleButton_ImageSize" Value="32" />
       <Setter Property="SvgImageTextToggleButton_Orientation" Value="Vertical" />
       <Setter Property="SvgImageTextToggleButton_TextMargin" Value="0,4,0,0" />
@@ -437,13 +436,40 @@
       <Setter Property="FontWeight" Value="SemiBold" />
    </Style>
 
-   <!-- ClickSelectTextBox Text Box -->
+   <!-- ClickSelectTextBox -->
    <Style TargetType="{x:Type customControls:ClickSelectTextBox}" >
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="MinWidth" Value="10" />
       <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="customControls:ClickSelectTextBox">
+               <Grid>
+                  <TextBox Text="{Binding Text, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" 
+                           Background="Transparent"
+                           BorderThickness="0"
+                           VerticalAlignment="Center"/>
+                  <TextBlock VerticalAlignment="Center"
+                             Text="{Binding ClickSelectTextBox_Watermak, RelativeSource={RelativeSource TemplatedParent}}"
+                             Foreground="{StaticResource OtherSide_Gray}"
+                             IsHitTestVisible="False"
+                             x:Name="UserMessage"
+                             Visibility="Hidden"/>
+               </Grid>
+               <ControlTemplate.Triggers>
+                  <MultiTrigger>
+                     <MultiTrigger.Conditions>
+                        <Condition Property="Text" Value=""/>
+                        <Condition Property="IsKeyboardFocusWithin" Value="False"/>
+                     </MultiTrigger.Conditions>
+                     <Setter Property="Visibility" TargetName="UserMessage" Value="Visible"/>
+                  </MultiTrigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
       <Style.Triggers>
          <Trigger Property="IsReadOnly" Value="True">
             <Setter Property="FontWeight" Value="Normal" />
@@ -485,7 +511,7 @@
    </Style>
 
    <!-- databasefield edition border -->
-   <Style x:Key="DatabaseFieldEditionBorder" TargetType="{x:Type Border}">
+   <Style x:Key="EditableTextBoxBorder" TargetType="{x:Type Border}">
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
       <Setter Property="Background" Value="White" />
@@ -524,6 +550,7 @@
       <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
       <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
       <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Template">
          <Setter.Value>
@@ -559,11 +586,6 @@
                      </Popup>
                   </Grid>
                </Border>
-               <ControlTemplate.Triggers>
-                  <Trigger Property="IsMouseOver" Value="True">
-                     <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Selected_Color}"/>
-                  </Trigger>
-               </ControlTemplate.Triggers>
             </ControlTemplate>
          </Setter.Value>
       </Setter>
@@ -599,14 +621,14 @@
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type ComboBox}">
-               <Border Background="{TemplateBinding Background}" Style="{StaticResource DatabaseFieldEditionBorder}" x:Name="Bd">
+               <Border Background="{TemplateBinding Background}" Style="{StaticResource EditableTextBoxBorder}" x:Name="Bd">
                   <Grid>
                      <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                      </Grid.ColumnDefinitions>
 
-                     <ToggleButton x:Name="ToggleButton" Background="Yellow"
+                     <ToggleButton x:Name="ToggleButton"
                                    Template="{StaticResource ComboBoxRightToggleButton}" Grid.Column="0" Grid.ColumnSpan="2" Focusable="false" ClickMode="Press"
                                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
 
@@ -708,6 +730,34 @@
                      <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
                   </Trigger>
                </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+   
+   <!-- UI popup -->
+   <Style x:Key="UiPopup" TargetType="{x:Type Popup}">
+      <Setter Property="StaysOpen" Value="False" />
+      <Setter Property="AllowsTransparency" Value="True" />
+      <Setter Property="VerticalOffset" Value="-5" />
+      <Setter Property="Placement" Value="Bottom" />
+      <Setter Property="PopupAnimation" Value="Slide" />
+   </Style>
+
+   <Style x:Key="UiPopupContentStyle" TargetType="{x:Type ContentControl}">
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ContentControl}">
+
+               <Border Background="White" BorderBrush="{StaticResource OtherSide_LightGray}" BorderThickness="1" Margin="5">
+                  <Border.Effect>
+                     <DropShadowEffect ShadowDepth="0" BlurRadius="5" Opacity="0.2" />
+                  </Border.Effect>
+
+                  <ContentPresenter Margin="10" />
+                  
+               </Border>
+
             </ControlTemplate>
          </Setter.Value>
       </Setter>

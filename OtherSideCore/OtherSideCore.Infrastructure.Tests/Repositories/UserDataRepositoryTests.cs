@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OtherSideCore.Domain.DatabaseFields;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
 
@@ -21,7 +22,7 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
       [Fact]
       public async Task GetAllAsync_ReturnAllUsers()
       {
-         var users = await _userRepository.GetAllAsync(null, false, CancellationToken.None);
+         var users = await _userRepository.GetAllAsync(CancellationToken.None);
 
          Assert.Equal(4, users.Count);
       }
@@ -29,7 +30,17 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
       [Fact]
       public async Task GetAllWithTextFiltersAsync_ReturnUsersSubset()
       {
-         var users = await _userRepository.GetAllAsync(new List<string> { "Malcourant" }, false, CancellationToken.None);
+         var users = await _userRepository.GetAllAsync(new List<string> { "Malcourant" }, [], false, CancellationToken.None);
+
+         Assert.Equal(2, users.Count);
+      }
+
+      [Fact]
+      public async Task GetAllWithConstraintAsync_ReturnUsersSubset()
+      {
+         var constraint = new Constraint<User>(nameof(User.LastName), "Malcourant");
+
+         var users = await _userRepository.GetAllAsync([], new List<Constraint<User>>() { constraint }, false, CancellationToken.None);
 
          Assert.Equal(2, users.Count);
       }
@@ -37,7 +48,7 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
       [Fact]
       public async Task GetAllWithTextFiltersAndExtendedSearchAsync_ReturnUsersSubset()
       {
-         var users = await _userRepository.GetAllAsync(new List<string> { "Malcpurant" }, true, CancellationToken.None);
+         var users = await _userRepository.GetAllAsync(new List<string> { "Malcpurant" }, [], true, CancellationToken.None);
 
          Assert.Equal(2, users.Count);
       }

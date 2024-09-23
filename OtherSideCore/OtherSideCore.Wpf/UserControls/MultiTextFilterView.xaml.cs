@@ -41,31 +41,34 @@ namespace OtherSideCore.Wpf.UserControls
       public MultiTextFilterView()
       {
          InitializeComponent();
-
-         ((INotifyCollectionChanged)FiltersItemsControl.Items).CollectionChanged += MultiTextFilterView_CollectionChanged;
       }
 
-      private void MultiTextFilterView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+      private void SearchBorder_GotFocus(object sender, RoutedEventArgs e)
       {
-         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems.Count > 0)
-         {
-            var newItem = e.NewItems[0];
-            var lastItem = (ContentPresenter)FiltersItemsControl.ItemContainerGenerator.ContainerFromItem(newItem);
-
-            lastItem.ApplyTemplate();
-            var textBox = (TextBox)lastItem.ContentTemplate.FindName("FilterTextBox", lastItem);
-            Keyboard.Focus(textBox);
-         }
-      }
-
-      private void MultiTextFilterViewUserControl_GotFocus(object sender, RoutedEventArgs e)
-      {
+         ResetIsDefaultState();
          SearchButton.IsDefault = true;
       }
 
-      private void MultiTextFilterViewUserControl_LostFocus(object sender, RoutedEventArgs e)
+      private void SearchBorder_LostFocus(object sender, RoutedEventArgs e)
+      {
+         ResetIsDefaultState();
+      }
+
+      private void FiltersBorder_GotFocus(object sender, RoutedEventArgs e)
+      {
+         ResetIsDefaultState();
+         RefreshButton.IsDefault = true;
+      }
+
+      private void FiltersBorder_LostFocus(object sender, RoutedEventArgs e)
+      {
+         ResetIsDefaultState();
+      }
+
+      private void ResetIsDefaultState()
       {
          SearchButton.IsDefault = false;
+         RefreshButton.IsDefault = false;
       }
    }
 }

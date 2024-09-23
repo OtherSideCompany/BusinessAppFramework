@@ -27,6 +27,7 @@
                                 SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
                                 SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
                                 SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                BorderThickness="0"
                                 RenderTransformOrigin="0.5 0.5"
                                 x:Name="OuterRing">
          <customcontrols:SvgViewer.RenderTransform>
@@ -58,6 +59,7 @@
                                         Width="16" Height="16"
                                         Margin="2,2,0,0"
                                         SvgImageButton_IconGeometry="{StaticResource icon_close}"
+                                        BorderThickness="0"
                                         SvgImageButton_ImageSize="12" 
                                         Visibility="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"
                                         Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"

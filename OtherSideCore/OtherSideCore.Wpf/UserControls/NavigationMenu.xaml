@@ -144,6 +144,7 @@
                                                                                            SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-up}"
                                                                                            SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
                                                                                            SvgImageToggleButton_ImageColor="{StaticResource ForegroundColor}"
+                                                                                           BorderThickness="0"
                                                                                            IsChecked="{Binding IsExpanded}" />
                                                    </Grid>
 

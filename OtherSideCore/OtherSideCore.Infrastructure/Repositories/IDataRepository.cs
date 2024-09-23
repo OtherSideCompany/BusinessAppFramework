@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-   public interface IDataRepository<T> : IDisposable
+   public interface IDataRepository<T> : IDisposable where T : EntityBase
    {
-      Task<List<T>> GetAllAsync(List<string> filters, bool extendedSearch, CancellationToken cancellationToken);
+      Task<List<T>> GetAllAsync(CancellationToken cancellationToken);
+
+      Task<List<T>> GetAllAsync(List<string> filters, List<Constraint<T>> constraints, bool extendedSearch, CancellationToken cancellationToken);
 
       Task<int> CreateAsync(List<DatabaseField> databaseFields);
 
