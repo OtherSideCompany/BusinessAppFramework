@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.DatabaseFields;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
@@ -16,7 +17,8 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public RepositoryTests()
       {
          var defaultEntityDataRepository = new DefaultEntityDataRepository();
-         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityDataRepository, new ModelObjectFactory());
+         var globalDataService = new Mock<IGlobalDataService>();
+         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityDataRepository, new ModelObjectFactory(), globalDataService.Object);
       }
 
       [Fact]

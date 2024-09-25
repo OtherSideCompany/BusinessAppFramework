@@ -1,4 +1,6 @@
-﻿using OtherSideCore.Domain.ModelObjects;
+﻿using Moq;
+using OtherSideCore.Domain.ModelObjects;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.DatabaseFields;
 using OtherSideCore.Infrastructure.Entities;
 
@@ -6,6 +8,8 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
 {
    public class ModelObjectTests
    {
+      IGlobalDataService _globalDataService = new Mock<IGlobalDataService>().Object;
+
       [Fact]
       public async Task LoadPropertiesFromEntity_PropertiesWellSet()
       {
@@ -76,7 +80,7 @@ namespace OtherSideCore.Domain.Tests.ModelObjects
 
          var modelObject = new DefaultModelObect();
 
-         modelObject.SetModelObjectFactory(new ModelObjectFactory());
+         modelObject.SetServices(new ModelObjectFactory(), _globalDataService);
 
          var entity = new DefaultEntity()
          {

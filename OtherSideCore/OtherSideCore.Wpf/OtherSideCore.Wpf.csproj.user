@@ -8,6 +8,12 @@
     <Compile Update="UserControls\ConstraintsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\DecimalDatabaseFieldEditionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\IntegerDatabaseFieldEditionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\StringDatabaseFieldEditionView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -20,6 +26,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ConstraintsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\DecimalDatabaseFieldEditionView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\IntegerDatabaseFieldEditionView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">

@@ -12,9 +12,13 @@ namespace OtherSideCore.Domain.ModelObjects
 {
    public class ModelObjectFactory : ObservableObject, IModelObjectFactory
    {
-      public virtual User CreateUser()
+      public virtual User CreateUser(IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService)
       {
-         return new User();
+         var user = new User();
+         user.SetServices(modelObjectFactory, globalDataService);
+         user.LoadDefaultProperties();
+
+         return user;
       }
    }
 }

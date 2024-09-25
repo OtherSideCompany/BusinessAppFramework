@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
-using OtherSideCore.Domain.Tests.Repositories;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Infrastructure.Repositories;
 using System;
@@ -29,8 +29,10 @@ namespace OtherSideCore.ViewModel.Tests
 
          var dbContextFactory = new Mock<IDbContextFactory<DbContext>>();
 
+         var globalDataService = new Mock<IGlobalDataService>();
+
          var repositoryFactory = new Mock<IRepositoryFactory>();
-         var defaultModelObjectRepository = new Repository<DefaultModelObject, DefaultEntity>(new MockDataRepository<DefaultEntity>(), modelObjectFactory);
+         var defaultModelObjectRepository = new Repository<DefaultModelObject, DefaultEntity>(new MockDataRepository<DefaultEntity>(), modelObjectFactory, globalDataService.Object);
          repositoryFactory.Setup(x => x.CreateRepository<DefaultModelObject>()).Returns(defaultModelObjectRepository);
          var modelObjectViewModelFactory = new ModelObjectViewModelFactory();
 
@@ -45,9 +47,9 @@ namespace OtherSideCore.ViewModel.Tests
       [Fact]
       public async Task EditUserValue_ListIsLockedUntillSaveChanges()
       {
-         if (_repositoryEditorViewModel.SearchCommandAsync.CanExecute(null))
+         if (_repositoryEditorViewModel.SearchCommandAsync.CanExecute(false))
          {
-            await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(null);
+            await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(false);
          }
 
          Assert.Equal(4, _repositoryEditorViewModel.SearchResultViewModels.Count);
@@ -78,7 +80,7 @@ namespace OtherSideCore.ViewModel.Tests
       [Fact]
       public async Task EditUserValue_ListIsLockedUntillCancelChanges()
       {
-         await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(null);
+         await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(false);
       }
 
       private class DefaultModelObject : ModelObject

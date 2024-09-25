@@ -51,6 +51,9 @@ namespace OtherSideCore.Infrastructure.Entities
                   case NullableIntegerDatabaseField nullableIntegerDatabaseField:
                      propertyInfo.SetValue(this, nullableIntegerDatabaseField.Value);
                      break;
+                  case DecimalDatabaseField decimalDatabaseField:
+                     propertyInfo.SetValue(this, decimalDatabaseField.Value);
+                     break;
                   default:
                      throw new ArgumentException("Unrecognized DatabaseField type " + databaseField.GetType());
                }

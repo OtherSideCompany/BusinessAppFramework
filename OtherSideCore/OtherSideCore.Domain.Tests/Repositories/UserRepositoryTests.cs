@@ -37,10 +37,11 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public UserRepositoryTests()
       {
          var userDataRepository = new Mock<UserDataRepository<Infrastructure.Entities.User>>(new Mock<IDbContextFactory<DbContext>>().Object, new Mock<Microsoft.Extensions.Logging.ILoggerFactory>().Object);
+         var globalDataService = new Mock<IGlobalDataService>();
 
          userDataRepository.Setup(x => x.GetUserPasswordHashAsync("anth")).ReturnsAsync((_anthony.Id, _anthony.PasswordHash));
 
-         _userRepository = new UserRepository<Domain.ModelObjects.User, Infrastructure.Entities.User>(userDataRepository.Object, new ModelObjectFactory());
+         _userRepository = new UserRepository<Domain.ModelObjects.User, Infrastructure.Entities.User>(userDataRepository.Object, new ModelObjectFactory(), globalDataService.Object);
       }
 
       [Fact]

@@ -109,6 +109,8 @@ namespace OtherSideCore.Domain.ModelObjects
          _globalDataService = globalDataService;
       }
 
+      public virtual void LoadDefaultProperties() { }
+
       public virtual bool MatchFilter(List<string> filters, bool extendedSearch)
       {
          throw new NotImplementedException();
@@ -147,6 +149,9 @@ namespace OtherSideCore.Domain.ModelObjects
                   case NullableIntegerDatabaseField nullableIntegerDatabaseField:
                      nullableIntegerDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.NullableIntegerDatabaseField).Value);
                      break;
+                  case DecimalDatabaseField decimalDatabaseField:
+                     decimalDatabaseField.LoadValue((databaseFieldProperty as Infrastructure.DatabaseFields.DecimalDatabaseField).Value);
+                     break;
                   default:
                      throw new ArgumentException("Unrecognized type " + databaseField.GetType());
                }
@@ -159,24 +164,7 @@ namespace OtherSideCore.Domain.ModelObjects
          }
 
          _isLoading = false;
-      }
-
-      protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(EntityBase entity)
-      {
-         if (entity.CreatedBy != null)
-         {
-            CreatedBy = _modelObjectFactory.CreateUser();
-            CreatedBy.SetServices(_modelObjectFactory, _globalDataService);
-            await CreatedBy.LoadPropertiesFromEntityAsync(entity.CreatedBy, false);            
-         }
-
-         if (entity.LastModifiedBy != null)
-         {
-            LastModifiedBy = _modelObjectFactory.CreateUser();
-            LastModifiedBy.SetServices(_modelObjectFactory, _globalDataService);
-            await LastModifiedBy.LoadPropertiesFromEntityAsync(entity.LastModifiedBy, false);
-         }
-      }
+      }      
 
       public bool CanSaveChanges()
       {
@@ -212,12 +200,7 @@ namespace OtherSideCore.Domain.ModelObjects
       internal void ResetDatabaseFieldsDirtyState()
       {
          GetDirtyDatabaseFields().ForEach(dbf => dbf.IsDirty = false);
-      }
-
-      protected List<PropertyInfo> GetDatabaseFieldsPropertyInfos()
-      {
-         return GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField))).ToList();
-      }
+      }      
 
       public List<DatabaseField> GetDatabaseFields()
       {
@@ -226,16 +209,7 @@ namespace OtherSideCore.Domain.ModelObjects
                                          .Cast<DatabaseField>()
                                          .ToList();
 
-      }
-
-      protected List<DatabaseField> GetDirtyDatabaseFields()
-      {
-         return GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField)))
-                                         .Select(p => p.GetValue(this))
-                                         .Cast<DatabaseField>()
-                                         .Where(p => (p as DatabaseField).IsDirty)
-                                         .ToList();
-      }
+      }      
 
       internal List<Infrastructure.DatabaseFields.DatabaseField> ConvertDirtyPropertiesToDataProperties()
       {
@@ -245,39 +219,6 @@ namespace OtherSideCore.Domain.ModelObjects
       internal List<Infrastructure.DatabaseFields.DatabaseField> ConvertPropertiesToDataProperties()
       {
          return ConvertDatabaseFieldsToDataProperties(GetDatabaseFields());
-      }
-
-      protected Infrastructure.DatabaseFields.DatabaseField ConvertDatabaseFieldToDataProperty(DatabaseField databaseField)
-      {
-         switch (databaseField)
-         {
-            case StringDatabaseField stringDatabaseField:
-               return new Infrastructure.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName);
-            case IntegerDatabaseField integerDatabaseField:
-               return new Infrastructure.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName);
-            case DateTimeDatabaseField dateTimeDatabaseField:
-               return new Infrastructure.DatabaseFields.DateTimeDatabaseField(dateTimeDatabaseField.Value, dateTimeDatabaseField.DatabaseFieldName);
-            case DateOnlyDatabaseField dateOnlyDatabaseField:
-               return new Infrastructure.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
-            case BoolDatabaseField boolDatabaseField:
-               return new Infrastructure.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
-            case NullableIntegerDatabaseField nullableIntegerDatabaseField:
-               return new Infrastructure.DatabaseFields.NullableIntegerDatabaseField(nullableIntegerDatabaseField.Value, nullableIntegerDatabaseField.DatabaseFieldName);
-            default:
-               throw new Exception("Unrecognized type " + databaseField.GetType());
-         }
-      }
-
-      private List<Infrastructure.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
-      {
-         var entityDataProperties = new List<Infrastructure.DatabaseFields.DatabaseField>();
-
-         foreach (var databaseField in databaseFields)
-         {
-            entityDataProperties.Add(ConvertDatabaseFieldToDataProperty(databaseField));
-         }
-
-         return entityDataProperties;
       }
 
       public override bool Equals(object obj)
@@ -303,6 +244,74 @@ namespace OtherSideCore.Domain.ModelObjects
       {
          CreatedBy?.Dispose();
          LastModifiedBy?.Dispose();
+      }
+
+      #endregion
+
+      #region Private Methods      
+
+      protected virtual async Task LoadModelObjectPropertiesFromEntityAsync(EntityBase entity)
+      {
+         if (entity.CreatedBy != null)
+         {
+            CreatedBy = _modelObjectFactory.CreateUser(_modelObjectFactory, _globalDataService);
+            await CreatedBy.LoadPropertiesFromEntityAsync(entity.CreatedBy, false);
+         }
+
+         if (entity.LastModifiedBy != null)
+         {
+            LastModifiedBy = _modelObjectFactory.CreateUser(_modelObjectFactory, _globalDataService);
+            await LastModifiedBy.LoadPropertiesFromEntityAsync(entity.LastModifiedBy, false);
+         }
+      }
+
+      protected List<PropertyInfo> GetDatabaseFieldsPropertyInfos()
+      {
+         return GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField))).ToList();
+      }
+
+      protected Infrastructure.DatabaseFields.DatabaseField ConvertDatabaseFieldToDataProperty(DatabaseField databaseField)
+      {
+         switch (databaseField)
+         {
+            case StringDatabaseField stringDatabaseField:
+               return new Infrastructure.DatabaseFields.StringDatabaseField(stringDatabaseField.Value, stringDatabaseField.DatabaseFieldName);
+            case IntegerDatabaseField integerDatabaseField:
+               return new Infrastructure.DatabaseFields.IntegerDatabaseField(integerDatabaseField.Value, integerDatabaseField.DatabaseFieldName);
+            case DateTimeDatabaseField dateTimeDatabaseField:
+               return new Infrastructure.DatabaseFields.DateTimeDatabaseField(dateTimeDatabaseField.Value, dateTimeDatabaseField.DatabaseFieldName);
+            case DateOnlyDatabaseField dateOnlyDatabaseField:
+               return new Infrastructure.DatabaseFields.DateOnlyDatabaseField(dateOnlyDatabaseField.Value, dateOnlyDatabaseField.DatabaseFieldName);
+            case BoolDatabaseField boolDatabaseField:
+               return new Infrastructure.DatabaseFields.BoolDatabaseField(boolDatabaseField.Value, boolDatabaseField.DatabaseFieldName);
+            case NullableIntegerDatabaseField nullableIntegerDatabaseField:
+               return new Infrastructure.DatabaseFields.NullableIntegerDatabaseField(nullableIntegerDatabaseField.Value, nullableIntegerDatabaseField.DatabaseFieldName);
+            case DecimalDatabaseField decimalDatabaseField:
+               return new Infrastructure.DatabaseFields.DecimalDatabaseField(decimalDatabaseField.Value, decimalDatabaseField.DatabaseFieldName);
+            default:
+               throw new Exception("Unrecognized type " + databaseField.GetType());
+         }
+      }
+
+      private List<Infrastructure.DatabaseFields.DatabaseField> ConvertDatabaseFieldsToDataProperties(List<DatabaseField> databaseFields)
+      {
+         var entityDataProperties = new List<Infrastructure.DatabaseFields.DatabaseField>();
+
+         foreach (var databaseField in databaseFields)
+         {
+            entityDataProperties.Add(ConvertDatabaseFieldToDataProperty(databaseField));
+         }
+
+         return entityDataProperties;
+      }
+
+      protected List<DatabaseField> GetDirtyDatabaseFields()
+      {
+         return GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(DatabaseField)))
+                                         .Select(p => p.GetValue(this))
+                                         .Cast<DatabaseField>()
+                                         .Where(p => (p as DatabaseField).IsDirty)
+                                         .ToList();
       }
 
       #endregion

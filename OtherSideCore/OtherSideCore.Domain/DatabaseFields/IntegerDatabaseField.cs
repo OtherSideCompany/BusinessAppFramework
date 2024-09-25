@@ -10,7 +10,7 @@ namespace OtherSideCore.Domain.DatabaseFields
    {
       #region Fields
 
-      private int m_Value;
+      private int _value;
 
       #endregion
 
@@ -18,14 +18,14 @@ namespace OtherSideCore.Domain.DatabaseFields
 
       public int Value
       {
-         get => m_Value;
+         get => _value;
          set
          {
-            var updateDirtySate = !m_IsLoading && value != m_Value;
+            var updateDirtySate = !m_IsLoading && value != _value;
 
             if (IsEditable)
             {
-               SetProperty(ref m_Value, value);
+               SetProperty(ref _value, value);
 
                if (updateDirtySate) IsDirty = true;
             }

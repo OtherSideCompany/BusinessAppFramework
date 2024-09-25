@@ -12,17 +12,12 @@ namespace OtherSideCore.Domain.Services
    {
       #region Fields
 
-      private bool _areDataLoaded;
+      protected IRepositoryFactory _repositoryFactory;
 
       #endregion
 
       #region Properties
 
-      public bool AreDataLoaded
-      {
-         get => _areDataLoaded;
-         set => SetProperty(ref _areDataLoaded, value);
-      }
 
       #endregion
 
@@ -43,7 +38,12 @@ namespace OtherSideCore.Domain.Services
 
       #region Public Methods
 
-      public abstract Task LoadGlobalDataAsync(IRepositoryFactory repositoryFactory);
+      public void SetRepositoryFactory(IRepositoryFactory repositoryFactory)
+      {
+         _repositoryFactory = repositoryFactory;
+      }
+
+      public abstract Task LoadGlobalDataAsync();
 
       public abstract void UnloadData();
 

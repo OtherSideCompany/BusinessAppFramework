@@ -9,8 +9,9 @@ namespace OtherSideCore.Domain.Services
 {
    public interface IGlobalDataService
    {
-      Task LoadGlobalDataAsync(IRepositoryFactory repositoryFactory);
+      void SetRepositoryFactory(IRepositoryFactory repositoryFactory);
 
+      public Task LoadGlobalDataAsync();
       void UnloadData();
    }
 }

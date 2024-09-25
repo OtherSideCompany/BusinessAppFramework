@@ -30,9 +30,11 @@ namespace OtherSideCore.Domain.Tests.Services
 
          var mockLogger = new Mock<ILoggerFactory>();
 
+         var mockGlobalDataService = new Mock<IGlobalDataService>();
+
          var modelObjectFactory = new ModelObjectFactory();
 
-         var repositoryFactory = new Mock<RepositoryFactory>(mockDbContextFactory.Object, modelObjectFactory, mockLogger.Object);
+         var repositoryFactory = new Mock<RepositoryFactory>(mockDbContextFactory.Object, modelObjectFactory, mockLogger.Object, mockGlobalDataService.Object);
          var userRepository = new Mock<IUserRepository<User>>();
          userRepository.Setup(x => x.GetUserPasswordHashAsync("anth")).ReturnsAsync((_anthony.Id.Value, _anthony.PasswordHash.Value));
          userRepository.Setup(x => x.GetAsync(2, CancellationToken.None)).ReturnsAsync(_anthony);

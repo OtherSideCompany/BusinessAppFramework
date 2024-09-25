@@ -2,6 +2,7 @@
 using Moq;
 using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
+using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,9 @@ namespace OtherSideCore.Domain.Tests.Repositories
       public RepositorySearchTests()
       {
          var defaultEntityRepository = new MockDataRepository<DefaultEntity>();
-         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityRepository, new ModelObjectFactory());
+         var globalDataService = new Mock<IGlobalDataService>();
+
+         _defaultModelObjectRepository = new DefaultModelObjectRepository<DefaultModelObject, DefaultEntity>(defaultEntityRepository, new ModelObjectFactory(), globalDataService.Object);
 
          var defaultModelObject1 = new DefaultModelObject(); defaultModelObject1.RandomProperty.Value = "sapin";
          var defaultModelObject2 = new DefaultModelObject(); defaultModelObject2.RandomProperty.Value = "pastèque";

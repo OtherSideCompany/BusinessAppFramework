@@ -136,6 +136,7 @@ namespace OtherSideCore.ViewModel
          _serviceProvider = serviceProvider;
          _repositoryFactory = repositoryFactory;
          _globalDataService = globalDataService;
+         _globalDataService.SetRepositoryFactory(_repositoryFactory);
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
@@ -170,7 +171,7 @@ namespace OtherSideCore.ViewModel
                if (DefaultViewDescription != null)
                {
                   await DisplayViewAsync(DefaultViewDescription, CancellationToken.None);
-                  await _globalDataService.LoadGlobalDataAsync(_repositoryFactory);
+                  await _globalDataService.LoadGlobalDataAsync();
                }
             }
 

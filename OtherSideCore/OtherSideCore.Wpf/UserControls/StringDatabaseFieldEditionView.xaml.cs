@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtherSideCore.Wpf.CustomControls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,14 @@ using System.Windows.Shapes;
 
 namespace OtherSideCore.Wpf.UserControls
 {
-    /// <summary>
-    /// Interaction logic for StringDatabaseFieldEditionView.xaml
-    /// </summary>
-    public partial class StringDatabaseFieldEditionView : UserControl
-    {
-        public StringDatabaseFieldEditionView()
-        {
-            InitializeComponent();
-        }
-    }
+   /// <summary>
+   /// Interaction logic for StringDatabaseFieldEditionView.xaml
+   /// </summary>
+   public partial class StringDatabaseFieldEditionView : UserControl
+   {
+      public StringDatabaseFieldEditionView()
+      {
+         InitializeComponent();
+      }
+   }
 }

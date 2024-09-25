@@ -3,7 +3,7 @@
                     xmlns:userControls="clr-namespace:OtherSideCore.Wpf.UserControls"
                     xmlns:customControls="clr-namespace:OtherSideCore.Wpf.CustomControls"
                     x:Class="OtherSideCore.Wpf.CustomControls.Style"
-                    xmlns:extensions="clr-namespace:OtherSideCore.Wpf.CustomControls.Extensions">
+                    xmlns:extensions="clr-namespace:OtherSideCore.Wpf.Extensions">
 
    <ResourceDictionary.MergedDictionaries>
       <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Icons/Icons.xaml"/>
@@ -437,7 +437,7 @@
    </Style>
 
    <!-- ClickSelectTextBox -->
-   <Style TargetType="{x:Type customControls:ClickSelectTextBox}" >
+   <Style TargetType="{x:Type customControls:ClickSelectTextBox}">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -450,7 +450,8 @@
                   <TextBox Text="{Binding Text, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" 
                            Background="Transparent"
                            BorderThickness="0"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           x:Name="InnerTextBox"/>
                   <TextBlock VerticalAlignment="Center"
                              Text="{Binding ClickSelectTextBox_Watermak, RelativeSource={RelativeSource TemplatedParent}}"
                              Foreground="{StaticResource OtherSide_Gray}"
@@ -466,6 +467,9 @@
                      </MultiTrigger.Conditions>
                      <Setter Property="Visibility" TargetName="UserMessage" Value="Visible"/>
                   </MultiTrigger>
+                  <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                     <Setter TargetName="InnerTextBox" Property="FocusManager.FocusedElement" Value="{Binding ElementName=InnerTextBox}" />
+                  </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
          </Setter.Value>
@@ -633,24 +637,37 @@
                                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
 
                      <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Grid.Column="0"
-                                 Content="{TemplateBinding SelectionBoxItem}"
-                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                 ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                 Margin="5,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                       Content="{TemplateBinding SelectionBoxItem}"
+                                       ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                       ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                       Margin="5,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
                      <Popup x:Name="Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=ToggleButton}" IsOpen="{TemplateBinding IsDropDownOpen}"
-                            AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" >
+                            AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" 
+                            VerticalOffset="5" HorizontalOffset="-1">
                         <StackPanel Orientation="Vertical">
-                           <Border Height="3" Background="Transparent"/>
+
                            <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                              <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="White">
+
+                              <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="#F5F5F5" CornerRadius="5">
                                  <ScrollViewer SnapsToDevicePixels="True" ScrollChanged="ComboBox_ScrollViewer_ScrollChanged"
                                                CanContentScroll="False">
-                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    <StackPanel>
+
+                                       <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+
+                                       <Border Visibility="{Binding Path=(extensions:ComboBoxExtension.AdditionalContent), RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}, Converter={StaticResource NullToVisibilityConverter}}"
+                                               Padding="5">
+                                          <ContentPresenter Content="{Binding Path=(extensions:ComboBoxExtension.AdditionalContent), RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" />
+                                       </Border>
+
+                                    </StackPanel>
+                                    
                                  </ScrollViewer>
-                              </Border>
+                              </Border>                             
+                              
                            </Grid>
-                           <Border Height="3" Background="Transparent"/>
+
                         </StackPanel>
                      </Popup>
                   </Grid>

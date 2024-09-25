@@ -1,10 +1,6 @@
-﻿using OtherSideCore.Wpf.CustomControls.Extensions;
-using System;
-using System.ComponentModel;
-using System.DirectoryServices;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.CustomControls
 {

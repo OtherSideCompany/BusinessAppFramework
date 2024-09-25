@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OtherSideCore.Domain.ModelObjects;
+using OtherSideCore.Domain.Repositories;
 using OtherSideCore.Domain.Services;
 using System;
 using System.Reflection.Metadata;
@@ -11,27 +12,29 @@ namespace OtherSideCore.ViewModel.Tests
 {
    public class MainWindowViewModelTests
    {
-      private MainWindowViewModel _mainWindowViewModel;
+      private DefaultMainWindowViewModel _mainWindowViewModel;
       private ViewDescription _view1;
       private ViewDescription _view2;
       private DashboardDescription _viewGroup;
 
       public MainWindowViewModelTests()
       {
-         var authenticationService = new Mock<IAuthenticationService>();
-
-         var serviceCollection = new ServiceCollection();
-         serviceCollection.AddTransient<DefaultViewModel>();
-
-         var serviceProvider = serviceCollection.BuildServiceProvider();
-
          var loggerFactory = new Mock<ILoggerFactory>();
          var loggerMock = new Mock<ILogger>();
          loggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(loggerMock.Object);
 
-         var globalDataService = new Mock<IGlobalDataService>();
+         var serviceCollection = new ServiceCollection();
+         serviceCollection.AddTransient<DefaultViewModel>();
+         serviceCollection.AddSingleton<DefaultMainWindowViewModel>();
+         serviceCollection.AddSingleton<IAuthenticationService>(new Mock<IAuthenticationService>().Object);
+         serviceCollection.AddSingleton<IRepositoryFactory>(new Mock<IRepositoryFactory>().Object);
+         serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory.Object);
+         serviceCollection.AddSingleton<IGlobalDataService>(new Mock<IGlobalDataService>().Object);
+         serviceCollection.AddSingleton<IModelObjectViewModelFactory>(new Mock<IModelObjectViewModelFactory>().Object);
 
-         _mainWindowViewModel = new CustomMainWindowViewModel(authenticationService.Object, serviceProvider, loggerFactory.Object, globalDataService.Object);
+         var serviceProvider = serviceCollection.BuildServiceProvider();         
+
+         _mainWindowViewModel = serviceProvider.GetRequiredService<DefaultMainWindowViewModel>();
 
          _view1 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 1", typeof(DefaultViewModel), null);
          _view2 = new ViewDescription(serviceProvider, loggerFactory.Object, "view 2", typeof(DefaultViewModel), null);
@@ -82,24 +85,49 @@ namespace OtherSideCore.ViewModel.Tests
 
       private class CustomMainWindowViewModel : MainWindowViewModel
       {
-         public CustomMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, serviceProvider, loggerFactory, globalDataService)
+         public CustomMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, IRepositoryFactory repository, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, serviceProvider, loggerFactory, repository, globalDataService)
          {
          }
       }
 
       private class DefaultViewModel : ViewViewModelBase
       {
+         public DefaultViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService)
+         {
+         }
+
          public override void Dispose()
          {
             
+         }
+
+         public override async Task InitializeAsync(CancellationToken cancellationToken)
+         {
+            await Task.Delay(0);
          }
       }
 
       private class DefaultDashboardViewModel : DashboardViewModelBase
       {
+         public DefaultDashboardViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService)
+         {
+         }
+
          public override void Dispose()
          {
 
+         }
+
+         public override async Task InitializeAsync(CancellationToken cancellationToken)
+         {
+            await Task.Delay(0);
+         }
+      }
+
+      private class DefaultMainWindowViewModel : MainWindowViewModel
+      {
+         public DefaultMainWindowViewModel(IAuthenticationService authenticationService, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IRepositoryFactory repositoryFactory, IGlobalDataService globalDataService) : base(authenticationService, serviceProvider, loggerFactory, repositoryFactory, globalDataService)
+         {
          }
       }
    }

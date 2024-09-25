@@ -5,7 +5,6 @@
       #region Fields
 
       private string m_Value;
-      private string m_Buffer;
       private int m_MaxLength;
 
       #endregion
@@ -26,12 +25,6 @@
                if (updateDirtySate) IsDirty = true;
             }
          }
-      }
-
-      public string Buffer
-      {
-         get => m_Buffer;
-         set => SetProperty(ref m_Buffer, value);
       }
 
       public int MaxLength
@@ -63,16 +56,6 @@
       #endregion
 
       #region Public Methods
-
-      public void LoadBuffer()
-      {
-
-      }
-
-      public void UpdateBuffer()
-      {
-
-      }
 
       public override bool IsValid()
       {

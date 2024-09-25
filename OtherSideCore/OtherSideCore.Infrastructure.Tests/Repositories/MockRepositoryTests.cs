@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using OtherSideCore.Domain.Tests.Repositories;
-using OtherSideCore.Infrastructure.Repositories;
+﻿using OtherSideCore.Infrastructure.Repositories;
 
 namespace OtherSideCore.Infrastructure.Tests.Repositories
 {

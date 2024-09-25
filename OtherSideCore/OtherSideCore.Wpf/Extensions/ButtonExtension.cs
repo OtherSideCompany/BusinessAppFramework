@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace OtherSideCore.Wpf.CustomControls.Extensions
+namespace OtherSideCore.Wpf.Extensions
 {
    public class ButtonExtension
    {

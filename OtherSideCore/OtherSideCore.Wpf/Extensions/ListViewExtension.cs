@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
-namespace OtherSideCore.Wpf.CustomControls.Extensions
+namespace OtherSideCore.Wpf.Extensions
 {
    public class ListViewExtension
    {

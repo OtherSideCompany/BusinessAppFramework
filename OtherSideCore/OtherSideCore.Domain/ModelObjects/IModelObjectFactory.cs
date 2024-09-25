@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Domain.Repositories;
+using OtherSideCore.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace OtherSideCore.Domain.ModelObjects
 {
    public interface IModelObjectFactory
    {
-      User CreateUser();
+      User CreateUser(IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService);
    }
 }
