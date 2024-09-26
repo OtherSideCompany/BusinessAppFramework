@@ -46,10 +46,15 @@ namespace OtherSideCore.ViewModel
 
       #region Public Methods
 
+      public override bool HasUnsavedChanges()
+      {
+         return false;
+      }
+
       public virtual void Dispose()
       {
          
-      }
+      }      
 
       #endregion
 

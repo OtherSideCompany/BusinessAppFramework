@@ -46,6 +46,7 @@ namespace OtherSideCore.ViewModel
       {
          get
          {
+            var dirtydbfields = _databaseFields.Where(dbf => dbf.IsDirty);
             return _databaseFields.Any(dbf => dbf.IsDirty);
          }
       }
@@ -205,6 +206,8 @@ namespace OtherSideCore.ViewModel
                SearchResultViewModels.Add(viewModel);
             }
 
+            RegisterDatabaseFields();
+
             if (selectedModelObject != null)
             {
                await SelectSearchResultAsync(SearchResultViewModels.FirstOrDefault(vm => vm.ModelObject.Equals(selectedModelObject)), cancellationToken);
@@ -224,7 +227,7 @@ namespace OtherSideCore.ViewModel
       {
          UnregisterDatabaseFields();
 
-         foreach (var databaseField in SelectedSearchResultViewModel.ModelObject.GetDatabaseFields())
+         foreach (var databaseField in SearchResultViewModels.SelectMany(vm => vm.ModelObject.GetDatabaseFields()))
          {
             databaseField.PropertyChanged += DatabaseField_OnPropertyChanged;
             _databaseFields.Add(databaseField);
@@ -312,12 +315,16 @@ namespace OtherSideCore.ViewModel
       private void AddSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
          SearchResultViewModels.Add(modelObjectViewModel);
+
+         RegisterDatabaseFields();
       }
 
       private void RemoveSearchResult(ModelObjectViewModel modelObjectViewModel)
       {
          SearchResultViewModels.Remove(modelObjectViewModel);
          OnPropertyChanged(nameof(SelectedSearchResultViewModel));
+
+         RegisterDatabaseFields();
       }
 
       private bool CanSelectSearchResult(ModelObjectViewModel modelObjectViewModel)
@@ -331,7 +338,6 @@ namespace OtherSideCore.ViewModel
          {
             SelectedSearchResultViewModel.IsSelected = false;
             OnPropertyChanged(nameof(SelectedSearchResultViewModel));
-            UnregisterDatabaseFields();
          }
 
          NotifyCommandsCanExecuteChanged();
@@ -347,8 +353,6 @@ namespace OtherSideCore.ViewModel
             {
                modelObjectViewModel.IsSelected = true;
                OnPropertyChanged(nameof(SelectedSearchResultViewModel));
-
-               RegisterDatabaseFields();
 
                if (SelectedSearchResultChangedAsync != null)
                {
@@ -411,7 +415,7 @@ namespace OtherSideCore.ViewModel
 
       private bool CanSaveDirtySearchResultChanges()
       {
-         return SearchResultViewModels.Any(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
+         return IsAnyDatabaseFieldDirty;
       }
 
       private async Task SaveDirtySearchResultChangesAsync()

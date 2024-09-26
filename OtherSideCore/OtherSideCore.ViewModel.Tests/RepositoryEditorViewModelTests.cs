@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OtherSideCore.ViewModel.Tests
 {
@@ -80,7 +81,59 @@ namespace OtherSideCore.ViewModel.Tests
       [Fact]
       public async Task EditUserValue_ListIsLockedUntillCancelChanges()
       {
-         await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(false);
+         if (_repositoryEditorViewModel.SearchCommandAsync.CanExecute(false))
+         {
+            await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(false);
+         }
+
+         Assert.Equal(4, _repositoryEditorViewModel.SearchResultViewModels.Count);
+
+         if (_repositoryEditorViewModel.SelectSearchResultCommandAsync.CanExecute(_repositoryEditorViewModel.SearchResultViewModels.First()))
+         {
+            await _repositoryEditorViewModel.SelectSearchResultCommandAsync.ExecuteAsync(_repositoryEditorViewModel.SearchResultViewModels.First());
+         }
+
+         Assert.NotNull(_repositoryEditorViewModel.SelectedSearchResultViewModel);
+
+         _repositoryEditorViewModel.SelectedSearchResultViewModel.ModelObject.CreatedById.Value = 2;
+
+         Assert.True(_repositoryEditorViewModel.IsSelectionLocked);
+         Assert.True(_repositoryEditorViewModel.IsAnyDatabaseFieldDirty);
+         Assert.False(_repositoryEditorViewModel.SelectSearchResultCommandAsync.CanExecute(_repositoryEditorViewModel.SearchResultViewModels.Last()));
+
+         if (_repositoryEditorViewModel.CancelSelectedSearchResultChangesAsyncCommand.CanExecute(null))
+         {
+            _repositoryEditorViewModel.CancelSelectedSearchResultChangesAsyncCommand.Execute(null);
+         }
+
+         Assert.False(_repositoryEditorViewModel.IsSelectionLocked);
+         Assert.False(_repositoryEditorViewModel.IsAnyDatabaseFieldDirty);
+         Assert.True(_repositoryEditorViewModel.SelectSearchResultCommandAsync.CanExecute(_repositoryEditorViewModel.SearchResultViewModels.Last()));
+      }
+
+      [Fact]
+      public async Task EditUsersValue_NoSearchResultIsDirtyAfterSaveDirtySearchResult()
+      {
+         if (_repositoryEditorViewModel.SearchCommandAsync.CanExecute(false))
+         {
+            await _repositoryEditorViewModel.SearchCommandAsync.ExecuteAsync(false);
+         }
+
+         _repositoryEditorViewModel.SearchResultViewModels[0].ModelObject.CreatedById.Value = 2;
+         _repositoryEditorViewModel.SearchResultViewModels[1].ModelObject.CreatedById.Value = 1;
+
+         Assert.True(_repositoryEditorViewModel.IsAnyDatabaseFieldDirty);
+         Assert.True(_repositoryEditorViewModel.SearchResultViewModels[0].ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
+         Assert.True(_repositoryEditorViewModel.SearchResultViewModels[1].ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
+
+         if (_repositoryEditorViewModel.SaveDirtySearchResultChangesAsyncCommand.CanExecute(null))
+         {
+            _repositoryEditorViewModel.SaveDirtySearchResultChangesAsyncCommand.Execute(null);
+         }
+
+         Assert.False(_repositoryEditorViewModel.IsAnyDatabaseFieldDirty);
+         Assert.False(_repositoryEditorViewModel.SearchResultViewModels[0].ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
+         Assert.False(_repositoryEditorViewModel.SearchResultViewModels[1].ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
       }
 
       private class DefaultModelObject : ModelObject

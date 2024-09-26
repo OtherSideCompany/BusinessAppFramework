@@ -51,6 +51,8 @@ namespace OtherSideCore.ViewModel
 
       public abstract Task InitializeAsync(CancellationToken cancellationToken);
 
+      public abstract bool HasUnsavedChanges();
+
       #endregion
 
       #region Private Methods

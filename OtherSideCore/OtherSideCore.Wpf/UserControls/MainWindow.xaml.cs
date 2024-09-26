@@ -58,8 +58,10 @@ namespace OtherSideCore.Wpf.UserControls
          {
             Background = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0)),
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch            
+            VerticalAlignment = VerticalAlignment.Stretch,
          };
+
+         modalOverlay.MouseDown += (sender, e) => HideModal();
 
          var modalPopupBorder = new ModalPopupBorder();
          modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
@@ -78,10 +80,23 @@ namespace OtherSideCore.Wpf.UserControls
       public void HideModal()
       {
          if (_modalPopupStack.Count > 0)
-         {           
-            var modalOverlay = _modalPopupStack.Pop();
-            ((ViewViewModelBase)modalOverlay.DataContext).Dispose();
-            ModalPopupHostGrid.Children.Remove(modalOverlay);            
+         {
+            var modalOverlay = _modalPopupStack.Peek();
+            var @continue = true;
+
+            if (((ViewViewModelBase)modalOverlay.DataContext).HasUnsavedChanges())
+            {
+               var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+               @continue = res == MessageBoxResult.Yes;
+            }
+
+            if (@continue)
+            {
+               _modalPopupStack.Pop();
+               ((ViewViewModelBase)modalOverlay.DataContext).Dispose();
+               ModalPopupHostGrid.Children.Remove(modalOverlay);
+            }
          }
       }
 

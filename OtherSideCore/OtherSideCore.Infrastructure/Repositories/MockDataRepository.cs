@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-   public class MockDataRepository<T> : IDisposable, IDataRepository<T> where T : EntityBase, new()
+   public class MockDataRepository<T> : IDataRepository<T> where T : EntityBase, new()
    {
       #region Fields
 
@@ -114,7 +114,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       public void Dispose()
       {
-         _entities.Clear();
+         
       }
 
       #endregion
