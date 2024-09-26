@@ -19,6 +19,7 @@ namespace OtherSideCore.ViewModel
       protected IRepositoryFactory _repositoryFactory;
       protected ILoggerFactory _loggerFactory;
       protected IGlobalDataService _globalDataService;
+      protected IModelObjectViewModelFactory _modelObjectViewModeFactory;
 
       #endregion
 
@@ -41,6 +42,7 @@ namespace OtherSideCore.ViewModel
          _repositoryFactory = repositoryFactory;
          _loggerFactory = loggerFactory;
          _globalDataService = globalDataService;
+         _modelObjectViewModeFactory = modelObjectViewModeFactory;
       }
 
       #endregion

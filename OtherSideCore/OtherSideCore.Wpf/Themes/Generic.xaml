@@ -37,6 +37,7 @@
       <Setter Property="SvgImageButton_MouseDownBackgroundColor" Value="{Binding SvgImageButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageButton_OverBackgroundColor" Value="LightGray" />
       <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageButton}">
@@ -79,6 +80,7 @@
       <Setter Property="SvgImageTextButton_OverBackgroundColor" Value="LightGray" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextButton}">
@@ -135,6 +137,7 @@
       <Setter Property="SvgImageToggleButton_CheckedIconGeometry" Value="{Binding SvgImageToggleButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageToggleButton}">
@@ -180,6 +183,7 @@
       <Setter Property="SvgImageTextRadioButton_CheckedBackgroundColor" Value="{Binding SvgImageTextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextRadioButton}">
@@ -240,6 +244,7 @@
       <Setter Property="SvgImageTextToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageTextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextToggleButton}">

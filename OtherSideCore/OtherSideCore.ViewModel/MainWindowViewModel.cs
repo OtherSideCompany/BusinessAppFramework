@@ -25,6 +25,7 @@ namespace OtherSideCore.ViewModel
       protected IAuthenticationService _authenticationService;
       protected IRepositoryFactory _repositoryFactory;
       protected IGlobalDataService _globalDataService;
+      protected ILoggerFactory _loggerFactory;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -147,7 +148,7 @@ namespace OtherSideCore.ViewModel
 
          ApplicationName = "Unnamed App";
 
-         LoadSettings();         
+         LoadSettings();
       }
 
       #endregion

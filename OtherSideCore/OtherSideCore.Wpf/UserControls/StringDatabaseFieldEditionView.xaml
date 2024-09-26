@@ -9,9 +9,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <Border Style="{StaticResource EditableTextBoxBorder}" CornerRadius="5">
       <customcontrols:ClickSelectTextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
-                                             IsReadOnly="{Binding IsEditable, Converter={StaticResource BoolInverter}}"
-                                             MaxLength="{Binding MaxLength}"
-                                             Margin="5,0,5,0"
-                                             x:Name="InputTextBox"/>
+                                         IsReadOnly="{Binding IsEditable, Converter={StaticResource BoolInverter}}"
+                                         MaxLength="{Binding MaxLength}"
+                                         Margin="4,0,4,0"
+                                         x:Name="InputTextBox"/>
    </Border>
 </UserControl>

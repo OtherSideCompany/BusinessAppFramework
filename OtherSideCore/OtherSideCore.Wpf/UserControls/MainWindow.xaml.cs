@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtherSideCore.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,14 @@ namespace OtherSideCore.Wpf.UserControls
    /// </summary>
    public partial class MainWindow : Window
    {
+      #region Fields
+
+      private readonly Stack<Border> _modalPopupStack;
+
+      #endregion
+
+      #region Properties
+
       public static readonly DependencyProperty MainWindow_ApplicationLogoColorProperty =
           DependencyProperty.Register("MainWindow_ApplicationLogoColor", typeof(SolidColorBrush), typeof(MainWindow), new UIPropertyMetadata(Brushes.Blue));
 
@@ -28,9 +37,54 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(MainWindow_ApplicationLogoColorProperty, value); }
       }
 
+      #endregion
+
+      #region Constructor
+
       public MainWindow()
       {
          InitializeComponent();
+
+         _modalPopupStack = new Stack<Border>();
       }
+
+      #endregion
+
+      #region Public Methods
+
+      public void ShowModal(UserControl modalContent)
+      {
+         var modalOverlay = new Border
+         {
+            Background = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0)),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch            
+         };
+
+         var modalPopupBorder = new ModalPopupBorder();
+         modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
+         modalPopupBorder.HorizontalAlignment = HorizontalAlignment.Center;
+         modalPopupBorder.ContentBorder.Child = modalContent;
+         modalPopupBorder.DataContext = modalContent.DataContext;
+
+         modalOverlay.Child = new ContentControl { Content = modalPopupBorder };
+         modalOverlay.DataContext = modalContent.DataContext;
+
+         ModalPopupHostGrid.Children.Add(modalOverlay);
+         Panel.SetZIndex(modalOverlay, 100 + _modalPopupStack.Count);
+         _modalPopupStack.Push(modalOverlay);
+      }
+
+      public void HideModal()
+      {
+         if (_modalPopupStack.Count > 0)
+         {           
+            var modalOverlay = _modalPopupStack.Pop();
+            ((ViewViewModelBase)modalOverlay.DataContext).Dispose();
+            ModalPopupHostGrid.Children.Remove(modalOverlay);            
+         }
+      }
+
+      #endregion
    }
 }

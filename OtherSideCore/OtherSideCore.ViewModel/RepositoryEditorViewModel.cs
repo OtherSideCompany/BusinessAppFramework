@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -110,8 +111,10 @@ namespace OtherSideCore.ViewModel
       public RelayCommand CancelSelectSearchResultCommand { get; private set; }
       public AsyncRelayCommand CreateAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveSelectedSearchResultChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand SaveDirtySearchResultChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelSelectedSearchResultChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand DeleteSelectedSearchResultAsyncCommand { get; private set; }
+      public AsyncRelayCommand<ModelObject> DeleteAsyncCommand { get; private set; }
 
       #endregion
 
@@ -131,8 +134,10 @@ namespace OtherSideCore.ViewModel
          CancelSelectSearchResultCommand = new RelayCommand(CancelSelectSearchResult);
          CreateAsyncCommand = new AsyncRelayCommand(CreateAsync);
          SaveSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedSearchResultChangesAsync, CanSaveSelectedSearchResultChanges);
+         SaveDirtySearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveDirtySearchResultChangesAsync, CanSaveDirtySearchResultChanges);
          CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
          DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
+         DeleteAsyncCommand = new AsyncRelayCommand<ModelObject>(DeleteAsync, CanExecuteDelete);
 
          ConstraintViewModels = new ObservableCollection<ConstraintViewModel>();
          MultiTextFilterViewModel = new MultiTextFilterViewModel(new MultiTextFilter(true), SearchCommandAsync);
@@ -158,10 +163,14 @@ namespace OtherSideCore.ViewModel
 
       public void SetConstraints(List<Constraint> constraints)
       {
+         ConstraintViewModels.Clear();
+
          foreach (var constraint in constraints)
          {
             ConstraintViewModels.Add(new ConstraintViewModel(constraint));
          }
+
+         OnPropertyChanged(nameof(IsAnyConstraintSelected));
       }
 
       public void ActivateConstraint(Constraint constraint)
@@ -178,6 +187,8 @@ namespace OtherSideCore.ViewModel
       {
          try
          {
+            var selectedModelObject = SelectedSearchResultViewModel?.ModelObject;
+
             UnselectSearchResult();
 
             UnloadSearchResultViewModels();
@@ -192,6 +203,11 @@ namespace OtherSideCore.ViewModel
             foreach (var viewModel in viewModels)
             {
                SearchResultViewModels.Add(viewModel);
+            }
+
+            if (selectedModelObject != null)
+            {
+               await SelectSearchResultAsync(SearchResultViewModels.FirstOrDefault(vm => vm.ModelObject.Equals(selectedModelObject)), cancellationToken);
             }
          }
          catch (OperationCanceledException)
@@ -266,6 +282,8 @@ namespace OtherSideCore.ViewModel
          SaveSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
          CancelSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
          DeleteSelectedSearchResultAsyncCommand.NotifyCanExecuteChanged();
+         SaveDirtySearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
+         DeleteAsyncCommand.NotifyCanExecuteChanged();
       }
 
       protected List<ModelObjectViewModel> ConstructSearchResultViewModels()
@@ -391,6 +409,20 @@ namespace OtherSideCore.ViewModel
          await repository.SaveAsync(SelectedSearchResultViewModel.ModelObject as T, _authenticatedUser.Id.Value);
       }
 
+      private bool CanSaveDirtySearchResultChanges()
+      {
+         return SearchResultViewModels.Any(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty));
+      }
+
+      private async Task SaveDirtySearchResultChangesAsync()
+      {
+         foreach (var dirtySearchResultViewModel in SearchResultViewModels.Where(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty)))
+         {
+            using var repository = _repositoryFactory.CreateRepository<T>();
+            await repository.SaveAsync(dirtySearchResultViewModel.ModelObject as T, _authenticatedUser.Id.Value);
+         }
+      }           
+
       protected virtual bool CanCancelSelectedSearchResultChanges()
       {
          return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanCancelChanges();
@@ -421,6 +453,31 @@ namespace OtherSideCore.ViewModel
             var selectedSearchResultViewModel = SelectedSearchResultViewModel;
             SelectedSearchResultViewModel.Dispose();
             UnselectSearchResult();
+            RemoveSearchResult(selectedSearchResultViewModel);
+
+            UnlockSelection();
+
+            NotifyCommandsCanExecuteChanged();
+         }
+      }
+
+      private bool CanExecuteDelete(ModelObject modelObject)
+      {
+         return modelObject != null && modelObject.CanBeDeleted();
+      }
+
+      private async Task DeleteAsync(ModelObject modelObject)
+      {
+         var result = MessageBox.Show("Confirmez-vous la suppression ? ", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+         if (result == MessageBoxResult.Yes)
+         {
+            LockSelection();
+
+            using var repository = _repositoryFactory.CreateRepository<T>();
+            await repository.DeleteAsync(modelObject as T);
+
+            var selectedSearchResultViewModel = SearchResultViewModels.FirstOrDefault(vm => vm.ModelObject.Equals(modelObject));
             RemoveSearchResult(selectedSearchResultViewModel);
 
             UnlockSelection();
