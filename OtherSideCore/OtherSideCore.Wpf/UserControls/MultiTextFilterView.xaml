@@ -12,8 +12,7 @@
    <Border Background="Transparent"
            BorderBrush="{StaticResource OtherSide_LightLightGray}"
            CornerRadius="5">
-
-
+      
       <Grid>
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

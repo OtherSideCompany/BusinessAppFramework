@@ -19,6 +19,8 @@
    <SolidColorBrush Color="#FFff001e" x:Key="OtherSide_Red"/>
    <SolidColorBrush Color="#FF00e236" x:Key="OtherSide_Green" />
 
+   <SolidColorBrush Color="#ff1789fc" x:Key="Highlight_Blue" />
+
    <!-- default textblock -->
    <Style TargetType="{x:Type TextBlock}">
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -231,6 +233,7 @@
       <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemContainerStyle}" />
+      <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
       <EventSetter Event="PreviewMouseWheel" Handler="SideMenuListView_PreviewMouseWheel" />
 
    </Style>
@@ -451,7 +454,8 @@
                            Background="Transparent"
                            BorderThickness="0"
                            VerticalAlignment="Center"
-                           x:Name="InnerTextBox"/>
+                           x:Name="InnerTextBox"
+                           IsReadOnly="{TemplateBinding IsReadOnly}"/>
                   <TextBlock VerticalAlignment="Center"
                              Text="{Binding ClickSelectTextBox_Watermak, RelativeSource={RelativeSource TemplatedParent}}"
                              Foreground="{StaticResource OtherSide_Gray}"

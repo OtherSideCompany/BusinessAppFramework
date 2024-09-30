@@ -10,6 +10,7 @@ namespace OtherSideCore.Domain.ModelObjects
 {
    public interface IModelObjectFactory
    {
-      User CreateUser(IModelObjectFactory modelObjectFactory, IGlobalDataService globalDataService);
+      User CreateUser(IGlobalDataService globalDataService);
+      T CreateModelObject<T>(IGlobalDataService globalDataService) where T : ModelObject, new();
    }
 }

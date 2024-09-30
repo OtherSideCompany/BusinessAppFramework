@@ -71,9 +71,7 @@ namespace OtherSideCore.Domain.Repositories
 
          if (entity != null)
          {
-            var modelObject = new T();
-            modelObject.SetServices(_modelObjectFactory, _globalDataService);
-            modelObject.LoadDefaultProperties();
+            var modelObject = _modelObjectFactory.CreateModelObject<T>(_globalDataService);
 
             await modelObject.LoadPropertiesFromEntityAsync(entity);
 
@@ -95,9 +93,7 @@ namespace OtherSideCore.Domain.Repositories
 
       public async Task<T> CreateAsync(int userId)
       {
-         var modelObject = new T();
-         modelObject.SetServices(_modelObjectFactory, _globalDataService);
-         modelObject.LoadDefaultProperties();
+         var modelObject = _modelObjectFactory.CreateModelObject<T>(_globalDataService);
          return await CreateAsync(modelObject, userId);
       }
 
@@ -156,9 +152,7 @@ namespace OtherSideCore.Domain.Repositories
 
          foreach (var entity in entities)
          {
-            var modelObject = new T();
-            modelObject.SetServices(_modelObjectFactory, _globalDataService);
-            modelObject.LoadDefaultProperties();
+            var modelObject = _modelObjectFactory.CreateModelObject<T>(_globalDataService);
             await modelObject.LoadPropertiesFromEntityAsync(entity);
             modelObjects.Add(modelObject);
          }

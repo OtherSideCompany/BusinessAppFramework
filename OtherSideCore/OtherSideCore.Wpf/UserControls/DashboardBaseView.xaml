@@ -54,7 +54,7 @@
          <ItemsControl.ItemTemplate>
             <DataTemplate>
                <Button Style="{StaticResource ModuleButton}"
-                       Command="{Binding DataContext.DisplayViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                       Command="{Binding DataContext.DisplayViewAsyncCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                        CommandParameter="{Binding}">
                   <Border>
                      <Grid Margin="10">

@@ -125,7 +125,7 @@ namespace OtherSideCore.ViewModel
 
       public AsyncRelayCommand AuthenticateUserAsyncCommand { get; set; }
       public AsyncRelayCommand DisconnectAuthenticatedUserAsyncCommand { get; set; }
-      public AsyncRelayCommand<ViewDescriptionBase> DisplayViewCommand { get; set; }
+      public AsyncRelayCommand<ViewDescriptionBase> DisplayViewAsyncCommand { get; set; }
 
       #endregion
 
@@ -144,7 +144,7 @@ namespace OtherSideCore.ViewModel
 
          AuthenticateUserAsyncCommand = new AsyncRelayCommand(AuthenticateUserAsync);
          DisconnectAuthenticatedUserAsyncCommand = new AsyncRelayCommand(DisconnectAuthenticatedUserAsync);
-         DisplayViewCommand = new AsyncRelayCommand<ViewDescriptionBase>(DisplayViewAsync);
+         DisplayViewAsyncCommand = new AsyncRelayCommand<ViewDescriptionBase>(DisplayViewAsync);
 
          ApplicationName = "Unnamed App";
 

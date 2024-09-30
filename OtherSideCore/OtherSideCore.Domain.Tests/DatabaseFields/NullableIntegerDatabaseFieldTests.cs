@@ -1,9 +1,4 @@
 ﻿using OtherSideCore.Domain.DatabaseFields;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Domain.Tests.DatabaseFields
 {
@@ -88,6 +83,31 @@ namespace OtherSideCore.Domain.Tests.DatabaseFields
 
          Assert.False(_nullableIntegerDatabaseField.IsDirty);
          Assert.Equal(0, _nullableIntegerDatabaseField.Value);
+      }
+
+      [Fact]
+      public void LoadValue_BufferIsSet()
+      {
+         _nullableIntegerDatabaseField.LoadValue(1);
+
+         Assert.Equal("1", _nullableIntegerDatabaseField.Buffer);
+      }
+
+      [Theory]
+      [InlineData("1", 1)]
+      [InlineData("-", 0)]
+      [InlineData("-12", -12)]
+      [InlineData("+4", 4)]
+      [InlineData("+", 0)]
+      [InlineData("1200 ", 1200)]
+      [InlineData("   ", null)]
+      [InlineData("", null)]
+      public void SetBuffer_ValueIsSet(string buffer, int? value)
+      {
+         _nullableIntegerDatabaseField.Buffer = buffer;
+
+         Assert.Equal(value, _nullableIntegerDatabaseField.Value);
+         Assert.Equal(buffer.Trim(), _nullableIntegerDatabaseField.Buffer);
       }
    }
 }

@@ -50,9 +50,9 @@ namespace OtherSideCore.ViewModel.Tests
       [Fact]
       public void DisplayView_ViewIsDisplayed()
       {
-         if (_mainWindowViewModel.DisplayViewCommand.CanExecute(_view1))
+         if (_mainWindowViewModel.DisplayViewAsyncCommand.CanExecute(_view1))
          {
-            _mainWindowViewModel.DisplayViewCommand.Execute(_view1);
+            _mainWindowViewModel.DisplayViewAsyncCommand.Execute(_view1);
          }
 
          Assert.NotNull(_mainWindowViewModel.LoadedViewDescription);
@@ -61,9 +61,9 @@ namespace OtherSideCore.ViewModel.Tests
          Assert.NotNull(_view1.ViewViewModelBase);
          Assert.Null(_view2.ViewViewModelBase);
 
-         if (_mainWindowViewModel.DisplayViewCommand.CanExecute(_view2))
+         if (_mainWindowViewModel.DisplayViewAsyncCommand.CanExecute(_view2))
          {
-            _mainWindowViewModel.DisplayViewCommand.Execute(_view2);
+            _mainWindowViewModel.DisplayViewAsyncCommand.Execute(_view2);
          }
 
          Assert.False(_view1.IsLoaded);
@@ -75,9 +75,9 @@ namespace OtherSideCore.ViewModel.Tests
       [Fact]
       public void DisplayView_ViewGroupHasSubViewLoaded()
       {
-         if (_mainWindowViewModel.DisplayViewCommand.CanExecute(_view1))
+         if (_mainWindowViewModel.DisplayViewAsyncCommand.CanExecute(_view1))
          {
-            _mainWindowViewModel.DisplayViewCommand.Execute(_view1);
+            _mainWindowViewModel.DisplayViewAsyncCommand.Execute(_view1);
          }
 
          Assert.True(_viewGroup.IsSubViewLoaded);
@@ -92,13 +92,18 @@ namespace OtherSideCore.ViewModel.Tests
 
       private class DefaultViewModel : ViewViewModelBase
       {
-         public DefaultViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService)
+         public DefaultViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService, IModelObjectFactory modelObjectFactory) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService, modelObjectFactory)
          {
          }
 
          public override void Dispose()
          {
             
+         }
+
+         public override bool HasUnsavedChanges()
+         {
+            return false;
          }
 
          public override async Task InitializeAsync(CancellationToken cancellationToken)
@@ -109,7 +114,7 @@ namespace OtherSideCore.ViewModel.Tests
 
       private class DefaultDashboardViewModel : DashboardViewModelBase
       {
-         public DefaultDashboardViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService)
+         public DefaultDashboardViewModel(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService, IModelObjectFactory modelObjectFactory) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService, modelObjectFactory)
          {
          }
 

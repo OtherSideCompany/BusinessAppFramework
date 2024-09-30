@@ -40,21 +40,8 @@ namespace OtherSideCore.Domain.Repositories
 
       #region Public Methods
 
-      public async Task<List<T>> GetInactiveUsers(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
-      {
-         var constraints = new List<Constraint<U>> { new Constraint<U>(nameof(ModelObjects.User.IsActive), false) };
-         return await GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
-      }
-
-      public async Task<List<T>> GetActiveUsers(List<string> filters, bool extendedSearch, CancellationToken cancellationToken)
-      {
-         var constraints = new List<Constraint<U>> { new Constraint<U>(nameof(ModelObjects.User.IsActive), true) };
-         return await GetAllAsync(filters, constraints, extendedSearch, cancellationToken);
-      }
-
       public async Task LoadCreatorAndModificator(ModelObject modelObject, CancellationToken cancellationToken)
       {
-
          modelObject.CreatedBy = modelObject.CreatedById.Value.HasValue ? await GetAsync((int)modelObject.CreatedById.Value, cancellationToken) : null;
          modelObject.LastModifiedBy = modelObject.LastModifiedById.Value.HasValue ? await GetAsync((int)modelObject.LastModifiedById.Value, cancellationToken) : null;
       }

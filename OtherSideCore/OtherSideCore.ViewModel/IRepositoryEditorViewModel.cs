@@ -3,6 +3,7 @@ using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.ViewModel
 {
@@ -16,8 +17,10 @@ namespace OtherSideCore.ViewModel
       AsyncRelayCommand SaveSelectedSearchResultChangesAsyncCommand { get; }
       AsyncRelayCommand SaveDirtySearchResultChangesAsyncCommand { get; }
       AsyncRelayCommand CancelSelectedSearchResultChangesAsyncCommand { get; }
+      AsyncRelayCommand CancelDirtySearchResultChangesAsyncCommand { get; }
       AsyncRelayCommand DeleteSelectedSearchResultAsyncCommand { get; }
       AsyncRelayCommand<ModelObject> DeleteAsyncCommand { get; }
+      public Task CreateModelObjectAsync(ModelObject modelObject);
       void SetConstraints(List<Constraint> constraints);
       void ActivateConstraint(Constraint constraint);
    }

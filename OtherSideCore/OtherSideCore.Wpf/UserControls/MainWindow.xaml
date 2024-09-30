@@ -36,7 +36,11 @@
 
                <!-- content -->
                <Border Grid.Column="1" Background="White">
-                  <ContentPresenter Content="{Binding MainWindowContent}" />
+                  <Grid>
+                     <ContentPresenter Content="{Binding MainWindowContent}" />
+                     <local:LoadingView VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                        Visibility="{Binding DisplayViewAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                  </Grid>
                </Border>
 
             </Grid>

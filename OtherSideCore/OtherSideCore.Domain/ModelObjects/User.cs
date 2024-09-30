@@ -65,7 +65,7 @@ namespace OtherSideCore.Domain.ModelObjects
          UserName = new StringDatabaseField(nameof(UserName), 50);
          PasswordHash = new StringDatabaseField(nameof(PasswordHash), 64);
 
-         IsActive.Value = true;
+         IsActive.LoadValue(true);
       }
 
       #endregion

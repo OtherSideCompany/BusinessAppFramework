@@ -114,6 +114,7 @@ namespace OtherSideCore.ViewModel
       public AsyncRelayCommand SaveSelectedSearchResultChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveDirtySearchResultChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelSelectedSearchResultChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand CancelDirtySearchResultChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand DeleteSelectedSearchResultAsyncCommand { get; private set; }
       public AsyncRelayCommand<ModelObject> DeleteAsyncCommand { get; private set; }
 
@@ -137,6 +138,7 @@ namespace OtherSideCore.ViewModel
          SaveSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveSelectedSearchResultChangesAsync, CanSaveSelectedSearchResultChanges);
          SaveDirtySearchResultChangesAsyncCommand = new AsyncRelayCommand(SaveDirtySearchResultChangesAsync, CanSaveDirtySearchResultChanges);
          CancelSelectedSearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelSelectedSearchResultChangesAsync, CanCancelSelectedSearchResultChanges);
+         CancelDirtySearchResultChangesAsyncCommand = new AsyncRelayCommand(CancelDirtySearchResultChangesAsync, CanCancelDirtySearchResultChanges);
          DeleteSelectedSearchResultAsyncCommand = new AsyncRelayCommand(DeleteSelectedSearchResultAsync, CanExecuteDeleteSelectedSearchResult);
          DeleteAsyncCommand = new AsyncRelayCommand<ModelObject>(DeleteAsync, CanExecuteDelete);
 
@@ -275,7 +277,7 @@ namespace OtherSideCore.ViewModel
          IsSelectionLocked = false;
       }
 
-      private void NotifyCommandsCanExecuteChanged()
+      protected virtual void NotifyCommandsCanExecuteChanged()
       {
          SearchCommandAsync.NotifyCanExecuteChanged();
          CancelSearchCommand.NotifyCanExecuteChanged();
@@ -284,6 +286,7 @@ namespace OtherSideCore.ViewModel
          CreateAsyncCommand.NotifyCanExecuteChanged();
          SaveSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
          CancelSelectedSearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
+         CancelDirtySearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
          DeleteSelectedSearchResultAsyncCommand.NotifyCanExecuteChanged();
          SaveDirtySearchResultChangesAsyncCommand.NotifyCanExecuteChanged();
          DeleteAsyncCommand.NotifyCanExecuteChanged();
@@ -402,6 +405,30 @@ namespace OtherSideCore.ViewModel
          }
       }
 
+      public async Task CreateModelObjectAsync(ModelObject modelObject)
+      {
+         if (!IsSelectionLocked)
+         {
+            UnselectSearchResult();
+         }
+
+         var wasSelectionLocked = IsSelectionLocked;
+
+         LockSelection();
+
+         using var repository = _repositoryFactory.CreateRepository<T>();
+         await repository.SaveAsync((T)modelObject, _authenticatedUser.Id.Value);
+
+         var viewModel = _modelObjectViewModelFactory.CreateViewModel(modelObject);
+         AddSearchResult(viewModel);
+
+         if (!wasSelectionLocked)
+         {
+            await SelectSearchResultAsync(viewModel, CancellationToken.None);
+            UnlockSelection();
+         }
+      }
+
       protected virtual bool CanSaveSelectedSearchResultChanges()
       {
          return SelectedSearchResultViewModel != null && SelectedSearchResultViewModel.ModelObject.CanSaveChanges();
@@ -413,12 +440,13 @@ namespace OtherSideCore.ViewModel
          await repository.SaveAsync(SelectedSearchResultViewModel.ModelObject as T, _authenticatedUser.Id.Value);
       }
 
-      private bool CanSaveDirtySearchResultChanges()
+      protected virtual bool CanSaveDirtySearchResultChanges()
       {
-         return IsAnyDatabaseFieldDirty;
+         return IsAnyDatabaseFieldDirty && 
+                SearchResultViewModels.Where(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty)).All(vm => vm.ModelObject.CanSaveChanges());
       }
 
-      private async Task SaveDirtySearchResultChangesAsync()
+      protected virtual async Task SaveDirtySearchResultChangesAsync()
       {
          foreach (var dirtySearchResultViewModel in SearchResultViewModels.Where(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty)))
          {
@@ -436,6 +464,21 @@ namespace OtherSideCore.ViewModel
       {
          using var repository = _repositoryFactory.CreateRepository<T>();
          await repository.LoadAsync(SelectedSearchResultViewModel.ModelObject as T);
+      }
+
+      protected virtual bool CanCancelDirtySearchResultChanges()
+      {
+         return IsAnyDatabaseFieldDirty &&
+                SearchResultViewModels.Where(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty)).All(vm => vm.ModelObject.CanCancelChanges());
+      }
+
+      protected virtual async Task CancelDirtySearchResultChangesAsync()
+      {
+         foreach (var dirtySearchResultViewModel in SearchResultViewModels.Where(vm => vm.ModelObject.GetDatabaseFields().Any(dbf => dbf.IsDirty)))
+         {
+            using var repository = _repositoryFactory.CreateRepository<T>();
+            await repository.LoadAsync(dirtySearchResultViewModel.ModelObject as T);
+         }
       }
 
       private bool CanExecuteDeleteSelectedSearchResult()
@@ -465,7 +508,7 @@ namespace OtherSideCore.ViewModel
          }
       }
 
-      private bool CanExecuteDelete(ModelObject modelObject)
+      protected virtual bool CanExecuteDelete(ModelObject modelObject)
       {
          return modelObject != null && modelObject.CanBeDeleted();
       }

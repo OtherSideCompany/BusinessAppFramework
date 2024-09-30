@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using OtherSideCore.Domain.ModelObjects;
 using OtherSideCore.Domain.Repositories;
 using OtherSideCore.Domain.Services;
 using System;
@@ -20,6 +21,7 @@ namespace OtherSideCore.ViewModel
       protected ILoggerFactory _loggerFactory;
       protected IGlobalDataService _globalDataService;
       protected IModelObjectViewModelFactory _modelObjectViewModeFactory;
+      protected IModelObjectFactory _modelObjectFactory;
 
       #endregion
 
@@ -36,13 +38,14 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public ViewViewModelBase(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService)
+      public ViewViewModelBase(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService, IModelObjectFactory modelObjectFactory)
       {
          _authenticationService = authenticationService;
          _repositoryFactory = repositoryFactory;
          _loggerFactory = loggerFactory;
          _globalDataService = globalDataService;
          _modelObjectViewModeFactory = modelObjectViewModeFactory;
+         _modelObjectFactory = modelObjectFactory;
       }
 
       #endregion
@@ -53,13 +56,15 @@ namespace OtherSideCore.ViewModel
 
       public abstract bool HasUnsavedChanges();
 
+      public abstract void Dispose();
+
       #endregion
 
       #region Private Methods
 
-      public virtual void Dispose()
+      protected virtual void NotifyCommandsCanExecuteChanged()
       {
-         
+
       }
 
       #endregion

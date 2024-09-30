@@ -28,25 +28,6 @@ namespace OtherSideCore.Wpf.UserControls
          InitializeComponent();
       }
 
-      private void DecimalTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-      {
-         TextBox textBox = sender as TextBox;
-         if (textBox == null) return;
-
-         e.Handled = !Regex.IsMatch(e.Text, "[0-9.,]");
-
-         if ((e.Text == "." || e.Text == ",") &&
-             (textBox.Text.Contains(".") || textBox.Text.Contains(",")))
-         {
-            e.Handled = true;
-         }
-      }
-
-      private void DecimalTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-      {
-         e.Handled = (e.Key == Key.Space);
-      }
-
       private void DecimalTextBox_LostFocus(object sender, RoutedEventArgs e)
       {
          ((DecimalDatabaseField)DataContext).LoadBuffer();

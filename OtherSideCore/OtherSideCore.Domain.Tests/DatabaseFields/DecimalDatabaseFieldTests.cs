@@ -94,12 +94,13 @@ namespace OtherSideCore.Domain.Tests.DatabaseFields
       [InlineData("-8.", -8.0)]
       [InlineData("-.01", -0.01)]
       [InlineData(".012", 0.012)]
+      [InlineData(".916 ", 0.916)]
       public void SetBuffer_ValueIsSet(string buffer, decimal value)
       {
          _decimalDatabaseField.Buffer = buffer;
 
          Assert.Equal(value, _decimalDatabaseField.Value);
-         Assert.Equal(buffer, _decimalDatabaseField.Buffer);
+         Assert.Equal(buffer.Trim(), _decimalDatabaseField.Buffer);
       }
    }
 }

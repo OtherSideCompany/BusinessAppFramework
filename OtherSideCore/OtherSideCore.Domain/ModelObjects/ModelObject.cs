@@ -254,13 +254,13 @@ namespace OtherSideCore.Domain.ModelObjects
       {
          if (entity.CreatedBy != null)
          {
-            CreatedBy = _modelObjectFactory.CreateUser(_modelObjectFactory, _globalDataService);
+            CreatedBy = _modelObjectFactory.CreateUser(_globalDataService);
             await CreatedBy.LoadPropertiesFromEntityAsync(entity.CreatedBy, false);
          }
 
          if (entity.LastModifiedBy != null)
          {
-            LastModifiedBy = _modelObjectFactory.CreateUser(_modelObjectFactory, _globalDataService);
+            LastModifiedBy = _modelObjectFactory.CreateUser(_globalDataService);
             await LastModifiedBy.LoadPropertiesFromEntityAsync(entity.LastModifiedBy, false);
          }
       }

@@ -37,7 +37,7 @@ namespace OtherSideCore.ViewModel
 
       #region Constructor
 
-      public DashboardViewModelBase(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService)
+      public DashboardViewModelBase(IAuthenticationService authenticationService, IRepositoryFactory repositoryFactory, IModelObjectViewModelFactory modelObjectViewModeFactory, ILoggerFactory loggerFactory, IGlobalDataService globalDataService, IModelObjectFactory modelObjectFactory) : base(authenticationService, repositoryFactory, modelObjectViewModeFactory, loggerFactory, globalDataService, modelObjectFactory)
       {
          
       }
@@ -51,7 +51,7 @@ namespace OtherSideCore.ViewModel
          return false;
       }
 
-      public virtual void Dispose()
+      public override void Dispose()
       {
          
       }      

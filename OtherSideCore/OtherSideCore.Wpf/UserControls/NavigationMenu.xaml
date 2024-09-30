@@ -68,7 +68,7 @@
 
                            <DataTemplate DataType="{x:Type viewmodel:ViewDescription}">
                               <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
-                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
+                                      Command="{Binding DataContext.DisplayViewAsyncCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
                                  <Button.Style>
                                     <Style TargetType="{x:Type Button}">
@@ -109,7 +109,7 @@
 
                            <DataTemplate DataType="{x:Type viewmodel:DashboardDescription}">
                               <Button Cursor="Hand"
-                                      Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}"
+                                      Command="{Binding DataContext.DisplayViewAsyncCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
                                  <Button.Style>
                                     <Style TargetType="{x:Type Button}">
@@ -193,7 +193,7 @@
                                     <ItemsControl.ItemTemplate>
                                        <DataTemplate>
                                           <ToggleButton Cursor="Hand" 
-                                                        Command="{Binding DataContext.DisplayViewCommand, ElementName=NavigationMenuUserControl}" 
+                                                        Command="{Binding DataContext.DisplayViewAsyncCommand, ElementName=NavigationMenuUserControl}" 
                                                         CommandParameter="{Binding}"
                                                         IsChecked="{Binding IsLoaded, Mode=OneWay}">
                                              <ToggleButton.Style>

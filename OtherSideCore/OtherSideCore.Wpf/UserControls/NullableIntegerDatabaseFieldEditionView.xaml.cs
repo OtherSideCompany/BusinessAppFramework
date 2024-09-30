@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,18 +17,18 @@ using System.Windows.Shapes;
 namespace OtherSideCore.Wpf.UserControls
 {
    /// <summary>
-   /// Interaction logic for IntegerDatabaseFieldEditionView.xaml
+   /// Interaction logic for NullableIntegerDatabaseFieldEditionView.xaml
    /// </summary>
-   public partial class IntegerDatabaseFieldEditionView : UserControl
+   public partial class NullableIntegerDatabaseFieldEditionView : UserControl
    {
-      public IntegerDatabaseFieldEditionView()
+      public NullableIntegerDatabaseFieldEditionView()
       {
          InitializeComponent();
       }
 
-      private void IntegerTextBox_LostFocus(object sender, RoutedEventArgs e)
+      private void NullableIntegerTextBox_LostFocus(object sender, RoutedEventArgs e)
       {
-         ((IntegerDatabaseField)DataContext).LoadBuffer();
+         ((NullableIntegerDatabaseField)DataContext).LoadBuffer();
       }
    }
 }

@@ -12,8 +12,6 @@ namespace OtherSideCore.Domain.Repositories
    {
       IRepository<T> CreateRepository<T>() where T : ModelObject, new();
 
-      IRepository<T> CreateSpecificRepository<T>() where T : ModelObject, new();
-
       IUserRepository<T> CreateUserRepository<T>() where T : User, new();
       
    }

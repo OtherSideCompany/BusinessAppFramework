@@ -17,6 +17,9 @@
     <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\NullableIntegerDatabaseFieldEditionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\StringDatabaseFieldEditionView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -56,6 +59,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\NavigationMenu.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\NullableIntegerDatabaseFieldEditionView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\SaveCancelChangesAsyncView.xaml">

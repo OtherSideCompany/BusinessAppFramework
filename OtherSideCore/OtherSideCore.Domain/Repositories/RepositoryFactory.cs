@@ -35,15 +35,15 @@ namespace OtherSideCore.Domain.Repositories
          }
       }
 
-      public virtual IRepository<T> CreateSpecificRepository<T>() where T : ModelObject, new()
-      {
-         throw new ArgumentException("Unknown repository type", typeof(T).ToString());
-      }
-
       public virtual IUserRepository<T> CreateUserRepository<T>() where T : ModelObjects.User, new()
       {
          var userDataRepository = new UserDataRepository<Infrastructure.Entities.User>(_dbContextFactory, _loggerFactory);
          return new UserRepository<T, Infrastructure.Entities.User>(userDataRepository, _modelObjectFactory, _globalDataService);
+      }
+
+      protected virtual IRepository<T> CreateSpecificRepository<T>() where T : ModelObject, new()
+      {
+         throw new ArgumentException("Unknown repository type", typeof(T).ToString());
       }
    }
 }

@@ -40,14 +40,15 @@ namespace OtherSideCore.Domain.DatabaseFields
          get => _buffer;
          set
          {
+            var trimmedValue = value.Trim();
             string pattern = @"^[+-]?\d*[\.,]?\d*$";
-            var setProperty = Regex.IsMatch(value, pattern);
-            setProperty &= value.Count(c => c == '.') <= 1;
-            setProperty &= value.Count(c => c == ',') <= 1;
+            var setProperty = Regex.IsMatch(trimmedValue, pattern);
+            setProperty &= trimmedValue.Count(c => c == '.') <= 1;
+            setProperty &= trimmedValue.Count(c => c == ',') <= 1;
 
             if (setProperty)
             {
-               SetProperty(ref _buffer, value);
+               SetProperty(ref _buffer, trimmedValue);
 
                var valueToParse = _buffer;
                var isNegative = false;

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.IntegerDatabaseFieldEditionView"
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.NullableIntegerDatabaseFieldEditionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,8 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <Border Style="{StaticResource EditableTextBoxBorder}" CornerRadius="5">
       <osc_customcontrols:ClickSelectTextBox Text="{Binding Buffer, UpdateSourceTrigger=PropertyChanged}" 
-                                             IsReadOnly="{Binding IsEditable, Converter={StaticResource BoolInverter}}"
-                                             LostFocus="IntegerTextBox_LostFocus"
-                                             Margin="4,0,4,0" />
+                                      IsReadOnly="{Binding IsEditable, Converter={StaticResource BoolInverter}}"
+                                      LostFocus="NullableIntegerTextBox_LostFocus"
+                                      Margin="4,0,4,0" />
    </Border>
 </UserControl>
