@@ -79,15 +79,6 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(SvgImageTextButton_OrientationProperty, value); }
       }
 
-      public static readonly DependencyProperty SvgImageTextButton_DisplayImageOnRightSideProperty =
-        DependencyProperty.Register("SvgImageTextButton_DisplayImageOnRightSide", typeof(bool), typeof(SvgImageTextButton), new UIPropertyMetadata(false));
-
-      public bool SvgImageTextButton_DisplayImageOnRightSide
-      {
-         get { return (bool)GetValue(SvgImageTextButton_DisplayImageOnRightSideProperty); }
-         set { SetValue(SvgImageTextButton_DisplayImageOnRightSideProperty, value); }
-      }
-
       static SvgImageTextButton()
       {
          DefaultStyleKeyProperty.OverrideMetadata(typeof(SvgImageTextButton), new FrameworkPropertyMetadata(typeof(SvgImageTextButton)));

@@ -54,14 +54,17 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> predicate, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+      public async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> where,
+                                                         int pageNumber,
+                                                         int pageSize,
+                                                         CancellationToken cancellationToken = default)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
             var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                       .Where(predicate)
+                                                       .Where(where)
                                                        .Skip((pageNumber - 1) * pageSize)
                                                        .Take(pageSize)
                                                        .ToListAsync();

@@ -412,4 +412,45 @@
       </Setter>
    </Style>
 
+   <!-- Text Toggle Button -->
+   <Style TargetType="{x:Type local:TextToggleButton}">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
+      <Setter Property="TextToggleButton_CheckedBackgroundColor" Value="{Binding TextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type local:TextToggleButton}">
+               <Border Width="{TemplateBinding Width}" 
+                    Height="{TemplateBinding Height}" 
+                    Background="{TemplateBinding Background}"
+                    x:Name="Border"
+                    BorderBrush="{StaticResource OtherSide_LightGray}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="5"
+                    Padding="4,0,4,0">
+
+                  <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
+                             Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}" 
+                             TextWrapping="NoWrap"/>
+
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{Binding TextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                  </Trigger>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter Property="Background" Value="{Binding TextToggleButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                     <Setter Property="Background" Value="{Binding TextToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
 </ResourceDictionary>
