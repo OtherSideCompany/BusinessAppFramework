@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -31,7 +26,7 @@ namespace OtherSideCore.Wpf.CustomControls
       }
 
       public static readonly DependencyProperty SvgImageTextButton_ImageSizeProperty =
-        DependencyProperty.Register("SvgImageTextButton_ImageSize", typeof(int), typeof(SvgImageTextButton), new UIPropertyMetadata((int)24));
+        DependencyProperty.Register("SvgImageTextButton_ImageSize", typeof(int), typeof(SvgImageTextButton), new UIPropertyMetadata(24));
 
       public int SvgImageTextButton_ImageSize
       {
@@ -82,6 +77,15 @@ namespace OtherSideCore.Wpf.CustomControls
       {
          get { return (OrientationType)GetValue(SvgImageTextButton_OrientationProperty); }
          set { SetValue(SvgImageTextButton_OrientationProperty, value); }
+      }
+
+      public static readonly DependencyProperty SvgImageTextButton_DisplayImageOnRightSideProperty =
+        DependencyProperty.Register("SvgImageTextButton_DisplayImageOnRightSide", typeof(bool), typeof(SvgImageTextButton), new UIPropertyMetadata(false));
+
+      public bool SvgImageTextButton_DisplayImageOnRightSide
+      {
+         get { return (bool)GetValue(SvgImageTextButton_DisplayImageOnRightSideProperty); }
+         set { SetValue(SvgImageTextButton_DisplayImageOnRightSideProperty, value); }
       }
 
       static SvgImageTextButton()

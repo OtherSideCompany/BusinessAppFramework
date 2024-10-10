@@ -1,7 +1,5 @@
-﻿using System.Collections.Specialized;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.UserControls
@@ -13,7 +11,7 @@ namespace OtherSideCore.Wpf.UserControls
    {
       public static readonly DependencyProperty MultiTextFilterViewButton_ImageColorProperty =
         DependencyProperty.Register("MultiTextFilterViewButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.Blue));
-      
+
       public SolidColorBrush MultiTextFilterViewButton_ImageColor
       {
          get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }

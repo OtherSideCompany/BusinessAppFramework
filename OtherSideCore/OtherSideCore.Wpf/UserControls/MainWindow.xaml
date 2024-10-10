@@ -26,7 +26,7 @@
 
          <Grid>
 
-            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Grid Visibility="{Binding IsUserContextInitialized, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Collapsed}">
                <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="*" />
@@ -37,7 +37,7 @@
                <!-- content -->
                <Border Grid.Column="1" Background="White">
                   <Grid>
-                     <ContentPresenter Content="{Binding MainWindowContent}" />
+                     <ContentPresenter Content="{Binding MainWindow_ViewContent, ElementName=MainWindowUserControl}" />
                      <local:LoadingView VerticalAlignment="Center" HorizontalAlignment="Center" 
                                         Visibility="{Binding DisplayViewAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
                   </Grid>
@@ -45,7 +45,7 @@
 
             </Grid>
 
-            <Grid Visibility="{Binding AuthenticationService.AuthenticatedUser, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
+            <Grid Visibility="{Binding IsUserContextInitialized, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
 
                <local:LoginView HorizontalAlignment="Center" VerticalAlignment="Center" />
 

@@ -1,8 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Application;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Context
 {

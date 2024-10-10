@@ -10,10 +10,9 @@
              x:Name="ConstraintsViewUserControl">
     <Grid>
       <StackPanel Orientation="Horizontal">
-         <customcontrols:TextRadioButton Margin="0,0,16,0" 
+         <customcontrols:TextRadioButton Margin="0,0,16,0"
                                          GroupName="Constraints" 
                                          TextRadioButton_Text="Tout"
-                                         TextRadioButton_SelectedColor="{StaticResource MMColor_Green}"
                                          Command="{Binding ConstraintsView_SearchCommand, ElementName=ConstraintsViewUserControl}"
                                          CommandParameter="{StaticResource False}"
                                          IsChecked="{Binding IsAnyConstraintSelected, Mode=OneWay, Converter={StaticResource BoolInverter}}"/>
@@ -28,11 +27,8 @@
                <DataTemplate>
                   <customcontrols:TextRadioButton Margin="0,0,16,0" 
                                                   GroupName="Constraints" 
-                                                  TextRadioButton_Text="{Binding Constraint.Name}"
-                                                  TextRadioButton_SelectedColor="{StaticResource MMColor_Green}"
-                                                  IsChecked="{Binding IsSelected}"
-                                                  Command="{Binding ConstraintsView_SearchCommand, ElementName=ConstraintsViewUserControl}"
-                                                  CommandParameter="{StaticResource False}"/>
+                                                  TextRadioButton_Text="{Binding Name}"
+                                                  IsChecked="{Binding IsSelected}"/>
                </DataTemplate>
             </ItemsControl.ItemTemplate>
          </ItemsControl>

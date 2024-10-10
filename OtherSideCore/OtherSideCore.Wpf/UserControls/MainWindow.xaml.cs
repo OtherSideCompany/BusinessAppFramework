@@ -1,17 +1,8 @@
-﻿using OtherSideCore.ViewModel;
-using System;
+﻿using OtherSideCore.Adapter.Views;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace OtherSideCore.Wpf.UserControls
 {
@@ -35,6 +26,15 @@ namespace OtherSideCore.Wpf.UserControls
       {
          get { return (SolidColorBrush)GetValue(MainWindow_ApplicationLogoColorProperty); }
          set { SetValue(MainWindow_ApplicationLogoColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty MainWindow_ViewContentProperty =
+          DependencyProperty.Register("MainWindow_ViewContent", typeof(UserControl), typeof(MainWindow), new UIPropertyMetadata(null));
+
+      public UserControl MainWindow_ViewContent
+      {
+         get { return (UserControl)GetValue(MainWindow_ViewContentProperty); }
+         set { SetValue(MainWindow_ViewContentProperty, value); }
       }
 
       #endregion

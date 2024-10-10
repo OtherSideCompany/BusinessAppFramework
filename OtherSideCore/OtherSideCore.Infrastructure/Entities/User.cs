@@ -1,6 +1,4 @@
-﻿using OtherSideCore.Infrastructure.DatabaseFields;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OtherSideCore.Infrastructure.Entities
@@ -25,18 +23,5 @@ namespace OtherSideCore.Infrastructure.Entities
       [Required]
       [StringLength(64, MinimumLength = 64)]
       public string PasswordHash { get; set; }
-
-      public override List<DatabaseField> GetDatabaseFieldProperties()
-      {
-         var databaseFieldProperties = base.GetDatabaseFieldProperties();
-
-         databaseFieldProperties.Add(new BoolDatabaseField(IsActive, nameof(IsActive)));
-         databaseFieldProperties.Add(new StringDatabaseField(FirstName, nameof(FirstName)));
-         databaseFieldProperties.Add(new StringDatabaseField(LastName, nameof(LastName)));
-         databaseFieldProperties.Add(new StringDatabaseField(UserName, nameof(UserName)));
-         databaseFieldProperties.Add(new StringDatabaseField(PasswordHash, nameof(PasswordHash)));
-
-         return databaseFieldProperties;
-      }
    }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.DirectoryServices;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,9 +8,6 @@ namespace OtherSideCore.Wpf.CustomControls
 {
    public class SortableListView : ListView
    {
-      private string m_IsSorted;
-      private string m_SortPropertyName;
-      private SortDirection m_SortDirection = SortDirection.Descending;
       private SortableGridViewColumn _currentSortedColumnHeader;
 
       public SortableListView() : base()

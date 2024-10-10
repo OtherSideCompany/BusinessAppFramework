@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Domain.RepositoryInterfaces;
 using OtherSideCore.Domain.Services;
 using OtherSideCore.Infrastructure.Entities;
+using OtherSideCore.Infrastructure.Mapping;
 using OtherSideCore.Infrastructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using OtherSideCore.Infrastructure.Services;
 
 namespace OtherSideCore.Infrastructure.Tests
 {
@@ -18,6 +18,10 @@ namespace OtherSideCore.Infrastructure.Tests
       public InfrastructureTestsDbContextFactory InfrastructureTestsDbContextFactory { get; }
       public Mock<ILoggerFactory> LoggerFactoryMock { get; }
       public Mock<ILogger> LoggerMock { get; }
+
+      private PasswordService _passwordService;
+
+      private IMapper _mapper;
 
       public DatabaseFixture()
       {
@@ -30,74 +34,95 @@ namespace OtherSideCore.Infrastructure.Tests
          var context = InfrastructureTestsDbContextFactory.CreateDbContext();
          context.Database.MigrateAsync().Wait();
 
+         var config = new MapperConfiguration(cfg => cfg.AddProfile<GenericMappingProfile>());
+         _mapper = config.CreateMapper();
+
+         _passwordService = new PasswordService();
+
          SeedUsers();
       }
 
       public void SeedUsers()
       {
-         var superAdmin = new User
+         var superAdmin = new Domain.DomainObjects.User
          {
             Id = 1,
             CreationDate = DateTime.Now,
-            CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
-            LastModifiedById = 1,
             FirstName = "Super",
             LastName = "Admin",
             UserName = "administrator",
-            PasswordHash = PasswordService.HashPassword("abcdefgh")
+            PasswordHash = _passwordService.HashPassword("abcdefgh")
          };
 
-         var anthony = new User
+         var anthony = new Domain.DomainObjects.User
          {
             Id = 2,
             CreationDate = DateTime.Now,
-            CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
-            LastModifiedById = 1,
             FirstName = "Anthony",
             LastName = "Thonon",
             UserName = "anth",
-            PasswordHash = PasswordService.HashPassword("abcdefgh")
+            PasswordHash = _passwordService.HashPassword("abcdefgh")
          };
 
-         var joy = new User
+         var joy = new Domain.DomainObjects.User
          {
             Id = 3,
             CreationDate = DateTime.Now,
-            CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
-            LastModifiedById = 2,
             FirstName = "Joy",
             LastName = "Malcourant",
             UserName = "joma",
-            PasswordHash = PasswordService.HashPassword("abcdefgh")
+            PasswordHash = _passwordService.HashPassword("abcdefgh")
          };
 
-         var pierre = new User
+         var pierre = new Domain.DomainObjects.User
          {
             Id = 4,
             CreationDate = DateTime.Now,
-            CreatedById = 1,
             LastModifiedDateTime = DateTime.Now,
-            LastModifiedById = 2,
             FirstName = "Pierre",
             LastName = "Malcourant",
             UserName = "pima",
-            PasswordHash = PasswordService.HashPassword("abcdefgh")
+            PasswordHash = _passwordService.HashPassword("abcdefgh")
          };
 
-         var userRepository = new UserDataRepository<User>(InfrastructureTestsDbContextFactory, LoggerFactoryMock.Object);
+         var userRepository = new UserRepository(InfrastructureTestsDbContextFactory, _mapper, LoggerFactoryMock.Object);
 
-         userRepository.CreateAsync(superAdmin.GetDatabaseFieldProperties()).Wait();
-         userRepository.CreateAsync(anthony.GetDatabaseFieldProperties()).Wait();
-         userRepository.CreateAsync(joy.GetDatabaseFieldProperties()).Wait();
-         userRepository.CreateAsync(pierre.GetDatabaseFieldProperties()).Wait();
+         using (var context = InfrastructureTestsDbContextFactory.CreateDbContext())
+         {
+            var entity = _mapper.Map<Entities.User>(superAdmin);
+
+            entity.CreationDate = DateTime.Now;
+            entity.LastModifiedDateTime = DateTime.Now;
+
+            context.Set<Entities.User>().Add(entity);
+            context.SaveChanges();
+
+            _mapper.Map(entity, superAdmin);
+         }
+
+         userRepository.CreateAsync(anthony, 1).Wait();
+         userRepository.CreateAsync(joy, 1).Wait();
+         userRepository.CreateAsync(pierre, 1).Wait();
       }
 
       public void Dispose()
       {
          InfrastructureTestsDbContextFactory.ReleaseInstance();
+      }
+   }
+
+   public class UserRepository : Repository<Domain.DomainObjects.User, Entities.User>
+   {
+      public UserRepository(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory) : base(dbContextFactory, mapper, loggerFactory)
+      {
+      }
+
+      public override Task<List<Domain.DomainObjects.User>> GetAllAsync(List<string> filters, List<Constraint<Domain.DomainObjects.User>> constraints, bool extendedSearch, CancellationToken cancellationToken = default)
+      {
+         throw new NotImplementedException();
       }
    }
 }

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace OtherSideCore.Wpf.CustomControls
 {
    public class SvgImageButton : Button
    {
       public static readonly DependencyProperty SvgImageButton_ImageSizeProperty =
-        DependencyProperty.Register("SvgImageButton_ImageSize", typeof(int), typeof(SvgImageButton), new UIPropertyMetadata((int)24));
+        DependencyProperty.Register("SvgImageButton_ImageSize", typeof(int), typeof(SvgImageButton), new UIPropertyMetadata(24));
 
       public int SvgImageButton_ImageSize
       {

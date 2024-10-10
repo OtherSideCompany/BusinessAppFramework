@@ -1,12 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Application;
 using OtherSideCore.Infrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace OtherSideCore.Infrastructure.Context
 {

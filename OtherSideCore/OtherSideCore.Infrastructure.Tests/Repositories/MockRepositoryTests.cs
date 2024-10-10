@@ -4,118 +4,119 @@ namespace OtherSideCore.Infrastructure.Tests.Repositories
 {
    [Collection("Non-Parallel Tests")]
    public class MockRepositoryTests
-   {  
-      private TestEntityRepository _testEntityRepository;
-      private TestEntity _testEntity;
+   {
+      private TestDomainObjectRepository _testDomainObjectRepository;
+      private TestDomainObject _testDomainObject;
 
       public MockRepositoryTests()
       {
-         _testEntity = new TestEntity();
-         _testEntityRepository = new TestEntityRepository();
+         _testDomainObject = new TestDomainObject();
+         _testDomainObjectRepository = new TestDomainObjectRepository();
       }
 
       [Fact]
-      public async Task CreateAsync_ShouldReturnEntityId()
-      {      
-         Assert.Equal(0, _testEntity.Id);
+      public async Task CreateAsync_ShouldSetEntityId()
+      {
+         Assert.Equal(0, _testDomainObject.Id);
 
-         _testEntity.Id = await _testEntityRepository.CreateAsync(_testEntity.GetDatabaseFieldProperties());
+         await _testDomainObjectRepository.CreateAsync(_testDomainObject, 1);
 
-         Assert.True(_testEntity.Id > 0);
+         Assert.True(_testDomainObject.Id > 0);
       }
 
       [Fact]
       public async Task GetAsync_EntityNotFound()
       {
-         var entity = await _testEntityRepository.GetAsync(_testEntity.Id, CancellationToken.None);
+         var entity = await _testDomainObjectRepository.GetAsync(_testDomainObject.Id, CancellationToken.None);
          Assert.Null(entity);
       }
 
       [Fact]
       public async Task GetAsync_ModificationPersist()
       {
-         _testEntity.Id = await _testEntityRepository.CreateAsync(_testEntity.GetDatabaseFieldProperties());
-         _testEntity = await _testEntityRepository.GetAsync(_testEntity.Id, CancellationToken.None) as TestEntity;
+         await _testDomainObjectRepository.CreateAsync(_testDomainObject, 1);
+         _testDomainObject = await _testDomainObjectRepository.GetAsync(_testDomainObject.Id, CancellationToken.None);
 
-         Assert.NotNull(_testEntity);
+         Assert.NotNull(_testDomainObject);
 
-         var creationDate = _testEntity.CreationDate;
-         var lastModifiedDateTime = _testEntity.LastModifiedDateTime;
-         
-         Assert.Equal(1, _testEntity.CreatedById);
-         Assert.Equal(1, _testEntity.LastModifiedById);
-         Assert.Equal(creationDate, _testEntity.CreationDate);
-         Assert.Equal(lastModifiedDateTime, _testEntity.LastModifiedDateTime);
+         var creationDate = _testDomainObject.CreationDate;
+         var lastModifiedDateTime = _testDomainObject.LastModifiedDateTime;
+
+         Assert.Equal(1, _testDomainObject.CreatedBy.Id);
+         Assert.Equal(1, _testDomainObject.LastModifiedBy.Id);
+         Assert.Equal(creationDate, _testDomainObject.CreationDate);
+         Assert.Equal(lastModifiedDateTime, _testDomainObject.LastModifiedDateTime);
       }
 
       [Fact]
       public async Task SaveAsync_ModificationPersist()
-      {     
-         _testEntity.Id = await _testEntityRepository.CreateAsync(_testEntity.GetDatabaseFieldProperties());
-         _testEntity = await _testEntityRepository.GetAsync(_testEntity.Id, CancellationToken.None) as TestEntity;
+      {
+         await _testDomainObjectRepository.CreateAsync(_testDomainObject, 1);
+         _testDomainObject = await _testDomainObjectRepository.GetAsync(_testDomainObject.Id);
 
-         var futureDateTime = DateTime.Now.AddMinutes(7);
+         var creationDate = _testDomainObject.CreationDate;
 
-         _testEntity.CreationDate = futureDateTime;
-         _testEntity.LastModifiedDateTime = futureDateTime;
+         await _testDomainObjectRepository.SaveAsync(_testDomainObject, 1);
+         _testDomainObject = await _testDomainObjectRepository.GetAsync(_testDomainObject.Id);
 
-         await _testEntityRepository.SaveAsync(_testEntity.Id, _testEntity.GetDatabaseFieldProperties());
-         _testEntity = await _testEntityRepository.GetAsync(_testEntity.Id, CancellationToken.None) as TestEntity;
-
-         Assert.NotNull(_testEntity);
-         Assert.Equal(_testEntity.CreationDate, futureDateTime);
-         Assert.Equal(_testEntity.LastModifiedDateTime, futureDateTime);
+         Assert.NotNull(_testDomainObject);
+         Assert.NotEqual(_testDomainObject.CreationDate, default(DateTime));
+         Assert.True(_testDomainObject.LastModifiedDateTime > creationDate);
       }
 
       [Fact]
       public async Task SaveAsync_EntityDoesNotExists()
       {
-         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testEntityRepository.SaveAsync(_testEntity.Id, _testEntity.GetDatabaseFieldProperties()));
+         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testDomainObjectRepository.SaveAsync(_testDomainObject, 1));
       }
 
       [Fact]
       public async Task DeleteAsync_EntityDoNotExists()
       {
-         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testEntityRepository.DeleteAsync(_testEntity.Id));
+         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testDomainObjectRepository.DeleteAsync(_testDomainObject));
       }
 
       [Fact]
       public async Task DeleteAsync_EntityIsDeleted()
       {
-         _testEntity.Id = await _testEntityRepository.CreateAsync(_testEntity.GetDatabaseFieldProperties());
-         await _testEntityRepository.DeleteAsync(_testEntity.Id);
+         await _testDomainObjectRepository.CreateAsync(_testDomainObject, 1);
+         await _testDomainObjectRepository.DeleteAsync(_testDomainObject);
 
-         var entity = await _testEntityRepository.GetAsync(_testEntity.Id, CancellationToken.None);
+         var entity = await _testDomainObjectRepository.GetAsync(_testDomainObject.Id, CancellationToken.None);
 
          Assert.Null(entity);
+         Assert.Equal(_testDomainObject.Id, 0);
+         Assert.Equal(_testDomainObject.CreatedBy, null);
+         Assert.Equal(_testDomainObject.LastModifiedBy, null);
+         Assert.Equal(_testDomainObject.CreationDate, default);
+         Assert.Equal(_testDomainObject.LastModifiedDateTime, default);
       }
 
       [Fact]
       public async Task GetModificationTimeAsync_EntityDoNotExists()
       {
-         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testEntityRepository.GetModificatonTimeAsync(_testEntity.Id));
+         await Assert.ThrowsAsync<ArgumentNullException>(async () => await _testDomainObjectRepository.GetLastModificatonTimeAsync(_testDomainObject));
       }
 
       [Fact]
       public async Task GetModificationTimeAsync_ModificationPersist()
       {
-         _testEntity.Id = await _testEntityRepository.CreateAsync(_testEntity.GetDatabaseFieldProperties());
+         await _testDomainObjectRepository.CreateAsync(_testDomainObject, 1);
 
-         var futureModificationTime = DateTime.Now.AddMinutes(5);
+         var creationDate = _testDomainObject.CreationDate;
 
-         _testEntity.LastModifiedDateTime = futureModificationTime;
+         await _testDomainObjectRepository.SaveAsync(_testDomainObject, 1);
+         var modificationTime = await _testDomainObjectRepository.GetLastModificatonTimeAsync(_testDomainObject);
 
-         await _testEntityRepository.SaveAsync(_testEntity.Id, _testEntity.GetDatabaseFieldProperties());
-         var modificationTime = await _testEntityRepository.GetModificatonTimeAsync(_testEntity.Id);
-
-         Assert.Equal(modificationTime, futureModificationTime);
+         Assert.True(modificationTime > creationDate);
       }
 
-      protected class TestEntityRepository : MockDataRepository<TestEntity>
+      protected class TestDomainObjectRepository : MockRepository<TestDomainObject>
       {
-         public TestEntityRepository() : base()
+         public TestDomainObjectRepository() : base()
          {
+
          }
       }
-   }   
+   }
 }

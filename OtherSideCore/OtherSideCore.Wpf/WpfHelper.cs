@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 
 namespace OtherSideCore.Wpf
 {
@@ -96,7 +92,7 @@ namespace OtherSideCore.Wpf
 
          if (parent != null && !(parent is T))
          {
-            return (T)FindParent<T>((FrameworkElement)parent);
+            return FindParent<T>((FrameworkElement)parent);
          }
 
          return (T)parent;

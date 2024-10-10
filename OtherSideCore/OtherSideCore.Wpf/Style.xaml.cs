@@ -1,8 +1,4 @@
-﻿using OtherSideCore.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OtherSideCore.Adapter;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,18 +38,18 @@ namespace OtherSideCore.Wpf.CustomControls
          }
       }
 
-      private void ModelObjectSearchListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+      private async void DomainObjectSearchListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
       {
          var listView = (sender as ListView);
-         var selectedModelObjectViewModel = listView.SelectedItem as ModelObjectViewModel;
+         var selectedDomainObjectViewModel = listView.SelectedItem as DomainObjectViewModel;
 
-         if (selectedModelObjectViewModel != null)
+         if (selectedDomainObjectViewModel != null)
          {
-            var repositoryManagerViewModel = listView.DataContext as IRepositoryEditorViewModel;
+            var domainObjectSearchViewModel = listView.DataContext as IDomainObjectSearchViewModel;
 
-            if (repositoryManagerViewModel != null && repositoryManagerViewModel.SelectSearchResultCommandAsync.CanExecute(selectedModelObjectViewModel))
+            if (domainObjectSearchViewModel != null && domainObjectSearchViewModel.CanSelectSearchResult(selectedDomainObjectViewModel))
             {
-               repositoryManagerViewModel.SelectSearchResultCommandAsync.Execute(selectedModelObjectViewModel);
+               await domainObjectSearchViewModel.SelectSearchResultAsync(selectedDomainObjectViewModel);
             }
          }
       }

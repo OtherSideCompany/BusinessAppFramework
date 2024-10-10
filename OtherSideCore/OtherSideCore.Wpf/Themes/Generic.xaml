@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:OtherSideCore.Wpf.CustomControls">
+    xmlns:local="clr-namespace:OtherSideCore.Wpf.CustomControls" xmlns:usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls">
 
    <ResourceDictionary.MergedDictionaries>
       <ResourceDictionary Source="pack://application:,,,/OtherSideCore.Wpf;component/Converters/Converters.xaml"/>
@@ -92,23 +92,25 @@
                        BorderThickness="{TemplateBinding BorderThickness}"
                        CornerRadius="5"
                        Padding="10,0,10,0">
+
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                              Orientation="Horizontal"
-                              x:Name="StackPanel">
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Orientation="Horizontal"
+                                          x:Name="StackPanel">
 
                      <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
-                                      SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
-                                      SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageColor}"
-                                      SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}"
-                                      x:Name="Image"/>
+                                                  SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
+                                                  SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageColor}"
+                                                  SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}"
+                                                  x:Name="Image"/>
 
                      <TextBlock Margin="{TemplateBinding SvgImageTextButton_TextMargin}"
-                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
-                                TextTrimming="CharacterEllipsis" 
-                                TextWrapping="NoWrap"/>
+                                            Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
+                                            TextTrimming="CharacterEllipsis" 
+                                            TextWrapping="NoWrap"/>
 
                   </StackPanel>
+
                </Border>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
@@ -169,6 +171,9 @@
                   <Trigger Property="IsPressed" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageToggleButton_IconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
+                  </Trigger>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.5" TargetName="Image" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -384,8 +389,9 @@
             <ControlTemplate TargetType="{x:Type RadioButton}">
                <StackPanel Background="Transparent">
                   <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_Text}" 
-                             FontWeight="SemiBold" 
-                             Foreground="{StaticResource OtherSide_Gray}"
+                             FontWeight="DemiBold"
+                             Foreground="Black"
+                             HorizontalAlignment="Center"
                              x:Name="ConstraintName"/>
                   <Border Height="2" 
                           SnapsToDevicePixels="True" 
@@ -397,6 +403,7 @@
                   <Trigger Property="IsChecked" Value="True">
                      <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_SelectedColor}" TargetName="ConstraintName" />
                      <Setter Property="Visibility" Value="Visible" TargetName="UnderlineBorder" />
+                     <Setter Property="FontWeight" Value="Bold" TargetName="ConstraintName" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>

@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Tests
 {
@@ -13,7 +8,7 @@ namespace OtherSideCore.Infrastructure.Tests
 
       public InfrastructureTestsDbContextFactory()
       {
-         
+
       }
 
       public DbContext CreateDbContext()
@@ -23,8 +18,8 @@ namespace OtherSideCore.Infrastructure.Tests
             _instance = new InfrastructureTestsDbContext();
             _instance.DatabasePath = ":memory:";
          }
- 
-         return _instance;         
+
+         return _instance;
       }
 
       public void ReleaseInstance()

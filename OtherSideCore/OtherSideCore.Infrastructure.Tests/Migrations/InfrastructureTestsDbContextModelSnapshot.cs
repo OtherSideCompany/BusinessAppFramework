@@ -17,49 +17,48 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("OtherSideCore.Infrastructure.Entities.EntityBase", b =>
+            modelBuilder.Entity("OtherSideCore.Infrastructure.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CreatedById")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("LastModifiedById")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastModifiedDateTime")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable((string)null);
-
-                    b.UseTpcMappingStrategy();
-                });
-
-            modelBuilder.Entity("OtherSideCore.Infrastructure.Entities.User", b =>
-                {
-                    b.HasBaseType("OtherSideCore.Infrastructure.Entities.EntityBase");
-
                     b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("LastModifiedById")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastModifiedDateTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
@@ -70,7 +69,23 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
 
             modelBuilder.Entity("OtherSideCore.Infrastructure.Tests.TestEntity", b =>
                 {
-                    b.HasBaseType("OtherSideCore.Infrastructure.Entities.EntityBase");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("LastModifiedById")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastModifiedDateTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
 
@@ -84,14 +99,12 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
                     b.HasOne("OtherSideCore.Infrastructure.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("OtherSideCore.Infrastructure.Entities.User", "LastModifiedBy")
                         .WithMany()
                         .HasForeignKey("LastModifiedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedBy");
 
@@ -102,15 +115,11 @@ namespace OtherSideCore.Infrastructure.Tests.Migrations
                 {
                     b.HasOne("OtherSideCore.Infrastructure.Entities.User", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatedById");
 
                     b.HasOne("OtherSideCore.Infrastructure.Entities.User", "LastModifiedBy")
                         .WithMany()
-                        .HasForeignKey("LastModifiedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LastModifiedById");
 
                     b.Navigation("CreatedBy");
 

@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
-             xmlns:viewmodel="clr-namespace:OtherSideCore.ViewModel;assembly=OtherSideCore.ViewModel" 
-             xmlns:model="clr-namespace:OtherSideCore.Domain;assembly=OtherSideCore.Domain"
+             xmlns:adapter_viewdescriptions="clr-namespace:OtherSideCore.Adapter.ViewDescriptions;assembly=OtherSideCore.Adapter" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="NavigationMenuUserControl">
@@ -66,7 +65,7 @@
                      <ContentPresenter Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type viewmodel:ViewDescription}">
+                           <DataTemplate DataType="{x:Type adapter_viewdescriptions:WorkspaceDescription}">
                               <Button Cursor="Hand" Content="{Binding IsLoaded, Mode=OneWay}"
                                       Command="{Binding DataContext.DisplayViewAsyncCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -107,7 +106,7 @@
                               </Button>
                            </DataTemplate>
 
-                           <DataTemplate DataType="{x:Type viewmodel:DashboardDescription}">
+                           <DataTemplate DataType="{x:Type adapter_viewdescriptions:ModuleDescription}">
                               <Button Cursor="Hand"
                                       Command="{Binding DataContext.DisplayViewAsyncCommand, ElementName=NavigationMenuUserControl}"
                                       CommandParameter="{Binding}">
@@ -180,9 +179,9 @@
                      <ContentPresenter Grid.Row="1" Content="{Binding}">
                         <ContentPresenter.Resources>
 
-                           <DataTemplate DataType="{x:Type viewmodel:ViewDescription}"/>
+                           <DataTemplate DataType="{x:Type adapter_viewdescriptions:WorkspaceDescription}"/>
 
-                           <DataTemplate DataType="{x:Type viewmodel:DashboardDescription}">
+                           <DataTemplate DataType="{x:Type adapter_viewdescriptions:ModuleDescription}">
                               <Grid Visibility="{Binding IsChecked, Converter={StaticResource BoolToVisibleOrCollapsed}, ElementName=MenuToggleButton}">
                                  <ItemsControl ItemsSource="{Binding SubViewDescriptions}" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <ItemsControl.ItemsPanel>

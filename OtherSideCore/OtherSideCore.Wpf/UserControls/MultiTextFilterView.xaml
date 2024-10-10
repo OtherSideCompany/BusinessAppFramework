@@ -30,7 +30,7 @@
                   <ColumnDefinition Width="Auto" />
                </Grid.ColumnDefinitions>
 
-               <customcontrols:ClickSelectTextBox Grid.Column="0" Margin="8,0,0,0" 
+               <customcontrols:ClickSelectTextBox Grid.Column="0" Margin="4,0,0,0" 
                                                   Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                                                   ClickSelectTextBox_Watermak="Rechercher"/>
 
@@ -39,7 +39,7 @@
                                               SvgImageButton_ImageSize="16" 
                                               SvgImageButton_ImageColor="{Binding MultiTextFilterViewButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"                                                 
                                               BorderThickness="0"
-                                              Command="{Binding AddFilterAndSearchAsyncCommand}"
+                                              Command="{Binding RequestSearchCommand}"
                                               x:Name="SearchButton">
                   <customcontrols:SvgImageButton.Style>
                      <Style TargetType="{x:Type customcontrols:SvgImageButton}" BasedOn="{StaticResource {x:Type customcontrols:SvgImageButton}}">
@@ -141,18 +141,17 @@
                                            SvgImageButton_IconGeometry="{StaticResource icon_refresh}"
                                            ToolTip="Relancer la recherche"
                                            x:Name="RefreshButton"
-                                           Command="{Binding SearchCommandAsync}"
-                                           CommandParameter="{Binding ExtendedSearch}"
+                                           Command="{Binding RequestSearchCommand}"
                                            Visibility="{Binding MultiTextFilter.Filters.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
 
             <customcontrols:SvgImageTextButton Grid.Column="1" Height="32" Margin="4,0,0,0"
-                                                SvgImageTextButton_IconGeometry="{StaticResource icon_close}"
-                                                SvgImageTextButton_Text="Effacer les filtres"
-                                                SvgImageTextButton_ImageColor="{StaticResource OtherSide_Gray}"
-                                                SvgImageTextButton_ImageSize="16"
-                                                Foreground="{StaticResource OtherSide_Gray}"
-                                                Command="{Binding ClearFiltersAsyncCommand}"
-                                                Visibility="{Binding MultiTextFilter.Filters.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
+                                               SvgImageTextButton_IconGeometry="{StaticResource icon_close}"
+                                               SvgImageTextButton_Text="Effacer les filtres"
+                                               SvgImageTextButton_ImageColor="{StaticResource OtherSide_Gray}"
+                                               SvgImageTextButton_ImageSize="16"
+                                               Foreground="{StaticResource OtherSide_Gray}"
+                                               Command="{Binding ClearFiltersAsyncCommand}"
+                                               Visibility="{Binding MultiTextFilter.Filters.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
 
          </Grid>
 

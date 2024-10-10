@@ -2,25 +2,13 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="UserControls\BoolDatabaseFieldEditionView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="UserControls\ConstraintsView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="UserControls\DecimalDatabaseFieldEditionView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="UserControls\IntegerDatabaseFieldEditionView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\NullableIntegerDatabaseFieldEditionView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="UserControls\StringDatabaseFieldEditionView.xaml.cs">
+    <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -28,16 +16,7 @@
     <Page Update="Icons\Icons.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\BoolDatabaseFieldEditionView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="UserControls\ConstraintsView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UserControls\DecimalDatabaseFieldEditionView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UserControls\IntegerDatabaseFieldEditionView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">
@@ -61,7 +40,7 @@
     <Page Update="UserControls\NavigationMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\NullableIntegerDatabaseFieldEditionView.xaml">
+    <Page Update="UserControls\PageNavigationUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\SaveCancelChangesAsyncView.xaml">
@@ -70,10 +49,7 @@
     <Page Update="UserControls\SearchListAsyncActionButton.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\DashboardBaseView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UserControls\StringDatabaseFieldEditionView.xaml">
+    <Page Update="UserControls\ModuleDescriptionListView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

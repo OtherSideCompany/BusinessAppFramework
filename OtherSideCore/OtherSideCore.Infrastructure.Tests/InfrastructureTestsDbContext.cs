@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OtherSideCore.Infrastructure.Context;
 using OtherSideCore.Infrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Tests
 {
@@ -22,7 +17,7 @@ namespace OtherSideCore.Infrastructure.Tests
       {
          base.OnModelCreating(modelBuilder);
 
-         modelBuilder.Entity<User>().Metadata.SetDiscriminatorValue("UserDiscriminator");      
+         modelBuilder.Entity<User>().Metadata.SetDiscriminatorValue("UserDiscriminator");
       }
 
       public void ReleaseInstance()
@@ -35,6 +30,6 @@ namespace OtherSideCore.Infrastructure.Tests
       {
          ChangeTracker.Clear();
       }
-      
+
    }
 }

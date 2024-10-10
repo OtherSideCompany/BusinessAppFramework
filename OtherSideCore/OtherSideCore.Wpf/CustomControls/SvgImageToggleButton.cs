@@ -7,7 +7,7 @@ namespace OtherSideCore.Wpf.CustomControls
    public class SvgImageToggleButton : ToggleButton
    {
       public static readonly DependencyProperty SvgImageToggleButton_ImageSizeProperty =
-        DependencyProperty.Register("SvgImageToggleButton_ImageSize", typeof(int), typeof(SvgImageToggleButton), new UIPropertyMetadata((int)24));
+        DependencyProperty.Register("SvgImageToggleButton_ImageSize", typeof(int), typeof(SvgImageToggleButton), new UIPropertyMetadata(24));
 
       public int SvgImageToggleButton_ImageSize
       {
@@ -29,7 +29,7 @@ namespace OtherSideCore.Wpf.CustomControls
 
       public Geometry SvgImageToggleButton_CheckedIconGeometry
       {
-         get 
+         get
          {
             return (Geometry)GetValue(SvgImageToggleButton_CheckedIconGeometryProperty);
          }

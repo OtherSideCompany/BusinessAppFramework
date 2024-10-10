@@ -1,6 +1,4 @@
-﻿using OtherSideCore.Infrastructure;
-
-namespace OtherSideCore.Infrastructure.Tests.Utils
+﻿namespace OtherSideCore.Infrastructure.Tests.Utils
 {
    public class UtilsTests
    {

@@ -42,7 +42,7 @@
                  CornerRadius="5" 
                  BorderThickness="1" 
                  BorderBrush="{StaticResource OtherSide_LightGray}"
-                 Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
+                 Visibility="{Binding LogInAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
             <Grid>
                <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto" />
@@ -66,7 +66,7 @@
                  CornerRadius="5" 
                  BorderThickness="1" 
                  BorderBrush="{StaticResource OtherSide_LightGray}"
-                 Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
+                 Visibility="{Binding LogInAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
             <Grid>
                <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto" />
@@ -78,6 +78,7 @@
                                          SvgViewer_ImageHeight="24"/>
 
                <PasswordBox Grid.Column="1"  
+                            Margin="4,0,4,0"
                             BorderThickness="0"
                             Background="Transparent"
                             VerticalAlignment="Center"
@@ -88,7 +89,7 @@
 
          <Grid Grid.Row="3" 
                Margin="0,16,0,0"
-               Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
+               Visibility="{Binding LogInAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}">
             <Grid.ColumnDefinitions>
                <ColumnDefinition Width="Auto" />
                <ColumnDefinition Width="Auto" />
@@ -104,10 +105,10 @@
 
          <Button Grid.Row="4" Margin="0,16,0,0"
                  Click="ConnectionButton_Click"
-                 Command="{Binding AuthenticateUserAsyncCommand}" 
+                 Command="{Binding LogInAsyncCommand}" 
                  Content="Connexion" VerticalAlignment="Center" 
                  HorizontalAlignment="Stretch" 
-                 Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}"
+                 Visibility="{Binding LogInAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrHidden}, ConverterParameter=invert}"
                  Cursor="Hand">
             <Button.Template>
                <ControlTemplate TargetType="{x:Type Button}">
@@ -122,7 +123,7 @@
 
          <local:LoadingView Grid.Row="1" Grid.RowSpan="3" Margin="0,16,0,0"
                             VerticalAlignment="Center"
-                            Visibility="{Binding AuthenticateUserAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
+                            Visibility="{Binding LogInAsyncCommand.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
       </Grid>
    </Border>
 </UserControl>

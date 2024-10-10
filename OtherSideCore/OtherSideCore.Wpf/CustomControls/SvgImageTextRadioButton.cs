@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Automation;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -31,7 +26,7 @@ namespace OtherSideCore.Wpf.CustomControls
       }
 
       public static readonly DependencyProperty SvgImageTextRadioButton_ImageSizeProperty =
-        DependencyProperty.Register("SvgImageTextRadioButton_ImageSize", typeof(int), typeof(SvgImageTextRadioButton), new UIPropertyMetadata((int)20));
+        DependencyProperty.Register("SvgImageTextRadioButton_ImageSize", typeof(int), typeof(SvgImageTextRadioButton), new UIPropertyMetadata(20));
 
       public int SvgImageTextRadioButton_ImageSize
       {
