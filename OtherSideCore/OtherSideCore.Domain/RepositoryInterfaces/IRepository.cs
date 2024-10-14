@@ -11,7 +11,9 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
    {
       Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
 
-      Task<List<T>> GetAllAsync(Expression<Func<T, bool>> where, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllAsync(Expression<Func<T, bool>> where, CancellationToken cancellationToken = default);
+
+      Task<List<T>> GetAllPaginatedAsync(Expression<Func<T, bool>> where, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
 
       Task CreateAsync(T domainObject, int userId);
 

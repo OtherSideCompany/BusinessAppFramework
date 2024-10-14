@@ -1,7 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace OtherSideCore.Wpf.UserControls
 {
@@ -49,6 +52,31 @@ namespace OtherSideCore.Wpf.UserControls
       public LoadingView()
       {
          InitializeComponent();
+         this.IsVisibleChanged += LoadingView_IsVisibleChanged;
+      }
+
+      private async void LoadingView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+      {
+         if ((bool)e.NewValue == true)
+         {
+            ShowLoadingWithFadeIn();
+         }
+         else
+         {
+            HideLoadingWithFadeOut();
+         }
+      }
+
+      private void ShowLoadingWithFadeIn()
+      {
+         var fadeInStoryboard = (Storyboard)this.Resources["FadeInStoryboard"];
+         fadeInStoryboard.Begin();
+      }
+
+      private void HideLoadingWithFadeOut()
+      {
+         var fadeOutStoryboard = (Storyboard)this.Resources["FadeOutStoryboard"];
+         fadeOutStoryboard.Begin();
       }
    }
 }

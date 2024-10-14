@@ -46,6 +46,11 @@ namespace OtherSideCore.Wpf.Services
          MessageBox.Show(message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
       }
 
+      public void Show(string message)
+      {
+         MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+      }
+
       #endregion
 
       #region Private Methods

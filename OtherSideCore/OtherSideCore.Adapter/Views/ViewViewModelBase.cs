@@ -10,13 +10,8 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       protected IUserContext _userContext;
-      //protected IRepositoryFactory _repositoryFactory;
       protected ILoggerFactory _loggerFactory;
-      //protected IGlobalDataService _globalDataService;
-      //protected IModelObjectViewModelFactory _modelObjectViewModeFactory;
-      //protected IModelObjectFactory _modelObjectFactory;
       protected IUserDialogService _userDialogService;
-      protected IDomainObjectViewModelFactory _viewModelFactory;
 
       #endregion
 
@@ -33,16 +28,13 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ViewViewModelBase(ILoggerFactory loggerFactory, IUserContext userContext, IUserDialogService userDialogService, IDomainObjectViewModelFactory viewModelFactory)
+      public ViewViewModelBase(ILoggerFactory loggerFactory,
+                               IUserContext userContext,
+                               IUserDialogService userDialogService)
       {
          _userContext = userContext;
-         //_repositoryFactory = repositoryFactory;
          _loggerFactory = loggerFactory;
-         //_globalDataService = globalDataService;
-         //_modelObjectViewModeFactory = modelObjectViewModeFactory;
-         //_modelObjectFactory = modelObjectFactory;
          _userDialogService = userDialogService;
-         _viewModelFactory = viewModelFactory;
       }
 
       #endregion
@@ -50,8 +42,6 @@ namespace OtherSideCore.Adapter.Views
       #region Public Methods
 
       public abstract Task InitializeAsync(CancellationToken cancellationToken);
-
-      public abstract bool HasUnsavedChanges();
 
       public abstract void Dispose();
 

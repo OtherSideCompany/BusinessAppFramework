@@ -135,7 +135,14 @@ namespace OtherSideCore.Infrastructure.Repositories
          throw new NotImplementedException();
       }
 
-      public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+      public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+      {
+         var query = _domainObjects.AsQueryable();
+
+         return await query.Distinct().ToListAsync();
+      }
+
+      public async Task<List<T>> GetAllPaginatedAsync(Expression<Func<T, bool>> predicate, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
       {
          var query = _domainObjects.AsQueryable();
 

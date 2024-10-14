@@ -15,6 +15,7 @@ namespace OtherSideCore.Adapter
 
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
+      protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
 
       #endregion
 
@@ -54,10 +55,14 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public DomainObjectViewModel(DomainObject domainObject, IGlobalDataService globalDataService, IMapper mapper)
+      public DomainObjectViewModel(DomainObject domainObject, 
+                                   IGlobalDataService globalDataService, 
+                                   IMapper mapper, 
+                                   IDomainObjectViewModelFactory domainObjectViewModelFactory)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
+         _domainObjectViewModelFactory = domainObjectViewModelFactory;
 
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
 

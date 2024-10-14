@@ -17,7 +17,7 @@ using System.Collections;
 namespace OtherSideCore.Infrastructure.Repositories
 {
    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
-                                                                                                         where TEntity : EntityBase, new()
+                                                                                             where TEntity : EntityBase, new()
    {
       #region Fields
 
@@ -55,9 +55,24 @@ namespace OtherSideCore.Infrastructure.Repositories
       }
 
       public async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> where,
-                                                         int pageNumber,
-                                                         int pageSize,
                                                          CancellationToken cancellationToken = default)
+      {
+         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                       .Where(where)
+                                                       .ToListAsync();
+
+            return _mapper.Map<List<TDomainObject>>(entities);
+         }
+      }
+
+      public async Task<List<TDomainObject>> GetAllPaginatedAsync(Expression<Func<TDomainObject, bool>> where,
+                                                                  int pageNumber,
+                                                                  int pageSize,
+                                                                  CancellationToken cancellationToken = default)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 

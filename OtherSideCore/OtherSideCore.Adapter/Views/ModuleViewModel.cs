@@ -33,7 +33,12 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ModuleViewModel(ILoggerFactory loggerFactory, IUserContext userContext, IUserDialogService userDialogService, IDomainObjectViewModelFactory viewModelFactory) : base(loggerFactory, userContext, userDialogService, viewModelFactory)
+      public ModuleViewModel(ILoggerFactory loggerFactory, 
+                             IUserContext userContext, 
+                             IUserDialogService userDialogService) : 
+         base(loggerFactory, 
+              userContext, 
+              userDialogService)
       {
 
       }
@@ -41,11 +46,6 @@ namespace OtherSideCore.Adapter.Views
       #endregion
 
       #region Public Methods
-
-      public override bool HasUnsavedChanges()
-      {
-         return false;
-      }
 
       public override void Dispose()
       {

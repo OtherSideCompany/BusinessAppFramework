@@ -134,7 +134,7 @@
                   <Border x:Name="HeaderBorder"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}">
-                     <Grid Margin="5,10,0,5">
+                     <Grid Margin="4,8,0,8">
                         <Grid.ColumnDefinitions>
                            <ColumnDefinition Width="Auto" />
                            <ColumnDefinition Width="Auto" />
@@ -177,6 +177,7 @@
                                  <Setter Property="TextWrapping" Value="WrapWithOverflow" />
                                  <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
                                  <Setter Property="LineHeight" Value="16" />
+                                 <Setter Property="Margin" Value="0,0,0,0" />
                               </Style>
                            </ContentPresenter.Resources>
                         </ContentPresenter>
@@ -194,7 +195,7 @@
                </Grid>
                <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
-                     <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
+                     <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -221,7 +222,7 @@
       </Setter>
       <Style.Triggers>
          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
+            <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
          </Trigger>
       </Style.Triggers>
    </Style>
@@ -246,7 +247,7 @@
       </Style.Resources>
       <Setter Property="BorderThickness" Value="0,0,0,1" />
       <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightLightGray}" />
-      <Setter Property="Height" Value="40" />
+      <Setter Property="Height" Value="48" />
       <Style.Triggers>
          <DataTrigger Binding="{Binding IsSelected}" Value="True">
             <Setter Property="Background" Value="{Binding Path=(extensions:ListViewExtension.SelectedItemBackgroundColor), RelativeSource={RelativeSource AncestorType={x:Type ListView}}}" />
@@ -264,9 +265,9 @@
    </Style>
 
    <Style TargetType="{x:Type GridViewColumnHeader}" x:Key="DomainObjectSearchColumnHeader" BasedOn="{StaticResource SortableGridViewColumnHeaderContainerStyle}">
-      <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightLightGray}" />
-      <Setter Property="BorderThickness" Value="0,1" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
       <Setter Property="Foreground" Value="{StaticResource OtherSide_Gray}" />
    </Style>
 
@@ -278,22 +279,6 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="ItemContainerStyle" Value="{StaticResource DomainObjectSearchListViewItemContainerStyle}" />
       <EventSetter Event="PreviewMouseLeftButtonUp" Handler="DomainObjectSearchListView_PreviewMouseLeftButtonUp" />
-   </Style>
-
-   <!-- DomainObjectSearch TreeList View-->
-   <Style TargetType="{x:Type ListViewItem}" x:Key="DomainObjectSearchTreeListViewItemContainerStyle" BasedOn="{StaticResource DomainObjectSearchListViewItemContainerStyle}">
-      <Style.Triggers>
-         <DataTrigger Binding="{Binding ParentViewModelBase.IsExpanded}" Value="False">
-            <Setter Property="Visibility" Value="Collapsed" />
-         </DataTrigger>
-         <DataTrigger Binding="{Binding ParentViewModelBase}" Value="{x:Null}">
-            <Setter Property="Visibility" Value="Visible" />
-         </DataTrigger>
-      </Style.Triggers>
-   </Style>
-
-   <Style TargetType="{x:Type ListView}" x:Key="DomainObjectSearchTreeListView" BasedOn="{StaticResource DomainObjectSearchListView}">
-      <Setter Property="ItemContainerStyle" Value="{StaticResource DomainObjectSearchTreeListViewItemContainerStyle}" />
    </Style>
 
    <!-- Separator border -->
@@ -448,7 +433,7 @@
       <Setter Property="Margin" Value="0,4,0,4" />
       <Setter Property="Height" Value="32" />
       <Setter Property="SnapsToDevicePixels" Value="True" />
-      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="CornerRadius" Value="8" />
       <Style.Triggers>
          <Trigger Property="IsMouseOver" Value="True">
             <Setter Property="BorderBrush" Value="{StaticResource OtherSide_Gray}" />
@@ -470,9 +455,9 @@
                <Border BorderThickness="{TemplateBinding BorderThickness}"
                        BorderBrush="{StaticResource OtherSide_LightGray}"                       
                        Background="{TemplateBinding Background}"
-                       CornerRadius="5"
+                       CornerRadius="8"
                        x:Name="Border">
-                  <Grid Margin="4,0,4,0">
+                  <Grid Margin="8,0,8,0">
                      <TextBox Text="{Binding Text, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" 
                               Background="Transparent"
                               BorderThickness="0"
@@ -531,10 +516,9 @@
       <Setter Property="behaviors:TextBoxBehaviour.IsInteger" Value="True" />
    </Style>
 
-   <Style x:Key="TrackingInfosClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource {x:Type customControls:ClickSelectTextBox}}">
+   <Style x:Key="TrackingInfosClickSelectTextBlock" TargetType="{x:Type TextBlock}">
       <Setter Property="Foreground" Value="{StaticResource OtherSide_DarkGray}" />
-      <Setter Property="Height" Value="32" />
-      <Setter Property="IsReadOnly" Value="True" />
+      <Setter Property="VerticalAlignment" Value="Center" />
    </Style>
 
    <!-- checkbox custom style -->
@@ -547,7 +531,7 @@
                <BulletDecorator Background="Transparent" SnapsToDevicePixels="true" VerticalAlignment="Center">
                   <BulletDecorator.Bullet>
                      <Border x:Name="Border" Width="16" Height="16" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="White"
-                             CornerRadius="2">
+                             CornerRadius="4">
                         <Path Visibility="Collapsed" Width="12" Height="12" x:Name="CheckMark" SnapsToDevicePixels="False" StrokeThickness="2" Data="M 2,5 L 5,9 L 10,3" Stroke="Black" />
                      </Border>
                   </BulletDecorator.Bullet>
@@ -683,7 +667,7 @@
                                        Content="{TemplateBinding SelectionBoxItem}"
                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                       Margin="4,0,24,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                       Margin="8,0,24,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
                      <Popup x:Name="Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=ToggleButton}" IsOpen="{TemplateBinding IsDropDownOpen}"
                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" 
@@ -692,7 +676,7 @@
 
                            <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
 
-                              <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="#F5F5F5" CornerRadius="5">
+                              <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="#F5F5F5" CornerRadius="4">
                                  <ScrollViewer SnapsToDevicePixels="True" ScrollChanged="ComboBox_ScrollViewer_ScrollChanged"
                                                CanContentScroll="False">
                                     <StackPanel>

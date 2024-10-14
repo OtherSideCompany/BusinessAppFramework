@@ -17,7 +17,6 @@ namespace OtherSideCore.Domain.DomainObjects
       public User CreatedBy { get; set; }
       public DateTime LastModifiedDateTime { get; set; }
       public User LastModifiedBy { get; set; }
-      public bool IsLoading { get; set; }
 
       #endregion
 

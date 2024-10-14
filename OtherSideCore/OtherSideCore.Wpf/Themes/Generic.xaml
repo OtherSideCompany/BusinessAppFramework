@@ -90,13 +90,13 @@
                        x:Name="Border"
                        BorderBrush="{StaticResource OtherSide_LightGray}"
                        BorderThickness="{TemplateBinding BorderThickness}"
-                       CornerRadius="5"
+                       CornerRadius="16"
                        Padding="10,0,10,0">
 
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Orientation="Horizontal"
-                                          x:Name="StackPanel">
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Orientation="Horizontal"
+                              x:Name="StackPanel">
 
                      <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
                                                   SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
@@ -198,7 +198,7 @@
                      x:Name="Border"
                      BorderBrush="{StaticResource OtherSide_LightGray}"
                      BorderThickness="{TemplateBinding BorderThickness}"
-                     CornerRadius="5"
+                     CornerRadius="16"
                      Padding="5,0,10,0">
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -259,7 +259,7 @@
                        x:Name="Border"
                        BorderBrush="{StaticResource OtherSide_LightGray}"
                        BorderThickness="{TemplateBinding BorderThickness}"
-                       CornerRadius="5"
+                       CornerRadius="16"
                        Padding="5,0,10,0">
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"

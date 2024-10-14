@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace OtherSideCore.Adapter
 {
-   public class DomainObjectEditorViewModel<T> : ObservableObject, IDisposable where T : DomainObject, new()
+   public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel where T : DomainObject, new()
    {
       #region Fields
 
@@ -35,7 +35,6 @@ namespace OtherSideCore.Adapter
          set
          {
             SetProperty(ref _hasUnsavedChanges, value);
-            NotifyCommandCanExecuteChange();
          }
       }
 
@@ -48,8 +47,7 @@ namespace OtherSideCore.Adapter
       #endregion
 
       #region Commands
-      public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
+      
 
       #endregion
 
@@ -63,9 +61,6 @@ namespace OtherSideCore.Adapter
 
          DomainObjectViewModel = domainObjectViewModel;
 
-         SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
-         CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
-
          DomainObjectViewModel.PropertyChanged += DomainObjectViewModel_PropertyChanged;
 
          IsEnabled = true;
@@ -75,7 +70,40 @@ namespace OtherSideCore.Adapter
 
       #region Public Methods
 
-      public void Dispose()
+      public virtual bool CanSaveChanges()
+      {
+         return HasUnsavedChanges;
+      }
+
+      public virtual async Task SaveChangesAsync()
+      {
+         IsEnabled = false;
+
+         DomainObjectViewModel.SetPropertiesToDomainObject();
+         await _domainObjectService.SaveAsync((T)DomainObjectViewModel.DomainObject);
+         await _domainObjectService.LoadTrackingInfosAsync((T)DomainObjectViewModel.DomainObject);
+         DomainObjectViewModel.RefreshTrackingInfos();
+         HasUnsavedChanges = false;
+
+         IsEnabled = true;
+      }
+
+      public virtual bool CanCancelChanges()
+      {
+         return HasUnsavedChanges;
+      }
+
+      public virtual async Task CancelChangesAsync()
+      {
+         IsEnabled = false;
+
+         DomainObjectViewModel.InitializeProperties();
+         HasUnsavedChanges = false;
+
+         IsEnabled = true;
+      }
+
+      public virtual void Dispose()
       {
          DomainObjectViewModel.PropertyChanged -= DomainObjectViewModel_PropertyChanged;
       }
@@ -92,47 +120,7 @@ namespace OtherSideCore.Adapter
          {
             HasUnsavedChanges = true;
          }
-      }
-
-      protected virtual bool CanSaveChanges()
-      {
-         return HasUnsavedChanges;
-      }
-
-      protected virtual async Task SaveChangesAsync()
-      {
-         IsEnabled = false;
-
-         DomainObjectViewModel.SetPropertiesToDomainObject();
-         await _domainObjectService.SaveAsync((T)DomainObjectViewModel.DomainObject);
-         await _domainObjectService.LoadTrackingInfosAsync((T)DomainObjectViewModel.DomainObject);
-         DomainObjectViewModel.RefreshTrackingInfos();
-         HasUnsavedChanges = false;
-
-         IsEnabled = true;
-      }
-
-      protected virtual bool CanCancelChanges()
-      {
-         return HasUnsavedChanges;
-      }
-
-      protected virtual async Task CancelChangesAsync()
-      {
-         IsEnabled = false;
-
-         DomainObjectViewModel.InitializeProperties();
-         HasUnsavedChanges = false;
-
-         IsEnabled = true;
-      }
-
-      private void NotifyCommandCanExecuteChange()
-      {
-         SaveChangesAsyncCommand.NotifyCanExecuteChanged();
-
-         CancelChangesAsyncCommand.NotifyCanExecuteChanged();
-      }
+      }      
       #endregion
    }
 }

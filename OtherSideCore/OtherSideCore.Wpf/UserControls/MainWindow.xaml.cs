@@ -84,11 +84,14 @@ namespace OtherSideCore.Wpf.UserControls
             var modalOverlay = _modalPopupStack.Peek();
             var @continue = true;
 
-            if (((ViewViewModelBase)modalOverlay.DataContext).HasUnsavedChanges())
+            if (modalOverlay.DataContext is WorkspaceViewModel)
             {
-               var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+               if (((WorkspaceViewModel)modalOverlay.DataContext).HasUnsavedChanges)
+               {
+                  var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-               @continue = res == MessageBoxResult.Yes;
+                  @continue = res == MessageBoxResult.Yes;
+               }
             }
 
             if (@continue)

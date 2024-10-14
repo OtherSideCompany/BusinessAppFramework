@@ -10,26 +10,42 @@
              x:Name="LoadingViewUserControl">
 
    <UserControl.Resources>
+      
       <Storyboard x:Key="Animation0" BeginTime="00:00:00.0" RepeatBehavior="Forever">
          <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
                           From="0" To="360" Duration="00:00:01.6" RepeatBehavior="Forever" />
       </Storyboard>
+      
+      <Storyboard x:Key="FadeInStoryboard">
+         <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                          Storyboard.TargetName="LoadingGrid"
+                          From="0" To="1"
+                          Duration="0:0:0.2" BeginTime="0:0:0.2" />
+      </Storyboard>
+      
+      <Storyboard x:Key="FadeOutStoryboard">
+         <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                          Storyboard.TargetName="LoadingGrid"
+                          From="1" To="0"
+                          Duration="0:0:1" />
+      </Storyboard>
+      
    </UserControl.Resources>
 
-   <Grid HorizontalAlignment="Center">
+   <Grid HorizontalAlignment="Center" Opacity="0" x:Name="LoadingGrid">
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
       <customcontrols:SvgViewer Grid.Row="0"
-                                SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
-                                SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
-                                SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                BorderThickness="0"
-                                RenderTransformOrigin="0.5 0.5"
-                                x:Name="OuterRing">
+                                   SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
+                                   SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
+                                   SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                   SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                   BorderThickness="0"
+                                   RenderTransformOrigin="0.5 0.5"
+                                   x:Name="OuterRing">
          <customcontrols:SvgViewer.RenderTransform>
             <RotateTransform />
          </customcontrols:SvgViewer.RenderTransform>
@@ -52,21 +68,21 @@
       <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,3,0,0">
 
          <TextBlock Text="Chargement" FontSize="10"
-                    Visibility="{Binding LoadingView_DisplayCaption, ElementName=LoadingViewUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"
-                    Foreground="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"/>
+                       Visibility="{Binding LoadingView_DisplayCaption, ElementName=LoadingViewUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                       Foreground="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"/>
 
          <customcontrols:SvgImageButton FontSize="10"
-                                        Width="16" Height="16"
-                                        Margin="2,2,0,0"
-                                        SvgImageButton_IconGeometry="{StaticResource icon_close}"
-                                        BorderThickness="0"
-                                        SvgImageButton_ImageSize="12" 
-                                        Visibility="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"
-                                        Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"
-                                        IsDefault="True"/>
+                                           Width="16" Height="16"
+                                           Margin="2,2,0,0"
+                                           SvgImageButton_IconGeometry="{StaticResource icon_close}"
+                                           BorderThickness="0"
+                                           SvgImageButton_ImageSize="12" 
+                                           Visibility="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"
+                                           Command="{Binding LoadingView_CancelCommand, ElementName=LoadingViewUserControl}"
+                                           IsDefault="True"/>
 
-      </StackPanel>      
+      </StackPanel>
 
    </Grid>
-   
+
 </UserControl>

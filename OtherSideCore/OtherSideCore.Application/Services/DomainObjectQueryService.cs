@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Services
 {
-    public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
+   public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
    {
       #region Fields
 
@@ -15,7 +15,7 @@ namespace OtherSideCore.Application.Services
 
       #region Properties
 
-      
+
 
       #endregion
 
@@ -35,6 +35,23 @@ namespace OtherSideCore.Application.Services
          return await _repository.GetAllAsync(cancellationToken);
       }
 
+      public virtual async Task<List<T>> SearchAsync(List<string> filters, Constraint<T> constraint, bool extendedSearch = false, CancellationToken cancellationToken = default)
+      {
+         var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
+         var filterExpressions = GetFilterConstraints(filters, extendedSearch).Select(c => c.Expression);
+
+         var combinedExpressions = constraintExpression;
+
+         foreach (var filterExpression in filterExpressions)
+         {
+            combinedExpressions = combinedExpressions.And(filterExpression);
+         }
+
+         var totalCount = await _repository.CountAsync(combinedExpressions, cancellationToken);
+
+         return await _repository.GetAllAsync(combinedExpressions, cancellationToken);
+      }
+
       public virtual async Task<PagedResult<T>> PaginatedSearchAsync(List<string> filters, Constraint<T> constraint, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
       {
          var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
@@ -51,7 +68,7 @@ namespace OtherSideCore.Application.Services
 
          return new PagedResult<T>
          {
-            Items = await _repository.GetAllAsync(combinedExpressions, pageNumber, pageSize, cancellationToken),
+            Items = await _repository.GetAllPaginatedAsync(combinedExpressions, pageNumber, pageSize, cancellationToken),
             TotalCount = totalCount,
             PageNumber = pageNumber,
             PageSize = pageSize
@@ -65,7 +82,7 @@ namespace OtherSideCore.Application.Services
 
       public void Dispose()
       {
-         
+
       }
 
       #endregion

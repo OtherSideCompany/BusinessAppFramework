@@ -4,5 +4,6 @@
    {
       bool Confirm(string message);
       void Error(string message);
+      void Show(string message);
    }
 }
