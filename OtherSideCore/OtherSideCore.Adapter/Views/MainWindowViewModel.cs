@@ -27,7 +27,7 @@ namespace OtherSideCore.Adapter.Views
       private List<ViewDescriptionBase> _quickNavigationViewescriptions;
       private IDisposable _instanciatedViewModel;
       private ViewDescriptionBase _defaultViewDescription;
-      private ViewViewModelBase _loadedViewViewModel;
+      private ViewBaseViewModel _loadedViewViewModel;
 
       private string _connexionUserName;
       private string _connexionPassword;
@@ -98,7 +98,7 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _defaultViewDescription, value);
       }
 
-      public ViewViewModelBase LoadedViewViewModel
+      public ViewBaseViewModel LoadedViewViewModel
       {
          get => _loadedViewViewModel;
          set => SetProperty(ref _loadedViewViewModel, value);
@@ -263,7 +263,7 @@ namespace OtherSideCore.Adapter.Views
 
          viewBase.Load();
 
-         LoadedViewViewModel = (ViewViewModelBase)_serviceProvider.GetService(LoadedViewDescription.ViewModelType);
+         LoadedViewViewModel = (ViewBaseViewModel)_serviceProvider.GetService(LoadedViewDescription.ViewModelType);
          await LoadedViewViewModel.InitializeAsync(cancellationToken);
 
          if (viewBase is ModuleDescription)

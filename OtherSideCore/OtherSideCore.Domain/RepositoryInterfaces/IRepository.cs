@@ -17,7 +17,7 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
 
       Task CreateAsync(T domainObject, int userId);
 
-      Task SaveAsync(T domainObject, int userId);
+      Task SaveAsync(T domainObject, int? userId);
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 

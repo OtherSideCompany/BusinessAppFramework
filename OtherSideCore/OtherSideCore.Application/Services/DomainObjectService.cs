@@ -59,7 +59,7 @@ namespace OtherSideCore.Application.Services
          await _repository.LoadAsync(domainObject);
       }
 
-      public async Task SaveAsync(T domainObject)
+      public virtual async Task SaveAsync(T domainObject)
       {
          await _repository.SaveAsync(domainObject, _userContext.Id);
       }

@@ -1,22 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.ViewDescriptions;
-using OtherSideCore.Application.Services;
-using OtherSideCore.Appplication.Services;
-using OtherSideCore.Domain.Services;
-using System.Reflection.Metadata.Ecma335;
+﻿using OtherSideCore.Adapter.ViewDescriptions;
+using OtherSideCore.Application.Views;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class WorkspaceViewModel : ViewViewModelBase
+   public abstract class WorkspaceViewModel : ViewBaseViewModel
    {
       #region Fields
 
       private WorkspaceDescription _workspaceDescription;
-
-      protected IGlobalDataService _globalDataService;
-      protected IDomainObjectViewModelFactory _viewModelFactory;
-      protected IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
-      protected IDomainObjectServiceFactory _domainObjectServiceFactory;      
+      private Workspace _workspace;
 
       #endregion
 
@@ -28,7 +20,7 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _workspaceDescription, value);
       }
 
-      public virtual bool HasUnsavedChanges => false;
+      public Workspace Workspace => (Workspace)_viewBase;
 
       #endregion
 
@@ -40,21 +32,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      protected WorkspaceViewModel(ILoggerFactory loggerFactory, 
-                                   IUserContext userContext, 
-                                   IUserDialogService userDialogService,
-                                   IGlobalDataService globalDataService,
-                                   IDomainObjectViewModelFactory viewModelFactory,
-                                   IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory,
-                                   IDomainObjectServiceFactory domainObjectServiceFactory) : 
-         base(loggerFactory, 
-              userContext, 
-              userDialogService)
+      protected WorkspaceViewModel(Workspace workspace) :  base(workspace)
       {
-         _globalDataService = globalDataService;
-         _viewModelFactory = viewModelFactory;
-         _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
-         _domainObjectServiceFactory = domainObjectServiceFactory;
+
       }
 
       #endregion

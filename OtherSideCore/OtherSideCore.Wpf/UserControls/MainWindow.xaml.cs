@@ -86,7 +86,7 @@ namespace OtherSideCore.Wpf.UserControls
 
             if (modalOverlay.DataContext is WorkspaceViewModel)
             {
-               if (((WorkspaceViewModel)modalOverlay.DataContext).HasUnsavedChanges)
+               if (((WorkspaceViewModel)modalOverlay.DataContext).Workspace.HasUnsavedChanges)
                {
                   var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -97,7 +97,7 @@ namespace OtherSideCore.Wpf.UserControls
             if (@continue)
             {
                _modalPopupStack.Pop();
-               ((ViewViewModelBase)modalOverlay.DataContext).Dispose();
+               ((ViewBaseViewModel)modalOverlay.DataContext).Dispose();
                ModalPopupHostGrid.Children.Remove(modalOverlay);
             }
          }

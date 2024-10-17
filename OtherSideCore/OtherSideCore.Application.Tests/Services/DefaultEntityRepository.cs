@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Domain.RepositoryInterfaces;
 using OtherSideCore.Infrastructure;
 using OtherSideCore.Infrastructure.Repositories;
 
 namespace OtherSideCore.Application.Tests.Services
 {
-   public class DefaultEntityRepository : MockRepository<DefaultDomainObject>
+    public class DefaultEntityRepository : MockRepository<DefaultDomainObject>
    {
       #region Fields
 

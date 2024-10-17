@@ -1,22 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace OtherSideCore.Adapter
+﻿namespace OtherSideCore.Adapter
 {
-   public class TextFilter : ObservableObject
+   public class TextFilter
    {
       #region Fields
 
-      private string m_Text;
+      
 
       #endregion
 
       #region Properties
 
-      public string Text
-      {
-         get => m_Text;
-         set => SetProperty(ref m_Text, value);
-      }
+      public string Text { get; set; }
 
       #endregion
 

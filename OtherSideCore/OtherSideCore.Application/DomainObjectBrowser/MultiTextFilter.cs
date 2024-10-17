@@ -1,30 +1,22 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter
 {
-   public class MultiTextFilter : ObservableObject
+   public class MultiTextFilter
    {
       #region Fields
 
-      private bool m_AllowExtendedSearch;
-      private ObservableCollection<TextFilter> m_Filters;
+     
 
       #endregion
 
       #region Properties
 
-      public bool AllowExtendedSearch
-      {
-         get => m_AllowExtendedSearch;
-         set => SetProperty(ref m_AllowExtendedSearch, value);
-      }
+      public bool AllowExtendedSearch { get; private set; }
 
-      public ObservableCollection<TextFilter> Filters
-      {
-         get => m_Filters;
-         set => SetProperty(ref m_Filters, value);
-      }
+      public List<TextFilter> Filters { get; private set; }
+
+      public bool ExtendedSearch { get; private set; }
 
       public List<string> StringFilters
       {
@@ -41,9 +33,9 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public MultiTextFilter(bool allowExtendedSearch = false)
+      public MultiTextFilter(bool allowExtendedSearch = true)
       {
-         Filters = new ObservableCollection<TextFilter>();
+         Filters = new List<TextFilter>();
          AllowExtendedSearch = allowExtendedSearch;
       }
 
@@ -59,6 +51,14 @@ namespace OtherSideCore.Adapter
       public void RemoveFilter(TextFilter textFilter)
       {
          Filters.Remove(textFilter);
+      }
+
+      public void SetExtendedSearch(bool extendedSearch)
+      {
+         if (AllowExtendedSearch)
+         {
+            ExtendedSearch = extendedSearch;
+         }
       }
 
       public void ClearFilters()

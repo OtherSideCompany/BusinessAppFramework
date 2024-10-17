@@ -27,7 +27,7 @@
                <DataTemplate>
                   <customcontrols:TextRadioButton Margin="0,0,16,0" 
                                                   GroupName="Constraints" 
-                                                  TextRadioButton_Text="{Binding Name}"
+                                                  TextRadioButton_Text="{Binding Constraint.Name}"
                                                   IsChecked="{Binding IsSelected}"/>
                </DataTemplate>
             </ItemsControl.ItemTemplate>

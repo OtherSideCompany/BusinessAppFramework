@@ -1,11 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OtherSideCore.Adapter.Views
+namespace OtherSideCore.Application.Views
 {
-   public abstract class ViewViewModelBase : ObservableObject, IDisposable
+   public abstract class ViewBase
    {
       #region Fields
 
@@ -28,9 +32,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ViewViewModelBase(ILoggerFactory loggerFactory,
-                               IUserContext userContext,
-                               IUserDialogService userDialogService)
+      public ViewBase(ILoggerFactory loggerFactory,
+                      IUserContext userContext,
+                      IUserDialogService userDialogService)
       {
          _userContext = userContext;
          _loggerFactory = loggerFactory;
@@ -49,10 +53,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Private Methods
 
-      protected virtual void NotifyCommandsCanExecuteChanged()
-      {
 
-      }
 
       #endregion
    }

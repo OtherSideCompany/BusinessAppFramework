@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.DomainObjectBrowser;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,12 +46,9 @@ namespace OtherSideCore.Wpf.CustomControls
 
          if (selectedDomainObjectViewModel != null)
          {
-            var domainObjectSearchViewModel = listView.DataContext as IDomainObjectSearchViewModel;
+            var domainObjectSearchViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
 
-            if (domainObjectSearchViewModel != null && domainObjectSearchViewModel.CanSelectSearchResult(selectedDomainObjectViewModel))
-            {
-               await domainObjectSearchViewModel.SelectSearchResultAsync(selectedDomainObjectViewModel);
-            }
+            await domainObjectSearchViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectViewModel);
          }
       }
 

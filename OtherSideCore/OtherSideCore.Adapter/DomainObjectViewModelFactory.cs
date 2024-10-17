@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 using System;
@@ -15,6 +16,7 @@ namespace OtherSideCore.Adapter
 
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
+      protected IUserContext _userContext;
 
       #endregion
 
@@ -32,10 +34,11 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public DomainObjectViewModelFactory(IGlobalDataService globalDataService, IMapper mapper)
+      public DomainObjectViewModelFactory(IGlobalDataService globalDataService, IMapper mapper, IUserContext userContext)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
+         _userContext = userContext;
       }
 
       #endregion

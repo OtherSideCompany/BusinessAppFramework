@@ -9,140 +9,117 @@
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="MultiTextFilterViewUserControl">
 
-   <Border Background="Transparent"
-           BorderBrush="{StaticResource OtherSide_LightLightGray}"
-           CornerRadius="5">
-      
-      <Grid>
+   <Grid Background="Transparent">
+
+      <Grid Visibility="{Binding IsInAdvancedMode, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <Border Grid.Column="0" Style="{StaticResource EditableTextBoxBorder}" Width="180"
-                  GotFocus="SearchBorder_GotFocus"
-                  LostFocus="SearchBorder_LostFocus">
+         <Border Grid.Column="0" Style="{StaticResource EditableTextBoxBorder}" Width="180">
+
             <Grid>
                <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="Auto" />
                </Grid.ColumnDefinitions>
 
                <customcontrols:ClickSelectTextBox Grid.Column="0" Margin="4,0,0,0" 
                                                   Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                                  ClickSelectTextBox_Watermak="Rechercher"/>
+                                                  ClickSelectTextBox_Watermak="Rechercher">
+                  <TextBox.InputBindings>
+                     <KeyBinding Key="Enter" Command="{Binding RequestSearchCommand}" />
+                  </TextBox.InputBindings>
+               </customcontrols:ClickSelectTextBox>
 
-               <customcontrols:SvgImageButton Grid.Column="1" Width="24" Margin="0,2,0,2"
+
+               <customcontrols:SvgImageButton Grid.Column="1" Width="24" Height="24" Margin="0,0,4,0"
                                               ToolTip="Rechercher"
                                               SvgImageButton_ImageSize="16" 
                                               SvgImageButton_ImageColor="{Binding MultiTextFilterViewButton_ImageColor, ElementName=MultiTextFilterViewUserControl}"                                                 
+                                              SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
                                               BorderThickness="0"
-                                              Command="{Binding RequestSearchCommand}"
-                                              x:Name="SearchButton">
-                  <customcontrols:SvgImageButton.Style>
-                     <Style TargetType="{x:Type customcontrols:SvgImageButton}" BasedOn="{StaticResource {x:Type customcontrols:SvgImageButton}}">
-                        <Setter Property="SvgImageButton_IconGeometry" Value="{StaticResource icon_magnify}" />
-                        <Style.Triggers>
-                           <DataTrigger Binding="{Binding ExtendedSearch}" Value="True">
-                              <Setter Property="SvgImageButton_IconGeometry" Value="{StaticResource icon_magnify_plus_outline}" />
-                           </DataTrigger>
-                        </Style.Triggers>
-                     </Style>
-                  </customcontrols:SvgImageButton.Style>
-               </customcontrols:SvgImageButton>
-
-               <customcontrols:SvgImageToggleButton Grid.Column="2" Width="24" Margin="0,2,4,2"
-                                                    BorderThickness="0"
-                                                    x:Name="SearchTypeToggleButton"
-                                                    SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-down}" 
-                                                    SvgImageToggleButton_ImageColor="{StaticResource MMColor_Green}"
-                                                    SvgImageToggleButton_ImageSize="16"
-                                                    Visibility="{Binding MultiTextFilter.AllowExtendedSearch, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
-
-               <Popup Style="{StaticResource UiPopup}"
-                      PlacementTarget="{Binding ElementName=SearchTypeToggleButton}" 
-                      IsOpen="{Binding IsChecked, ElementName=SearchTypeToggleButton}" >
-                  <ContentControl Style="{StaticResource UiPopupContentStyle}">
-                     <StackPanel>
-                        <customcontrols:SvgImageTextRadioButton SvgImageTextRadioButton_Text="Recherche classique"
-                                                                SvgImageTextRadioButton_IconGeometry="{StaticResource icon_magnify}"
-                                                                BorderThickness="0"
-                                                                Height="32"/>
-
-                        <customcontrols:SvgImageTextRadioButton Margin="0,8,0,0"
-                                                                IsChecked="{Binding ExtendedSearch}"
-                                                                SvgImageTextRadioButton_Text="Recherche étendue"
-                                                                SvgImageTextRadioButton_IconGeometry="{StaticResource icon_magnify_plus_outline}"
-                                                                BorderThickness="0"
-                                                                Height="32"/>
-                     </StackPanel>
-                  </ContentControl>
-               </Popup>
-
+                                              Command="{Binding RequestSearchCommand}" />
             </Grid>
+
          </Border>
 
-         <Grid Grid.Column="1" Margin="4,0,0,0">
-            <Border GotFocus="FiltersBorder_GotFocus" LostFocus="FiltersBorder_LostFocus">
-               <ItemsControl Grid.Column="3" 
-                              ItemsSource="{Binding MultiTextFilter.Filters}" 
-                              x:Name="FiltersItemsControl"
-                              VerticalAlignment="Center">
-                  <ItemsControl.ItemsPanel>
-                     <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" />
-                     </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                     <DataTemplate>
-                        <Border Background="{StaticResource OtherSide_LightGray}"
-                                 Margin="0,0,4,0" 
-                                 CornerRadius="5"
-                                 VerticalAlignment="Center"
-                                 Height="32">
-                           <Grid>
-                              <Grid.ColumnDefinitions>
-                                 <ColumnDefinition Width="*"/>
-                                 <ColumnDefinition Width="Auto" />
-                              </Grid.ColumnDefinitions>
+         <customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
+                                        SvgImageButton_IconGeometry="{StaticResource icon_plus}" 
+                                        SvgImageButton_ImageSize="16"
+                                        BorderThickness="0"
+                                        Background="{StaticResource MMColor_Green_Light}"
+                                        SvgImageButton_OverBackgroundColor="{StaticResource MMColor_Green_LightLight}"
+                                        SvgImageButton_ImageColor="White"
+                                        ToolTip="Basculer en mode avancé"
+                                        Command="{Binding ToggleModeCommand}"/>
 
-                              <customcontrols:ClickSelectTextBox Background="Transparent"
-                                                                  Grid.Column="0"
-                                                                  x:Name="FilterTextBox"
-                                                                  Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                                  VerticalAlignment="Center"
-                                                                  Margin="8,0,2,0"/>
+      </Grid>
 
-                              <customcontrols:SvgImageButton Grid.Column="1" Width="24" Height="24" Margin="0,0,4,0"
-                                                               SvgImageButton_ImageSize="12" 
-                                                               SvgImageButton_IconGeometry="{StaticResource icon_close}"
-                                                               SvgImageButton_OverBackgroundColor="{StaticResource OtherSide_Gray}"
-                                                               BorderThickness="0"
-                                                               Command="{Binding DataContext.RemoveFilterAsyncCommand, ElementName=MultiTextFilterViewUserControl}"                                                     
-                                                               CommandParameter="{Binding}" />
-                           </Grid>
-                        </Border>
-                     </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-               </ItemsControl>
-            </Border>
+      <Grid Visibility="{Binding IsInAdvancedMode, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+         </Grid.ColumnDefinitions>
+
+         <Grid Grid.Column="0">
+            <ItemsControl ItemsSource="{Binding FilterViewModels}" VerticalAlignment="Center">
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <WrapPanel Orientation="Horizontal" />
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Border Background="{StaticResource OtherSide_LightGray}"
+                                Margin="0,0,4,0" 
+                                CornerRadius="5"
+                                VerticalAlignment="Center"
+                                Height="32">
+                        <Grid>
+                           <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="Auto" />
+                           </Grid.ColumnDefinitions>
+
+                           <customcontrols:ClickSelectTextBox Background="Transparent"
+                                                              Grid.Column="0"
+                                                              Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" 
+                                                              VerticalAlignment="Center">
+                              <TextBox.InputBindings>
+                                 <KeyBinding Key="Enter" Command="{Binding DataContext.RequestSearchCommand, ElementName=MultiTextFilterViewUserControl}" />
+                              </TextBox.InputBindings>
+                           </customcontrols:ClickSelectTextBox>
+
+                           <customcontrols:SvgImageButton Grid.Column="1" Width="24" Height="24" Margin="0,0,4,0"
+                                                          SvgImageButton_ImageSize="12" 
+                                                          SvgImageButton_IconGeometry="{StaticResource icon_close}"
+                                                          SvgImageButton_OverBackgroundColor="{StaticResource OtherSide_LightGray}"
+                                                          BorderThickness="0"
+                                                          Command="{Binding DataContext.RemoveFilterCommand, ElementName=MultiTextFilterViewUserControl}"                                                     
+                                                          CommandParameter="{Binding}" />
+                        </Grid>
+                     </Border>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
          </Grid>
 
-         <Grid Grid.Column="2">
+         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="Auto" />
+               <ColumnDefinition Width="Auto" />
                <ColumnDefinition Width="Auto" />
                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <customcontrols:SvgImageButton Grid.Column="0" Width="32" Height="32" Margin="0"
-                                           SvgImageButton_ImageSize="20" 
-                                           SvgImageButton_IconGeometry="{StaticResource icon_refresh}"
-                                           ToolTip="Relancer la recherche"
-                                           x:Name="RefreshButton"
-                                           Command="{Binding RequestSearchCommand}"
-                                           Visibility="{Binding MultiTextFilter.Filters.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
+            <customcontrols:SvgImageButton Grid.Column="0" Width="32" Height="32" 
+                                           SvgImageButton_ImageSize="16" 
+                                           SvgImageButton_IconGeometry="{StaticResource icon_filter-plus-outline}"
+                                           Command="{Binding AddFilterCommand}" />
 
             <customcontrols:SvgImageTextButton Grid.Column="1" Height="32" Margin="4,0,0,0"
                                                SvgImageTextButton_IconGeometry="{StaticResource icon_close}"
@@ -150,13 +127,33 @@
                                                SvgImageTextButton_ImageColor="{StaticResource OtherSide_Gray}"
                                                SvgImageTextButton_ImageSize="16"
                                                Foreground="{StaticResource OtherSide_Gray}"
-                                               Command="{Binding ClearFiltersAsyncCommand}"
-                                               Visibility="{Binding MultiTextFilter.Filters.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
+                                               Command="{Binding ClearFiltersCommand}"
+                                               Visibility="{Binding FilterViewModels.Count, Converter={StaticResource ZeroToVisibilityConverter}}"/>
+
+            <customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" Margin="4,0,0,0"
+                                           SvgImageButton_ImageSize="16" 
+                                           SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
+                                           Command="{Binding RequestSearchCommand}" />
+
+            <customcontrols:SvgImageButton Grid.Column="3" Width="32" Height="32" Margin="4,0,0,0"
+                                           SvgImageButton_ImageSize="16" 
+                                           SvgImageButton_IconGeometry="{StaticResource icon_magnify_plus_outline}"
+                                           Command="{Binding RequestExtendedSearchCommand}" />
 
          </Grid>
 
-      </Grid>
-      
+         <customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" Margin="4,0,0,0"
+                                        SvgImageButton_IconGeometry="{StaticResource icon_minus}" 
+                                        SvgImageButton_ImageSize="16"
+                                        BorderThickness="0"
+                                        Background="{StaticResource MMColor_Green_Light}"
+                                        SvgImageButton_OverBackgroundColor="{StaticResource MMColor_Green_LightLight}"
+                                        SvgImageButton_ImageColor="White"
+                                        ToolTip="Basculer en mode avancé"
+                                        Command="{Binding ToggleModeCommand}"/>
 
-   </Border>
+      </Grid>
+
+
+   </Grid>
 </UserControl>

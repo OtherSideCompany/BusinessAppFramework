@@ -1,11 +1,12 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.RepositoryInterfaces;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Services
 {
-   public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
+    public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
    {
       #region Fields
 
@@ -84,7 +85,6 @@ namespace OtherSideCore.Application.Services
       {
 
       }
-
       #endregion
 
       #region Private Methods

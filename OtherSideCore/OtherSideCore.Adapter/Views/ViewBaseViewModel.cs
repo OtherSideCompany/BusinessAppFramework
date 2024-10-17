@@ -1,0 +1,51 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using OtherSideCore.Application.Views;
+
+namespace OtherSideCore.Adapter.Views
+{
+   public abstract class ViewBaseViewModel : ObservableObject, IDisposable
+   {
+      #region Fields
+
+      protected ViewBase _viewBase;
+
+      #endregion
+
+      #region Properties
+
+
+      #endregion
+
+      #region Commands
+
+
+
+      #endregion
+
+      #region Constructor
+
+      public ViewBaseViewModel(ViewBase viewBase)
+      {
+         _viewBase = viewBase;
+      }
+
+      #endregion
+
+      #region Public Methods
+
+      public abstract Task InitializeAsync(CancellationToken cancellationToken);
+
+      public abstract void Dispose();
+
+      #endregion
+
+      #region Private Methods
+
+      protected virtual void NotifyCommandsCanExecuteChanged()
+      {
+
+      }
+
+      #endregion
+   }
+}

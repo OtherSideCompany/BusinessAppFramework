@@ -103,7 +103,7 @@ namespace OtherSideCore.Adapter
 
       private string GetHistoryDescription(DateTime dateTime, User user)
       {
-         var creationDescription = dateTime.ToString("dd/MM/yyyy, HH:mm, ");
+         var creationDescription = "";
 
          if (user != null)
          {
@@ -113,6 +113,8 @@ namespace OtherSideCore.Adapter
          {
             creationDescription += "Inconnu";
          }
+
+         creationDescription += dateTime.ToString(", le dd/MM/yyyy à HH:mm");
 
          return creationDescription;
       }      

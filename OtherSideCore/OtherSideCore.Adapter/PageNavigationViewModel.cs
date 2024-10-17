@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Application.DomainObjectBrowser;
 
 namespace OtherSideCore.Adapter
 {
@@ -7,37 +8,29 @@ namespace OtherSideCore.Adapter
    {
       #region Fields
 
-      private int _pageCount;
-      private int _resultsPerPage;
-      private int _totalResults;
-      private int _currentPageNumber;
+      private PageNavigation _pageNavigation;
 
       #endregion
 
-      #region Properties
+      #region Properties    
 
-      public int ResultsPerPage
+      public PageNavigation PageNavigation
       {
-         get => _resultsPerPage;
-         set => SetProperty(ref _resultsPerPage, value);
+         get => _pageNavigation;
+         set => SetProperty(ref _pageNavigation, value);
       }
 
-      public int TotalResults
-      {
-         get => _totalResults;
-         set => SetProperty(ref _totalResults, value);
-      }
+      public int TotalResults => PageNavigation.TotalResults;
 
-      public int CurrentPageNumber
-      {
-         get => _currentPageNumber;
-         set => SetProperty(ref _currentPageNumber, value);
-      }
+      public int MinResultIndex => PageNavigation.MinResultIndex;
 
-      public int MinResultIndex => (CurrentPageNumber - 1) * ResultsPerPage + 1;
+      public int MaxResultIndex => PageNavigation.MaxResultIndex;
 
-      public int MaxResultIndex => CurrentPageNumber * ResultsPerPage > TotalResults ? TotalResults : CurrentPageNumber * ResultsPerPage;
+      #endregion
 
+      #region Events
+
+      public event EventHandler SelectPageRequested;
 
       #endregion
 
@@ -46,39 +39,43 @@ namespace OtherSideCore.Adapter
       public RelayCommand SetNextPageCommand { get; private set; }
       public RelayCommand SetFirstPageCommand { get; private set; }
       public RelayCommand SetLastPageCommand { get; private set; }
+      public RelayCommand SelectPageCommand { get; private set; }
 
       #endregion
 
       #region Constructor
 
-      public PageNavigationViewModel()
+      public PageNavigationViewModel(PageNavigation pageNavigation)
       {
-         SetPreviousPageCommand = new RelayCommand(() => SelectPage(Math.Max(CurrentPageNumber - 1, 1)));
-         SetNextPageCommand = new RelayCommand(() => SelectPage(Math.Min(CurrentPageNumber + 1, _pageCount)));
-         SetFirstPageCommand = new RelayCommand(() => SelectPage(1));
-         SetLastPageCommand = new RelayCommand(() => SelectPage(_pageCount));
+         PageNavigation = pageNavigation;
+
+         SetPreviousPageCommand = new RelayCommand(() => { PageNavigation.SelectPreviousPage(); UpdateProperties(); PageRequested(); });
+         SetNextPageCommand = new RelayCommand(() => { PageNavigation.SelectNextPage(); UpdateProperties(); PageRequested(); });
+         SetFirstPageCommand = new RelayCommand(() => { PageNavigation.SelectFirstPage(); UpdateProperties(); PageRequested(); });
+         SetLastPageCommand = new RelayCommand(() => { PageNavigation.SelectLastPage(); UpdateProperties(); PageRequested(); });
       }
 
       #endregion
 
       #region Public Methods
 
-      public void SetPages(int pageCount, int resultsPerPage, int totalResutls)
+      public void Refresh()
       {
-         _pageCount = pageCount;
-         ResultsPerPage = resultsPerPage;
-         TotalResults = totalResutls;
-
-         SelectPage(1);
+         UpdateProperties();
       }
 
       #endregion
 
       #region Private Methods
 
-      private void SelectPage(int pageNumber)
+      private void PageRequested()
       {
-         CurrentPageNumber = pageNumber;
+         SelectPageRequested?.Invoke(this, EventArgs.Empty);
+      }
+
+      private void UpdateProperties()
+      {
+         OnPropertyChanged(nameof(TotalResults));
          OnPropertyChanged(nameof(MinResultIndex));
          OnPropertyChanged(nameof(MaxResultIndex));
       }

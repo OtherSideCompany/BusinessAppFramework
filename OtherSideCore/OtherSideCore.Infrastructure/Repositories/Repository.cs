@@ -119,23 +119,13 @@ namespace OtherSideCore.Infrastructure.Repositories
          {
             var entity = _mapper.Map<TEntity>(domainObject);
 
-            entity.CreationDate = DateTime.Now;
-            entity.LastModifiedDateTime = DateTime.Now;
-            entity.CreatedById = userId;
-            entity.LastModifiedById = userId;
-
-            DetachVirtualProperties(entity, context);
-
-            context.Entry(entity).State = EntityState.Detached;
-
-            await context.Set<TEntity>().AddAsync(entity);
-            await context.SaveChangesAsync();
+            await CreateEntityAsync(context, entity, userId);
 
             _mapper.Map(entity, domainObject);
          }
-      }
+      }      
 
-      public async Task SaveAsync(TDomainObject domainObject, int userId)
+      public virtual async Task SaveAsync(TDomainObject domainObject, int? userId)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}",
                                 GetType(),
@@ -148,15 +138,16 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (existingEntity != null)
             {
-               var entity = _mapper.Map<TEntity>(domainObject);
+               _mapper.Map(domainObject, existingEntity);
 
-               entity.LastModifiedDateTime = DateTime.Now;
-               entity.LastModifiedById = userId;
+               existingEntity.LastModifiedDateTime = DateTime.Now;
+               existingEntity.LastModifiedById = userId;
 
-               context.Entry(existingEntity).CurrentValues.SetValues(entity);
+               DetachVirtualProperties(existingEntity, context);
+
                await context.SaveChangesAsync();
 
-               _mapper.Map(entity, domainObject);
+               _mapper.Map(existingEntity, domainObject);
             }
             else
             {
@@ -274,22 +265,36 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #region Private Methods
 
+      protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId)
+      {
+         entity.CreationDate = DateTime.Now;
+         entity.LastModifiedDateTime = DateTime.Now;
+         entity.CreatedById = userId;
+         entity.LastModifiedById = userId;
+
+         DetachVirtualProperties(entity, context);
+
+         context.Entry(entity).State = EntityState.Detached;
+
+         await context.Set<TEntity>().AddAsync(entity);
+         await context.SaveChangesAsync();
+      }
+
       private TDestination MapIfNull<TSource, TDestination>(TSource source, TDestination destination)
       {
-         // Check if destination is null, if so, create a new instance using AutoMapper
          if (destination == null && source != null)
          {
             destination = _mapper.Map<TDestination>(source);
          }
          else if (source != null)
          {
-            _mapper.Map(source, destination); // Perform regular mapping if destination is not null
+            _mapper.Map(source, destination);
          }
 
          return destination;
       }
 
-      private void DetachVirtualProperties(TEntity entity, DbContext dbContext)
+      protected void DetachVirtualProperties(TEntity entity, DbContext dbContext)
       {
          var properties = typeof(TEntity).GetProperties();
 

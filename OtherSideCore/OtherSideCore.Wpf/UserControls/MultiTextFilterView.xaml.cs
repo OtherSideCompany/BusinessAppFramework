@@ -39,34 +39,6 @@ namespace OtherSideCore.Wpf.UserControls
       public MultiTextFilterView()
       {
          InitializeComponent();
-      }
-
-      private void SearchBorder_GotFocus(object sender, RoutedEventArgs e)
-      {
-         ResetIsDefaultState();
-         SearchButton.IsDefault = true;
-      }
-
-      private void SearchBorder_LostFocus(object sender, RoutedEventArgs e)
-      {
-         ResetIsDefaultState();
-      }
-
-      private void FiltersBorder_GotFocus(object sender, RoutedEventArgs e)
-      {
-         ResetIsDefaultState();
-         RefreshButton.IsDefault = true;
-      }
-
-      private void FiltersBorder_LostFocus(object sender, RoutedEventArgs e)
-      {
-         ResetIsDefaultState();
-      }
-
-      private void ResetIsDefaultState()
-      {
-         SearchButton.IsDefault = false;
-         RefreshButton.IsDefault = false;
-      }
+      }      
    }
 }

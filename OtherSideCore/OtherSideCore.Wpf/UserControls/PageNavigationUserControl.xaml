@@ -12,57 +12,7 @@
       <Grid.RowDefinitions>
          <RowDefinition Height="Auto" />
          <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>  
-              
-      <!--<StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-
-         <customcontrols:TextRadioButton Width="24"
-                                         GroupName="PageNavigation"
-                                         TextRadioButton_Text="{Binding FirstPageNavigation.PageNumber}"
-                                         IsChecked="{Binding FirstPageNavigation.IsSelected}"
-                                         Command="{Binding SelectPageAsyncCommand}"
-                                         CommandParameter="{Binding FirstPageNavigation}"/>
-
-         <customcontrols:SvgImageButton Width="24" Height="24"
-                                        SvgImageButton_IconGeometry="{StaticResource icon_dots_horizontal}"
-                                        SvgImageButton_ImageColor="Black" 
-                                        BorderThickness="0" Margin="4,-4,4,0"
-                                        Visibility="{Binding AreThereMorePagesBefore, Converter={StaticResource BoolToVisibleOrCollapsed}}"
-                                        Command="{Binding LoadPreviousPagesAsyncCommand}"/>
-
-         <ItemsControl ItemsSource="{Binding PageNavigations}" VerticalAlignment="Center">
-            <ItemsControl.ItemsPanel>
-               <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal" />
-               </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-               <DataTemplate>
-                  <customcontrols:TextRadioButton Width="24"
-                                                  GroupName="PageNavigation"
-                                                  TextRadioButton_Text="{Binding PageNumber}"
-                                                  IsChecked="{Binding IsSelected}"
-                                                  Command="{Binding DataContext.SelectPageAsyncCommand, ElementName=PageNavigation}"
-                                                  CommandParameter="{Binding}"/>
-               </DataTemplate>
-            </ItemsControl.ItemTemplate>
-         </ItemsControl>
-
-         <customcontrols:SvgImageButton Width="24" Height="24"
-                                        SvgImageButton_IconGeometry="{StaticResource icon_dots_horizontal}"
-                                        SvgImageButton_ImageColor="Black"                                        
-                                        BorderThickness="0" Margin="4,-4,4,0"
-                                        Visibility="{Binding AreThereMorePagesAfter, Converter={StaticResource BoolToVisibleOrCollapsed}}"
-                                        Command="{Binding LoadNextPagesAsyncCommand}"/>
-
-         <customcontrols:TextRadioButton Width="24"
-                                         GroupName="PageNavigation"
-                                         Visibility="{Binding LastPageNavigation, Converter={StaticResource NullToVisibilityConverter}}"
-                                         TextRadioButton_Text="{Binding LastPageNavigation.PageNumber}"
-                                         IsChecked="{Binding LastPageNavigation.IsSelected}"
-                                         Command="{Binding SelectPageAsyncCommand}"
-                                         CommandParameter="{Binding LastPageNavigation}"/>
-      </StackPanel>-->
+      </Grid.RowDefinitions>              
 
       <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
 
@@ -83,7 +33,7 @@
             <Run Text="-" />
             <Run Text="{Binding MaxResultIndex, Mode=OneWay}" />
             <Run Text="de" />
-            <Run Text="{Binding TotalResults}" />
+            <Run Text="{Binding TotalResults, Mode=OneWay}" />
          </TextBlock>
 
          <customcontrols:SvgImageButton Width="24" Height="24"

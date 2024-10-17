@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Application;
+using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
@@ -9,7 +9,6 @@ namespace OtherSideCore.Adapter
       #region Fields
 
       private bool _isSelected;
-      private string _name;
       private Constraint<T> _constraint;
 
       #endregion
@@ -20,12 +19,6 @@ namespace OtherSideCore.Adapter
       {
          get => _isSelected;
          set => SetProperty(ref _isSelected, value);
-      }
-
-      public string Name
-      {
-         get => _name;
-         set => SetProperty(ref _name, value);
       }
 
       public Constraint<T> Constraint
@@ -44,9 +37,8 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public ConstraintViewModel(string name, Constraint<T> constraint)
+      public ConstraintViewModel(Constraint<T> constraint)
       {
-         Name = name;
          Constraint = constraint;
       }
 

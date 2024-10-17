@@ -59,14 +59,18 @@ namespace OtherSideCore.Infrastructure.Repositories
          _domainObjects.Add(domainObject);
       }
 
-      public async Task SaveAsync(T domainObject, int userId)
+      public async Task SaveAsync(T domainObject, int? userId)
       {
          T existingEntity = _domainObjects.FirstOrDefault(e => e.Id == domainObject.Id);
 
          if (existingEntity != null)
          {
             domainObject.LastModifiedDateTime = DateTime.Now;
-            domainObject.LastModifiedBy.Id = userId;
+
+            if (userId.HasValue)
+            {
+               domainObject.LastModifiedBy.Id = userId.Value;
+            }
 
             int index = _domainObjects.IndexOf(existingEntity);
             _domainObjects[index] = domainObject;

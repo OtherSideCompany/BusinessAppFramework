@@ -1,17 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.ViewDescriptions;
-using OtherSideCore.Application.Services;
-using OtherSideCore.Appplication.Services;
-using OtherSideCore.Domain.Services;
+﻿using OtherSideCore.Adapter.ViewDescriptions;
+using OtherSideCore.Application.Views;
 
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class ModuleViewModel : ViewViewModelBase
+   public abstract class ModuleViewModel : ViewBaseViewModel
    {
       #region Fields
 
       private ModuleDescription _moduleDescription;
+      private Module _module;
 
       #endregion
 
@@ -23,6 +21,8 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _moduleDescription, value);
       }
 
+      public Module Module => (Module)_viewBase;
+
       #endregion
 
       #region Commands
@@ -33,26 +33,13 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ModuleViewModel(ILoggerFactory loggerFactory, 
-                             IUserContext userContext, 
-                             IUserDialogService userDialogService) : 
-         base(loggerFactory, 
-              userContext, 
-              userDialogService)
+      public ModuleViewModel(Module module) : base(module)
       {
-
+         _module = module;
       }
 
       #endregion
 
-      #region Public Methods
-
-      public override void Dispose()
-      {
-
-      }
-
-      #endregion
 
       #region Private Methods
 
