@@ -26,14 +26,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Properties
 
-      //public DomainObjectViewModel SelectedSearchResultViewModel
-      //{
-      //   get
-      //   {
-      //      return SearchResultViewModels.FirstOrDefault(vm => vm.IsSelected);
-      //   }
-      //}
-
       public ObservableCollection<DomainObjectViewModel> SearchResultViewModels
       {
          get => _searchResultViewModels;
@@ -112,7 +104,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Public Methods
 
-      public async Task SearchAsync(CancellationToken cancellationToken)
+      public async Task SearchAsync(CancellationToken cancellationToken = default)
       {
          IsExecutingSearch = true;
 
@@ -125,7 +117,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          IsExecutingSearch = false;
       }
 
-      public async Task PaginatedSearchAsync(bool resetPage, CancellationToken cancellationToken)
+      public async Task PaginatedSearchAsync(bool resetPage, CancellationToken cancellationToken = default)
       {
          IsExecutingSearch = true;
 

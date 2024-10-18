@@ -9,7 +9,6 @@ namespace OtherSideCore.Adapter
       #region Fields
 
       private MultiTextFilter m_MultiTextFilter;
-      private AsyncRelayCommand _searchCommandAsync;
       private string _searchText;
 
       private bool _isInAdvancedMode;
@@ -86,6 +85,11 @@ namespace OtherSideCore.Adapter
 
       #region Public Methods
 
+      public void RequestSearch()
+      {
+         MultiTextFilter.SetExtendedSearch(false);
+         Search();
+      }
 
       #endregion
 
@@ -95,12 +99,6 @@ namespace OtherSideCore.Adapter
       {
          RequestSearchCommand.NotifyCanExecuteChanged();
          RemoveFilterCommand.NotifyCanExecuteChanged();
-      }
-
-      private void RequestSearch()
-      {
-         MultiTextFilter.SetExtendedSearch(false);
-         Search();
       }
 
       private void RequestExtendedSearch()

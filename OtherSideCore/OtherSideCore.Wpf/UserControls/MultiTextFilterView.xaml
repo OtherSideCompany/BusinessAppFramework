@@ -28,7 +28,7 @@
 
                <customcontrols:ClickSelectTextBox Grid.Column="0" Margin="4,0,0,0" 
                                                   Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                                  ClickSelectTextBox_Watermak="Rechercher">
+                                                  ClickSelectTextBox_Watermark="Rechercher">
                   <TextBox.InputBindings>
                      <KeyBinding Key="Enter" Command="{Binding RequestSearchCommand}" />
                   </TextBox.InputBindings>

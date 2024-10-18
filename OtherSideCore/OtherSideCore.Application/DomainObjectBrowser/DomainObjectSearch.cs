@@ -8,8 +8,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
    {
       #region Fields
 
-      private readonly int _pageSize = 20;
-
       protected IDomainObjectQueryService<T> _domainObjectQueryService;
       private List<DomainObject> _searchResults;
       private MultiTextFilter _multiTextFilter;
@@ -25,6 +23,7 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       #region Properties
 
+      public int PageSize = 20;
       public PageNavigation PageNavigation => _pageNavigation;
       public List<DomainObject> SearchResults => _searchResults;
       public MultiTextFilter MultiTextFilter => _multiTextFilter;
@@ -104,7 +103,7 @@ namespace OtherSideCore.Application.DomainObjectBrowser
                                                                                    _activatedConstraint,
                                                                                    _multiTextFilter.ExtendedSearch,
                                                                                    pageToSelect,
-                                                                                   _pageSize,
+                                                                                   PageSize,
                                                                                    cancellationToken);
 
             _searchResults.AddRange(pagedResult.Items);

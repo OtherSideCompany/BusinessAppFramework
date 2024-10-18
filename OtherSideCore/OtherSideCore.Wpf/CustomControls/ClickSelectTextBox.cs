@@ -8,13 +8,13 @@ namespace OtherSideCore.Wpf.CustomControls
 {
    public class ClickSelectTextBox : TextBox
    {
-      public static readonly DependencyProperty ClickSelectTextBox_WatermakProperty =
-        DependencyProperty.Register("ClickSelectTextBox_Watermak", typeof(string), typeof(ClickSelectTextBox), new UIPropertyMetadata(String.Empty));
+      public static readonly DependencyProperty ClickSelectTextBox_WatermarkProperty =
+        DependencyProperty.Register("ClickSelectTextBox_Watermark", typeof(string), typeof(ClickSelectTextBox), new UIPropertyMetadata(String.Empty));
 
-      public string ClickSelectTextBox_Watermak
+      public string ClickSelectTextBox_Watermark
       {
-         get { return (string)GetValue(ClickSelectTextBox_WatermakProperty); }
-         set { SetValue(ClickSelectTextBox_WatermakProperty, value); }
+         get { return (string)GetValue(ClickSelectTextBox_WatermarkProperty); }
+         set { SetValue(ClickSelectTextBox_WatermarkProperty, value); }
       }
 
       public ClickSelectTextBox()

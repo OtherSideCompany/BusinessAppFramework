@@ -7,6 +7,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
    {
       bool HasUnsavedChanges { get; }
       public ObservableCollection<IDomainObjectEditorViewModel> DomainObjectEditorViewModels { get; }
+      ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels { get; }
+      IEnumerable<IDomainObjectBrowserViewModel> InlineNestedDomainObjectBrowserViewModels { get; }
       Task SaveChangesAsync();
       Task CancelChangesAsync();
       Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels);

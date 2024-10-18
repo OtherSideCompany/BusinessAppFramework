@@ -11,6 +11,7 @@ namespace OtherSideCore.Adapter
       #region Fields
 
       private bool _isSelected;
+      private bool _isExpanded;
       private DomainObject _domainObject;
 
       protected IGlobalDataService _globalDataService;
@@ -33,6 +34,12 @@ namespace OtherSideCore.Adapter
          set => SetProperty(ref _isSelected, value);
       }
 
+      public bool IsExpanded
+      {
+         get => _isExpanded;
+         set => SetProperty(ref _isExpanded, value);
+      }
+
       public DomainObject DomainObject
       {
          get => _domainObject;
@@ -51,6 +58,8 @@ namespace OtherSideCore.Adapter
 
       public RelayCommand DisplayInExternalWindowCommand { get; private set; }
 
+      public RelayCommand ToggleExpandCommand { get; private set; }
+
       #endregion
 
       #region Constructor
@@ -62,9 +71,10 @@ namespace OtherSideCore.Adapter
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
-         _domainObjectViewModelFactory = domainObjectViewModelFactory;
+         _domainObjectViewModelFactory = domainObjectViewModelFactory; 
 
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
+         ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
 
          DomainObject = domainObject;
 

@@ -61,11 +61,9 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                       .Where(where)
-                                                       .ToListAsync();
-
-            return _mapper.Map<List<TDomainObject>>(entities);
+            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                               .Where(where)
+                                               .ToListAsync();
          }
       }
 
@@ -78,13 +76,11 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                       .Where(where)
-                                                       .Skip((pageNumber - 1) * pageSize)
-                                                       .Take(pageSize)
-                                                       .ToListAsync();
-
-            return _mapper.Map<List<TDomainObject>>(entities);
+            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                               .Where(where)
+                                               .Skip((pageNumber - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
          }
       }
 

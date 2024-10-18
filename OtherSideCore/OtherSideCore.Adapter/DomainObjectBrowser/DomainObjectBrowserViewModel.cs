@@ -4,18 +4,20 @@ using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
-    public class DomainObjectBrowserViewModel<T> : WorkspaceViewModel, IDomainObjectBrowserViewModel where T : DomainObject, new()
+   public class DomainObjectBrowserViewModel<T> : WorkspaceViewModel, IDomainObjectBrowserViewModel where T : DomainObject, new()
    {
       #region Fields
 
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IUserDialogService _userDialogService;
+      protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
 
       protected DomainObjectsSearchViewModel<T> _domainObjectsSearchViewModel;
       protected ObservableCollection<IDomainObjectEditorViewModel> _domainObjectEditorViewModels;
@@ -23,12 +25,38 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       protected DomainObjectViewModelSelection _selection;
       private bool _isSelectionLocked;
       private bool _isLoadingNestedBrowsers;
+      private DomainObjectViewModel _parentContextViewModel;
 
       protected DomainObjectBrowser<T> _domainObjectBrowser => (DomainObjectBrowser<T>)_viewBase;
+
+      private IEnumerable<IDomainObjectBrowserViewModel> _inlineNestedDomainObjectBrowserViewModels
+      {
+         get
+         {
+            foreach (var domainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
+            {
+               yield return domainObjectBrowserViewModel;
+
+               if (domainObjectBrowserViewModel.NestedDomainObjectBrowserViewModels.Any())
+               {
+                  foreach (var nestedDomainObjectBrowserViewModel in domainObjectBrowserViewModel.InlineNestedDomainObjectBrowserViewModels)
+                  {
+                     yield return nestedDomainObjectBrowserViewModel;
+                  }
+               }
+            }
+
+
+         }
+      }
 
       #endregion
 
       #region Properties
+
+      public ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels => _nestedDomainObjectBrowserViewModels;
+
+      public IEnumerable<IDomainObjectBrowserViewModel> InlineNestedDomainObjectBrowserViewModels => _inlineNestedDomainObjectBrowserViewModels;
 
       public DomainObjectsSearchViewModel<T> DomainObjectsSearchViewModel
       {
@@ -60,6 +88,12 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          private set => SetProperty(ref _isLoadingNestedBrowsers, value);
       }
 
+      public DomainObjectViewModel ParentContextViewModel
+      {
+         get => _parentContextViewModel;
+         set => SetProperty(ref _parentContextViewModel, value);
+      }
+
       public IDomainObjectEditorViewModel SelectedDomainObjectEditorViewModel => _domainObjectEditorViewModels.FirstOrDefault(vm => vm.DomainObjectViewModel == Selection.SelectedViewModel);
 
       public bool HasUnsavedChanges => DomainObjectEditorViewModels.Any(vm => vm.HasUnsavedChanges) || _nestedDomainObjectBrowserViewModels.Any(vm => vm.HasUnsavedChanges);
@@ -84,13 +118,14 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _userDialogService = userDialogService;
+         _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
 
          CreateAsyncCommand = new AsyncRelayCommand(CreateAsync, CanCreate);
          DeleteSelectionAsyncCommand = new AsyncRelayCommand(DeleteSelectionAsync, CanDeleteSelection);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
 
-         DomainObjectsSearchViewModel = (DomainObjectsSearchViewModel<T>)domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, _domainObjectViewModelFactory);
+         DomainObjectsSearchViewModel = (DomainObjectsSearchViewModel<T>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, _domainObjectViewModelFactory);
          DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged += SearchResultViewModels_CollectionChanged;
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModels;
 
@@ -129,13 +164,14 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
             await LoadNestedBrowsersAsync();
 
-            foreach (var nestedBrowserViewModel in _nestedDomainObjectBrowserViewModels)
+            foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
             {
+               await nestedBrowserViewModel.LoadNestedBrowsersAsync();
                nestedBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
             }
 
             IsLoadingNestedBrowsers = false;
-         }         
+         }
       }
 
       public void UnselectSearchResultViewModel(DomainObjectViewModel domainObjectViewModel)
@@ -147,7 +183,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                Selection.UnselectViewModel(domainObjectViewModel);
             }
 
-            foreach (var nestedBrowserViewModel in _nestedDomainObjectBrowserViewModels)
+            foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
             {
                nestedBrowserViewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
             }
@@ -165,7 +201,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       public virtual async Task SaveChangesAsync()
       {
          DomainObjectEditorViewModels.ToList().ForEach(async vm => await vm.SaveChangesAsync());
-         _nestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.SaveChangesAsync());
+         InlineNestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.SaveChangesAsync());
       }
 
       public virtual bool CanCancelChanges()
@@ -176,7 +212,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       public virtual async Task CancelChangesAsync()
       {
          DomainObjectEditorViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
-         _nestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
+         InlineNestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
       }
 
       public async Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
@@ -184,7 +220,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          foreach (var domainObjectViewModel in domainObjectViewModels)
          {
             var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel, _domainObjectBrowser.DomainObjectServiceFactory.CreateDomainObjectService<T>());
-            
+
             editorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
             editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;
 
@@ -220,7 +256,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModels;
          DomainObjectsSearchViewModel.Dispose();
 
-         foreach (var viewModel in _nestedDomainObjectBrowserViewModels)
+         foreach (var viewModel in InlineNestedDomainObjectBrowserViewModels)
          {
             viewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
          }
@@ -233,12 +269,12 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Private Methods
 
-      private bool CanCreate()
+      protected virtual bool CanCreate()
       {
-         return !HasUnsavedChanges;
+         return true;
       }
 
-      private async Task CreateAsync()
+      protected virtual async Task CreateAsync()
       {
          var domainObject = await _domainObjectBrowser.CreateAsync();
 
@@ -277,12 +313,15 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                }
             }
          }
+
+         UpdateUnsavedChanges();
       }
 
       private void EditorViewModel_DomainObjectDeletedEvent(object? sender, DomainObjectViewModel e)
       {
          _domainObjectsSearchViewModel.RemoveSearchResultViewModel(e);
          Selection.UnselectViewModel(e);
+         UpdateUnsavedChanges();
       }
 
       private void PreviewUnloadSearchResultViewModels(object? sender, EventArgs e)
@@ -296,8 +335,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          foreach (var viewModel in DomainObjectsSearchViewModel.SearchResultViewModels)
          {
             viewModel.PropertyChanged -= SearchResultViewModel_PropertyChanged;
-         }        
-      }      
+         }
+      }
 
       protected virtual IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel, IDomainObjectService<T> domainObjectService)
       {
