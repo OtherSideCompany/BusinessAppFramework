@@ -138,9 +138,9 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          }
       }
 
-      private void DomainObjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      protected void DomainObjectViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
-         var property = _domainObjectViewModel.GetType().GetProperty(e.PropertyName);
+         var property = sender.GetType().GetProperty(e.PropertyName);
 
          if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null)
          {

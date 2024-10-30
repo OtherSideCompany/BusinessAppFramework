@@ -48,7 +48,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var entities = await context.Set<TEntity>().ToListAsync(cancellationToken);
+            var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                       .ToListAsync(cancellationToken);
 
             return _mapper.Map<List<TDomainObject>>(entities);
          }
@@ -63,7 +64,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          {
             return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
                                                .Where(where)
-                                               .ToListAsync();
+                                               .ToListAsync(cancellationToken);
          }
       }
 
@@ -134,12 +135,14 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (existingEntity != null)
             {
-               _mapper.Map(domainObject, existingEntity);
+               _mapper.Map(domainObject, existingEntity);           
 
                existingEntity.LastModifiedDateTime = DateTime.Now;
                existingEntity.LastModifiedById = userId;
 
                DetachVirtualProperties(existingEntity, context);
+
+               context.Entry(existingEntity).State = EntityState.Modified;
 
                await context.SaveChangesAsync();
 
@@ -270,6 +273,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          DetachVirtualProperties(entity, context);
 
+         context.Entry(entity.LastModifiedBy).State = EntityState.Unchanged;
+         context.Entry(entity.CreatedBy).State = EntityState.Unchanged;
          context.Entry(entity).State = EntityState.Detached;
 
          await context.Set<TEntity>().AddAsync(entity);
@@ -302,16 +307,27 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                if (virtualProperty != null)
                {
+                  System.Diagnostics.Debug.WriteLine("Detach property " + property.Name);
+
                   if (virtualProperty is ICollection collection)
                   {
                      foreach (var item in collection)
                      {
                         dbContext.Entry(item).State = EntityState.Unchanged;
+                        //dbContext.Entry(item).State = EntityState.Detached;
                      }
                   }
                   else
                   {
-                     dbContext.Entry(virtualProperty).State = EntityState.Unchanged;
+                     var navigation = dbContext.Entry(entity).Navigation(property.Name);
+
+                     if (navigation.IsLoaded)
+                     {
+                        navigation.CurrentValue = null;
+                     }
+
+                     //dbContext.Entry(virtualProperty).State = EntityState.Unchanged;
+                     //dbContext.Entry(virtualProperty).State = EntityState.Detached;
                   }
                }
             }

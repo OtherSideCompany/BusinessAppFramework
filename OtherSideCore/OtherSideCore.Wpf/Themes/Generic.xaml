@@ -99,15 +99,15 @@
                               x:Name="StackPanel">
 
                      <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
-                                                  SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
-                                                  SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageColor}"
-                                                  SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}"
-                                                  x:Name="Image"/>
+                                      SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageSize}"
+                                      SvgViewer_ImageColor="{Binding  RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_ImageColor}"
+                                      SvgViewer_ImageGeometry="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_IconGeometry}"
+                                      x:Name="Image"/>
 
                      <TextBlock Margin="{TemplateBinding SvgImageTextButton_TextMargin}"
-                                            Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
-                                            TextTrimming="CharacterEllipsis" 
-                                            TextWrapping="NoWrap"/>
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageTextButton_Text}"
+                                TextTrimming="CharacterEllipsis" 
+                                TextWrapping="NoWrap"/>
 
                   </StackPanel>
 

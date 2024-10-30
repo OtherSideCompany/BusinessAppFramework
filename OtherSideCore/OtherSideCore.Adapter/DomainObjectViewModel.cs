@@ -18,6 +18,8 @@ namespace OtherSideCore.Adapter
       protected IMapper _mapper;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
 
+      protected List<DomainObjectViewModel> _nestedDomainObjectViewModels;
+
       #endregion
 
       #region Properties
@@ -64,14 +66,14 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public DomainObjectViewModel(DomainObject domainObject, 
-                                   IGlobalDataService globalDataService, 
-                                   IMapper mapper, 
+      public DomainObjectViewModel(DomainObject domainObject,
+                                   IGlobalDataService globalDataService,
+                                   IMapper mapper,
                                    IDomainObjectViewModelFactory domainObjectViewModelFactory)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
-         _domainObjectViewModelFactory = domainObjectViewModelFactory; 
+         _domainObjectViewModelFactory = domainObjectViewModelFactory;
 
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
          ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
@@ -80,6 +82,8 @@ namespace OtherSideCore.Adapter
 
          MonitoredProperties = new HashSet<string>();
 
+         _nestedDomainObjectViewModels = new List<DomainObjectViewModel>();
+
          RefreshTrackingInfos();
       }
 
@@ -87,9 +91,13 @@ namespace OtherSideCore.Adapter
 
       #region Public Methods
 
-      public virtual void Dispose() { }
+      public virtual void Dispose() 
+      {
+         _nestedDomainObjectViewModels.ToList().ForEach(vm => vm.Dispose());
+         _nestedDomainObjectViewModels.Clear();
+      }
 
-      public virtual void InitializeProperties() 
+      public virtual void InitializeProperties()
       {
          _mapper.Map(DomainObject, this);
       }
@@ -103,7 +111,7 @@ namespace OtherSideCore.Adapter
       {
          OnPropertyChanged(nameof(CreationDescription));
          OnPropertyChanged(nameof(ModificationDescription));
-      }      
+      }
 
       #endregion
 
@@ -127,7 +135,7 @@ namespace OtherSideCore.Adapter
          creationDescription += dateTime.ToString(", le dd/MM/yyyy à HH:mm");
 
          return creationDescription;
-      }      
+      }
 
       #endregion
    }

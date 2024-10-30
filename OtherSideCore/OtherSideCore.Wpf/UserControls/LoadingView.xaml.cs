@@ -55,7 +55,7 @@ namespace OtherSideCore.Wpf.UserControls
          this.IsVisibleChanged += LoadingView_IsVisibleChanged;
       }
 
-      private async void LoadingView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+      private void LoadingView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
       {
          if ((bool)e.NewValue == true)
          {

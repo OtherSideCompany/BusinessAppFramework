@@ -144,7 +144,7 @@
                         <Grid Grid.Column="0"
                               Visibility="{Binding Column.IsSorted, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Collapsed}">
 
-                           <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                           <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Bottom">
                               <Canvas Width="24" Height="24" Background="Transparent">
                                  <Path Fill="{TemplateBinding Foreground}">
                                     <Path.Style>
@@ -360,6 +360,10 @@
    <Style x:Key="PropertyLabelTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
       <Setter Property="Foreground" Value="Gray" />
       <Setter Property="Margin" Value="0,0,20,0" />
+   </Style>
+
+   <Style x:Key="PropertyLabelWithHelperTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource PropertyLabelTextBlock}">
+      <Setter Property="Cursor" Value="Help" />
    </Style>
 
    <!-- Borderless Text Box -->
