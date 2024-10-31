@@ -250,6 +250,7 @@ namespace OtherSideCore.Adapter.Views
       {
          await ShutdownUserContextAsync();
 
+         _globalDataService.UnloadData();
          IsUserContextInitialized = false;
 
          LoadSettings();

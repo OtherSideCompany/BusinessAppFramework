@@ -8,7 +8,15 @@ namespace OtherSideCore.Infrastructure.Mapping
    {
       public InfrastructureMappingProfile()
       {
+         CreateMap<EntityBase, DomainObject>()
+            .IncludeAllDerived()
+            .ReverseMap()
+            .ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .IncludeAllDerived();
+
          CreateMap<Entities.User, Domain.DomainObjects.User>().ReverseMap();
+         
       }
    }
 }

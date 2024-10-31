@@ -21,13 +21,9 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-      Task LoadAsync(T domainObject);
-
       Task DeleteAsync(T domainObject);
 
       Task<DateTime> GetLastModificatonTimeAsync(T domainObject);
-
-      Task LoadTrackingInfos(T domainObject);
 
       Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
    }

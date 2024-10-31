@@ -87,7 +87,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
             _domainObjectViewModel.SetPropertiesToDomainObject();
 
             await _domainObjectService.SaveAsync((T)_domainObjectViewModel.DomainObject);
-            await _domainObjectService.LoadTrackingInfosAsync((T)_domainObjectViewModel.DomainObject);
 
             _domainObjectViewModel.RefreshTrackingInfos();
          }

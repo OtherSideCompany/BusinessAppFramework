@@ -6,14 +6,10 @@ namespace OtherSideCore.Application.Services
    {
       Task<T> GetAsync(int entityId, CancellationToken cancellationToken = default);
 
-      Task LoadAsync(T domainObject);
-
       Task CreateAsync(T domainObject);
 
       Task SaveAsync(T domainObject);
 
       Task DeleteAsync(T domainObject);
-
-      Task LoadTrackingInfosAsync(T domainObject);
    }
 }

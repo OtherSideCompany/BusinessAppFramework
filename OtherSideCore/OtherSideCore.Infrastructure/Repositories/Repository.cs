@@ -48,10 +48,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var entities = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                       .ToListAsync(cancellationToken);
-
-            return _mapper.Map<List<TDomainObject>>(entities);
+            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                            .ToListAsync(cancellationToken);
          }
       }
 
@@ -77,11 +75,18 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+            var projectedList = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
                                                .Where(where)
                                                .Skip((pageNumber - 1) * pageSize)
                                                .Take(pageSize)
                                                .ToListAsync();
+
+            var nonprojectedList = await context.Set<TEntity>()
+                                               .Skip((pageNumber - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+
+            return projectedList;
          }
       }
 
@@ -140,11 +145,9 @@ namespace OtherSideCore.Infrastructure.Repositories
                existingEntity.LastModifiedDateTime = DateTime.Now;
                existingEntity.LastModifiedById = userId;
 
-               DetachVirtualProperties(existingEntity, context);
-
-               context.Entry(existingEntity).State = EntityState.Modified;
-
                await context.SaveChangesAsync();
+
+               await LoadNavigationPropertiesAsync(context, existingEntity);
 
                _mapper.Map(existingEntity, domainObject);
             }
@@ -164,18 +167,6 @@ namespace OtherSideCore.Infrastructure.Repositories
             var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
             return _mapper.Map<TDomainObject>(entity);
-         }
-      }
-
-      public async Task LoadAsync(TDomainObject domainObject)
-      {
-         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(LoadAsync), domainObject.Id.ToString());
-
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
-
-            _mapper.Map(entity, domainObject);
          }
       }
 
@@ -211,46 +202,17 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var existingEntity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+            bool exists = await context.Set<TEntity>().AnyAsync(e => e.Id == domainObject.Id);
 
-            if (existingEntity != null)
+            if (exists)
             {
-               return existingEntity.LastModifiedDateTime;
+               return await context.Set<TEntity>().Where(e => e.Id == domainObject.Id) 
+                                                  .Select(e => e.LastModifiedDateTime)          
+                                                  .FirstAsync();
             }
             else
             {
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
-            }
-         }
-      }
-
-      public async Task LoadTrackingInfos(TDomainObject domainObject)
-      {
-         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(LoadTrackingInfos), domainObject.Id);
-
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            var entity = await context.Set<TEntity>()
-                                      .Include(e => e.CreatedBy)
-                                      .Include(e => e.LastModifiedBy)
-                                      .FirstOrDefaultAsync(e => e.Id == domainObject.Id);
-
-            if (entity.CreatedBy != null)
-            {
-               domainObject.CreatedBy = MapIfNull(entity.CreatedBy, domainObject.CreatedBy);
-            }
-            else
-            {
-               domainObject.CreatedBy = null;
-            }
-
-            if (entity.LastModifiedBy != null)
-            {
-               domainObject.LastModifiedBy = MapIfNull(entity.LastModifiedBy, domainObject.LastModifiedBy);
-            }
-            else
-            {
-               domainObject.LastModifiedBy = null;
             }
          }
       }
@@ -271,14 +233,22 @@ namespace OtherSideCore.Infrastructure.Repositories
          entity.CreatedById = userId;
          entity.LastModifiedById = userId;
 
-         DetachVirtualProperties(entity, context);
-
-         context.Entry(entity.LastModifiedBy).State = EntityState.Unchanged;
-         context.Entry(entity.CreatedBy).State = EntityState.Unchanged;
-         context.Entry(entity).State = EntityState.Detached;
-
          await context.Set<TEntity>().AddAsync(entity);
+
+         await LoadNavigationPropertiesAsync(context, entity);
+
          await context.SaveChangesAsync();
+      }
+
+      private async Task LoadNavigationPropertiesAsync(DbContext context, TEntity entity)
+      {
+         foreach (var navigation in context.Entry(entity).Navigations)
+         {
+            if (!navigation.IsLoaded)
+            {
+               await navigation.LoadAsync();
+            }
+         }
       }
 
       private TDestination MapIfNull<TSource, TDestination>(TSource source, TDestination destination)
@@ -293,50 +263,6 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
 
          return destination;
-      }
-
-      protected void DetachVirtualProperties(TEntity entity, DbContext dbContext)
-      {
-         var properties = typeof(TEntity).GetProperties();
-
-         foreach (var property in properties)
-         {
-            if (IsVirtualProperty(property))
-            {
-               var virtualProperty = property.GetValue(entity);
-
-               if (virtualProperty != null)
-               {
-                  System.Diagnostics.Debug.WriteLine("Detach property " + property.Name);
-
-                  if (virtualProperty is ICollection collection)
-                  {
-                     foreach (var item in collection)
-                     {
-                        dbContext.Entry(item).State = EntityState.Unchanged;
-                        //dbContext.Entry(item).State = EntityState.Detached;
-                     }
-                  }
-                  else
-                  {
-                     var navigation = dbContext.Entry(entity).Navigation(property.Name);
-
-                     if (navigation.IsLoaded)
-                     {
-                        navigation.CurrentValue = null;
-                     }
-
-                     //dbContext.Entry(virtualProperty).State = EntityState.Unchanged;
-                     //dbContext.Entry(virtualProperty).State = EntityState.Detached;
-                  }
-               }
-            }
-         }
-      }
-
-      private bool IsVirtualProperty(PropertyInfo property)
-      {
-         return property.GetGetMethod().IsVirtual;
       }
 
       #endregion

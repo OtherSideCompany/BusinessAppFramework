@@ -15,20 +15,27 @@ namespace OtherSideCore.Infrastructure.Context
          modelBuilder.Entity<User>().HasOne(u => u.CreatedBy).WithMany().HasForeignKey(u => u.CreatedById).OnDelete(DeleteBehavior.Restrict);
          modelBuilder.Entity<User>().HasOne(u => u.LastModifiedBy).WithMany().HasForeignKey(u => u.LastModifiedById).OnDelete(DeleteBehavior.Restrict);
 
-         AutoIncludeCreatedByAndLastModifiedBy(modelBuilder);
+         AutoIncludeNavigationProperties(modelBuilder);
       }
 
-      private void AutoIncludeCreatedByAndLastModifiedBy(ModelBuilder modelBuilder)
+      private void AutoIncludeNavigationProperties(ModelBuilder modelBuilder)
       {
-         var derivedTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsClass &&
-                                                                                  !t.IsAbstract &&
-                                                                                  typeof(EntityBase).IsAssignableFrom(t) &&
-                                                                                  !typeof(User).IsAssignableFrom(t));
-
-         foreach (var derivedType in derivedTypes)
+         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
          {
-            modelBuilder.Entity(derivedType).Navigation(nameof(EntityBase.CreatedBy)).AutoInclude();
-            modelBuilder.Entity(derivedType).Navigation(nameof(EntityBase.LastModifiedBy)).AutoInclude();
+            if (!typeof(User).IsAssignableFrom(entityType.ClrType))
+            {
+               foreach (var navigation in entityType.GetNavigations())
+               {
+                  if (!navigation.IsCollection)
+                  {
+                     modelBuilder.Entity(entityType.ClrType)
+                                 .Navigation(navigation.Name)
+                                 .AutoInclude();
+
+                     System.Diagnostics.Debug.WriteLine($"AutoIncluding {entityType.ClrType.Name}.{navigation.Name}");
+                  }
+               }
+            }
          }
       }
    }

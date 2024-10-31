@@ -54,19 +54,9 @@ namespace OtherSideCore.Application.Services
          return await _repository.GetAsync(domainObjectId, cancellationToken);
       }
 
-      public async Task LoadAsync(T domainObject)
-      {
-         await _repository.LoadAsync(domainObject);
-      }
-
       public virtual async Task SaveAsync(T domainObject)
       {
          await _repository.SaveAsync(domainObject, _userContext.Id);
-      }
-
-      public async Task LoadTrackingInfosAsync(T domainObject)
-      {
-         await _repository.LoadTrackingInfos(domainObject);
       }
 
       #endregion

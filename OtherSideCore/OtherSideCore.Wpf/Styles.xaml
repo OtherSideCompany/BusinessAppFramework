@@ -494,6 +494,9 @@
                   <Trigger Property="IsEnabled" Value="False">
                      <Setter Property="Opacity" Value="0.5" TargetName="InnerTextBox" />
                   </Trigger>
+                  <Trigger Property="IsReadOnly" Value="True">
+                     <Setter Property="Foreground" Value="{StaticResource OtherSide_DarkGray}"/>
+                  </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
          </Setter.Value>
@@ -577,56 +580,6 @@
    <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
       <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
    </ControlTemplate>
-
-   <!--<Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
-      <Setter Property="SnapsToDevicePixels" Value="true" />
-      <Setter Property="OverridesDefaultStyle" Value="true" />
-      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-      <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-      <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="Template">
-         <Setter.Value>
-            <ControlTemplate TargetType="{x:Type ComboBox}">
-               <Border Background="{TemplateBinding Background}" x:Name="Bd">
-                  <Grid>
-                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                     </Grid.ColumnDefinitions>
-                     
-                     <ToggleButton x:Name="ToggleButton"
-                                   Template="{StaticResource ComboBoxToggleButton}" Grid.Column="0" Grid.ColumnSpan="2" Focusable="false" ClickMode="Press"
-                                   IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
-                     
-                     <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Grid.Column="1"
-                                       Content="{TemplateBinding SelectionBoxItem}"
-                                       ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                       ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                       Margin="24,4,4,4" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                     
-                     <Popup x:Name="Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=ToggleButton}" IsOpen="{TemplateBinding IsDropDownOpen}"
-                            AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" VerticalOffset="4" >
-                        <StackPanel Orientation="Vertical">
-                           <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                              <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="White">
-                                 <ScrollViewer SnapsToDevicePixels="True" ScrollChanged="ComboBox_ScrollViewer_ScrollChanged"
-                                               CanContentScroll="False">
-                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
-                                 </ScrollViewer>
-                              </Border>
-                           </Grid>
-                           <Border Height="3" Background="Transparent"/>
-                        </StackPanel>
-                     </Popup>
-                  </Grid>
-               </Border>
-            </ControlTemplate>
-         </Setter.Value>
-      </Setter>
-   </Style>-->
 
    <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
       <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -813,6 +766,81 @@
 
                </Border>
 
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+   
+   <!-- date picker -->
+   <Style x:Key="DatePickerCalendarStyle" TargetType="{x:Type Calendar}" BasedOn="{StaticResource {x:Type Calendar}}">
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+   </Style>
+
+   <Style x:Key="DropDownButtonStyle" TargetType="Button">
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+               <customControls:SvgImageButton SvgImageButton_IconGeometry="{StaticResource icon_calendar-month}"
+                                              SvgImageButton_ImageSize="20"/>  
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <Style TargetType="DatePickerTextBox">
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DatePickerTextBox}">
+               <Grid>
+                  <customControls:ClickSelectTextBox Text="{Binding Path=SelectedDate, StringFormat=d, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}"
+                                                     VerticalAlignment="Center" />
+               </Grid>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <Style TargetType="{x:Type DatePicker}" x:Key="EditorDatePicker">
+      <Setter Property="IsTodayHighlighted" Value="True" />
+      <Setter Property="CalendarStyle" Value="{DynamicResource DatePickerCalendarStyle}" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DatePicker}">
+
+               <Grid x:Name="PART_Root" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="*" />
+                     <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+
+                  <Border Grid.Column="0" Style="{StaticResource EditableTextBoxBorder}">
+                     <DatePickerTextBox x:Name="PART_TextBox"                   
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Focusable="{TemplateBinding Focusable}"
+                                        HorizontalContentAlignment="Stretch"
+                                        Grid.Row="0"
+                                        VerticalContentAlignment="Stretch" />
+                  </Border>
+
+                  <Button x:Name="PART_Button" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Focusable="False" Width="32" Height="32"
+                          HorizontalAlignment="Left" Style="{StaticResource DropDownButtonStyle}" Margin="4,0,0,0" />
+
+                  <Grid x:Name="PART_DisabledVisual" Grid.ColumnSpan="2" Grid.Column="0" IsHitTestVisible="False" Opacity="0">
+                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                     </Grid.ColumnDefinitions>
+                     <Rectangle Grid.Column="0" Fill="#A5FFFFFF" Grid.Row="0" />
+                     <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding ElementName=PART_Button}" StaysOpen="False" />
+                  </Grid>
+
+               </Grid>
+
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.3" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
             </ControlTemplate>
          </Setter.Value>
       </Setter>

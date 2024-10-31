@@ -65,7 +65,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
          var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<T>();
 
          await domainObjectService.CreateAsync(domainObject);
-         await domainObjectService.LoadAsync(domainObject);
 
          DomainObjectSearch.AddSearchResult(domainObject);
 

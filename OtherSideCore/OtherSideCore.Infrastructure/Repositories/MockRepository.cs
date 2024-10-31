@@ -120,25 +120,6 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task LoadAsync(T domainObject)
-      {
-         T existingDomainObject = _domainObjects.FirstOrDefault(e => e.Id == domainObject.Id);
-
-         if (existingDomainObject != null)
-         {
-            CopyProperties(existingDomainObject, domainObject);
-         }
-         else
-         {
-            throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(T).ToString()}");
-         }
-      }
-
-      public async Task LoadTrackingInfos(T domainObject)
-      {
-         throw new NotImplementedException();
-      }
-
       public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
       {
          var query = _domainObjects.AsQueryable();
