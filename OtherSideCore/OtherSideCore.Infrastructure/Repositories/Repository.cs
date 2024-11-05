@@ -60,6 +60,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
+            var entites = await context.Set<TEntity>().ToListAsync(cancellationToken);
+
             return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
                                                .Where(where)
                                                .ToListAsync(cancellationToken);

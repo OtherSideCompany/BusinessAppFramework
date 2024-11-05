@@ -221,8 +221,10 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          {
             var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel, _domainObjectBrowser.DomainObjectServiceFactory.CreateDomainObjectService<T>());
 
+            await editorViewModel.LoadNestedBrowsersAsync();
+
             editorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
-            editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;
+            editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;            
 
             DomainObjectEditorViewModels.Add(editorViewModel);
          }
@@ -286,7 +288,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       private bool CanDeleteSelection()
       {
-         return !Selection.IsSelectionEmpty() && !HasUnsavedChanges;
+         return !Selection.IsSelectionEmpty && !HasUnsavedChanges;
       }
 
       private async Task DeleteSelectionAsync()

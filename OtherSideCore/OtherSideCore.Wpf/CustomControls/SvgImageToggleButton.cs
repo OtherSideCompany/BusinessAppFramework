@@ -72,6 +72,15 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(SvgImageToggleButton_ImageColorProperty, value); }
       }
 
+      public static readonly DependencyProperty SvgImageToggleButton_CornerRadiusProperty =
+        DependencyProperty.Register("SvgImageToggleButton_CornerRadius", typeof(CornerRadius), typeof(SvgImageToggleButton), new UIPropertyMetadata(new CornerRadius(8)));
+
+      public CornerRadius SvgImageToggleButton_CornerRadius
+      {
+         get { return (CornerRadius)GetValue(SvgImageToggleButton_ImageSizeProperty); }
+         set { SetValue(SvgImageToggleButton_ImageSizeProperty, value); }
+      }
+
       static SvgImageToggleButton()
       {
          DefaultStyleKeyProperty.OverrideMetadata(typeof(SvgImageToggleButton), new FrameworkPropertyMetadata(typeof(SvgImageToggleButton)));

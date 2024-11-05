@@ -91,6 +91,11 @@ namespace OtherSideCore.Adapter
 
       #region Public Methods
 
+      public virtual void ResetState()
+      {
+
+      }
+
       public virtual void Dispose() 
       {
          _nestedDomainObjectViewModels.ToList().ForEach(vm => vm.Dispose());

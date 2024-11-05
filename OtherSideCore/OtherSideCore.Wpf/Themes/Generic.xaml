@@ -149,7 +149,7 @@
                        BorderThickness="{TemplateBinding BorderThickness}"
                        BorderBrush="{StaticResource OtherSide_LightGray}"
                        x:Name="Border"
-                       CornerRadius="8">
+                       CornerRadius="{TemplateBinding SvgImageToggleButton_CornerRadius}">
 
                   <local:SvgViewer SvgViewer_ImageWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageToggleButton_ImageSize}"
                                    SvgViewer_ImageHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SvgImageToggleButton_ImageSize}"

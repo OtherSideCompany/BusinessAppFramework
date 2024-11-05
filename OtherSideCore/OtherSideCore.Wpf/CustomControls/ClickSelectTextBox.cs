@@ -17,6 +17,15 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(ClickSelectTextBox_WatermarkProperty, value); }
       }
 
+      public static readonly DependencyProperty ClickSelectTextBox_TextMarginProperty =
+        DependencyProperty.Register("ClickSelectTextBox_TextMargin", typeof(Thickness), typeof(ClickSelectTextBox), new UIPropertyMetadata(new Thickness(8,0,8,0)));
+
+      public Thickness ClickSelectTextBox_TextMargin
+      {
+         get { return (Thickness)GetValue(ClickSelectTextBox_TextMarginProperty); }
+         set { SetValue(ClickSelectTextBox_TextMarginProperty, value); }
+      }
+
       public ClickSelectTextBox()
       {
          AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(SelectivelyIgnoreMouseButton), true);

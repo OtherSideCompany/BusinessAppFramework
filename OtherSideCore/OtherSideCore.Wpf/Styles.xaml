@@ -18,6 +18,7 @@
    <SolidColorBrush Color="#FFE6E6E6" x:Key="OtherSide_SuperLightGray" Opacity="0.2"/>
 
    <SolidColorBrush Color="#FFff001e" x:Key="OtherSide_Red"/>
+   <SolidColorBrush Color="#FFb20015" x:Key="OtherSide_Red_Dark"/>
    <SolidColorBrush Color="#FF00e236" x:Key="OtherSide_Green" />
 
    <SolidColorBrush Color="#ff1789fc" x:Key="Highlight_Blue" />
@@ -406,23 +407,6 @@
       <Setter Property="Margin" Value="16,16,0,16" />
    </Style>
 
-   <!-- Model Object Properties Pannel Action button -->
-   <Style x:Key="DomainObjectPropertiesPannelActionButton" TargetType="{x:Type customControls:SvgImageTextButton}">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="SvgImageTextButton_ImageSize" Value="32" />
-      <Setter Property="SvgImageTextButton_Orientation" Value="Vertical" />
-      <Setter Property="SvgImageTextButton_TextMargin" Value="0,4,0,0" />
-   </Style>
-
-   <!-- Model Object Properties Pannel Action Toggle button -->
-   <Style x:Key="DomainObjectPropertiesPannelActionToggleButton" TargetType="{x:Type customControls:SvgImageTextToggleButton}">
-      <Setter Property="Background" Value="White" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="SvgImageTextToggleButton_ImageSize" Value="32" />
-      <Setter Property="SvgImageTextToggleButton_Orientation" Value="Vertical" />
-      <Setter Property="SvgImageTextToggleButton_TextMargin" Value="0,4,0,0" />
-   </Style>
-
    <!-- View header -->
    <Style x:Key="ViewHeader" TargetType="{x:Type TextBlock}">
       <Setter Property="FontSize" Value="22" />
@@ -447,7 +431,7 @@
 
    <!-- ClickSelectTextBox -->
    <Style TargetType="{x:Type customControls:ClickSelectTextBox}">
-      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Background" Value="White" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="MinWidth" Value="10" />
@@ -461,7 +445,8 @@
                        Background="{TemplateBinding Background}"
                        CornerRadius="8"
                        x:Name="Border">
-                  <Grid Margin="8,0,8,0">
+                  <Grid Margin="{Binding ClickSelectTextBox_TextMargin, RelativeSource={RelativeSource TemplatedParent}}" 
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
                      <TextBox Text="{Binding Text, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" 
                               Background="Transparent"
                               BorderThickness="0"
@@ -841,6 +826,48 @@
                      <Setter Property="Opacity" Value="0.3" />
                   </Trigger>
                </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+   
+   <!-- More Actions Image Toggle Button -->
+   <Style x:Key="MoreActionsImageToggleButton" TargetType="{x:Type customControls:SvgImageToggleButton}">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Margin" Value="4,0,0,0" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Width" Value="40" />
+      <Setter Property="SvgImageToggleButton_IconGeometry" Value="{StaticResource icon_dots_horizontal}" />
+      <Setter Property="SvgImageToggleButton_CornerRadius" Value="16" />
+      <Setter Property="SvgImageToggleButton_ImageSize" Value="20" />
+   </Style>
+
+   <!-- CardHeaderToggleButton -->
+   <Style TargetType="{x:Type ToggleButton}"  x:Key="CardHeaderToggleButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+               <Grid Background="{TemplateBinding Background}">
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto" />
+                     <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+
+                  <ContentPresenter Grid.Column="0" VerticalAlignment="Center" Height="{TemplateBinding Height}" />
+
+                  <customControls:SvgImageToggleButton Grid.Column="1" HorizontalAlignment="Right"
+                                                       SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-right}" 
+                                                       SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
+                                                       SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                       SvgImageToggleButton_OverBackgroundColor="Transparent"
+                                                       SvgImageToggleButton_ImageSize="16"
+                                                       BorderThickness="0"
+                                                       Height="{TemplateBinding Height}"
+                                                       IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}" />
+
+               </Grid>
             </ControlTemplate>
          </Setter.Value>
       </Setter>

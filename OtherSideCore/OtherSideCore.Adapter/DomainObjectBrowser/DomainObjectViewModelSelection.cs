@@ -62,6 +62,29 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          }
       }
 
+      public bool IsSelectionEmpty
+      {
+         get
+         {
+            if (SelectionType == DomainObjectViewModelSelectionType.None)
+            {
+               return true;
+            }
+            else if (SelectionType == DomainObjectViewModelSelectionType.Single)
+            {
+               return _selectedViewModel == null;
+            }
+            else if (SelectionType == DomainObjectViewModelSelectionType.Multiple)
+            {
+               return !_selectedViewModels.Any();
+            }
+            else
+            {
+               return true;
+            }
+         }
+      }
+
       #endregion
 
       #region Commands
@@ -153,26 +176,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          NotifyPropertyChanged();
       }
 
-      public bool IsSelectionEmpty()
-      {
-         if (SelectionType == DomainObjectViewModelSelectionType.None)
-         {
-            return true;
-         }
-         else if (SelectionType == DomainObjectViewModelSelectionType.Single)
-         {
-            return _selectedViewModel == null;
-         }
-         else if (SelectionType == DomainObjectViewModelSelectionType.Multiple)
-         {
-            return !_selectedViewModels.Any();
-         }
-         else
-         {
-            throw new ArgumentException("Unknown selection type " + SelectionType.ToString());
-         }
-      }
-
       #endregion
 
       #region Private Methods
@@ -181,6 +184,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          OnPropertyChanged(nameof(SelectedViewModel));
          OnPropertyChanged(nameof(SelectedViewModels));
+         OnPropertyChanged(nameof(IsSelectionEmpty));
       }
 
       #endregion
