@@ -5,6 +5,9 @@
     <Compile Update="UserControls\ConstraintsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\EmptyListIndicator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -17,6 +20,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ConstraintsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\EmptyListIndicator.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">

@@ -26,6 +26,15 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(ClickSelectTextBox_TextMarginProperty, value); }
       }
 
+      public static readonly DependencyProperty ClickSelectTextBox_UnitsProperty =
+        DependencyProperty.Register("ClickSelectTextBox_Units", typeof(string), typeof(ClickSelectTextBox), new UIPropertyMetadata(String.Empty));
+
+      public string ClickSelectTextBox_Units
+      {
+         get { return (string)GetValue(ClickSelectTextBox_UnitsProperty); }
+         set { SetValue(ClickSelectTextBox_UnitsProperty, value); }
+      }
+
       public ClickSelectTextBox()
       {
          AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(SelectivelyIgnoreMouseButton), true);

@@ -16,7 +16,7 @@ namespace OtherSideCore.Wpf.UserControls
       private void ClosePopupButton_Click(object sender, RoutedEventArgs e)
       {
          MainWindow mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-         mainWindow.HideModal();
+         mainWindow.HideTopModal();
       }
    }
 }

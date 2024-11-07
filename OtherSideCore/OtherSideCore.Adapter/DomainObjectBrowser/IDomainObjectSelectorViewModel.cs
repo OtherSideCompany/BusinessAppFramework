@@ -8,7 +8,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
    public interface IDomainObjectSelectorViewModel
    {
-      void RequestSearch();
-      void SelectDomainObjectViewModel(DomainObjectViewModel domainObjectViewModel);
+      bool CanValidateSelection();
+      void ValidateSelection();
    }
 }

@@ -14,7 +14,8 @@
               BorderBrush="{StaticResource OtherSide_Gray}" 
               CornerRadius="16" 
               Padding="24,16,24,16"
-              x:Name="ContentBorder" />
+              x:Name="ContentBorder" 
+              Margin="40"/>
       
    </Grid>
 </UserControl>

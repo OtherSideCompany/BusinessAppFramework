@@ -15,5 +15,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       void UnloadEditorViewModels(IEnumerable<DomainObjectViewModel> domainObjectViewModels);
       Task LoadNestedBrowsersAsync();
       Task SelectSearchResultViewModelAsync(DomainObjectViewModel domainObjectViewModel);
+      Task InitializeAsync(CancellationToken cancellationToken = default);
    }
 }

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Adapter.ViewDescriptions;
+using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
@@ -17,7 +18,8 @@ namespace OtherSideCore.Adapter.Views
       protected readonly IAuthenticationService _authenticationService;
       protected readonly ILoggerFactory _loggerFactory;
       protected readonly IGlobalDataService _globalDataService;
-      protected IUserContext _userContext;      
+      protected IUserContext _userContext;
+      protected IAppConfiguration _appConfiguration;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -142,13 +144,15 @@ namespace OtherSideCore.Adapter.Views
                                  IUserDialogService userDialogService, 
                                  IAuthenticationService authenticationService, 
                                  IUserContext userContext,
-                                 IGlobalDataService globalDataService)
+                                 IGlobalDataService globalDataService,
+                                 IAppConfiguration appConfiguration)
       {
          _userDialogService = userDialogService;
          _authenticationService = authenticationService;
          _serviceProvider = serviceProvider;
          UserContext = userContext;
          _globalDataService = globalDataService;
+         _appConfiguration = appConfiguration;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
@@ -159,6 +163,7 @@ namespace OtherSideCore.Adapter.Views
 
          ApplicationName = "Unnamed App";
 
+         _appConfiguration.Load();
          LoadSettings();
       }
 
@@ -183,11 +188,11 @@ namespace OtherSideCore.Adapter.Views
 
       private void LoadSettings()
       {
-         RememberUserName = Properties.Settings.Default.RememberUserName;
+         RememberUserName = _appConfiguration.RememberUserName;
 
          if (RememberUserName)
          {
-            ConnexionUserName = Properties.Settings.Default.UserName;
+            ConnexionUserName = _appConfiguration.UserLogin;
          }
       }
 
@@ -195,16 +200,16 @@ namespace OtherSideCore.Adapter.Views
       {
          if (RememberUserName)
          {
-            Properties.Settings.Default.UserName = ConnexionUserName;
-            Properties.Settings.Default.RememberUserName = RememberUserName;
+            _appConfiguration.UserLogin = ConnexionUserName;
+            _appConfiguration.RememberUserName = RememberUserName;
          }
          else
          {
-            Properties.Settings.Default.UserName = string.Empty;
-            Properties.Settings.Default.RememberUserName = false;
+            _appConfiguration.UserLogin = string.Empty;
+            _appConfiguration.RememberUserName = false;
          }
 
-         Properties.Settings.Default.Save();
+         _appConfiguration.Save();
       }
 
       private void ResetConnexionInfos()
@@ -256,20 +261,20 @@ namespace OtherSideCore.Adapter.Views
          LoadSettings();
       }
 
-      private async Task DisplayViewAsync(ViewDescriptionBase viewBase, CancellationToken cancellationToken)
+      private async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase, CancellationToken cancellationToken)
       {
          LoadedViewViewModel?.Dispose();
 
          ViewDescriptions.ForEach(vd => vd.Unload());
 
-         viewBase.Load();
+         viewDescriptionBase.Load();
 
          LoadedViewViewModel = (ViewBaseViewModel)_serviceProvider.GetService(LoadedViewDescription.ViewModelType);
          await LoadedViewViewModel.InitializeAsync(cancellationToken);
 
-         if (viewBase is ModuleDescription)
+         if (viewDescriptionBase is ModuleDescription)
          {
-            ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewBase;
+            ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewDescriptionBase;
          }
 
          OnPropertyChanged(nameof(LoadedViewDescription));

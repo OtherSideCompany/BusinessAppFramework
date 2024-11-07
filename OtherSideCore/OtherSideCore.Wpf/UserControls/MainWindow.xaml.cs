@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter.Views;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -61,7 +62,7 @@ namespace OtherSideCore.Wpf.UserControls
             VerticalAlignment = VerticalAlignment.Stretch,
          };
 
-         modalOverlay.MouseDown += (sender, e) => HideModal();
+         modalOverlay.MouseDown += (sender, e) => HideTopModal();
 
          var modalPopupBorder = new ModalPopupBorder();
          modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
@@ -77,11 +78,12 @@ namespace OtherSideCore.Wpf.UserControls
          _modalPopupStack.Push(modalOverlay);
       }
 
-      public void HideModal()
+      public void HideTopModal()
       {
          if (_modalPopupStack.Count > 0)
          {
             var modalOverlay = _modalPopupStack.Peek();
+
             var @continue = true;
 
             if (modalOverlay.DataContext is WorkspaceViewModel)
@@ -97,7 +99,6 @@ namespace OtherSideCore.Wpf.UserControls
             if (@continue)
             {
                _modalPopupStack.Pop();
-               ((ViewBaseViewModel)modalOverlay.DataContext).Dispose();
                ModalPopupHostGrid.Children.Remove(modalOverlay);
             }
          }

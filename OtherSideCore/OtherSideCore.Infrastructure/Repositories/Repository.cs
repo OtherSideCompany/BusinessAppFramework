@@ -49,7 +49,8 @@ namespace OtherSideCore.Infrastructure.Repositories
          using (var context = _dbContextFactory.CreateDbContext())
          {
             return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                            .ToListAsync(cancellationToken);
+                                               .OrderByDescending(e => e.Id)             
+                                               .ToListAsync(cancellationToken);
          }
       }
 
@@ -63,6 +64,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             var entites = await context.Set<TEntity>().ToListAsync(cancellationToken);
 
             return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                               .OrderByDescending(e => e.Id)
                                                .Where(where)
                                                .ToListAsync(cancellationToken);
          }
@@ -77,18 +79,12 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var projectedList = await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                               .OrderByDescending(e => e.Id)
                                                .Where(where)
                                                .Skip((pageNumber - 1) * pageSize)
                                                .Take(pageSize)
                                                .ToListAsync();
-
-            var nonprojectedList = await context.Set<TEntity>()
-                                               .Skip((pageNumber - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
-
-            return projectedList;
          }
       }
 

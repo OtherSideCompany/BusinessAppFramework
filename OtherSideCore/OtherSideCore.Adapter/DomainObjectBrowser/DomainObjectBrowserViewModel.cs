@@ -4,7 +4,6 @@ using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -241,6 +240,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
             editorViewModel.Dispose();
 
             DomainObjectEditorViewModels.Remove(editorViewModel);
+
+            Selection.UnselectViewModel(viewModel);
          }
       }
 

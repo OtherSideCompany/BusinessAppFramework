@@ -66,10 +66,11 @@ namespace OtherSideCore.Application.Services
          }
 
          var totalCount = await _repository.CountAsync(combinedExpressions, cancellationToken);
+         var results = await _repository.GetAllPaginatedAsync(combinedExpressions, pageNumber, pageSize, cancellationToken);
 
          return new PagedResult<T>
          {
-            Items = await _repository.GetAllPaginatedAsync(combinedExpressions, pageNumber, pageSize, cancellationToken),
+            Items = results,
             TotalCount = totalCount,
             PageNumber = pageNumber,
             PageSize = pageSize
