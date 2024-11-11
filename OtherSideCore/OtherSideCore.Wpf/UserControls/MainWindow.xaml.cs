@@ -61,8 +61,8 @@ namespace OtherSideCore.Wpf.UserControls
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch,
          };
-
-         modalOverlay.MouseDown += (sender, e) => HideTopModal();
+         
+         modalOverlay.MouseDown += (sender, e) => { if (e.OriginalSource == modalOverlay) HideTopModal(); };
 
          var modalPopupBorder = new ModalPopupBorder();
          modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
@@ -71,7 +71,7 @@ namespace OtherSideCore.Wpf.UserControls
          modalPopupBorder.DataContext = modalContent.DataContext;
 
          modalOverlay.Child = new ContentControl { Content = modalPopupBorder };
-         modalOverlay.DataContext = modalContent.DataContext;
+         modalOverlay.DataContext = modalContent.DataContext;         
 
          ModalPopupHostGrid.Children.Add(modalOverlay);
          Panel.SetZIndex(modalOverlay, 100 + _modalPopupStack.Count);

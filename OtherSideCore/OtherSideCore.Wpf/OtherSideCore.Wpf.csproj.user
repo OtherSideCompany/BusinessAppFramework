@@ -5,7 +5,28 @@
     <Compile Update="UserControls\ConstraintsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\DomainObjectDirectoryView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\EmptyListIndicator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\FileDropView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\FileListView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\FileTypeIcon.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\FolderListView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\FolderTypeIcon.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\ManagedFileListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
@@ -22,7 +43,25 @@
     <Page Update="UserControls\ConstraintsView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="UserControls\DomainObjectDirectoryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UserControls\EmptyListIndicator.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\FileDropView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\FileListView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\FileTypeIcon.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\FolderListView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\FolderTypeIcon.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">
@@ -35,6 +74,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\MainWindowTitleBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ManagedFileListView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ModalPopupBorder.xaml">

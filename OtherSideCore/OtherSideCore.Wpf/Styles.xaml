@@ -888,4 +888,12 @@
       </Setter>
    </Style>
 
+   <!-- List Border Style-->
+   <Style TargetType="{x:Type Border}" x:Key="ListBorderStyle">
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="8" />
+   </Style>
+
 </ResourceDictionary>

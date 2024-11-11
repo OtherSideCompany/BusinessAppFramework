@@ -7,5 +7,4 @@
    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
    <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
    <converters:BoolInverter x:Key="BoolInverter" />
-   <converters:DecimalInputConverter x:Key="DecimalInputConverter" />
 </ResourceDictionary>
