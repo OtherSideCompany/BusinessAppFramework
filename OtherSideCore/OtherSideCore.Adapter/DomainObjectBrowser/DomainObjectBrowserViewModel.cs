@@ -7,6 +7,7 @@ using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
@@ -113,7 +114,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       public DomainObjectBrowserViewModel(DomainObjectBrowser<T> domainObjectBrowser,
                                           IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                           IUserDialogService userDialogService,
-                                          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory) : base(domainObjectBrowser)
+                                          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
+                                          DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) : base(domainObjectBrowser)
       {
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _userDialogService = userDialogService;
@@ -128,7 +130,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged += SearchResultViewModels_CollectionChanged;
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModels;
 
-         Selection = new DomainObjectViewModelSelection(DomainObjectViewModelSelectionType.Single);
+         Selection = new DomainObjectViewModelSelection(selectionType);
          DomainObjectEditorViewModels = new ObservableCollection<IDomainObjectEditorViewModel>();
          _nestedDomainObjectBrowserViewModels = new ObservableCollection<IDomainObjectBrowserViewModel>();
       }
@@ -149,27 +151,30 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          if (!IsSelectionLocked)
          {
-            UnselectSearchResultViewModel(domainObjectViewModel);
-
-            if (domainObjectViewModel != null)
+            if (ProceedSelection(domainObjectViewModel))
             {
-               Selection.SelectViewModel(domainObjectViewModel);
+               UnselectSearchResultViewModel(domainObjectViewModel);
+
+               if (domainObjectViewModel != null)
+               {
+                  Selection.SelectViewModel(domainObjectViewModel);
+               }
+
+               OnPropertyChanged(nameof(SelectedDomainObjectEditorViewModel));
+               NotifyCommandsCanExecuteChanged();
+
+               IsLoadingNestedBrowsers = true;
+
+               await LoadNestedBrowsersAsync();
+
+               foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
+               {
+                  await nestedBrowserViewModel.LoadNestedBrowsersAsync();
+                  nestedBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
+               }
+
+               IsLoadingNestedBrowsers = false;
             }
-
-            OnPropertyChanged(nameof(SelectedDomainObjectEditorViewModel));
-            NotifyCommandsCanExecuteChanged();
-
-            IsLoadingNestedBrowsers = true;
-
-            await LoadNestedBrowsersAsync();
-
-            foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
-            {
-               await nestedBrowserViewModel.LoadNestedBrowsersAsync();
-               nestedBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
-            }
-
-            IsLoadingNestedBrowsers = false;
          }
       }
 
@@ -216,6 +221,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       public async Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
       {
+         var t = domainObjectViewModels.ToList();
+
          foreach (var domainObjectViewModel in domainObjectViewModels)
          {
             var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel, _domainObjectBrowser.DomainObjectServiceFactory.CreateDomainObjectService<T>());
@@ -227,19 +234,24 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
             DomainObjectEditorViewModels.Add(editorViewModel);
          }
+
+         SortEditorViewModels();
       }
 
       public void UnloadEditorViewModels(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
       {
          foreach (var viewModel in domainObjectViewModels)
          {
-            var editorViewModel = DomainObjectEditorViewModels.First(editorViewModel => editorViewModel.DomainObjectViewModel.Equals(viewModel));
+            var editorViewModel = DomainObjectEditorViewModels.FirstOrDefault(editorViewModel => editorViewModel.DomainObjectViewModel.Equals(viewModel));
 
-            editorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
-            editorViewModel.DomainObjectDeletedEvent -= EditorViewModel_DomainObjectDeletedEvent;
-            editorViewModel.Dispose();
+            if (editorViewModel != null)
+            {
+               editorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
+               editorViewModel.DomainObjectDeletedEvent -= EditorViewModel_DomainObjectDeletedEvent;
+               editorViewModel.Dispose();
 
-            DomainObjectEditorViewModels.Remove(editorViewModel);
+               DomainObjectEditorViewModels.Remove(editorViewModel);               
+            }
 
             Selection.UnselectViewModel(viewModel);
          }
@@ -271,6 +283,19 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       #endregion
 
       #region Private Methods
+
+      private bool ProceedSelection(DomainObjectViewModel domainObjectViewModel)
+      {
+         if (Selection.SelectionType == DomainObjectViewModelSelectionType.Single &&
+                domainObjectViewModel.Equals(Selection.SelectedViewModel))
+         {
+            return false;
+         }
+
+         return true;
+      }
+
+      protected virtual void SortEditorViewModels() { }
 
       protected virtual bool CanCreate()
       {

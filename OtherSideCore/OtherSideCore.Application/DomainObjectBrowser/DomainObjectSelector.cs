@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Application.Views;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;

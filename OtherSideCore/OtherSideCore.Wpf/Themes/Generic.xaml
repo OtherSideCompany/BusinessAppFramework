@@ -91,7 +91,7 @@
                        BorderBrush="{StaticResource OtherSide_LightGray}"
                        BorderThickness="{TemplateBinding BorderThickness}"
                        CornerRadius="16"
-                       Padding="10,0,10,0">
+                       Padding="8,0,8,0">
 
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -166,7 +166,6 @@
                   <Trigger Property="IsChecked" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageToggleButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                      <Setter Property="SvgViewer_ImageGeometry" Value="{Binding SvgImageToggleButton_CheckedIconGeometry, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Image"/>
-                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
                   </Trigger>
                   <Trigger Property="IsPressed" Value="True">
                      <Setter Property="Background" Value="{Binding SvgImageToggleButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
@@ -199,7 +198,7 @@
                      BorderBrush="{StaticResource OtherSide_LightGray}"
                      BorderThickness="{TemplateBinding BorderThickness}"
                      CornerRadius="16"
-                     Padding="5,0,10,0">
+                     Padding="8,0,8,0">
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Orientation="Horizontal"
@@ -260,7 +259,7 @@
                        BorderBrush="{StaticResource OtherSide_LightGray}"
                        BorderThickness="{TemplateBinding BorderThickness}"
                        CornerRadius="16"
-                       Padding="5,0,10,0">
+                       Padding="8,0,8,0">
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                               Orientation="Horizontal"

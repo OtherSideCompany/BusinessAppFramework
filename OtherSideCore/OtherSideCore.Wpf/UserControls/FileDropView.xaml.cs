@@ -79,7 +79,7 @@ namespace OtherSideCore.Wpf.UserControls
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-               Console.WriteLine($"Error accessing FileDrop data: {ex.Message}");
+               System.Diagnostics.Debug.WriteLine($"Error accessing FileDrop data: {ex.Message}");
             }           
          }
          else if (e.Data.GetDataPresent("FileGroupDescriptor"))

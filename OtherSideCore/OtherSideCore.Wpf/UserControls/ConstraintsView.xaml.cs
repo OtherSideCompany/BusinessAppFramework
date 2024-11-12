@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -9,6 +10,8 @@ namespace OtherSideCore.Wpf.UserControls
    /// </summary>
    public partial class ConstraintsView : UserControl
    {
+      public string UniqueGroupName { get; } = Guid.NewGuid().ToString();
+
       public static readonly DependencyProperty ConstraintsView_SearchCommandProperty =
             DependencyProperty.Register("ConstraintsView_SearchCommand", typeof(ICommand), typeof(ConstraintsView), new UIPropertyMetadata(null));
 

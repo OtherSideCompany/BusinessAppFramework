@@ -11,7 +11,7 @@
     <Grid>
       <StackPanel Orientation="Horizontal">
          <customcontrols:TextRadioButton Margin="0,0,16,0"
-                                         GroupName="Constraints" 
+                                         GroupName="{Binding UniqueGroupName, ElementName=ConstraintsViewUserControl}" 
                                          TextRadioButton_Text="Tout"
                                          Command="{Binding ConstraintsView_SearchCommand, ElementName=ConstraintsViewUserControl}"
                                          CommandParameter="{StaticResource False}"
@@ -26,7 +26,7 @@
             <ItemsControl.ItemTemplate>
                <DataTemplate>
                   <customcontrols:TextRadioButton Margin="0,0,16,0" 
-                                                  GroupName="Constraints" 
+                                                  GroupName="{Binding UniqueGroupName, ElementName=ConstraintsViewUserControl}" 
                                                   TextRadioButton_Text="{Binding Constraint.Name}"
                                                   IsChecked="{Binding IsSelected}"/>
                </DataTemplate>

@@ -239,7 +239,7 @@
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemContainerStyle}" />
       <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-      <EventSetter Event="PreviewMouseWheel" Handler="SideMenuListView_PreviewMouseWheel" />
+      <EventSetter Event="PreviewMouseWheel" Handler="ListView_PreviewMouseWheel" />
 
    </Style>
 
@@ -670,7 +670,7 @@
             <ControlTemplate TargetType="{x:Type Thumb}">
                <Grid x:Name="Grid">
                   <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                  <Border x:Name="Rectangle1" CornerRadius="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  
+                  <Border x:Name="Rectangle1" CornerRadius="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  
                        Background="{TemplateBinding Background}" />
                </Grid>
                <ControlTemplate.Triggers>
@@ -894,6 +894,66 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="8" />
       <Setter Property="Padding" Value="8" />
+   </Style>
+   
+   <!-- TreeView Style -->
+   <Style TargetType="{x:Type TreeView}">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+      <EventSetter Event="PreviewMouseWheel" Handler="ListView_PreviewMouseWheel" />
+   </Style>
+
+   <Style TargetType="{x:Type TreeViewItem}">
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type TreeViewItem}">
+               <Grid>
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto" SharedSizeGroup="ExpanderIcon" />
+                     <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <customControls:SvgImageToggleButton Grid.Row="0" Grid.Column="0" Width="20" Height="20"
+                                                       x:Name="ExpanderToggleButton"
+                                                       Background="Transparent"
+                                                       Margin="0,0,4,0"
+                                                       IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource AncestorType=TreeViewItem}, Mode=TwoWay}"
+                                                       SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-right}"
+                                                       SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
+                                                       SvgImageToggleButton_ImageSize="16"
+                                                       SvgImageToggleButton_OverBackgroundColor="Transparent"
+                                                       SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                       SvgImageToggleButton_ImageColor="{StaticResource OtherSide_DarkGray}"
+                                                       BorderThickness="0"/>
+
+                  <ContentPresenter Grid.Row="0" Grid.Column="1" 
+                                    x:Name="PART_Header"
+                                    ContentSource="Header"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="Center" />
+
+                  <ItemsPresenter Grid.Row="1" Grid.Column="1" x:Name="ItemsHost"  Margin="16,0,0,0"/>
+               </Grid>
+
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsExpanded" Value="false">
+                     <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+                  </Trigger>
+                  <Trigger Property="IsExpanded" Value="true">
+                     <Setter TargetName="ItemsHost" Property="Visibility" Value="Visible" />
+                  </Trigger>
+                  <DataTrigger Binding="{Binding HasItems, RelativeSource={RelativeSource Self}}" Value="False">
+                     <Setter TargetName="ExpanderToggleButton" Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
    </Style>
 
 </ResourceDictionary>

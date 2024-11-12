@@ -12,7 +12,7 @@ namespace OtherSideCore.Wpf.CustomControls
    {
       private const int GRIDVIEW_COLUMN_MIN_WIDTH = 50;
 
-      private void SideMenuListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+      private void ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
       {
          if (!e.Handled)
          {
@@ -46,9 +46,9 @@ namespace OtherSideCore.Wpf.CustomControls
 
          if (selectedDomainObjectViewModel != null)
          {
-            var domainObjectSearchViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
+            var domainObjectBrowserViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
 
-            await domainObjectSearchViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectViewModel);
+            await domainObjectBrowserViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectViewModel);
          }
       }
 
