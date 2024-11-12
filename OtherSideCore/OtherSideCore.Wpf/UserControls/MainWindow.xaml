@@ -51,7 +51,7 @@
 
             </Grid>
 
-            <Grid x:Name="ModalPopupHostGrid"/>
+            <ContentPresenter Content="{Binding MainWindow_ModalContent, ElementName=MainWindowUserControl}" />
 
          </Grid>
 

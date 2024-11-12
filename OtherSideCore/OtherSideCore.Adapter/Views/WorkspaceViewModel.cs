@@ -32,7 +32,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      protected WorkspaceViewModel(Workspace workspace) :  base(workspace)
+      protected WorkspaceViewModel(Workspace workspace, IWindowService windowService) :  base(workspace, windowService)
       {
 
       }

@@ -17,6 +17,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       protected DomainObjectViewModel _domainObjectViewModel;
       protected IDomainObjectService<T> _domainObjectService;
       protected IUserDialogService _userDialogService;
+      protected IWindowService _windowService;
 
       protected ObservableCollection<IDomainObjectBrowserViewModel> _nestedDomainObjectBrowserViewModels;
 
@@ -84,11 +85,13 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       public DomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel,
                                          IDomainObjectService<T> domainObjectService,
-                                         IUserDialogService userDialogService)
+                                         IUserDialogService userDialogService,
+                                         IWindowService windowService)
       {
          _domainObjectViewModel = domainObjectViewModel;
          _domainObjectService = domainObjectService;
          _userDialogService = userDialogService;
+         _windowService = windowService;
 
          DeleteAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel>(DeleteAsync, CanDelete);
 

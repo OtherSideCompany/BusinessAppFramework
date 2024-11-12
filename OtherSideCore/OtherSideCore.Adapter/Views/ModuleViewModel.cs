@@ -33,7 +33,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ModuleViewModel(Module module) : base(module)
+      public ModuleViewModel(Module module, IWindowService windowService) : base(module, windowService)
       {
          _module = module;
       }

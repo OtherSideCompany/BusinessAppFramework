@@ -40,11 +40,13 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                                            IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
+                                           IWindowService windowService,
                                            DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) :
          base(domainObjectSelector,
               domainObjectViewModelFactory,
               userDialogService,
               domainObjectsSearchViewModelFactory,
+              windowService,
               selectionType)
       {
          _dynamicSearch = dynamicSearch;

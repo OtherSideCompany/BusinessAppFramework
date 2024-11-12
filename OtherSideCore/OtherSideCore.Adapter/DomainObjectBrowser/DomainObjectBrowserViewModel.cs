@@ -115,7 +115,9 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                                           IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                           IUserDialogService userDialogService,
                                           IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
-                                          DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) : base(domainObjectBrowser)
+                                          IWindowService windowService,
+                                          DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) : 
+         base(domainObjectBrowser, windowService)
       {
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _userDialogService = userDialogService;
@@ -368,7 +370,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       protected virtual IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel, IDomainObjectService<T> domainObjectService)
       {
-         return new DomainObjectEditorViewModel<T>(domainObjectViewModel, domainObjectService, _userDialogService);
+         return new DomainObjectEditorViewModel<T>(domainObjectViewModel, domainObjectService, _userDialogService, _windowService);
       }
 
       private async void SearchResultViewModels_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

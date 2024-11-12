@@ -20,6 +20,7 @@ namespace OtherSideCore.Adapter.Views
       protected readonly IGlobalDataService _globalDataService;
       protected IUserContext _userContext;
       protected IAppConfiguration _appConfiguration;
+      protected IWindowService _windowService;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -123,6 +124,8 @@ namespace OtherSideCore.Adapter.Views
          }
       }
 
+      public IWindowService WindowService => _windowService;
+
       public string UserContextFirstName => UserContext?.FirstName;
       public string UserContextLastName => UserContext?.LastName;
 
@@ -145,7 +148,8 @@ namespace OtherSideCore.Adapter.Views
                                  IAuthenticationService authenticationService, 
                                  IUserContext userContext,
                                  IGlobalDataService globalDataService,
-                                 IAppConfiguration appConfiguration)
+                                 IAppConfiguration appConfiguration,
+                                 IWindowService windowService)
       {
          _userDialogService = userDialogService;
          _authenticationService = authenticationService;
@@ -153,6 +157,7 @@ namespace OtherSideCore.Adapter.Views
          UserContext = userContext;
          _globalDataService = globalDataService;
          _appConfiguration = appConfiguration;
+         _windowService = windowService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();

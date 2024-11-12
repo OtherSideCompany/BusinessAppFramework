@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using OtherSideCore.Adapter.Views;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace OtherSideCore.Wpf.UserControls
@@ -15,8 +16,8 @@ namespace OtherSideCore.Wpf.UserControls
 
       private void ClosePopupButton_Click(object sender, RoutedEventArgs e)
       {
-         MainWindow mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-         mainWindow.HideTopModal();
+         MainWindowViewModel mainWindowViewModel = (MainWindowViewModel)System.Windows.Application.Current.MainWindow.DataContext;
+         mainWindowViewModel.WindowService.HideTopModal();
       }
    }
 }

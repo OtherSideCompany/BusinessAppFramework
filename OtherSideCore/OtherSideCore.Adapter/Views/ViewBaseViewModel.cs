@@ -8,6 +8,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       protected ViewBase _viewBase;
+      protected IWindowService _windowService;
 
       #endregion
 
@@ -24,9 +25,10 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ViewBaseViewModel(ViewBase viewBase)
+      public ViewBaseViewModel(ViewBase viewBase, IWindowService windowService)
       {
          _viewBase = viewBase;
+         _windowService = windowService;
       }
 
       #endregion
