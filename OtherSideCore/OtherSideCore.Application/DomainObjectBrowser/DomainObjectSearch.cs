@@ -9,9 +9,9 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       #region Fields
 
       protected IDomainObjectQueryService<T> _domainObjectQueryService;
-      private List<DomainObject> _searchResults;
-      private MultiTextFilter _multiTextFilter;
-      private PageNavigation _pageNavigation;
+      protected List<DomainObject> _searchResults;
+      protected MultiTextFilter _multiTextFilter;
+      protected PageNavigation _pageNavigation;
 
       private Func<CancellationToken, Task> _selectedSearchResultChangedAsync;
 
@@ -144,7 +144,7 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       #region Private Methods
 
-      private void UnloadSearchResults()
+      protected void UnloadSearchResults()
       {
          _searchResults.ForEach(r => r.Dispose());
          _searchResults.Clear();

@@ -182,7 +182,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Private Methods  
 
-      private void ConstructConstraintViewModels()
+      protected void ConstructConstraintViewModels()
       {
          ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
          ConstraintViewModels.Clear();

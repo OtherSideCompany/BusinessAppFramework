@@ -125,7 +125,10 @@ namespace OtherSideCore.Adapter
 
       #region private Methods
 
-      protected virtual void DisplayInExternalWindow() { }
+      protected virtual void DisplayInExternalWindow() 
+      {
+         ((IWindowService)_windowService).ShowDomainObjectViewModelInSubWindow(this);
+      }
 
       private string GetHistoryDescription(DateTime dateTime, User user)
       {

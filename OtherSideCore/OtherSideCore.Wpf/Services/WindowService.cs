@@ -105,9 +105,11 @@ namespace OtherSideCore.Wpf.Services
          }
       }
 
-      public abstract void ShowSubWindow(object content);
+      public abstract object ShowSubWindow();
 
       public abstract void ShowMainWindow();
+
+      public abstract void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel);
 
       public void CloseWindow(object window)
       {
@@ -143,6 +145,16 @@ namespace OtherSideCore.Wpf.Services
          window.Activated += OnWindowActivated;
 
          return window;
+      }
+
+      protected void ShowSubWindow(UserControl content, object viewModel, string windowName)
+      {
+         content.DataContext = viewModel;
+
+         var subWindow = (SubWindow)ShowSubWindow();
+         subWindow.SubWindow_ViewContent = content;
+
+         ((WindowViewModel)subWindow.DataContext).WindowName = windowName;
       }
 
       private void OnWindowActivated(object sender, EventArgs e)
