@@ -1,14 +1,11 @@
-﻿using OtherSideCore.Adapter.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace OtherSideCore.Adapter
 {
    public interface IWindowService
    {
+      void ShowSubWindow(object content);
+      void ShowMainWindow();
+      void CloseWindow(object window);
       void ShowModal(object modalContent);
       void HideTopModal();
    }

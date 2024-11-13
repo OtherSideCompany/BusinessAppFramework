@@ -17,6 +17,7 @@ namespace OtherSideCore.Adapter
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
       protected IUserContext _userContext;
+      protected IWindowService _windowService;
 
       #endregion
 
@@ -34,11 +35,12 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public DomainObjectViewModelFactory(IGlobalDataService globalDataService, IMapper mapper, IUserContext userContext)
+      public DomainObjectViewModelFactory(IGlobalDataService globalDataService, IMapper mapper, IUserContext userContext, IWindowService windowService)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
          _userContext = userContext;
+         _windowService = windowService;
       }
 
       #endregion

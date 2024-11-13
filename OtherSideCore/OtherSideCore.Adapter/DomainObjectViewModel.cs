@@ -17,6 +17,7 @@ namespace OtherSideCore.Adapter
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
+      protected IWindowService _windowService;
 
       protected List<DomainObjectViewModel> _nestedDomainObjectViewModels;
 
@@ -69,11 +70,13 @@ namespace OtherSideCore.Adapter
       public DomainObjectViewModel(DomainObject domainObject,
                                    IGlobalDataService globalDataService,
                                    IMapper mapper,
-                                   IDomainObjectViewModelFactory domainObjectViewModelFactory)
+                                   IDomainObjectViewModelFactory domainObjectViewModelFactory,
+                                   IWindowService windowService)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
+         _windowService = windowService;
 
          DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
          ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);

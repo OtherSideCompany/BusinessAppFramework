@@ -9,22 +9,12 @@ using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class MainWindowViewModel : ObservableObject, IDisposable
+   public abstract class MainWindowViewModel : WindowViewModel
    {
       #region Fields
 
-      protected readonly IServiceProvider _serviceProvider;
-      protected readonly IUserDialogService _userDialogService;
-      protected readonly IAuthenticationService _authenticationService;
-      protected readonly ILoggerFactory _loggerFactory;
-      protected readonly IGlobalDataService _globalDataService;
-      protected IUserContext _userContext;
-      protected IAppConfiguration _appConfiguration;
-      protected IWindowService _windowService;
+      private IAuthenticationService _authenticationService;
 
-      private string _applicationLogoImageSource;
-      private string _companyLogoImageSource;
-      private string _applicationName;
       private bool _isNavigationMenuDisplayed;
       private List<ViewDescriptionBase> _viewDescriptions;
       private List<ViewDescriptionBase> _quickNavigationViewescriptions;
@@ -39,25 +29,7 @@ namespace OtherSideCore.Adapter.Views
 
       #endregion
 
-      #region Properties
-
-      public string ApplicationLogoImageSource
-      {
-         get => _applicationLogoImageSource;
-         set => SetProperty(ref _applicationLogoImageSource, value);
-      }
-
-      public string CompanyLogoImageSource
-      {
-         get => _companyLogoImageSource;
-         set => SetProperty(ref _companyLogoImageSource, value);
-      }
-
-      public string ApplicationName
-      {
-         get => _applicationName;
-         set => SetProperty(ref _applicationName, value);
-      }
+      #region Properties      
 
       public bool IsNavigationMenuDisplayed
       {
@@ -107,12 +79,6 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _loadedViewViewModel, value);
       }
 
-      public IUserContext UserContext
-      {
-         get => _userContext;
-         set => SetProperty(ref _userContext, value);
-      }
-
       public bool IsUserContextInitialized
       {
          get => _isUserContextInitialized;
@@ -125,10 +91,8 @@ namespace OtherSideCore.Adapter.Views
       }
 
       public IWindowService WindowService => _windowService;
-
       public string UserContextFirstName => UserContext?.FirstName;
       public string UserContextLastName => UserContext?.LastName;
-
       public ViewDescriptionBase LoadedViewDescription => ViewDescriptions.FirstOrDefault(vd => vd.IsLoaded);
 
       #endregion
@@ -149,15 +113,15 @@ namespace OtherSideCore.Adapter.Views
                                  IUserContext userContext,
                                  IGlobalDataService globalDataService,
                                  IAppConfiguration appConfiguration,
-                                 IWindowService windowService)
+                                 IWindowService windowService) :
+         base(serviceProvider,
+              userDialogService,
+              userContext,
+              globalDataService,
+              appConfiguration,
+              windowService)
       {
-         _userDialogService = userDialogService;
          _authenticationService = authenticationService;
-         _serviceProvider = serviceProvider;
-         UserContext = userContext;
-         _globalDataService = globalDataService;
-         _appConfiguration = appConfiguration;
-         _windowService = windowService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
@@ -166,10 +130,10 @@ namespace OtherSideCore.Adapter.Views
          LogOutAsyncCommand = new AsyncRelayCommand(LogOutAsync);
          DisplayViewAsyncCommand = new AsyncRelayCommand<ViewDescriptionBase>(DisplayViewAsync);
 
-         ApplicationName = "Unnamed App";
-
          _appConfiguration.Load();
          LoadSettings();
+
+         WindowName = "";
       }
 
       #endregion
@@ -178,6 +142,8 @@ namespace OtherSideCore.Adapter.Views
 
       public void Dispose()
       {
+         base.Dispose();
+
          _globalDataService.UnloadData();
          ViewDescriptions.ForEach(vd => vd.Dispose());
          QuickNavigationViewDescriptions.ForEach(vd => vd.Dispose());
@@ -278,11 +244,13 @@ namespace OtherSideCore.Adapter.Views
          await LoadedViewViewModel.InitializeAsync(cancellationToken);
 
          if (viewDescriptionBase is ModuleDescription)
+
          {
             ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewDescriptionBase;
          }
 
          OnPropertyChanged(nameof(LoadedViewDescription));
+         WindowName = LoadedViewDescription.ViewNavigationPath;
       }
 
       #endregion

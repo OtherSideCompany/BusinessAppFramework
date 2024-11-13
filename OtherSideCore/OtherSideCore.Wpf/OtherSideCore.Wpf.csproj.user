@@ -35,6 +35,9 @@
     <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\SubWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Icons\Icons.xaml">
@@ -73,7 +76,10 @@
     <Page Update="UserControls\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\MainWindowTitleBar.xaml">
+    <Page Update="UserControls\SubWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\WindowTitleBar.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ManagedFileListView.xaml">

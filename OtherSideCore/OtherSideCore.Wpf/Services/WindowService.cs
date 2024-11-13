@@ -1,6 +1,8 @@
-﻿using OtherSideCore.Adapter;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,13 +10,15 @@ using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.Services
 {
-   public class WindowService : IWindowService
+   public abstract class WindowService : IWindowService
    {
       #region Fields
 
-      private readonly Stack<Border> _modalPopupStack;
-      private UserControl _modalPopupHost;
-      private Grid _modalPopupHostGrid;
+      protected IServiceProvider _serviceProvider;
+
+      private readonly Dictionary<Window, Stack<Border>> _modalPopupStacks;
+      private readonly List<Window> _windows;
+      private Window _activeWindow;
 
       #endregion
 
@@ -32,20 +36,19 @@ namespace OtherSideCore.Wpf.Services
 
       #region Constructor
 
-      public WindowService()
+      public WindowService(IServiceProvider serviceProvider)
       {
-         _modalPopupStack = new Stack<Border>();
+         System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
-         var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-         var modalPopupHost = mainWindow.MainWindow_ModalContent;
-         _modalPopupHost = modalPopupHost;
-         _modalPopupHostGrid = new Grid();
-         _modalPopupHost.Content = _modalPopupHostGrid;
-      }  
+         _serviceProvider = serviceProvider;
+
+         _modalPopupStacks = new Dictionary<Window, Stack<Border>>();
+         _windows = new List<Window>();
+      }
 
       #endregion
 
-      #region Public Methods
+      #region Public Methods   
 
       public void ShowModal(object modalContent)
       {
@@ -69,16 +72,18 @@ namespace OtherSideCore.Wpf.Services
          modalOverlay.Child = new ContentControl { Content = modalPopupBorder };
          modalOverlay.DataContext = userControl.DataContext;
 
-         _modalPopupHostGrid.Children.Add(modalOverlay);
-         Panel.SetZIndex(modalOverlay, 100 + _modalPopupStack.Count);
-         _modalPopupStack.Push(modalOverlay);
+         WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Add(modalOverlay);
+         Panel.SetZIndex(modalOverlay, 100 + _modalPopupStacks[_activeWindow].Count);
+         _modalPopupStacks[_activeWindow].Push(modalOverlay);
       }
 
       public void HideTopModal()
       {
-         if (_modalPopupStack.Count > 0)
+         var currentModalPopupStack = _modalPopupStacks[_activeWindow];
+
+         if (currentModalPopupStack.Count > 0)
          {
-            var modalOverlay = _modalPopupStack.Peek();
+            var modalOverlay = currentModalPopupStack.Peek();
 
             var @continue = true;
 
@@ -94,17 +99,72 @@ namespace OtherSideCore.Wpf.Services
 
             if (@continue)
             {
-               _modalPopupStack.Pop();
-               _modalPopupHostGrid.Children.Remove(modalOverlay);
+               currentModalPopupStack.Pop();
+               WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Remove(modalOverlay);
             }
          }
+      }
+
+      public abstract void ShowSubWindow(object content);
+
+      public abstract void ShowMainWindow();
+
+      public void CloseWindow(object window)
+      {
+         _modalPopupStacks.Remove((Window)window);
+         ((Window)window).Close(); 
       }
 
       #endregion
 
       #region Private Methods
 
+      protected MainWindow CreateMainWindow()
+      {
+         var window = _serviceProvider.GetRequiredService<MainWindow>();
+         window.MainWindow_ModalContent = new UserControl();
+         window.MainWindow_ModalContent.Content = new Grid() { Name = "ContentGrid" };
+         
+         _modalPopupStacks.Add(window, new Stack<Border>());
 
+         window.Activated += OnWindowActivated;
+
+         return window;
+      }
+
+      protected SubWindow CreateSubWindow()
+      {
+         var window = _serviceProvider.GetRequiredService<SubWindow>();
+         window.SubWindow_ModalContent = new UserControl();
+         window.SubWindow_ModalContent.Content = new Grid() { Name = "ContentGrid" };
+
+         _modalPopupStacks.Add(window, new Stack<Border>());
+
+         window.Activated += OnWindowActivated;
+
+         return window;
+      }
+
+      private void OnWindowActivated(object sender, EventArgs e)
+      {
+         _activeWindow = sender as Window;
+      }
+
+      private UserControl GetModalContent(Window window)
+      {
+         if (window is MainWindow mainWindow)
+         {
+            return mainWindow.MainWindow_ModalContent;
+         }
+         else if (window is SubWindow subWindow)
+         {
+            return subWindow.SubWindow_ModalContent;
+         }
+         else
+         {
+            return null;
+         }
+      }
 
       #endregion
    }

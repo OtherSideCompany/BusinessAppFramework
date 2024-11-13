@@ -1,0 +1,42 @@
+﻿<Window x:Class="OtherSideCore.Wpf.UserControls.SubWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls"
+        mc:Ignorable="d" 
+        d:DesignHeight="450" d:DesignWidth="800"
+        WindowStyle="None"
+        WindowState="Maximized"
+        x:Name="SubWindowUserControl">
+   <WindowChrome.WindowChrome>
+      <WindowChrome CaptionHeight="0" CornerRadius="0" ResizeBorderThickness="10" GlassFrameThickness="0"/>
+   </WindowChrome.WindowChrome>
+
+   <Grid x:Name="LayoutRoot" Style="{StaticResource MainGridApplicationLayout}" Background="{StaticResource OtherSide_LightGray}">
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto" />
+         <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <local:WindowTitleBar Grid.Row="0" WindowTitleBar_ApplicationLogoColor="{Binding SubWindow_ApplicationLogoColor, ElementName=SubWindowUserControl}" />
+
+      <Border Grid.Row="1" BorderThickness="0,0,1,1">
+
+         <Grid>
+
+            <!-- content -->
+            <Border Grid.Column="1" Background="White">
+               <Grid>
+                  <ContentPresenter Content="{Binding SubWindow_ViewContent, ElementName=SubWindowUserControl}" />
+               </Grid>
+            </Border>
+
+            <ContentPresenter Content="{Binding SubWindow_ModalContent, ElementName=SubWindowUserControl}" />
+
+         </Grid>
+
+      </Border>
+
+   </Grid>
+</Window>

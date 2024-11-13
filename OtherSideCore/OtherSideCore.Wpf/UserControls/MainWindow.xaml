@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls" 
+        xmlns:customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
         mc:Ignorable="d"
         Title="MainWindow" 
         x:Name="MainWindowUserControl"
@@ -20,7 +21,7 @@
          <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
-      <local:MainWindowTitleBar Grid.Row="0" MainWindowTitleBar_ApplicationLogoColor="{Binding MainWindow_ApplicationLogoColor, ElementName=MainWindowUserControl}" />
+      <local:WindowTitleBar Grid.Row="0" WindowTitleBar_ApplicationLogoColor="{Binding MainWindow_ApplicationLogoColor, ElementName=MainWindowUserControl}" />
 
       <Border Grid.Row="1" BorderThickness="0,0,1,1">
 
