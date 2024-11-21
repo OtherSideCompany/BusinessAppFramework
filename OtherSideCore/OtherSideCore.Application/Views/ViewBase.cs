@@ -45,7 +45,7 @@ namespace OtherSideCore.Application.Views
 
       #region Public Methods
 
-      public abstract Task InitializeAsync(CancellationToken cancellationToken);
+      public abstract Task InitializeAsync();
 
       public abstract void Dispose();
 

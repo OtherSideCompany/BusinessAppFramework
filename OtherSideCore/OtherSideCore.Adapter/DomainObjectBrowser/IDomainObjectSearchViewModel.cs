@@ -8,8 +8,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
    public interface IDomainObjectSearchViewModel : IDisposable
    {
-      Task SearchAsync(CancellationToken cancellationToken = default);
-      Task PaginatedSearchAsync(bool resetPage, CancellationToken cancellationToken = default);
+      Task SearchAsync(SearchParameters parameters);
+      Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
       void LoadSearchResultViewModels();
       void UnloadSearchResultViewModels();
       void AddSearchResultViewModel(DomainObjectViewModel domainObjectViewModel);

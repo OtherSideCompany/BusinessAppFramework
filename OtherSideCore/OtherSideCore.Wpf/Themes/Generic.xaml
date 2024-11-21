@@ -303,8 +303,7 @@
    </Style>
 
    <!-- Info Panel Category -->
-   <Style TargetType="{x:Type ToggleButton}"  x:Key="InfoPanelCategoryHeaderToggleButton">
-      <Setter Property="Cursor" Value="Hand" />
+   <Style TargetType="{x:Type ToggleButton}" x:Key="InfoPanelCategoryHeaderToggleButton">
       <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Template">
@@ -358,7 +357,8 @@
                                    VerticalAlignment="Center"
                                    IsChecked="{Binding InfoPanelCategory_IsExpanded, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
                                    Style="{StaticResource InfoPanelCategoryHeaderToggleButton}"
-                                   Content="{Binding InfoPanelCategory_HeaderName, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
+                                   Content="{Binding InfoPanelCategory_HeaderName, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
+                                   Cursor="Hand"/>
                   </Border>
 
                   <ContentPresenter Grid.Row="1" 
@@ -427,7 +427,7 @@
                     x:Name="Border"
                     BorderBrush="{StaticResource OtherSide_LightGray}"
                     BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="4"
+                    CornerRadius="8"
                     Padding="4,0,4,0">
 
                   <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"

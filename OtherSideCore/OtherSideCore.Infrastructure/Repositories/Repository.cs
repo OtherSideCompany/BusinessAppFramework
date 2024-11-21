@@ -11,8 +11,6 @@ using OtherSideCore.Domain.DomainObjects;
 using AutoMapper;
 using System.Linq.Expressions;
 using AutoMapper.QueryableExtensions;
-using System.Reflection;
-using System.Collections;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -20,6 +18,8 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                                                              where TEntity : EntityBase, new()
    {
       #region Fields
+
+      protected List<Type> _availableParentTypes;
 
       protected IDbContextFactory<DbContext> _dbContextFactory { get; set; }
       protected ILoggerFactory _loggerFactory { get; set; }
@@ -36,64 +36,143 @@ namespace OtherSideCore.Infrastructure.Repositories
          _loggerFactory = loggerFactory;
          _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
          _mapper = mapper;
+
+         _availableParentTypes = new List<Type>();
       }
 
       #endregion
 
       #region Public Methods
 
-      public async Task<List<TDomainObject>> GetAllAsync(CancellationToken cancellationToken = default)
+      public virtual async Task<List<TDomainObject>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 
-         using (var context = _dbContextFactory.CreateDbContext())
+         if (parent == null)
          {
-            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                               .OrderByDescending(e => e.Id)             
-                                               .ToListAsync(cancellationToken);
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else if (_availableParentTypes.Contains(parent.GetType()))
+         {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .Where(GetParentRelationPredicate(parent))
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else
+         {
+            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
          }
       }
 
-      public async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> where,
-                                                         CancellationToken cancellationToken = default)
+      public virtual async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> where, DomainObject? parent, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 
-         using (var context = _dbContextFactory.CreateDbContext())
+         if (parent == null)
          {
-            var entites = await context.Set<TEntity>().ToListAsync(cancellationToken);
-
-            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                               .OrderByDescending(e => e.Id)
-                                               .Where(where)
-                                               .ToListAsync(cancellationToken);
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .Where(where)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else if (_availableParentTypes.Contains(parent.GetType()))
+         {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .Where(GetParentRelationPredicate(parent))
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .Where(where)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else
+         {
+            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
          }
       }
 
-      public async Task<List<TDomainObject>> GetAllPaginatedAsync(Expression<Func<TDomainObject, bool>> where,
-                                                                  int pageNumber,
-                                                                  int pageSize,
-                                                                  CancellationToken cancellationToken = default)
+      public virtual async Task<List<TDomainObject>> GetAllPaginatedAsync(Expression<Func<TDomainObject, bool>> where,
+                                                                          DomainObject? parent,
+                                                                          int pageNumber,
+                                                                          int pageSize,
+                                                                          CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 
-         using (var context = _dbContextFactory.CreateDbContext())
+         if (parent == null)
          {
-            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                               .OrderByDescending(e => e.Id)
-                                               .Where(where)
-                                               .Skip((pageNumber - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .Where(where)
+                                                  .Skip((pageNumber - 1) * pageSize)
+                                                  .Take(pageSize)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else if (_availableParentTypes.Contains(parent.GetType()))
+         {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .Where(GetParentRelationPredicate(parent))
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .OrderByDescending(e => e.Id)
+                                                  .Where(where)
+                                                  .Skip((pageNumber - 1) * pageSize)
+                                                  .Take(pageSize)
+                                                  .ToListAsync(cancellationToken);
+            }
+         }
+         else
+         {
+            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
          }
       }
 
-      public async Task<int> CountAsync(Expression<Func<TDomainObject, bool>> predicate, CancellationToken cancellationToken)
+      public virtual async Task<int> CountAsync(Expression<Func<TDomainObject, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken)
       {
-         using (var context = _dbContextFactory.CreateDbContext())
+         if (parent == null)
          {
-            return await context.Set<TEntity>().ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                               .CountAsync(predicate, cancellationToken);
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .CountAsync(predicate, cancellationToken);
+            }
+         }
+         else if (_availableParentTypes.Contains(parent.GetType()))
+         {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .Where(GetParentRelationPredicate(parent))
+                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
+                                                  .CountAsync(predicate, cancellationToken);
+            }
+         }
+         else
+         {
+            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
          }
       }
 
@@ -123,7 +202,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             _mapper.Map(entity, domainObject);
          }
-      }      
+      }
 
       public virtual async Task SaveAsync(TDomainObject domainObject, int? userId)
       {
@@ -138,7 +217,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (existingEntity != null)
             {
-               _mapper.Map(domainObject, existingEntity);           
+               _mapper.Map(domainObject, existingEntity);
 
                existingEntity.LastModifiedDateTime = DateTime.Now;
                existingEntity.LastModifiedById = userId;
@@ -156,13 +235,15 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task<TDomainObject> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      public async Task<TDomainObject> GetAsync(int domainObjectId, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetAsync), domainObjectId.ToString());
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
             var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
+
+            await LoadNavigationPropertiesAsync(context, entity);
 
             return _mapper.Map<TDomainObject>(entity);
          }
@@ -194,7 +275,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task<DateTime> GetLastModificatonTimeAsync(TDomainObject domainObject)
+      public async Task<DateTime> GetLastModificatonTimeAsync(TDomainObject domainObject, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetLastModificatonTimeAsync), domainObject.Id);
 
@@ -204,9 +285,10 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (exists)
             {
-               return await context.Set<TEntity>().Where(e => e.Id == domainObject.Id) 
-                                                  .Select(e => e.LastModifiedDateTime)          
-                                                  .FirstAsync();
+               return await context.Set<TEntity>().AsNoTracking()
+                                                  .Where(e => e.Id == domainObject.Id)
+                                                  .Select(e => e.LastModifiedDateTime)
+                                                  .FirstAsync(cancellationToken);
             }
             else
             {
@@ -223,6 +305,11 @@ namespace OtherSideCore.Infrastructure.Repositories
       #endregion
 
       #region Private Methods
+
+      protected virtual Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
+      {
+         return entity => false;
+      }
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId)
       {

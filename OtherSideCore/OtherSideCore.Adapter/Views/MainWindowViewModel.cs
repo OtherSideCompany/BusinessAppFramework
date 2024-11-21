@@ -209,7 +209,7 @@ namespace OtherSideCore.Adapter.Views
                   IsUserContextInitialized = true;
 
                   await _globalDataService.LoadGlobalDataAsync();
-                  await DisplayViewAsync(DefaultViewDescription, CancellationToken.None);                  
+                  await DisplayViewAsync(DefaultViewDescription);                  
                }
             }
 
@@ -232,7 +232,7 @@ namespace OtherSideCore.Adapter.Views
          LoadSettings();
       }
 
-      private async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase, CancellationToken cancellationToken)
+      private async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase)
       {
          LoadedViewViewModel?.Dispose();
 
@@ -241,7 +241,7 @@ namespace OtherSideCore.Adapter.Views
          viewDescriptionBase.Load();
 
          LoadedViewViewModel = (ViewBaseViewModel)_serviceProvider.GetService(LoadedViewDescription.ViewModelType);
-         await LoadedViewViewModel.InitializeAsync(cancellationToken);
+         await LoadedViewViewModel.InitializeAsync();
 
          if (viewDescriptionBase is ModuleDescription)
 

@@ -11,6 +11,9 @@
     <Compile Update="UserControls\EmptyListIndicator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\EmptyObjectIndicator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\FileDropView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -35,7 +38,13 @@
     <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\SingleTextFilter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\SubWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\TextFilterView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -50,6 +59,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\EmptyListIndicator.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\EmptyObjectIndicator.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\FileDropView.xaml">
@@ -76,7 +88,13 @@
     <Page Update="UserControls\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="UserControls\SingleTextFilter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UserControls\SubWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\TextFilterView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\WindowTitleBar.xaml">

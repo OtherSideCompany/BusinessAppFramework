@@ -18,23 +18,6 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
       }
 
-      public static readonly DependencyProperty MultiTextFilterViewCheckedButton_ImageColorProperty =
-        DependencyProperty.Register("MultiTextFilterViewCheckedButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.AliceBlue));
-
-      public SolidColorBrush MultiTextFilterViewCheckedButton_ImageColor
-      {
-         get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }
-         set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
-      }
-
-      public static readonly DependencyProperty MultiTextFilterViewMouseDownButton_ImageColorProperty =
-        DependencyProperty.Register("MultiTextFilterViewMouseDownButton_ImageColor", typeof(SolidColorBrush), typeof(MultiTextFilterView), new UIPropertyMetadata(Brushes.AliceBlue));
-
-      public SolidColorBrush MultiTextFilterViewMouseDownButton_ImageColor
-      {
-         get { return (SolidColorBrush)GetValue(MultiTextFilterViewButton_ImageColorProperty); }
-         set { SetValue(MultiTextFilterViewButton_ImageColorProperty, value); }
-      }
 
       public MultiTextFilterView()
       {

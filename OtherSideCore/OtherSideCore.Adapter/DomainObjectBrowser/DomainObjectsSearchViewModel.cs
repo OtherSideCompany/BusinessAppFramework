@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application;
 using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
@@ -8,14 +7,17 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
-   public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
+    public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
    {
       #region Fields
+
+      private bool _isInAdvancedSearchMode;
 
       protected DomainObjectSearch<T> _domainObjectSearch;
 
       private IDomainObjectViewModelFactory _viewModelFactory;
       private ObservableCollection<DomainObjectViewModel> _searchResultViewModels;
+      private SingleTextFilterViewModel _singleTextFilterViewModel;
       private MultiTextFilterViewModel _multiTextFilterViewModel;
       private PageNavigationViewModel _pageNavigationViewModel;
       private ObservableCollection<ConstraintViewModel<T>> _constraintViewModels;
@@ -26,10 +28,22 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Properties
 
+      public bool IsInAdvancedSearchMode
+      {
+         get => _isInAdvancedSearchMode;
+         set => SetProperty(ref _isInAdvancedSearchMode, value);
+      }
+
       public ObservableCollection<DomainObjectViewModel> SearchResultViewModels
       {
          get => _searchResultViewModels;
          set => SetProperty(ref _searchResultViewModels, value);
+      }
+
+      public SingleTextFilterViewModel SingleTextFilterViewModel
+      {
+         get => _singleTextFilterViewModel;
+         set => SetProperty(ref _singleTextFilterViewModel, value);
       }
 
       public MultiTextFilterViewModel MultiTextFilterViewModel
@@ -71,8 +85,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Commands
 
-      public AsyncRelayCommand SearchCommandAsync { get; private set; }
-      public AsyncRelayCommand<bool> PaginatedSearchCommandAsync { get; private set; }
+      public AsyncRelayCommand<SearchParameters> SearchCommandAsync { get; private set; }
+      public AsyncRelayCommand<PaginatedSearchParameters> PaginatedSearchCommandAsync { get; private set; }
       public RelayCommand CancelSearchCommand { get; private set; }
 
       #endregion
@@ -86,15 +100,15 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
          SearchResultViewModels = new ObservableCollection<DomainObjectViewModel>();
 
-         SearchCommandAsync = new AsyncRelayCommand(SearchAsync);
-         PaginatedSearchCommandAsync = new AsyncRelayCommand<bool>(PaginatedSearchAsync);
+         SearchCommandAsync = new AsyncRelayCommand<SearchParameters>(SearchAsync);
+         PaginatedSearchCommandAsync = new AsyncRelayCommand<PaginatedSearchParameters>(PaginatedSearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
 
          ConstraintViewModels = new ObservableCollection<ConstraintViewModel<T>>();
          ConstructConstraintViewModels();
 
-         MultiTextFilterViewModel = new MultiTextFilterViewModel(_domainObjectSearch.MultiTextFilter);
-         MultiTextFilterViewModel.SearchRequested += MultiTextFilterViewModel_SearchRequested;
+         MultiTextFilterViewModel = new MultiTextFilterViewModel();
+         SingleTextFilterViewModel = new SingleTextFilterViewModel();
 
          PageNavigationViewModel = new PageNavigationViewModel(domainObjectSearch.PageNavigation);
          PageNavigationViewModel.SelectPageRequested += PageNavigationViewModel_SelectPageRequested;
@@ -104,40 +118,21 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Public Methods
 
-      public async Task SearchAsync(CancellationToken cancellationToken = default)
+      public async Task SearchAsync(SearchParameters parameters)
       {
-         IsExecutingSearch = true;
-
-         UnloadSearchResultViewModels();
-
-         await _domainObjectSearch.SearchAsync(cancellationToken);
-
-         LoadSearchResultViewModels();
-
-         IsExecutingSearch = false;
+         await SearchAsync(parameters.ExtendedSearch, parameters.ParentViewModel);
       }
 
-      public async Task PaginatedSearchAsync(bool resetPage, CancellationToken cancellationToken = default)
+      public async Task PaginatedSearchAsync(PaginatedSearchParameters parameters)
       {
-         IsExecutingSearch = true;
-
-         UnloadSearchResultViewModels();
-
-         await _domainObjectSearch.PaginatedSearchAsync(resetPage, cancellationToken);
-
-         LoadSearchResultViewModels();
-
-         if (resetPage)
-         {
-           PageNavigationViewModel.Refresh();
-         }
-
-         IsExecutingSearch = false;
+         await PaginatedSearchAsync(parameters.ResetPage, parameters.ExtendedSearch, parameters.ParentViewModel);
       }
 
       public void LoadSearchResultViewModels()
       {
-         foreach (var searchResult in _domainObjectSearch.SearchResults)
+         var snapshot = _domainObjectSearch.SearchResults.ToList();
+
+         foreach (var searchResult in snapshot)
          {
             var viewModel = _viewModelFactory.CreateViewModel(searchResult);
             SearchResultViewModels.Add(viewModel);
@@ -171,8 +166,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          UnloadSearchResultViewModels();
 
-         MultiTextFilterViewModel.SearchRequested -= MultiTextFilterViewModel_SearchRequested;
-
          ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
 
          PageNavigationViewModel.PropertyChanged -= PageNavigationViewModel_SelectPageRequested;
@@ -181,6 +174,49 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       #endregion
 
       #region Private Methods  
+
+      protected virtual async Task SearchAsync(bool extendedSearch, DomainObjectViewModel? parentViewModel)
+      {
+         IsExecutingSearch = true;
+
+         UnloadSearchResultViewModels();
+
+         await _domainObjectSearch.SearchAsync(extendedSearch, GetTextFilters(), parentViewModel?.DomainObject);
+
+         LoadSearchResultViewModels();
+
+         IsExecutingSearch = false;
+      }
+
+      protected virtual async Task PaginatedSearchAsync(bool resetPage, bool extendedSearch, DomainObjectViewModel? parentViewModel)
+      {
+         IsExecutingSearch = true;
+
+         UnloadSearchResultViewModels();
+
+         await _domainObjectSearch.PaginatedSearchAsync(resetPage, extendedSearch, GetTextFilters(), parentViewModel?.DomainObject);
+
+         LoadSearchResultViewModels();
+
+         if (resetPage)
+         {
+            PageNavigationViewModel.Refresh();
+         }
+
+         IsExecutingSearch = false;
+      }
+
+      protected List<string> GetTextFilters()
+      {
+         if (IsInAdvancedSearchMode)
+         {
+            return _multiTextFilterViewModel.Filters.Where(f => !String.IsNullOrEmpty(f.Text)).Select(f => f.Text).ToList();
+         }
+         else
+         {
+            return String.IsNullOrEmpty(_singleTextFilterViewModel.Filter) ? [] : new List<string>() { _singleTextFilterViewModel.Filter };
+         }
+      }
 
       protected void ConstructConstraintViewModels()
       {
@@ -195,11 +231,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
       }
 
-      private async void MultiTextFilterViewModel_SearchRequested(object? sender, EventArgs e)
-      {
-         await PaginatedSearchAsync(true, new CancellationToken());
-      }
-
       private async void ConstraintViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
          if (e.PropertyName.Equals(nameof(ConstraintViewModel<T>.IsSelected)))
@@ -208,25 +239,25 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
             {
                ConstraintViewModels.Where(vm => vm != sender).ToList().ForEach(vm => vm.IsSelected = false);
                _domainObjectSearch.ActivateConstraint(SelectedConstraintViewModel?.Constraint);
-               await PaginatedSearchAsync(true, new CancellationToken());
+               await PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
             }
             else if (ConstraintViewModels.All(vm => !vm.IsSelected))
             {
                _domainObjectSearch.ActivateConstraint(null);
-               await PaginatedSearchAsync(true, new CancellationToken());
+               await PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
             }
          }
       }
 
       private async void PageNavigationViewModel_SelectPageRequested(object? sender, EventArgs e)
       {
-         await PaginatedSearchAsync(false, new CancellationToken());
-      }      
+         await PaginatedSearchAsync(new PaginatedSearchParameters());
+      }
 
       private void CancelSearch()
       {
-         SearchCommandAsync.Cancel();
-      }      
+         throw new NotImplementedException();
+      }
 
       #endregion
    }

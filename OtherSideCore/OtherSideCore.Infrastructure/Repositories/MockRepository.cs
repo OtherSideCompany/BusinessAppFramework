@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-   public class MockRepository<T> : IRepository<T> where T : DomainObject, new()
+   public class MockRepository<T> /*: IRepository<T>*/ where T : DomainObject, new()
    {
       #region Fields
 
@@ -106,7 +106,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task<DateTime> GetLastModificatonTimeAsync(T domainObject)
+      public async Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken = default)
       {
          T existingDomainObject = _domainObjects.FirstOrDefault(e => e.Id == domainObject.Id);
 

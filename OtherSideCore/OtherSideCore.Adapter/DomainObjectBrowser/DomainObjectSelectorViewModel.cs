@@ -51,7 +51,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          _dynamicSearch = dynamicSearch;
 
-         DomainObjectsSearchViewModel.MultiTextFilterViewModel.PropertyChanged += MultiTextFilterViewModel_PropertyChanged;
+         DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
 
@@ -76,7 +76,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          base.Dispose();
 
-         DomainObjectsSearchViewModel.MultiTextFilterViewModel.PropertyChanged -= MultiTextFilterViewModel_PropertyChanged;
+         DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
 
          Selection.PropertyChanged -= Selection_PropertyChanged;
       }
@@ -86,11 +86,11 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Private Methods
 
-      private void MultiTextFilterViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      private async void SingleTextFilterViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
-         if (_dynamicSearch && e.PropertyName.Equals(nameof(MultiTextFilterViewModel.SearchText)))
+         if (_dynamicSearch && e.PropertyName.Equals(nameof(SingleTextFilterViewModel.Filter)))
          {
-            DomainObjectsSearchViewModel.MultiTextFilterViewModel.RequestSearch();
+            await DomainObjectsSearchViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
          }
       }
 

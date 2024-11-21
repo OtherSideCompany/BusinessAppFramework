@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;

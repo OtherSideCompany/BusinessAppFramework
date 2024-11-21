@@ -54,9 +54,9 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       #region Public Methods
 
-      public override async Task InitializeAsync(CancellationToken cancellationToken)
+      public override async Task InitializeAsync()
       {
-         await DomainObjectSearch.PaginatedSearchAsync(true, cancellationToken);
+         await DomainObjectSearch.PaginatedSearchAsync(true, false, []);
       }
 
       public async Task<T> CreateAsync()

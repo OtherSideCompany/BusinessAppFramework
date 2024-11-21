@@ -9,22 +9,22 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
 {
    public interface IRepository<T> : IDisposable where T : DomainObject
    {
-      Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<T>> GetAllAsync(Expression<Func<T, bool>> where, CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllAsync(Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<T>> GetAllPaginatedAsync(Expression<Func<T, bool>> where, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllPaginatedAsync(Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
       Task CreateAsync(T domainObject, int userId);
 
       Task SaveAsync(T domainObject, int? userId);
 
-      Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+      Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken);
 
       Task DeleteAsync(T domainObject);
 
-      Task<DateTime> GetLastModificatonTimeAsync(T domainObject);
+      Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);
 
-      Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
+      Task<int> CountAsync(Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
    }
 }

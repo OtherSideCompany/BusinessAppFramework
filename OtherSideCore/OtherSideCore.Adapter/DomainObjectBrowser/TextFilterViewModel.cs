@@ -1,26 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OtherSideCore.Adapter
+namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
    public class TextFilterViewModel : ObservableObject
    {
       #region Fields
 
-      private string _filterText;
+      private string _text;
 
       #endregion
 
       #region Properties
 
-      public string FilterText
+      public string Text
       {
-         get => _filterText;
-         set => SetProperty(ref _filterText, value);
+         get => _text;
+         set => SetProperty(ref _text, value);
       }
 
       #endregion
@@ -33,9 +28,9 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public TextFilterViewModel(string filterText)
+      public TextFilterViewModel()
       {
-         FilterText = filterText;
+         Text = "Recherche...";
       }
 
       #endregion

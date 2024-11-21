@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Adapter;
+﻿using Microsoft.Data.SqlClient;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 
@@ -10,14 +10,15 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       protected IDomainObjectQueryService<T> _domainObjectQueryService;
       protected List<DomainObject> _searchResults;
-      protected MultiTextFilter _multiTextFilter;
       protected PageNavigation _pageNavigation;
 
       private Func<CancellationToken, Task> _selectedSearchResultChangedAsync;
-
-      private Constraint<T> _activatedConstraint;
-
+      protected Constraint<T> _activatedConstraint;
       private List<Constraint<T>> _constraints;
+      protected CancellationTokenSource? _currentSearchCancellationTokenSource;
+      private readonly SemaphoreSlim _searchSemaphore = new SemaphoreSlim(1, 1);
+
+      protected CancellationToken _currentSearchCancellationToken => _currentSearchCancellationTokenSource.Token;
 
       #endregion
 
@@ -26,7 +27,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       public int PageSize = 20;
       public PageNavigation PageNavigation => _pageNavigation;
       public List<DomainObject> SearchResults => _searchResults;
-      public MultiTextFilter MultiTextFilter => _multiTextFilter;
 
       #endregion
 
@@ -42,7 +42,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       {
          _domainObjectQueryService = domainObjectQueryService;
          _searchResults = new List<DomainObject>();
-         _multiTextFilter = new MultiTextFilter();
          _constraints = new List<Constraint<T>>();
          _pageNavigation = new PageNavigation();
       }
@@ -50,11 +49,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       #endregion
 
       #region Public Methods
-
-      public void ClearFilters()
-      {
-         _multiTextFilter.Filters.Clear();
-      }
 
       public void ClearConstraints()
       {
@@ -72,53 +66,57 @@ namespace OtherSideCore.Application.DomainObjectBrowser
          _constraints.AddRange(constraints);
       }
 
-      public async Task SearchAsync(CancellationToken cancellationToken)
+      public async Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject parent = null)
       {
+         await InitializeSearchAsync();
+
          try
          {
+            await SearchAsync(extendedSearch, filters, parent, _currentSearchCancellationTokenSource.Token);
+         }
+         catch (InvalidOperationException)
+         {
             UnloadSearchResults();
-
-            var results = await _domainObjectQueryService.SearchAsync(_multiTextFilter.StringFilters,
-                                                                      _activatedConstraint,
-                                                                      _multiTextFilter.ExtendedSearch,
-                                                                      cancellationToken);
-
-            _searchResults.AddRange(results);
+         }
+         catch (SqlException)
+         {
+            UnloadSearchResults();
          }
          catch (OperationCanceledException)
          {
             UnloadSearchResults();
          }
-      }
+         finally
+         {
+            ShutdownSearch();
+         }         
+      }      
 
-      public async Task PaginatedSearchAsync(bool resetPages, CancellationToken cancellationToken)
+      public async Task PaginatedSearchAsync(bool resetPages, bool extendedSearch, List<string> filters, DomainObject parent = null)
       {
+         await InitializeSearchAsync();
+
          try
          {
+            await PaginatedSearchAsync(resetPages, extendedSearch, filters, parent, _currentSearchCancellationTokenSource.Token);
+         }
+         catch (InvalidOperationException)
+         {
             UnloadSearchResults();
-
-            var pageToSelect = resetPages ? 1 : Math.Max(1, _pageNavigation.CurrentPageNumber);
-
-            var pagedResult = await _domainObjectQueryService.PaginatedSearchAsync(_multiTextFilter.StringFilters,
-                                                                                   _activatedConstraint,
-                                                                                   _multiTextFilter.ExtendedSearch,
-                                                                                   pageToSelect,
-                                                                                   PageSize,
-                                                                                   cancellationToken);
-
-            _searchResults.AddRange(pagedResult.Items);
-
-            if (resetPages)
-            {
-               _pageNavigation.SetPages(pagedResult.TotalPages, pagedResult.PageSize, pagedResult.TotalCount);
-               _pageNavigation.SelectFirstPage();
-            }
+         }
+         catch (SqlException)
+         {
+            UnloadSearchResults();
          }
          catch (OperationCanceledException)
          {
             UnloadSearchResults();
          }
-      }
+         finally
+         {
+            ShutdownSearch();
+         }
+      }      
 
       public void AddSearchResult(DomainObject domainObject)
       {
@@ -137,12 +135,83 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       public void Dispose()
       {
+         _currentSearchCancellationTokenSource?.Cancel();
+         DisposeSearchCancellationTokenSource();
+
          UnloadSearchResults();
       }
 
       #endregion
 
       #region Private Methods
+
+      protected async Task InitializeSearchAsync()
+      {
+         await _searchSemaphore.WaitAsync();
+         CreateSearchCancellationTokenSource();
+
+         UnloadSearchResults();
+      }
+
+      protected void ShutdownSearch()
+      {
+         DisposeSearchCancellationTokenSource();
+         _searchSemaphore.Release();
+      }
+
+      protected async Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject? parent, CancellationToken cancellationToken)
+      {
+         var results = await _domainObjectQueryService.SearchAsync(filters,
+                                                                   _activatedConstraint,
+                                                                   parent,
+                                                                   extendedSearch,                                                                   
+                                                                   cancellationToken);
+
+         if (results != null)
+         {
+            _searchResults.AddRange(results);
+         }
+      }
+
+      protected async Task PaginatedSearchAsync(bool resetPages, bool extendedSearch, List<string> filters, DomainObject? parent, CancellationToken cancellationToken)
+      {
+         var pageToSelect = resetPages ? 1 : Math.Max(1, _pageNavigation.CurrentPageNumber);
+
+         var pagedResult = await _domainObjectQueryService.PaginatedSearchAsync(filters,
+                                                                                _activatedConstraint,
+                                                                                parent,
+                                                                                extendedSearch,
+                                                                                pageToSelect,
+                                                                                PageSize,                                                                                
+                                                                                cancellationToken);
+
+         _searchResults.AddRange(pagedResult.Items);
+
+         if (resetPages)
+         {
+            _pageNavigation.SetPages(pagedResult.TotalPages, pagedResult.PageSize, pagedResult.TotalCount);
+            _pageNavigation.SelectFirstPage();
+         }
+      }
+
+      protected void CreateSearchCancellationTokenSource()
+      {
+         if (_currentSearchCancellationTokenSource != null)
+         {
+            _currentSearchCancellationTokenSource.Cancel();
+            _currentSearchCancellationTokenSource.Dispose();
+            _currentSearchCancellationTokenSource = null;
+         }
+
+         _currentSearchCancellationTokenSource = new CancellationTokenSource();
+         _currentSearchCancellationTokenSource.Token.ThrowIfCancellationRequested();
+      }
+
+      protected void DisposeSearchCancellationTokenSource()
+      {
+         _currentSearchCancellationTokenSource?.Dispose();
+         _currentSearchCancellationTokenSource = null;
+      }
 
       protected void UnloadSearchResults()
       {

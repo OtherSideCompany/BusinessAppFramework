@@ -955,5 +955,10 @@
          </Setter.Value>
       </Setter>
    </Style>
+   
+   <!-- InfoPanelCategory Nested1 -->
+   <!--<Style TargetType="{x:Type customControls:InfoPanelCategory}" x:Key="Nested1InfoPanelCategory" BasedOn="{StaticResource {x:Type customControls:InfoPanelCategory}}">
+      <Setter Property="FontSize" Value="12" />
+   </Style>-->
 
 </ResourceDictionary>
