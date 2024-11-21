@@ -26,3 +26,5 @@
 /OtherSideCore/OtherSideCore.Application.Tests/bin/Debug/net8.0
 /OtherSideCore/OtherSideCore.Application.Tests/obj
 /OtherSideCore/OtherSideCore.Adapter/bin/Debug/net8.0
+/OtherSideCore/OtherSideCore.Adapter/bin/Release/net8.0
+/OtherSideCore/OtherSideCore.Application/bin/Release/net8.0
