@@ -35,6 +35,9 @@
     <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\ModuleHeader.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -86,6 +89,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ModuleHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\SingleTextFilter.xaml">

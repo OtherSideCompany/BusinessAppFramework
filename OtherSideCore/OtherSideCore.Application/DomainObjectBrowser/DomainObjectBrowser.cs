@@ -59,12 +59,18 @@ namespace OtherSideCore.Application.DomainObjectBrowser
          await DomainObjectSearch.PaginatedSearchAsync(true, false, []);
       }
 
-      public async Task<T> CreateAsync()
+      public async Task<T> CreateAsync(DomainObject? parent)
       {
          var domainObject = new T();
+
+         return await CreateAsync(domainObject, parent);
+      }
+
+      public async Task<T> CreateAsync(T domainObject, DomainObject? parent)
+      {
          var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<T>();
 
-         await domainObjectService.CreateAsync(domainObject);
+         await domainObjectService.CreateAsync(domainObject, parent);
 
          DomainObjectSearch.AddSearchResult(domainObject);
 

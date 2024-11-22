@@ -53,7 +53,7 @@
          <osc_usercontrols:EmptyListIndicator DataContext="{Binding FileInfos}"
                                               EmptyListIndicator_Text="Aucun fichier associé"/>
 
-         <Border Style="{StaticResource ListBorderStyle}">
+         <Border Style="{StaticResource ListBorderStyle}" Background="{StaticResource OtherSide_SuperLightGray}">
 
             <Grid>
                <Grid.RowDefinitions>

@@ -117,7 +117,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Commands
 
-      public AsyncRelayCommand CreateAsyncCommand { get; private set; }
+      public AsyncRelayCommand<DomainObjectViewModel?> CreateAsyncCommand { get; private set; }
       public AsyncRelayCommand DeleteSelectionAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
@@ -138,7 +138,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          _userDialogService = userDialogService;
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
 
-         CreateAsyncCommand = new AsyncRelayCommand(CreateAsync, CanCreate);
+         CreateAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel?>(CreateAsync, CanCreate);
          DeleteSelectionAsyncCommand = new AsyncRelayCommand(DeleteSelectionAsync, CanDeleteSelection);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
@@ -334,14 +334,14 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       protected virtual void SortEditorViewModels() { }
 
-      protected virtual bool CanCreate()
+      protected virtual bool CanCreate(DomainObjectViewModel? parentViewModel)
       {
          return true;
       }
 
-      protected virtual async Task CreateAsync()
+      protected virtual async Task CreateAsync(DomainObjectViewModel? parentViewModel)
       {
-         var domainObject = await _domainObjectBrowser.CreateAsync();
+         var domainObject = await _domainObjectBrowser.CreateAsync(parentViewModel?.DomainObject);
 
          var viewModel = _domainObjectViewModelFactory.CreateViewModel(domainObject);
          _domainObjectsSearchViewModel.AddSearchResultViewModel(viewModel);
@@ -393,6 +393,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       {
          await _domainObjectEditorViewModelsSemaphore.WaitAsync();
 
+         UnselectSearchResultViewModel(Selection.SelectedViewModel);
          UnregisterSearchResultViewModelPropertyChanged();
          UnloadEditorViewModels();
 

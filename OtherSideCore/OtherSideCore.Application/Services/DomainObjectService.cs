@@ -39,9 +39,9 @@ namespace OtherSideCore.Application.Services
 
       #region Public Methods
 
-      public virtual async Task CreateAsync(T domainObject)
+      public virtual async Task CreateAsync(T domainObject, DomainObject? parent)
       {
-         await _repository.CreateAsync(domainObject, _userContext.Id);
+         await _repository.CreateAsync(domainObject, parent, _userContext.Id);
       }
 
       public async Task DeleteAsync(T domainObject)

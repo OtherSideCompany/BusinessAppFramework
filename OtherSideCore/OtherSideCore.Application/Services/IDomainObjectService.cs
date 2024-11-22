@@ -6,7 +6,7 @@ namespace OtherSideCore.Application.Services
    {
       Task<T> GetAsync(int entityId, CancellationToken cancellationToken = default);
 
-      Task CreateAsync(T domainObject);
+      Task CreateAsync(T domainObject, DomainObject? parent);
 
       Task SaveAsync(T domainObject);
 

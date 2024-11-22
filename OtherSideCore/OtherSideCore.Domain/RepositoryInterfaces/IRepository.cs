@@ -15,7 +15,7 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
 
       Task<List<T>> GetAllPaginatedAsync(Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-      Task CreateAsync(T domainObject, int userId);
+      Task CreateAsync(T domainObject, DomainObject? parent, int userId);
 
       Task SaveAsync(T domainObject, int? userId);
 

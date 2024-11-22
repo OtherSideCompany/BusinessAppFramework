@@ -19,7 +19,7 @@ namespace OtherSideCore.Infrastructure.Repositories
    {
       #region Fields
 
-      protected List<Type> _availableParentTypes;
+      protected List<Type> _supportedDomainObjectParentTypes;
 
       protected IDbContextFactory<DbContext> _dbContextFactory { get; set; }
       protected ILoggerFactory _loggerFactory { get; set; }
@@ -30,14 +30,20 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #region Contructor
 
-      public Repository(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory)
+      public Repository(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory, List<Type> supportedDomainObjectParentTypes)
       {
          _dbContextFactory = dbContextFactory;
          _loggerFactory = loggerFactory;
          _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
          _mapper = mapper;
 
-         _availableParentTypes = new List<Type>();
+         _supportedDomainObjectParentTypes = new List<Type>();
+
+         if (supportedDomainObjectParentTypes != null)
+         { 
+            _supportedDomainObjectParentTypes.AddRange(supportedDomainObjectParentTypes); 
+         }
+         
       }
 
       #endregion
@@ -58,7 +64,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                   .ToListAsync(cancellationToken);
             }
          }
-         else if (_availableParentTypes.Contains(parent.GetType()))
+         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
          {
             using (var context = _dbContextFactory.CreateDbContext())
             {
@@ -90,7 +96,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                   .ToListAsync(cancellationToken);
             }
          }
-         else if (_availableParentTypes.Contains(parent.GetType()))
+         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
          {
             using (var context = _dbContextFactory.CreateDbContext())
             {
@@ -129,7 +135,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                   .ToListAsync(cancellationToken);
             }
          }
-         else if (_availableParentTypes.Contains(parent.GetType()))
+         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
          {
             using (var context = _dbContextFactory.CreateDbContext())
             {
@@ -160,7 +166,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                   .CountAsync(predicate, cancellationToken);
             }
          }
-         else if (_availableParentTypes.Contains(parent.GetType()))
+         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
          {
             using (var context = _dbContextFactory.CreateDbContext())
             {
@@ -190,13 +196,18 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task CreateAsync(TDomainObject domainObject, int userId)
+      public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(CreateAsync));
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
             var entity = _mapper.Map<TEntity>(domainObject);
+
+            if (parent != null)
+            {
+               SetParent(entity, parent);
+            }
 
             await CreateEntityAsync(context, entity, userId);
 
@@ -309,6 +320,11 @@ namespace OtherSideCore.Infrastructure.Repositories
       protected virtual Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
       {
          return entity => false;
+      }
+
+      protected virtual void SetParent(TEntity entity, DomainObject parent)
+      {
+
       }
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId)
