@@ -901,6 +901,7 @@
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+      <Setter Property="Background" Value="Transparent" />
       <EventSetter Event="PreviewMouseWheel" Handler="ListView_PreviewMouseWheel" />
    </Style>
 
@@ -908,6 +909,7 @@
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type TreeViewItem}">
+
                <Grid>
                   <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="Auto" SharedSizeGroup="ExpanderIcon" />
@@ -956,9 +958,27 @@
       </Setter>
    </Style>
    
-   <!-- InfoPanelCategory Nested1 -->
-   <!--<Style TargetType="{x:Type customControls:InfoPanelCategory}" x:Key="Nested1InfoPanelCategory" BasedOn="{StaticResource {x:Type customControls:InfoPanelCategory}}">
-      <Setter Property="FontSize" Value="12" />
-   </Style>-->
+  <!-- Button Link -->
+   <Style TargetType="{x:Type Button}" x:Key="LinkButton">
+      <Setter Property="Foreground" Value="Black" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="Button">
+               
+               <TextBlock Text="{TemplateBinding Content}" 
+                           Foreground="{TemplateBinding Foreground}" 
+                           FontWeight="{TemplateBinding FontWeight}"
+                           HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                           VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                           TextDecorations="Underline"/>
+               
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+      <Setter Property="Padding" Value="0" />
+   </Style>
 
 </ResourceDictionary>
