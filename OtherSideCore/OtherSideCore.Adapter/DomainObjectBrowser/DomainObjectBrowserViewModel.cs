@@ -22,7 +22,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       protected DomainObjectsSearchViewModel<T> _domainObjectsSearchViewModel;
       protected ObservableCollection<IDomainObjectEditorViewModel> _domainObjectEditorViewModels;
-      protected ObservableCollection<IDomainObjectBrowserViewModel> _nestedDomainObjectBrowserViewModels;
       protected DomainObjectViewModelSelection _selection;
       private bool _isSelectionLocked;
       private bool _isLoadingNestedBrowsers;
@@ -31,32 +30,9 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       protected DomainObjectBrowser<T> _domainObjectBrowser;
 
-      private IEnumerable<IDomainObjectBrowserViewModel> _inlineNestedDomainObjectBrowserViewModels
-      {
-         get
-         {
-            foreach (var domainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
-            {
-               yield return domainObjectBrowserViewModel;
-
-               if (domainObjectBrowserViewModel.NestedDomainObjectBrowserViewModels.Any())
-               {
-                  foreach (var nestedDomainObjectBrowserViewModel in domainObjectBrowserViewModel.InlineNestedDomainObjectBrowserViewModels)
-                  {
-                     yield return nestedDomainObjectBrowserViewModel;
-                  }
-               }
-            }
-         }
-      }
-
       #endregion
 
       #region Properties
-
-      public ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels => _nestedDomainObjectBrowserViewModels;
-
-      public IEnumerable<IDomainObjectBrowserViewModel> InlineNestedDomainObjectBrowserViewModels => _inlineNestedDomainObjectBrowserViewModels;
 
       public bool IsExpanded
       {
@@ -109,7 +85,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       public IDomainObjectEditorViewModel SelectedDomainObjectEditorViewModel => _domainObjectEditorViewModels.FirstOrDefault(vm => vm.DomainObjectViewModel == Selection.SelectedViewModel);
 
-      public bool HasUnsavedChanges => DomainObjectEditorViewModels.Any(vm => vm.HasUnsavedChanges) || _nestedDomainObjectBrowserViewModels.Any(vm => vm.HasUnsavedChanges);
+      public bool HasUnsavedChanges => DomainObjectEditorViewModels.Any(vm => vm.HasUnsavedChanges);
 
       #endregion
 
@@ -148,7 +124,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
          Selection = new DomainObjectViewModelSelection(DomainObjectViewModelSelectionType.Single);
          DomainObjectEditorViewModels = new ObservableCollection<IDomainObjectEditorViewModel>();
-         _nestedDomainObjectBrowserViewModels = new ObservableCollection<IDomainObjectBrowserViewModel>();
       }
 
       #endregion
@@ -181,15 +156,9 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
                IsLoadingNestedBrowsers = true;
 
-               await LoadNestedBrowsersAsync();
+               await SelectedDomainObjectEditorViewModel.LoadNestedBrowsersAsync();
 
-               foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
-               {
-                  await nestedBrowserViewModel.LoadNestedBrowsersAsync();
-                  nestedBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
-               }
-
-               IsLoadingNestedBrowsers = false;
+               IsLoadingNestedBrowsers = false;           
             }
          }
       }
@@ -201,11 +170,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
             if (domainObjectViewModel != null)
             {
                Selection.UnselectViewModel(domainObjectViewModel);
-            }
-
-            foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
-            {
-               nestedBrowserViewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
             }
 
             OnPropertyChanged(nameof(SelectedDomainObjectEditorViewModel));
@@ -221,7 +185,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       public virtual async Task SaveChangesAsync()
       {
          DomainObjectEditorViewModels.ToList().ForEach(async vm => await vm.SaveChangesAsync());
-         InlineNestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.SaveChangesAsync());
       }
 
       public virtual bool CanCancelChanges()
@@ -232,7 +195,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       public virtual async Task CancelChangesAsync()
       {
          DomainObjectEditorViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
-         InlineNestedDomainObjectBrowserViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
       }
 
       public async Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
@@ -273,11 +235,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          }
       }      
 
-      public virtual async Task LoadNestedBrowsersAsync()
-      {
-
-      }
-
       public virtual void Dispose()
       {
          UnregisterSearchResultViewModelPropertyChanged();
@@ -286,14 +243,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged -= SearchResultViewModels_CollectionChanged;
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
          DomainObjectsSearchViewModel.Dispose();
-
-         foreach (var viewModel in InlineNestedDomainObjectBrowserViewModels)
-         {
-            viewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
-         }
-
-         _nestedDomainObjectBrowserViewModels.ToList().ForEach(vm => vm.Dispose());
-         _nestedDomainObjectBrowserViewModels.Clear();
       }
 
       #endregion
@@ -447,14 +396,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       private void SearchResultViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
          NotifyCommandsCanExecuteChanged();
-      }
-
-      protected void NestedDomainObjectBrowserViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-      {
-         if (e.PropertyName.Equals(nameof(DomainObjectBrowser<T>.HasUnsavedChanges)))
-         {
-            UpdateUnsavedChanges();
-         }
       }
 
       private void DomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

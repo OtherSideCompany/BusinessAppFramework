@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Appplication.Services;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
@@ -13,6 +14,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       private DomainObjectViewModelSelection _selection;
       private bool _isSelectionLocked;
       private IDomainObjectEditorViewModel _selectedDomainObjectEditorViewModel;
+
+      private bool _isLoadingNestedBrowsers;
 
       private IEnumerable<DomainObjectTreeViewNode> _inlineNodes
       {
@@ -57,6 +60,14 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          get => _selectedDomainObjectEditorViewModel;
          private set => SetProperty(ref _selectedDomainObjectEditorViewModel, value);
       }
+
+      public bool IsLoadingNestedBrowsers
+      {
+         get => _isLoadingNestedBrowsers;
+         private set => SetProperty(ref _isLoadingNestedBrowsers, value);
+      }
+
+      public bool HasUnsavedChanges => 
 
       #endregion
 
@@ -112,19 +123,11 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
                SelectedDomainObjectEditorViewModel = domainObjectTreeViewNode.DomainObjectEditorViewModel;
 
-               //NotifyCommandsCanExecuteChanged();
+               IsLoadingNestedBrowsers = true;
 
-               //IsLoadingNestedBrowsers = true;
+               await SelectedDomainObjectEditorViewModel.LoadNestedBrowsersAsync();
 
-               //await LoadNestedBrowsersAsync();
-
-               //foreach (var nestedBrowserViewModel in InlineNestedDomainObjectBrowserViewModels)
-               //{
-               //   await nestedBrowserViewModel.LoadNestedBrowsersAsync();
-               //   nestedBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
-               //}
-
-               //IsLoadingNestedBrowsers = false;
+               IsLoadingNestedBrowsers = false;
             }
          }
       }
@@ -151,6 +154,14 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       #endregion
 
       #region Private Methods
+
+      private void DomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      {
+         if (e.PropertyName.Equals(nameof(IDomainObjectEditorViewModel.HasUnsavedChanges)))
+         {
+            UpdateUnsavedChanges();
+         }
+      }
 
       private DomainObjectTreeViewNode GetNode(DomainObjectViewModel domainObjectViewModel)
       {

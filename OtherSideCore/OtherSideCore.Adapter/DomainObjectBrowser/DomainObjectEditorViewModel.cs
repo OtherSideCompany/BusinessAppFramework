@@ -24,32 +24,11 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
 
-      private IEnumerable<IDomainObjectBrowserViewModel> _inlineNestedDomainObjectBrowserViewModels
-      {
-         get
-         {
-            foreach (var domainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
-            {
-               yield return domainObjectBrowserViewModel;
-
-               if (domainObjectBrowserViewModel.NestedDomainObjectBrowserViewModels.Any())
-               {
-                  foreach (var nestedDomainObjectBrowserViewModel in domainObjectBrowserViewModel.InlineNestedDomainObjectBrowserViewModels)
-                  {
-                     yield return nestedDomainObjectBrowserViewModel;
-                  }
-               }
-            }
-         }
-      }
-
       #endregion
 
       #region Properties
 
       public ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels => _nestedDomainObjectBrowserViewModels;
-
-      public IEnumerable<IDomainObjectBrowserViewModel> InlineNestedDomainObjectBrowserViewModels => _inlineNestedDomainObjectBrowserViewModels;
 
       public DomainObjectViewModel DomainObjectViewModel => _domainObjectViewModel;
 

@@ -15,7 +15,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       event EventHandler<DomainObjectViewModel> DomainObjectDeletedEvent;
       ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels { get; }
-      IEnumerable<IDomainObjectBrowserViewModel> InlineNestedDomainObjectBrowserViewModels { get; }
       bool HasUnsavedChanges { get; }
       bool IsEnabled { get; }
       bool CanSaveChanges();
