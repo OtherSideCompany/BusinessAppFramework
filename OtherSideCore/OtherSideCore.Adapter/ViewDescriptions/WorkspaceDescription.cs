@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.Views;
-
-namespace OtherSideCore.Adapter.ViewDescriptions
+﻿namespace OtherSideCore.Adapter.ViewDescriptions
 {
    public class WorkspaceDescription : ViewDescriptionBase
    {
@@ -24,7 +21,7 @@ namespace OtherSideCore.Adapter.ViewDescriptions
 
       #region Constructor
 
-      public WorkspaceDescription(string name, Type viewModelType, object iconResource, ModuleDescription parent = null) : base(name, viewModelType, iconResource)
+      public WorkspaceDescription(int id, string name, object iconResource, ModuleDescription parent = null) : base(id, name, iconResource)
       {
          _parentModule = parent;
 

@@ -28,7 +28,7 @@ namespace OtherSideCore.Wpf.Services
       public UserDialogService()
       {
 
-      }
+      }      
 
       #endregion
 

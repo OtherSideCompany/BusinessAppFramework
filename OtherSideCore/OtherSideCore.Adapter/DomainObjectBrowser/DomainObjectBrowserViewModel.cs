@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.DomainObjectBrowser;
-using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
@@ -10,17 +8,17 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
-   public class DomainObjectBrowserViewModel<T> : WorkspaceViewModel, IDomainObjectBrowserViewModel where T : DomainObject, new()
+    public class DomainObjectBrowserViewModel<T> : UIInteractionHost, IDomainObjectBrowserViewModel where T : DomainObject, new()
    {
       #region Fields
 
       private bool _isExpanded;      
 
       private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
-
-      protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
-      protected IUserDialogService _userDialogService;
+      
+      protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;      
       protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
+      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
 
       protected DomainObjectsSearchViewModel<T> _domainObjectsSearchViewModel;
       protected ObservableCollection<IDomainObjectEditorViewModel> _domainObjectEditorViewModels;
@@ -31,7 +29,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       private bool _isLoadingDomainObjectEditors;
       private DomainObjectViewModel _parentContextViewModel;
 
-      protected DomainObjectBrowser<T> _domainObjectBrowser => (DomainObjectBrowser<T>)_viewBase;
+      protected DomainObjectBrowser<T> _domainObjectBrowser;
 
       private IEnumerable<IDomainObjectBrowserViewModel> _inlineNestedDomainObjectBrowserViewModels
       {
@@ -131,12 +129,13 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                                           IUserDialogService userDialogService,
                                           IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
                                           IWindowService windowService,
-                                          DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) :
-         base(domainObjectBrowser, windowService)
+                                          IDomainObjectInteractionFactory domainObjectInteractionFactory) :
+         base(userDialogService, windowService)
       {
+         _domainObjectBrowser = domainObjectBrowser;
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
-         _userDialogService = userDialogService;
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
+         _domainObjectInteractionFactory = domainObjectInteractionFactory;
 
          CreateAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel?>(CreateAsync, CanCreate);
          DeleteSelectionAsyncCommand = new AsyncRelayCommand(DeleteSelectionAsync, CanDeleteSelection);
@@ -147,7 +146,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged += SearchResultViewModels_CollectionChanged;
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
 
-         Selection = new DomainObjectViewModelSelection(selectionType);
+         Selection = new DomainObjectViewModelSelection(DomainObjectViewModelSelectionType.Single);
          DomainObjectEditorViewModels = new ObservableCollection<IDomainObjectEditorViewModel>();
          _nestedDomainObjectBrowserViewModels = new ObservableCollection<IDomainObjectBrowserViewModel>();
       }
@@ -156,7 +155,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Public Methods
 
-      public override async Task InitializeAsync()
+      public virtual async Task InitializeAsync()
       {
          await _domainObjectBrowser.InitializeAsync();
          DomainObjectsSearchViewModel.UnloadSearchResultViewModels();
@@ -242,7 +241,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
          foreach (var domainObjectViewModel in domainObjectViewModels)
          {
-            var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel, _domainObjectBrowser.DomainObjectServiceFactory.CreateDomainObjectService<T>());
+            var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel);
 
             await editorViewModel.LoadNestedBrowsersAsync();
 
@@ -279,7 +278,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       }
 
-      public override void Dispose()
+      public virtual void Dispose()
       {
          UnregisterSearchResultViewModelPropertyChanged();
          UnloadEditorViewModels(DomainObjectsSearchViewModel.SearchResultViewModels);
@@ -408,9 +407,9 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          }
       }
 
-      protected virtual IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel, IDomainObjectService<T> domainObjectService)
+      protected virtual IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel)
       {
-         return new DomainObjectEditorViewModel<T>(domainObjectViewModel, domainObjectService, _userDialogService, _windowService);
+         return _domainObjectInteractionFactory.CreateDomainObjectEditorViewModel<T>(domainObjectViewModel);
       }
 
       private async void SearchResultViewModels_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -491,10 +490,8 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          IsSelectionLocked = false;
       }
 
-      protected override void NotifyCommandsCanExecuteChanged()
+      protected virtual void NotifyCommandsCanExecuteChanged()
       {
-         base.NotifyCommandsCanExecuteChanged();
-
          CreateAsyncCommand.NotifyCanExecuteChanged();
          DeleteSelectionAsyncCommand.NotifyCanExecuteChanged();
          SaveChangesAsyncCommand.NotifyCanExecuteChanged();

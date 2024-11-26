@@ -1,11 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
+using System.Diagnostics;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -14,6 +13,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private IAuthenticationService _authenticationService;
+      private IViewModelFactory _viewModelFactory;
 
       private bool _isNavigationMenuDisplayed;
       private List<ViewDescriptionBase> _viewDescriptions;
@@ -21,6 +21,7 @@ namespace OtherSideCore.Adapter.Views
       private IDisposable _instanciatedViewModel;
       private ViewDescriptionBase _defaultViewDescription;
       private ViewBaseViewModel _loadedViewViewModel;
+      private bool _isLoadingContent;
 
       private string _connexionUserName;
       private string _connexionPassword;
@@ -79,6 +80,12 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _loadedViewViewModel, value);
       }
 
+      public bool IsLoadingContent
+      {
+         get => _isLoadingContent;
+         set => SetProperty(ref _isLoadingContent, value);
+      }
+
       public bool IsUserContextInitialized
       {
          get => _isUserContextInitialized;
@@ -97,6 +104,12 @@ namespace OtherSideCore.Adapter.Views
 
       #endregion
 
+      #region Events
+
+      public EventHandler LoadedViewModelChanged;
+
+      #endregion
+
       #region Commands
 
       public AsyncRelayCommand LogInAsyncCommand { get; set; }
@@ -107,21 +120,21 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public MainWindowViewModel(IServiceProvider serviceProvider, 
-                                 IUserDialogService userDialogService, 
-                                 IAuthenticationService authenticationService, 
+      public MainWindowViewModel(IUserDialogService userDialogService,
+                                 IAuthenticationService authenticationService,
                                  IUserContext userContext,
                                  IGlobalDataService globalDataService,
                                  IAppConfiguration appConfiguration,
-                                 IWindowService windowService) :
-         base(serviceProvider,
-              userDialogService,
+                                 IWindowService windowService,
+                                 IViewModelFactory viewModelFactory) :
+         base(userDialogService,
               userContext,
               globalDataService,
               appConfiguration,
               windowService)
       {
          _authenticationService = authenticationService;
+         _viewModelFactory = viewModelFactory;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
@@ -209,7 +222,7 @@ namespace OtherSideCore.Adapter.Views
                   IsUserContextInitialized = true;
 
                   await _globalDataService.LoadGlobalDataAsync();
-                  await DisplayViewAsync(DefaultViewDescription);                  
+                  await DisplayViewAsync(DefaultViewDescription);
                }
             }
 
@@ -234,23 +247,44 @@ namespace OtherSideCore.Adapter.Views
 
       private async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase)
       {
-         LoadedViewViewModel?.Dispose();
+         IsLoadingContent = true;
 
-         ViewDescriptions.ForEach(vd => vd.Unload());
+         var proceed = true;
 
-         viewDescriptionBase.Load();
-
-         LoadedViewViewModel = (ViewBaseViewModel)_serviceProvider.GetService(LoadedViewDescription.ViewModelType);
-         await LoadedViewViewModel.InitializeAsync();
-
-         if (viewDescriptionBase is ModuleDescription)
-
+         if (LoadedViewViewModel is WorkspaceViewModel workspaceViewModel && workspaceViewModel.HasUnsavedChanges)
          {
-            ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewDescriptionBase;
+            proceed = _userDialogService.Confirm("Vous avez des modifications non sauvegardées. Voulez-vous continuer ?");
          }
 
-         OnPropertyChanged(nameof(LoadedViewDescription));
-         WindowName = LoadedViewDescription.ViewNavigationPath;
+         if (proceed)
+         {
+            LoadedViewViewModel?.Dispose();
+            LoadedViewViewModel = null;
+
+            ViewDescriptions.ForEach(vd => vd.Unload());
+
+            viewDescriptionBase.Load();
+
+            LoadedViewViewModel = _viewModelFactory.CreateViewModel(LoadedViewDescription);
+
+            await LoadedViewViewModel.InitializeAsync();
+
+            if (viewDescriptionBase is ModuleDescription)
+            {
+               ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewDescriptionBase;
+            }
+            else if (viewDescriptionBase is WorkspaceDescription)
+            {
+               ((WorkspaceViewModel)LoadedViewViewModel).WorkspaceDescription = (WorkspaceDescription)viewDescriptionBase;
+            }
+
+            OnPropertyChanged(nameof(LoadedViewDescription));
+            WindowName = LoadedViewDescription.ViewNavigationPath;
+         }
+
+         LoadedViewModelChanged?.Invoke(this, new EventArgs());
+
+         IsLoadingContent = false;
       }
 
       #endregion

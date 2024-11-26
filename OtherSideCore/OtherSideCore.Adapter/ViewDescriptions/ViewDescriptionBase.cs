@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.Logging;
 
 namespace OtherSideCore.Adapter.ViewDescriptions
 {
@@ -12,11 +11,11 @@ namespace OtherSideCore.Adapter.ViewDescriptions
       private string _viewNavigationPath;
       private object _iconResource;
 
-      protected Type _viewModelType;
-
       #endregion
 
       #region Properties
+
+      public int Id { get; private set; }
 
       public bool IsLoaded
       {
@@ -42,12 +41,6 @@ namespace OtherSideCore.Adapter.ViewDescriptions
          protected set => SetProperty(ref _iconResource, value);
       }
 
-      public Type ViewModelType
-      {
-         get => _viewModelType;
-         protected set => SetProperty(ref _viewModelType, value);
-      }
-
       #endregion
 
       #region Commands
@@ -58,10 +51,10 @@ namespace OtherSideCore.Adapter.ViewDescriptions
 
       #region Constructor
 
-      public ViewDescriptionBase(string name, Type viewModelType, object iconResource)
+      public ViewDescriptionBase(int id, string name, object iconResource)
       {
+         Id = id;
          Name = name;
-         _viewModelType = viewModelType;
          IconResource = iconResource;
       }
 

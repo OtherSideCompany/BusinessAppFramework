@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.Views;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.ViewDescriptions
 {
@@ -46,7 +44,7 @@ namespace OtherSideCore.Adapter.ViewDescriptions
 
       #region Constructor
 
-      public ModuleDescription(string name, Type viewModelType, object iconResource) : base(name, viewModelType, iconResource)
+      public ModuleDescription(int id, string name, object iconResource) : base(id, name, iconResource)
       {
          SubViewDescriptions = new ObservableCollection<WorkspaceDescription>();
 

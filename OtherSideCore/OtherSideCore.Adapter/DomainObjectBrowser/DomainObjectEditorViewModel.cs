@@ -3,20 +3,21 @@ using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 
 namespace OtherSideCore.Adapter.DomainObjectBrowser
 {
-   public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel where T : DomainObject, new()
+    public class DomainObjectEditorViewModel<T> : UIInteractionHost, IDomainObjectEditorViewModel where T : DomainObject, new()
    {
       #region Fields
 
       protected DomainObjectViewModel _domainObjectViewModel;
       protected IDomainObjectService<T> _domainObjectService;
-      protected IUserDialogService _userDialogService;
-      protected IWindowService _windowService;
+      protected IDomainObjectServiceFactory _domainObjectServiceFactory;
+      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
 
       protected ObservableCollection<IDomainObjectBrowserViewModel> _nestedDomainObjectBrowserViewModels;
 
@@ -39,8 +40,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
                   }
                }
             }
-
-
          }
       }
 
@@ -83,12 +82,16 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       #region Constructor
 
       public DomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel,
-                                         IDomainObjectService<T> domainObjectService,
+                                         IDomainObjectServiceFactory domainObjectServiceFactory,
+                                         IDomainObjectInteractionFactory domainObjectInteractionFactory,
                                          IUserDialogService userDialogService,
-                                         IWindowService windowService)
+                                         IWindowService windowService) :
+         base (userDialogService, windowService)
       {
          _domainObjectViewModel = domainObjectViewModel;
-         _domainObjectService = domainObjectService;
+         _domainObjectServiceFactory = domainObjectServiceFactory;
+         _domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
+         _domainObjectInteractionFactory = domainObjectInteractionFactory;
          _userDialogService = userDialogService;
          _windowService = windowService;
 
@@ -223,6 +226,11 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          {
             HasUnsavedChanges = _nestedDomainObjectBrowserViewModels.Any(vm => vm.HasUnsavedChanges);
          }
+      }
+
+      protected virtual void NotifyCommandsCanExecuteChanged()
+      {
+         DeleteAsyncCommand.NotifyCanExecuteChanged();
       }
       #endregion
    }

@@ -1,5 +1,4 @@
 ﻿using OtherSideCore.Adapter.ViewDescriptions;
-using OtherSideCore.Application.Views;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -8,7 +7,6 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private WorkspaceDescription _workspaceDescription;
-      private Workspace _workspace;
 
       #endregion
 
@@ -20,7 +18,7 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _workspaceDescription, value);
       }
 
-      public Workspace Workspace => (Workspace)_viewBase;
+      public virtual bool HasUnsavedChanges => false;
 
       #endregion
 
@@ -32,10 +30,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      protected WorkspaceViewModel(Workspace workspace, IWindowService windowService) :  base(workspace, windowService)
-      {
 
-      }
 
       #endregion
 

@@ -10,14 +10,13 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
    {
       #region Fields
 
-      private bool _dynamicSearch;
-      private DomainObjectSelector<T> _domainObjectSelector => (DomainObjectSelector<T>)_domainObjectBrowser;
+
 
       #endregion
 
       #region Properties
 
-
+      public bool DynamicSearch { get; set; }
 
       #endregion
 
@@ -35,22 +34,19 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Constructor
 
-      public DomainObjectSelectorViewModel(bool dynamicSearch,
-                                           DomainObjectSelector<T> domainObjectSelector,
+      public DomainObjectSelectorViewModel(DomainObjectBrowser<T> domainObjectBrowser,
                                            IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
                                            IWindowService windowService,
-                                           DomainObjectViewModelSelectionType selectionType = DomainObjectViewModelSelectionType.Single) :
-         base(domainObjectSelector,
+                                           IDomainObjectInteractionFactory domainObjectInteractionFactory) :
+         base(domainObjectBrowser,
               domainObjectViewModelFactory,
               userDialogService,
               domainObjectsSearchViewModelFactory,
               windowService,
-              selectionType)
+              domainObjectInteractionFactory)
       {
-         _dynamicSearch = dynamicSearch;
-
          DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
@@ -88,7 +84,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       private async void SingleTextFilterViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
-         if (_dynamicSearch && e.PropertyName.Equals(nameof(SingleTextFilterViewModel.Filter)))
+         if (DynamicSearch && e.PropertyName.Equals(nameof(SingleTextFilterViewModel.Filter)))
          {
             await DomainObjectsSearchViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
          }

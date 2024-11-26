@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
 using System;
@@ -15,10 +16,14 @@ namespace OtherSideCore.Wpf.Services
       #region Fields
 
       protected IServiceProvider _serviceProvider;
+      protected IViewFactory _viewFactory;
 
       private readonly Dictionary<Window, Stack<Border>> _modalPopupStacks;
       private readonly List<Window> _windows;
       private Window _activeWindow;
+
+      protected MainWindow _mainWindow;
+      protected MainWindowViewModel _mainWindowViewModel;
 
       #endregion
 
@@ -36,11 +41,12 @@ namespace OtherSideCore.Wpf.Services
 
       #region Constructor
 
-      public WindowService(IServiceProvider serviceProvider)
+      public WindowService(IServiceProvider serviceProvider, IViewFactory viewFactory)
       {
          System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
          _serviceProvider = serviceProvider;
+         _viewFactory = viewFactory;
 
          _modalPopupStacks = new Dictionary<Window, Stack<Border>>();
          _windows = new List<Window>();
@@ -89,7 +95,7 @@ namespace OtherSideCore.Wpf.Services
 
             if (modalOverlay.DataContext is WorkspaceViewModel)
             {
-               if (((WorkspaceViewModel)modalOverlay.DataContext).Workspace.HasUnsavedChanges)
+               if (((WorkspaceViewModel)modalOverlay.DataContext).HasUnsavedChanges)
                {
                   var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -105,11 +111,39 @@ namespace OtherSideCore.Wpf.Services
          }
       }
 
-      public abstract object ShowSubWindow();
+      public void ShowMainWindow<T>() where T : MainWindowViewModel
+      {
+         _mainWindow = CreateMainWindow();
 
-      public abstract void ShowMainWindow();
+         _mainWindowViewModel = _serviceProvider.GetRequiredService<T>();
+
+         _mainWindowViewModel.LoadedViewModelChanged += MainWindowViewModel_LoadedViewModelChanged;
+
+         SetWindowViewModelDefaultProperties(_mainWindowViewModel);
+         BuildModulesAndWorkspaceDescriptions(_mainWindowViewModel);
+
+         _mainWindow.DataContext = _mainWindowViewModel;
+         _mainWindow.Show();
+      }      
+
+      public object ShowSubWindow()
+      {
+         var window = CreateSubWindow();
+
+         var windowViewModel = _serviceProvider.GetRequiredService<WindowViewModel>();
+
+         SetWindowViewModelDefaultProperties(windowViewModel);
+
+         window.DataContext = windowViewModel;
+
+         window.Show();
+
+         return window;
+      }
 
       public abstract void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel);
+
+      public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
 
       public void CloseWindow(object window)
       {
@@ -120,6 +154,20 @@ namespace OtherSideCore.Wpf.Services
       #endregion
 
       #region Private Methods
+
+      private void MainWindowViewModel_LoadedViewModelChanged(object? sender, EventArgs e)
+      {
+         if (_mainWindowViewModel.LoadedViewViewModel is ModuleViewModel moduleViewModel)
+         {
+            _mainWindow.MainWindow_ViewContent = (UserControl)_viewFactory.CreateView(moduleViewModel.ModuleDescription);
+         }
+         else if (_mainWindowViewModel.LoadedViewViewModel is WorkspaceViewModel workspaceViewModel)
+         {
+            _mainWindow.MainWindow_ViewContent = (UserControl)_viewFactory.CreateView(workspaceViewModel.WorkspaceDescription);
+         }
+
+         _mainWindow.MainWindow_ViewContent.DataContext = _mainWindowViewModel.LoadedViewViewModel;
+      }
 
       protected MainWindow CreateMainWindow()
       {
@@ -177,6 +225,10 @@ namespace OtherSideCore.Wpf.Services
             return null;
          }
       }
+
+      protected abstract void SetWindowViewModelDefaultProperties(WindowViewModel windowViewModel);
+
+      protected abstract void BuildModulesAndWorkspaceDescriptions(MainWindowViewModel mainWindowViewModel);
 
       #endregion
    }

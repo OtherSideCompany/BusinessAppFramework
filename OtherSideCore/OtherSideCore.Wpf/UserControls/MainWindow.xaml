@@ -38,9 +38,11 @@
                <!-- content -->
                <Border Grid.Column="1" Background="White">
                   <Grid>
-                     <ContentPresenter Content="{Binding MainWindow_ViewContent, ElementName=MainWindowUserControl}" />
                      <local:LoadingView VerticalAlignment="Center" HorizontalAlignment="Center" 
-                                        Visibility="{Binding DisplayViewAsyncCommand.IsRunning, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                                        Visibility="{Binding IsLoadingContent, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                     
+                     <ContentPresenter Content="{Binding MainWindow_ViewContent, ElementName=MainWindowUserControl}" 
+                                       Visibility="{Binding IsLoadingContent, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>                     
                   </Grid>
                </Border>
 

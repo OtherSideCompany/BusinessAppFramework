@@ -1,10 +1,9 @@
 ﻿using OtherSideCore.Adapter.ViewDescriptions;
-using OtherSideCore.Application.Views;
-
+using OtherSideCore.Application;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class ModuleViewModel : ViewBaseViewModel
+    public abstract class ModuleViewModel : ViewBaseViewModel
    {
       #region Fields
 
@@ -21,8 +20,6 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _moduleDescription, value);
       }
 
-      public Module Module => (Module)_viewBase;
-
       #endregion
 
       #region Commands
@@ -33,7 +30,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ModuleViewModel(Module module, IWindowService windowService) : base(module, windowService)
+      public ModuleViewModel(Module module) : base()
       {
          _module = module;
       }

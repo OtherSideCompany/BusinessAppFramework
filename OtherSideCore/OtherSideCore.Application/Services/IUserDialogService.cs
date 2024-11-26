@@ -1,4 +1,6 @@
-﻿namespace OtherSideCore.Appplication.Services
+﻿using OtherSideCore.Application.Services;
+
+namespace OtherSideCore.Appplication.Services
 {
    public interface IUserDialogService
    {

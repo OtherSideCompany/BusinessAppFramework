@@ -109,6 +109,11 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       #region Public Methods
 
+      public void SetSelectionType(DomainObjectViewModelSelectionType selectionType)
+      {
+         SelectionType = selectionType;
+      }
+
       public void SelectViewModel(DomainObjectViewModel viewModel)
       {
          if (viewModel != null)

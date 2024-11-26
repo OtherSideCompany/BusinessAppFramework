@@ -1,24 +1,19 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
-using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class WindowViewModel : ObservableObject, IDisposable
+   public class WindowViewModel : UIInteractionHost, IDisposable
    {
       #region Fields
 
-      protected readonly IServiceProvider _serviceProvider;
-      protected readonly IUserDialogService _userDialogService;
       protected readonly ILoggerFactory _loggerFactory;
       protected readonly IGlobalDataService _globalDataService;
       protected IUserContext _userContext;
       protected IAppConfiguration _appConfiguration;
-      protected IWindowService _windowService;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -73,19 +68,16 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public WindowViewModel(IServiceProvider serviceProvider,
-                             IUserDialogService userDialogService,
+      public WindowViewModel(IUserDialogService userDialogService,
                              IUserContext userContext,
                              IGlobalDataService globalDataService,
                              IAppConfiguration appConfiguration,
-                             IWindowService windowService)
+                             IWindowService windowService) :
+         base(userDialogService, windowService)
       {
-         _userDialogService = userDialogService;
-         _serviceProvider = serviceProvider;
          UserContext = userContext;
          _globalDataService = globalDataService;
          _appConfiguration = appConfiguration;
-         _windowService = windowService;
 
          ApplicationName = "Unnamed App";
          WindowName = "Unnamed Window";

@@ -1,8 +1,6 @@
 ﻿using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.RepositoryInterfaces;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Services
 {

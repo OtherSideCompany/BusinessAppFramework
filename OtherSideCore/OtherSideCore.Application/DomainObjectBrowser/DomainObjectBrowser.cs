@@ -1,19 +1,20 @@
 ﻿
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Application.Views;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.DomainObjectBrowser
 {
-   public class DomainObjectBrowser<T> : Workspace where T : DomainObject, new()
+   public class DomainObjectBrowser<T> where T : DomainObject, new()
    {
 
       #region Fields
 
-      
+      protected IUserContext _userContext;
+      protected ILoggerFactory _loggerFactory;
+      protected IUserDialogService _userDialogService;
 
       #endregion
 
@@ -21,6 +22,10 @@ namespace OtherSideCore.Application.DomainObjectBrowser
 
       public DomainObjectSearch<T> DomainObjectSearch { get; private set; }
       public List<DomainObjectBrowser<T>> NestedDomainObjectBrowser { get; private set; }
+      public IDomainObjectServiceFactory DomainObjectServiceFactory { get; private set; }
+      public IGlobalDataService GlobalDataService { get; private set; }
+      public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; private set; }
+      public virtual bool HasUnsavedChanges => false;
 
       #endregion
 
@@ -38,23 +43,23 @@ namespace OtherSideCore.Application.DomainObjectBrowser
                                  IGlobalDataService globalDataService, 
                                  IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory, 
                                  IDomainObjectServiceFactory domainObjectServiceFactory,
-                                 IDomainObjectSearchFactory domainObjectSearchFactory) : 
-         base(loggerFactory, 
-              userContext, 
-              userDialogService, 
-              globalDataService, 
-              domainObjectQueryServiceFactory, 
-              domainObjectServiceFactory)
+                                 IDomainObjectSearchFactory domainObjectSearchFactory)
       {
+         _userContext = userContext;
+         _loggerFactory = loggerFactory;
+         _userDialogService = userDialogService;
          DomainObjectSearch = (DomainObjectSearch<T>)domainObjectSearchFactory.CreateDomainObjectSearch<T>(domainObjectQueryServiceFactory);
          NestedDomainObjectBrowser = new List<DomainObjectBrowser<T>>();
+         GlobalDataService = globalDataService;
+         DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
+         DomainObjectServiceFactory = domainObjectServiceFactory;
       }
 
       #endregion
 
       #region Public Methods
 
-      public override async Task InitializeAsync()
+      public virtual async Task InitializeAsync()
       {
          await DomainObjectSearch.PaginatedSearchAsync(true, false, []);
       }
@@ -96,7 +101,7 @@ namespace OtherSideCore.Application.DomainObjectBrowser
          }
       }
 
-      public override void Dispose()
+      public virtual void Dispose()
       {
          DomainObjectSearch.Dispose();
          NestedDomainObjectBrowser.ForEach(domainObjectBrowser => domainObjectBrowser.Dispose());

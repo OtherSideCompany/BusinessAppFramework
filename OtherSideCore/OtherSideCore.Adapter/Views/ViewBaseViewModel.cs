@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Application.Views;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -7,8 +6,7 @@ namespace OtherSideCore.Adapter.Views
    {
       #region Fields
 
-      protected ViewBase _viewBase;
-      protected IWindowService _windowService;
+      
 
       #endregion
 
@@ -25,10 +23,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public ViewBaseViewModel(ViewBase viewBase, IWindowService windowService)
+      public ViewBaseViewModel()
       {
-         _viewBase = viewBase;
-         _windowService = windowService;
+         
       }
 
       #endregion
