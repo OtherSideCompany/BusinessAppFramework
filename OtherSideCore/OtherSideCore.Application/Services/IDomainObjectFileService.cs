@@ -12,5 +12,6 @@ namespace OtherSideCore.Application.Services
       void OpenFolder(DirectoryInfo directoryInfo);
       void OpenFile(FileInfo fileInfo);
       void CopyFilesInAssociatedFolder(DomainObject domainObject, List<ManagedFile> managedFiles);
+      void TryDeleteAssociatedFolder(DomainObject domainObject);
    }
 }

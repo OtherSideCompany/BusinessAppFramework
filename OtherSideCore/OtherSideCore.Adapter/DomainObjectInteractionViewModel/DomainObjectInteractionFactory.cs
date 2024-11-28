@@ -5,7 +5,7 @@ using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public abstract class DomainObjectInteractionFactory : IDomainObjectInteractionFactory
    {
@@ -21,7 +21,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
       protected IWindowService _windowService;
-      protected IDomainObjectHierarchyService _domainObjectHierarchyService;
       protected IDomainObjectFileService _domainObjectFileService;
 
 
@@ -47,7 +46,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          IDomainObjectViewModelFactory domainObjectViewModelFactory,
          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
          IWindowService windowService,
-         IDomainObjectHierarchyService domainObjectHierarchyService,
          IDomainObjectFileService domainObjectFileService)
       {
          _loggerFactory = loggerFactory;
@@ -60,7 +58,6 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
          _windowService = windowService;
-         _domainObjectHierarchyService = domainObjectHierarchyService;
          _domainObjectFileService = domainObjectFileService;
       }
 
@@ -76,7 +73,16 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
 
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
 
-      public abstract DomainObjectTreeViewNode CreateTreeViewNode(DomainObjectViewModel domainObjectViewModel, DomainObjectTreeViewModel domainObjectTreeViewModel);
+      public abstract Task<DomainObjectTreeViewModel> CreateTreeViewAsync(DomainObjectViewModel domainObjectViewModel);
+
+      public virtual IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel) 
+      {
+         var domainObjectType = domainObjectViewModel.DomainObject.GetType();
+         var genericType = typeof(DomainObjectTreeViewNode<>).MakeGenericType(domainObjectType);
+
+         return (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, _windowService, this, _domainObjectServiceFactory);
+      }
+
 
       #endregion
 

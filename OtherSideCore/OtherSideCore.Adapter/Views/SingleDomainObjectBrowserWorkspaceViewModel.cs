@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Adapter.DomainObjectBrowser;
+﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Domain.DomainObjects;
 

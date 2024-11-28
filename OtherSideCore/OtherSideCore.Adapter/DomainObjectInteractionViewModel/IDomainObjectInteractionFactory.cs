@@ -1,6 +1,6 @@
 ﻿using OtherSideCore.Domain.DomainObjects;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public interface IDomainObjectInteractionFactory
    {
@@ -8,6 +8,7 @@ namespace OtherSideCore.Adapter.DomainObjectBrowser
       IDomainObjectBrowserViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-      DomainObjectTreeViewNode CreateTreeViewNode(DomainObjectViewModel domainObjectViewModel, DomainObjectTreeViewModel domainObjectTreeViewModel);
+      Task<DomainObjectTreeViewModel> CreateTreeViewAsync(DomainObjectViewModel domainObjectViewModel);
+      IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel);
    }
 }

@@ -1,7 +1,7 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public class DomainObjectViewModelSelection : ObservableObject
    {

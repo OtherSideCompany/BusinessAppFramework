@@ -52,6 +52,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="DataTemplateSelector\DataTemplateSelectors.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Icons\Icons.xaml">
       <SubType>Designer</SubType>
     </Page>

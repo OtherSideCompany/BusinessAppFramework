@@ -157,10 +157,6 @@ namespace OtherSideCore.Application.Services
          }
       }
 
-      #endregion
-
-      #region Private Methods
-
       public bool IsImage(FileInfo fileInfo)
       {
          return Path.GetExtension(fileInfo.Name).ToLower().Equals(".jpg") ||
@@ -171,6 +167,29 @@ namespace OtherSideCore.Application.Services
                 Path.GetExtension(fileInfo.Name).ToLower().Equals(".heic") ||
                 Path.GetExtension(fileInfo.Name).ToLower().Equals(".heif");
       }
+
+      public void TryDeleteAssociatedFolder(DomainObject domainObject)
+      {
+         var associatedFolder = GetAssociatedDirectoryInfo(domainObject);
+
+         if (associatedFolder.Exists)
+         {
+            try
+            {
+               associatedFolder.Delete(true);
+            }
+            catch (Exception ex)
+            {
+               throw new IOException($"Failed to delete folder '{associatedFolder.FullName}'.", ex);
+            }
+         }
+      }
+
+      #endregion
+
+      #region Private Methods
+
+
 
       #endregion
    }

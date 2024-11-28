@@ -5,7 +5,7 @@ using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
     public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
    {

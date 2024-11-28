@@ -41,8 +41,7 @@ namespace OtherSideCore.Adapter
         #endregion
 
         #region Private Methods
-
-
+  
 
         #endregion
     }

@@ -49,8 +49,6 @@ namespace OtherSideCore.Adapter
          set => SetProperty(ref _domainObject, value);
       }
 
-      public virtual string TreeviewDisplayName => "Display name not set";
-
       public HashSet<string> MonitoredProperties { get; set; }
 
       public string CreationDescription => GetHistoryDescription(DomainObject.CreationDate, DomainObject.CreatedBy);

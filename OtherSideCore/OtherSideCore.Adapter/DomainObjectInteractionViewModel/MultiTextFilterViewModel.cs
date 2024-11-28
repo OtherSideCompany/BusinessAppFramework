@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Application.DomainObjectBrowser;
 using System.Collections.ObjectModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public class MultiTextFilterViewModel : ObservableObject
    {

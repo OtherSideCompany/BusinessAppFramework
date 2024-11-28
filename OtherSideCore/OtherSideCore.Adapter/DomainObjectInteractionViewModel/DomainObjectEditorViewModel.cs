@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
     public class DomainObjectEditorViewModel<T> : UIInteractionHost, IDomainObjectEditorViewModel where T : DomainObject, new()
    {

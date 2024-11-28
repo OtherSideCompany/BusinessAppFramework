@@ -1,5 +1,5 @@
 ﻿using OtherSideCore.Adapter;
-using OtherSideCore.Adapter.DomainObjectBrowser;
+using OtherSideCore.Adapter.DomainObjectInteraction;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;

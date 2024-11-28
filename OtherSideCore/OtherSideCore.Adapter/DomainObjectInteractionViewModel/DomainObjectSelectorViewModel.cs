@@ -4,7 +4,7 @@ using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
    {

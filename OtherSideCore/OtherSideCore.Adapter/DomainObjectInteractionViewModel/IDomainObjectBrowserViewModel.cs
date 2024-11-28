@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public interface IDomainObjectBrowserViewModel : IDisposable, INotifyPropertyChanged
    {

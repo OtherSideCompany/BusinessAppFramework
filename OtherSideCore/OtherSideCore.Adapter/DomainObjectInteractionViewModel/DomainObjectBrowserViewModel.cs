@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace OtherSideCore.Adapter.DomainObjectBrowser
+namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
     public class DomainObjectBrowserViewModel<T> : UIInteractionHost, IDomainObjectBrowserViewModel where T : DomainObject, new()
    {

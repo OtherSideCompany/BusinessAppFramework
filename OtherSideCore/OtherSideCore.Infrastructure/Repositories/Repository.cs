@@ -182,18 +182,9 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
+      public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
-         if (filters == null || !filters.Any())
-         {
-            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
-            GetType(), nameof(GetAllAsync), "none", extendedSearch.ToString());
-         }
-         else
-         {
-            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
-            GetType(), nameof(GetAllAsync), string.Join(',', filters), extendedSearch.ToString());
-         }
+         return await CountAsync(_ => true, parent, cancellationToken);
       }
 
       public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId)
@@ -316,6 +307,20 @@ namespace OtherSideCore.Infrastructure.Repositories
       #endregion
 
       #region Private Methods
+
+      protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
+      {
+         if (filters == null || !filters.Any())
+         {
+            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
+            GetType(), nameof(GetAllAsync), "none", extendedSearch.ToString());
+         }
+         else
+         {
+            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
+            GetType(), nameof(GetAllAsync), string.Join(',', filters), extendedSearch.ToString());
+         }
+      }
 
       protected virtual Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
       {

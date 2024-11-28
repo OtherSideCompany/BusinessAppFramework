@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls"
              xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
              xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
-             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" xmlns:domainobjectbrowser="clr-namespace:OtherSideCore.Adapter.DomainObjectBrowser;assembly=OtherSideCore.Adapter"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" xmlns:domainobjectbrowser="clr-namespace:OtherSideCore.Adapter.DomainObjectInteraction;assembly=OtherSideCore.Adapter"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    <Grid>

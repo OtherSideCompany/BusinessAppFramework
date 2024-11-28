@@ -26,5 +26,6 @@ namespace OtherSideCore.Domain.RepositoryInterfaces
       Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);
 
       Task<int> CountAsync(Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
+      Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
    }
 }
