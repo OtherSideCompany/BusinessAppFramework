@@ -9,8 +9,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public ObservableCollection<IDomainObjectEditorViewModel> DomainObjectEditorViewModels { get; }
       Task SaveChangesAsync();
       Task CancelChangesAsync();
-      Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels);
-      void UnloadEditorViewModels(IEnumerable<DomainObjectViewModel> domainObjectViewModels);
       Task SelectSearchResultViewModelAsync(DomainObjectViewModel domainObjectViewModel);
       Task InitializeAsync();
    }

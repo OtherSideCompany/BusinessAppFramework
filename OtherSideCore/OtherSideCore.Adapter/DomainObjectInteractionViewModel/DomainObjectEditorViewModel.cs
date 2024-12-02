@@ -20,6 +20,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
 
       protected ObservableCollection<IDomainObjectBrowserViewModel> _nestedDomainObjectBrowserViewModels;
+      protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
 
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
@@ -81,6 +82,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsEnabled = true;
 
          _nestedDomainObjectBrowserViewModels = new ObservableCollection<IDomainObjectBrowserViewModel>();
+         _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
       }
 
       #endregion
@@ -109,6 +111,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                await nestedBrowserViewModel.SaveChangesAsync();
             }
 
+            foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+            {
+               await nestedTreeViewModel.SaveChangesAsync();
+            }
+
             _domainObjectViewModel.ResetState();
          }
 
@@ -133,6 +140,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             await nestedBrowserViewModel.CancelChangesAsync();
          }
 
+         foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+         {
+            await nestedTreeViewModel.CancelChangesAsync();
+         }
+
          _domainObjectViewModel.ResetState();
 
          HasUnsavedChanges = false;
@@ -140,14 +152,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsEnabled = true;
       }
 
-      public virtual async Task LoadNestedBrowsersAsync()
+      public virtual async Task LoadNestedStructuresAsync()
       {
 
       }
 
       public virtual void Dispose()
       {
-         UnRegisterNestedDomainObjectBrowserViewModel();
+         UnRegisterNestedStructures();
          _domainObjectViewModel.PropertyChanged -= DomainObjectViewModel_PropertyChanged;
       }
 
@@ -155,21 +167,31 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
-      protected void RegisterNestedDomainObjectBrowserViewModel()
+      protected void RegisterNestedStructures()
       {
-         UnRegisterNestedDomainObjectBrowserViewModel();
+         UnRegisterNestedStructures();
 
          foreach (var nestedDomainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
          {
             nestedDomainObjectBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
          }
+
+         foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
+         {
+            nestedDomainObjectTreeViewModel.PropertyChanged += NestedDomainObjectTreeViewModel_PropertyChanged;
+         }
       }
 
-      private void UnRegisterNestedDomainObjectBrowserViewModel()
+      private void UnRegisterNestedStructures()
       {
          foreach (var nestedDomainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
          {
             nestedDomainObjectBrowserViewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
+         }
+
+         foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
+         {
+            nestedDomainObjectTreeViewModel.PropertyChanged -= NestedDomainObjectTreeViewModel_PropertyChanged;
          }
       }
 
@@ -204,6 +226,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          if (e.PropertyName.Equals(nameof(DomainObjectBrowserViewModel<T>.HasUnsavedChanges)) && !HasUnsavedChanges)
          {
             HasUnsavedChanges = _nestedDomainObjectBrowserViewModels.Any(vm => vm.HasUnsavedChanges);
+         }
+      }
+
+      private void NestedDomainObjectTreeViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      {
+         if (e.PropertyName.Equals(nameof(DomainObjectTreeViewModel.HasUnsavedChanges)) && !HasUnsavedChanges)
+         {
+            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);
          }
       }
 

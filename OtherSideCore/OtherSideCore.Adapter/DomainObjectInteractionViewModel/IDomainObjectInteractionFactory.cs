@@ -8,7 +8,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       IDomainObjectBrowserViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-      Task<DomainObjectTreeViewModel> CreateTreeViewAsync(DomainObjectViewModel domainObjectViewModel);
       IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel);
    }
 }

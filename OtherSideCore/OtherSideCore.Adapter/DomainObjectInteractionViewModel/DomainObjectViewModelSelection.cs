@@ -98,11 +98,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public DomainObjectViewModelSelection(DomainObjectViewModelSelectionType selectionType)
       {
          SelectionType = selectionType;
-
-         if (SelectionType == DomainObjectViewModelSelectionType.Multiple)
-         {
-            _selectedViewModels = new List<DomainObjectViewModel>();
-         }
+         _selectedViewModels = new List<DomainObjectViewModel>();
       }
 
       #endregion

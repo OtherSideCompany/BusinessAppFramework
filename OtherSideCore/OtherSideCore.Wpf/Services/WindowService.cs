@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
@@ -141,7 +142,7 @@ namespace OtherSideCore.Wpf.Services
          return window;
       }
 
-      public abstract void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel);
+      public abstract void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel);
 
       public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
 

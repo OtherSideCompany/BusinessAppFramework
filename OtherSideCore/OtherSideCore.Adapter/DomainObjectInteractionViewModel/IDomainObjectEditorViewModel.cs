@@ -15,6 +15,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task SaveChangesAsync();
       bool CanCancelChanges();
       Task CancelChangesAsync();
-      Task LoadNestedBrowsersAsync();
+      Task LoadNestedStructuresAsync();
    }
 }

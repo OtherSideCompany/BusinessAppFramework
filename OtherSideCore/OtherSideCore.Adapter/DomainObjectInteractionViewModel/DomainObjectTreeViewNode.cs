@@ -46,7 +46,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public bool IsExpanded
       {
          get => _isExpanded;
-         private set => SetProperty(ref _isExpanded, value);
+         set => SetProperty(ref _isExpanded, value);
       }
 
       public bool IsSelected
@@ -115,6 +115,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Public Methods
 
+      public virtual void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing)
+      {
+         Children.Add(childNode);
+      }
+
+      public virtual void RemoveChild(IDomainObjectTreeViewNode childNode)
+      {
+         Children.Remove(childNode);
+      }
+
       public void RequestSelection()
       {
          NodeSelectionRequested?.Invoke(this, this);
@@ -160,12 +170,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      private bool CanDelete()
+      protected virtual bool CanDelete()
       {
          return !DomainObjectEditorViewModel.HasUnsavedChanges;
       }
 
-      private async Task DeleteAsync()
+      protected virtual async Task DeleteAsync()
       {
          var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
 

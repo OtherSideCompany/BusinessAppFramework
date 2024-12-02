@@ -156,7 +156,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
                IsLoadingNestedBrowsers = true;
 
-               await SelectedDomainObjectEditorViewModel.LoadNestedBrowsersAsync();
+               await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
 
                IsLoadingNestedBrowsers = false;           
             }
@@ -197,15 +197,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DomainObjectEditorViewModels.ToList().ForEach(async vm => await vm.CancelChangesAsync());
       }
 
-      public async Task LoadEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
+      public virtual void Dispose()
+      {
+         UnregisterSearchResultViewModelPropertyChanged();
+         DeleteEditorViewModels(DomainObjectsSearchViewModel.SearchResultViewModels);
+
+         DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged -= SearchResultViewModels_CollectionChanged;
+         DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
+         DomainObjectsSearchViewModel.Dispose();
+      }
+
+      #endregion
+
+      #region Private Methods
+
+      protected async Task CreateEditorViewModelsAsync(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
       {
          IsLoadingDomainObjectEditors = true;
 
          foreach (var domainObjectViewModel in domainObjectViewModels)
          {
             var editorViewModel = CreateDomainObjectEditorViewModel(domainObjectViewModel);
-
-            await editorViewModel.LoadNestedBrowsersAsync();
 
             editorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
             editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;
@@ -218,48 +230,34 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsLoadingDomainObjectEditors = false;
       }
 
-      public void UnloadEditorViewModels(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
+      protected void DeleteEditorViewModels(IEnumerable<DomainObjectViewModel> domainObjectViewModels)
       {
          foreach (var viewModel in domainObjectViewModels)
          {
             Selection.UnselectViewModel(viewModel);
 
-            var editorViewModel = DomainObjectEditorViewModels.FirstOrDefault(editorViewModel => editorViewModel.DomainObjectViewModel.Equals(viewModel));            
+            var editorViewModel = DomainObjectEditorViewModels.FirstOrDefault(editorViewModel => editorViewModel.DomainObjectViewModel.Equals(viewModel));
 
             if (editorViewModel != null)
             {
-               UnloadEditorViewModel(editorViewModel);
+               DeleteEditorViewModel(editorViewModel);
 
                DomainObjectEditorViewModels.Remove(editorViewModel);
-            }            
+            }
          }
-      }      
-
-      public virtual void Dispose()
-      {
-         UnregisterSearchResultViewModelPropertyChanged();
-         UnloadEditorViewModels(DomainObjectsSearchViewModel.SearchResultViewModels);
-
-         DomainObjectsSearchViewModel.SearchResultViewModels.CollectionChanged -= SearchResultViewModels_CollectionChanged;
-         DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
-         DomainObjectsSearchViewModel.Dispose();
       }
 
-      #endregion
-
-      #region Private Methods
-
-      private void UnloadEditorViewModels()
+      private void DeleteEditorViewModels()
       {
          foreach (var viewModel in DomainObjectEditorViewModels)
          {
-            UnloadEditorViewModel(viewModel);
+            DeleteEditorViewModel(viewModel);
          }
 
          DomainObjectEditorViewModels.Clear();
       }
 
-      private void UnloadEditorViewModel(IDomainObjectEditorViewModel domainObjectEditorViewModel)
+      private void DeleteEditorViewModel(IDomainObjectEditorViewModel domainObjectEditorViewModel)
       {
          if (domainObjectEditorViewModel != null)
          {
@@ -343,7 +341,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          UnselectSearchResultViewModel(Selection.SelectedViewModel);
          UnregisterSearchResultViewModelPropertyChanged();
-         UnloadEditorViewModels();
+         DeleteEditorViewModels();
 
          _domainObjectEditorViewModelsSemaphore.Release();
       }
@@ -375,7 +373,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                }
             }
 
-            UnloadEditorViewModels(e.OldItems.Cast<DomainObjectViewModel>());
+            DeleteEditorViewModels(e.OldItems.Cast<DomainObjectViewModel>());
          }
          else if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
          {
@@ -387,7 +385,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                }
             }
 
-            await LoadEditorViewModelsAsync(e.NewItems.Cast<DomainObjectViewModel>());
+            await CreateEditorViewModelsAsync(e.NewItems.Cast<DomainObjectViewModel>());
          }
 
          _domainObjectEditorViewModelsSemaphore.Release();

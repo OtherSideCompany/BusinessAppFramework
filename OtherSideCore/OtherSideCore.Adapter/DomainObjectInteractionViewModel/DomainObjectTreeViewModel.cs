@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
+using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -13,12 +14,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private IDomainObjectInteractionFactory _domainObjectInteractionFactory;
       private IDomainObjectTreeSearchViewModel _domainObjectTreeSearchViewModel;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
-      private IDomainObjectServiceFactory _domainObjectServiceFactory;
+      protected IDomainObjectServiceFactory _domainObjectServiceFactory;
 
       private ObservableCollection<IDomainObjectTreeViewNode> _roots;
       private bool _isSelectionLocked;
       private IDomainObjectTreeViewNode _selectedDomainObjectTreeViewNode;
       private IDomainObjectEditorViewModel _selectedDomainObjectEditorViewModel;
+      private DomainObjectViewModel _parentContextViewModel;
+      protected bool _isInitializingTree;
 
       private bool _isLoadingNestedBrowsers;
 
@@ -68,12 +71,25 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          private set => SetProperty(ref _isLoadingNestedBrowsers, value);
       }
 
+      public DomainObjectViewModel ParentContextViewModel
+      {
+         get => _parentContextViewModel;
+         set => SetProperty(ref _parentContextViewModel, value);
+      }
+
       public bool HasUnsavedChanges => _inlineNodes.Select(n => n.DomainObjectEditorViewModel).Any(vm => vm.HasUnsavedChanges);
+
+      #endregion
+
+      #region Events
+
+      public EventHandler TreeModified;
 
       #endregion
 
       #region Commands
 
+      public AsyncRelayCommand CreateRootNodeAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
 
@@ -99,6 +115,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
+
+         CreateRootNodeAsyncCommand = new AsyncRelayCommand(CreateRootNodeAsync, CanCreateRootNode);
       }
 
       #endregion
@@ -127,8 +145,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public async Task InitializeAsync(DomainObjectViewModel domainObjectViewModel)
       {
+         _isInitializingTree = true;
+
          await _domainObjectTreeSearchViewModel.SearchAsync(domainObjectViewModel);
          ConstructTree(domainObjectViewModel);
+
+         _isInitializingTree = false;
       }
 
       public async Task SelectNodeAsync(IDomainObjectTreeViewNode domainObjectTreeViewNode)
@@ -146,7 +168,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
                IsLoadingNestedBrowsers = true;
 
-               await SelectedDomainObjectEditorViewModel.LoadNestedBrowsersAsync();
+               await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
 
                IsLoadingNestedBrowsers = false;
             }
@@ -163,29 +185,55 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _inlineNodes.ToList().ForEach(n => n.Expand());
       }
 
-      public void Dispose()
+      public virtual void Dispose()
       {
-         _inlineNodes.ToList().ForEach(n => UnregisterNode(n));
-         _inlineNodes.ToList().ForEach(n => n.Dispose());
+         Clear();
       }
 
       #endregion
 
       #region Private Methods
 
-      protected void AddRootNode(DomainObjectViewModel domainObjectViewModel)
+      protected virtual void AddRootNode(DomainObjectViewModel domainObjectViewModel)
       {
          var domainObjectRootTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
          Roots.Add(domainObjectRootTreeViewNode);
-         RegisterNode(domainObjectRootTreeViewNode);         
+         RegisterNode(domainObjectRootTreeViewNode);
+
+         TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
       protected void AddChildNode(DomainObjectViewModel domainObjectViewModel, DomainObjectViewModel parentViewModel)
       {
          var domainObjectTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
          var parentNode = GetNode(parentViewModel);
-         parentNode.Children.Add(domainObjectTreeViewNode);
-         RegisterNode(domainObjectTreeViewNode);         
+         parentNode.AddChild(domainObjectTreeViewNode, _isInitializingTree);
+         RegisterNode(domainObjectTreeViewNode);
+
+         TreeModified?.Invoke(this, EventArgs.Empty);
+      }
+
+      protected virtual void RemoveRootNode(IDomainObjectTreeViewNode rootNodeToRemove)
+      {
+         UnregisterNode(rootNodeToRemove);
+         Roots.Remove(rootNodeToRemove);
+         TreeModified?.Invoke(this, EventArgs.Empty);
+      }
+
+      protected void RemoveChildNode(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
+      {
+         UnregisterNode(nodeToRemove);
+         parent.RemoveChild(nodeToRemove);
+         TreeModified?.Invoke(this, EventArgs.Empty);
+      }
+
+      protected void Clear()
+      {
+         _inlineNodes.ToList().ForEach(n => UnregisterNode(n));
+         _inlineNodes.ToList().ForEach(n => n.Dispose());
+         Roots.Clear();
+
+         TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
       private void RegisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
@@ -213,35 +261,33 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void DomainObjectTreeViewNode_NodeDeleted(object? sender, IDomainObjectTreeViewNode e)
       {
          RemoveNode(e);
-      }
+      }     
 
-      protected void RemoveNode(IDomainObjectTreeViewNode nodeToRemove)
+      private void RemoveNode(IDomainObjectTreeViewNode nodeToRemove)
       {
          foreach (var rootNode in Roots.ToList())
          {
             if (rootNode.Equals(nodeToRemove))
             {
-               UnregisterNode(rootNode);
-               Roots.Remove(rootNode);
+               RemoveRootNode(nodeToRemove);               
                return;
             }
 
-            RemoveNodeFromChildren(nodeToRemove, rootNode.Children);
+            RemoveNodeFromChildren(nodeToRemove, rootNode);
          }
       }
 
-      private void RemoveNodeFromChildren(IDomainObjectTreeViewNode nodeToRemove, ObservableCollection<IDomainObjectTreeViewNode> children)
+      private void RemoveNodeFromChildren(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
       {
-         foreach (var childNode in children.ToList())
+         foreach (var childNode in parent.Children.ToList())
          {
             if (childNode.Equals(nodeToRemove))
             {
-               UnregisterNode(childNode);
-               children.Remove(childNode);
+               RemoveChildNode(nodeToRemove, parent);               
                return;
             }
 
-            RemoveNodeFromChildren(nodeToRemove, childNode.Children);
+            RemoveNodeFromChildren(nodeToRemove, childNode);
          }
       }
 
@@ -260,7 +306,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      private IDomainObjectTreeViewNode GetNode(DomainObjectViewModel domainObjectViewModel)
+      protected IDomainObjectTreeViewNode GetNode(DomainObjectViewModel domainObjectViewModel)
       {
          return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.Equals(domainObjectViewModel));
       }
@@ -299,6 +345,24 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          SaveChangesAsyncCommand.NotifyCanExecuteChanged();
          CancelChangesAsyncCommand.NotifyCanExecuteChanged();
+      }
+
+      private bool CanCreateRootNode()
+      {
+         return ParentContextViewModel != null;
+      }
+
+      private async Task CreateRootNodeAsync()
+      {
+         var domainObject = await CreateRootDomainObjectAsync();
+            
+         var viewModel = _domainObjectViewModelFactory.CreateViewModel(domainObject);
+         AddRootNode(viewModel);
+      }
+
+      protected virtual async Task<DomainObject> CreateRootDomainObjectAsync()
+      {
+         return null;
       }
 
       #endregion

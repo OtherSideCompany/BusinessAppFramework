@@ -8,6 +8,8 @@ namespace OtherSideCore.Application.Services
 
       Task CreateAsync(T domainObject, DomainObject? parent);
 
+      Task<T> CreateAsync(DomainObject? parent);
+
       Task SaveAsync(T domainObject);
 
       Task DeleteAsync(T domainObject);

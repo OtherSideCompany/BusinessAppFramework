@@ -44,6 +44,13 @@ namespace OtherSideCore.Application.Services
          await _repository.CreateAsync(domainObject, parent, _userContext.Id);
       }
 
+      public virtual async Task<T> CreateAsync(DomainObject? parent)
+      {
+         var domainObject = new T();
+         await CreateAsync(domainObject, parent);
+         return domainObject;
+      }
+
       public virtual async Task DeleteAsync(T domainObject)
       {
          await _repository.DeleteAsync(domainObject);

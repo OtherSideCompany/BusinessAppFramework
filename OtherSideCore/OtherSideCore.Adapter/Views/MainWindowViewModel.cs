@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
@@ -14,6 +15,7 @@ namespace OtherSideCore.Adapter.Views
 
       private IAuthenticationService _authenticationService;
       private IViewModelFactory _viewModelFactory;
+      private IDomainObjectInteractionFactory domainObjectInteractionFactory;
 
       private bool _isNavigationMenuDisplayed;
       private List<ViewDescriptionBase> _viewDescriptions;

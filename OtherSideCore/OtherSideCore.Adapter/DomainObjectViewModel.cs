@@ -127,7 +127,9 @@ namespace OtherSideCore.Adapter
 
       protected virtual void DisplayInExternalWindow() 
       {
-         ((IWindowService)_windowService).ShowDomainObjectViewModelInSubWindow(this);
+         // how to get associated workspace ???
+         // construct (SingleDomainObjectBrowserWorkspaceViewModel<Goods>)((MMSoftViewModelFactory)_viewModelFactory).CreateViewModel(MMSoftViews.Goods, this, domainObjectInteractionFactory);
+         ((IWindowService)_windowService).ShowDomainObjectViewModelInSubWindow(this, null);
       }
 
       private string GetHistoryDescription(DateTime dateTime, User user)

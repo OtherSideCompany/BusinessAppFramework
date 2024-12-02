@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;

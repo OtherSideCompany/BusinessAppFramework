@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using OtherSideCore.Adapter.ViewDescriptions;
+using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -72,8 +74,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
 
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-
-      public abstract Task<DomainObjectTreeViewModel> CreateTreeViewAsync(DomainObjectViewModel domainObjectViewModel);
 
       public virtual IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel) 
       {
