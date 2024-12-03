@@ -2,11 +2,6 @@
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Adapter
 {
@@ -17,7 +12,6 @@ namespace OtherSideCore.Adapter
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
       protected IUserContext _userContext;
-      protected IWindowService _windowService;
 
       #endregion
 
@@ -35,12 +29,14 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public DomainObjectViewModelFactory(IGlobalDataService globalDataService, IMapper mapper, IUserContext userContext, IWindowService windowService)
+      public DomainObjectViewModelFactory(
+         IGlobalDataService globalDataService, 
+         IMapper mapper, 
+         IUserContext userContext)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
          _userContext = userContext;
-         _windowService = windowService;
       }
 
       #endregion

@@ -14,7 +14,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isExpanded;
       private bool _isSelected;
 
-      private IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
 
       private DomainObjectViewModel _domainObjectViewModel;

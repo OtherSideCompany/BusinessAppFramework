@@ -3,7 +3,7 @@ using OtherSideCore.Adapter.ViewDescriptions;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public interface IViewModelFactory
+   public interface IModuleViewModelFactory
    {
       ViewBaseViewModel CreateViewModel(ViewDescriptionBase viewDescription);
    }

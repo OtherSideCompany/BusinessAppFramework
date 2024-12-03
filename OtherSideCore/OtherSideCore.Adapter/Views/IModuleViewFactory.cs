@@ -2,7 +2,7 @@
 
 namespace OtherSideCore.Adapter.Views
 {
-   public interface IViewFactory
+   public interface IModuleViewFactory
    {
       object CreateView(ViewDescriptionBase viewDescription);
    }

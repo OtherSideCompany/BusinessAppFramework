@@ -14,7 +14,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private IAuthenticationService _authenticationService;
-      private IViewModelFactory _viewModelFactory;
+      private IModuleViewModelFactory _viewModelFactory;
       private IDomainObjectInteractionFactory domainObjectInteractionFactory;
 
       private bool _isNavigationMenuDisplayed;
@@ -128,7 +128,7 @@ namespace OtherSideCore.Adapter.Views
                                  IGlobalDataService globalDataService,
                                  IAppConfiguration appConfiguration,
                                  IWindowService windowService,
-                                 IViewModelFactory viewModelFactory) :
+                                 IModuleViewModelFactory viewModelFactory) :
          base(userDialogService,
               userContext,
               globalDataService,
@@ -247,7 +247,7 @@ namespace OtherSideCore.Adapter.Views
          LoadSettings();
       }
 
-      private async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase)
+      public async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase)
       {
          IsLoadingContent = true;
 

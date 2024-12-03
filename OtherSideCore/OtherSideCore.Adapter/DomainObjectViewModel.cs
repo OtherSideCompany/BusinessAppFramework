@@ -17,7 +17,6 @@ namespace OtherSideCore.Adapter
       protected IGlobalDataService _globalDataService;
       protected IMapper _mapper;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
-      protected IWindowService _windowService;
 
       protected List<DomainObjectViewModel> _nestedDomainObjectViewModels;
 
@@ -59,8 +58,6 @@ namespace OtherSideCore.Adapter
 
       #region Commands
 
-      public RelayCommand DisplayInExternalWindowCommand { get; private set; }
-
       public RelayCommand ToggleExpandCommand { get; private set; }
 
       #endregion
@@ -70,15 +67,12 @@ namespace OtherSideCore.Adapter
       public DomainObjectViewModel(DomainObject domainObject,
                                    IGlobalDataService globalDataService,
                                    IMapper mapper,
-                                   IDomainObjectViewModelFactory domainObjectViewModelFactory,
-                                   IWindowService windowService)
+                                   IDomainObjectViewModelFactory domainObjectViewModelFactory)
       {
          _globalDataService = globalDataService;
          _mapper = mapper;
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
-         _windowService = windowService;
 
-         DisplayInExternalWindowCommand = new RelayCommand(DisplayInExternalWindow);
          ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
 
          DomainObject = domainObject;
@@ -124,13 +118,6 @@ namespace OtherSideCore.Adapter
       #endregion
 
       #region private Methods
-
-      protected virtual void DisplayInExternalWindow() 
-      {
-         // how to get associated workspace ???
-         // construct (SingleDomainObjectBrowserWorkspaceViewModel<Goods>)((MMSoftViewModelFactory)_viewModelFactory).CreateViewModel(MMSoftViews.Goods, this, domainObjectInteractionFactory);
-         ((IWindowService)_windowService).ShowDomainObjectViewModelInSubWindow(this, null);
-      }
 
       private string GetHistoryDescription(DateTime dateTime, User user)
       {

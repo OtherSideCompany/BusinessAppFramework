@@ -17,7 +17,7 @@ namespace OtherSideCore.Wpf.Services
       #region Fields
 
       protected IServiceProvider _serviceProvider;
-      protected IViewFactory _viewFactory;
+      protected IModuleViewFactory _viewFactory;
 
       private readonly Dictionary<Window, Stack<Border>> _modalPopupStacks;
       private readonly List<Window> _windows;
@@ -42,7 +42,7 @@ namespace OtherSideCore.Wpf.Services
 
       #region Constructor
 
-      public WindowService(IServiceProvider serviceProvider, IViewFactory viewFactory)
+      public WindowService(IServiceProvider serviceProvider, IModuleViewFactory viewFactory)
       {
          System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
