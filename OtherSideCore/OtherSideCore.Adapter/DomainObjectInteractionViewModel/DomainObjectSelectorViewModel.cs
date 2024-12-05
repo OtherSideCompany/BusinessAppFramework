@@ -52,6 +52,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
 
          Selection.PropertyChanged += Selection_PropertyChanged;
+
+         _loadNestedStructureOnSelection = false;
       }
 
       #endregion

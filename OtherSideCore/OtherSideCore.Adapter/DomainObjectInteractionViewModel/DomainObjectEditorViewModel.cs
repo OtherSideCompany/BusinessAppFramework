@@ -19,7 +19,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
       protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
 
-      protected ObservableCollection<IDomainObjectBrowserViewModel> _nestedDomainObjectBrowserViewModels;
       protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
 
       private bool _isEnabled;
@@ -29,7 +28,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Properties
 
-      public ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels => _nestedDomainObjectBrowserViewModels;
 
       public DomainObjectViewModel DomainObjectViewModel => _domainObjectViewModel;
 
@@ -81,7 +79,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          IsEnabled = true;
 
-         _nestedDomainObjectBrowserViewModels = new ObservableCollection<IDomainObjectBrowserViewModel>();
          _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
       }
 
@@ -106,11 +103,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
             _domainObjectViewModel.RefreshTrackingInfos();
 
-            foreach (var nestedBrowserViewModel in NestedDomainObjectBrowserViewModels)
-            {
-               await nestedBrowserViewModel.SaveChangesAsync();
-            }
-
             foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
             {
                await nestedTreeViewModel.SaveChangesAsync();
@@ -134,11 +126,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsEnabled = false;
 
          _domainObjectViewModel.InitializeProperties();
-
-         foreach (var nestedBrowserViewModel in NestedDomainObjectBrowserViewModels)
-         {
-            await nestedBrowserViewModel.CancelChangesAsync();
-         }
 
          foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
@@ -171,11 +158,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          UnRegisterNestedStructures();
 
-         foreach (var nestedDomainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
-         {
-            nestedDomainObjectBrowserViewModel.PropertyChanged += NestedDomainObjectBrowserViewModel_PropertyChanged;
-         }
-
          foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
             nestedDomainObjectTreeViewModel.PropertyChanged += NestedDomainObjectTreeViewModel_PropertyChanged;
@@ -184,11 +166,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private void UnRegisterNestedStructures()
       {
-         foreach (var nestedDomainObjectBrowserViewModel in _nestedDomainObjectBrowserViewModels)
-         {
-            nestedDomainObjectBrowserViewModel.PropertyChanged -= NestedDomainObjectBrowserViewModel_PropertyChanged;
-         }
-
          foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
             nestedDomainObjectTreeViewModel.PropertyChanged -= NestedDomainObjectTreeViewModel_PropertyChanged;
@@ -218,14 +195,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null)
          {
             HasUnsavedChanges = true;
-         }
-      }
-
-      private void NestedDomainObjectBrowserViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-      {
-         if (e.PropertyName.Equals(nameof(DomainObjectBrowserViewModel<T>.HasUnsavedChanges)) && !HasUnsavedChanges)
-         {
-            HasUnsavedChanges = _nestedDomainObjectBrowserViewModels.Any(vm => vm.HasUnsavedChanges);
          }
       }
 

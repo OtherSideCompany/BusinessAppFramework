@@ -83,13 +83,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, _windowService, this, _domainObjectServiceFactory);
       }
 
-
-      #endregion
-
-      #region Private Methods
-
+      public abstract DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
 
 
       #endregion
+
+         #region Private Methods
+
+
+
+         #endregion
    }
 }

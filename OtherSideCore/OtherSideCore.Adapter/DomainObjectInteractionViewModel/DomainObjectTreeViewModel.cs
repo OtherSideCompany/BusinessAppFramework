@@ -20,7 +20,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isSelectionLocked;
       private IDomainObjectTreeViewNode _selectedDomainObjectTreeViewNode;
       private IDomainObjectEditorViewModel _selectedDomainObjectEditorViewModel;
-      private DomainObjectViewModel _parentContextViewModel;
+      private DomainObjectViewModel _ContextViewModel;
       protected bool _isInitializingTree;
 
       private bool _isLoadingNestedBrowsers;
@@ -71,10 +71,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          private set => SetProperty(ref _isLoadingNestedBrowsers, value);
       }
 
-      public DomainObjectViewModel ParentContextViewModel
+      public DomainObjectViewModel ContextViewModel
       {
-         get => _parentContextViewModel;
-         set => SetProperty(ref _parentContextViewModel, value);
+         get => _ContextViewModel;
+         set => SetProperty(ref _ContextViewModel, value);
       }
 
       public bool HasUnsavedChanges => _inlineNodes.Select(n => n.DomainObjectEditorViewModel).Any(vm => vm.HasUnsavedChanges);
@@ -147,10 +147,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          _isInitializingTree = true;
 
+         ContextViewModel = domainObjectViewModel;
          await _domainObjectTreeSearchViewModel.SearchAsync(domainObjectViewModel);
-         ConstructTree(domainObjectViewModel);
+         await ConstructTreeAsync(domainObjectViewModel);
 
          _isInitializingTree = false;
+
+         NotifyCommandsCanExecuteChanged();
       }
 
       public async Task SelectNodeAsync(IDomainObjectTreeViewNode domainObjectTreeViewNode)
@@ -296,7 +299,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          await SelectNodeAsync(e);
       }
 
-      protected abstract void ConstructTree(DomainObjectViewModel domainObjectViewModel);
+      protected abstract Task ConstructTreeAsync(DomainObjectViewModel domainObjectViewModel);
 
       private void DomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
@@ -343,16 +346,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
+         CreateRootNodeAsyncCommand.NotifyCanExecuteChanged();
          SaveChangesAsyncCommand.NotifyCanExecuteChanged();
          CancelChangesAsyncCommand.NotifyCanExecuteChanged();
       }
 
       private bool CanCreateRootNode()
       {
-         return ParentContextViewModel != null;
+         return ContextViewModel != null;
       }
 
-      private async Task CreateRootNodeAsync()
+      protected virtual async Task CreateRootNodeAsync()
       {
          var domainObject = await CreateRootDomainObjectAsync();
             

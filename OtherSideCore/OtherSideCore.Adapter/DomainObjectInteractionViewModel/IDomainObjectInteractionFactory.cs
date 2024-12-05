@@ -9,5 +9,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
       IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel);
+      DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
    }
 }

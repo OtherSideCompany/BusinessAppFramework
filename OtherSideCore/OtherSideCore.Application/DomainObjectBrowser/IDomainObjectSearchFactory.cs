@@ -6,6 +6,6 @@ namespace OtherSideCore.Application.DomainObjectBrowser
    public interface IDomainObjectSearchFactory
    {
       IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObject, new();
-      IDomainObjectTreeSearch CreateDomainObjectTreeSearch(DomainObject domainObject, IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory);
+      IDomainObjectTreeSearch CreateDomainObjectTreeSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObject, new();
    }
 }

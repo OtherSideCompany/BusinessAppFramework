@@ -12,7 +12,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    {
       #region Fields
 
-      private bool _isExpanded;      
+      private bool _isExpanded;
+
+      protected bool _loadNestedStructureOnSelection;
 
       private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
       
@@ -26,7 +28,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isSelectionLocked;
       private bool _isLoadingNestedBrowsers;
       private bool _isLoadingDomainObjectEditors;
-      private DomainObjectViewModel _parentContextViewModel;
+      private DomainObjectViewModel _contextViewModel;
 
       protected DomainObjectBrowser<T> _domainObjectBrowser;
 
@@ -77,10 +79,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       }
 
 
-      public DomainObjectViewModel ParentContextViewModel
+      public DomainObjectViewModel ContextViewModel
       {
-         get => _parentContextViewModel;
-         set => SetProperty(ref _parentContextViewModel, value);
+         get => _contextViewModel;
+         set => SetProperty(ref _contextViewModel, value);
       }
 
       public IDomainObjectEditorViewModel SelectedDomainObjectEditorViewModel => _domainObjectEditorViewModels.FirstOrDefault(vm => vm.DomainObjectViewModel == Selection.SelectedViewModel);
@@ -113,6 +115,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
 
+         _loadNestedStructureOnSelection = true;
+
          CreateAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel?>(CreateAsync, CanCreate);
          DeleteSelectionAsyncCommand = new AsyncRelayCommand(DeleteSelectionAsync, CanDeleteSelection);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
@@ -138,7 +142,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DomainObjectsSearchViewModel.PageNavigationViewModel.Refresh();
       }
 
-      public async Task SelectSearchResultViewModelAsync(DomainObjectViewModel domainObjectViewModel)
+      public virtual async Task SelectSearchResultViewModelAsync(DomainObjectViewModel domainObjectViewModel)
       {
          if (!IsSelectionLocked)
          {
@@ -154,11 +158,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                OnPropertyChanged(nameof(SelectedDomainObjectEditorViewModel));
                NotifyCommandsCanExecuteChanged();
 
-               IsLoadingNestedBrowsers = true;
+               if (_loadNestedStructureOnSelection)
+               {
+                  IsLoadingNestedBrowsers = true;
 
-               await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
+                  await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
 
-               IsLoadingNestedBrowsers = false;           
+                  IsLoadingNestedBrowsers = false;
+               }
             }
          }
       }

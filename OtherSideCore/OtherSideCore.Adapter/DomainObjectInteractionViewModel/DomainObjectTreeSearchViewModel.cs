@@ -8,7 +8,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    {
       #region Fields
 
-      protected DomainObjectTreeSearch _domainObjectTreeSearch;
+      protected IDomainObjectTreeSearch _domainObjectTreeSearch;
       protected DomainObjectViewModel _parentViewModel;
 
       private bool _isExecutingSearch;
@@ -34,7 +34,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectTreeSearchViewModel(DomainObjectTreeSearch domainObjectTreeSearch,
+      public DomainObjectTreeSearchViewModel(IDomainObjectTreeSearch domainObjectTreeSearch,
                                              IUserDialogService userDialogService,
                                              IWindowService windowService,
                                              IDomainObjectInteractionFactory domainObjectInteractionFactory)

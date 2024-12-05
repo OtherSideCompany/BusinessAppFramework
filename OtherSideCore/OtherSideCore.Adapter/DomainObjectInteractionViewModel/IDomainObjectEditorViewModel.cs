@@ -8,7 +8,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       DomainObjectViewModel DomainObjectViewModel { get; }
 
       event EventHandler<DomainObjectViewModel> DomainObjectDeletedEvent;
-      ObservableCollection<IDomainObjectBrowserViewModel> NestedDomainObjectBrowserViewModels { get; }
       bool HasUnsavedChanges { get; }
       bool IsEnabled { get; }
       bool CanSaveChanges();
