@@ -128,7 +128,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          await PaginatedSearchAsync(parameters.ResetPage, parameters.ExtendedSearch, parameters.ParentViewModel);
       }
 
-      public void LoadSearchResultViewModels()
+      public virtual void LoadSearchResultViewModels()
       {
          var snapshot = _domainObjectSearch.SearchResults.ToList();
 

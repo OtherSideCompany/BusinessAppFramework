@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Application.DomainObjectBrowser;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
@@ -11,10 +12,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    {
       #region Fields
 
+      private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
+
       private IDomainObjectInteractionFactory _domainObjectInteractionFactory;
       private IDomainObjectTreeSearchViewModel _domainObjectTreeSearchViewModel;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
+      protected IDomainObjectSearchFactory _domainObjectSearchFactory;
+      protected IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
 
       private ObservableCollection<IDomainObjectTreeViewNode> _roots;
       private bool _isSelectionLocked;
@@ -44,6 +49,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Properties
+
+      public IDomainObjectViewModelFactory DomainObjectViewModelFactory => _domainObjectViewModelFactory;
+      public IDomainObjectServiceFactory DomainObjectServiceFactory => _domainObjectServiceFactory;
+      public IUserDialogService UserDialogService => _userDialogService;
 
       public ObservableCollection<IDomainObjectTreeViewNode> Roots
       {
@@ -103,13 +112,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                                        IDomainObjectInteractionFactory domainObjectInteractionFactory,
                                        IDomainObjectTreeSearchViewModel domainObjectTreeSearchViewModel,
                                        IDomainObjectViewModelFactory domainObjectViewModelFactory,
-                                       IDomainObjectServiceFactory domainObjectServiceFactory) :
+                                       IDomainObjectServiceFactory domainObjectServiceFactory,
+                                       IDomainObjectSearchFactory domainObjectSearchFactory,
+                                       IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) :
        base(userDialogService, windowService)
       {
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
          _domainObjectTreeSearchViewModel = domainObjectTreeSearchViewModel;
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _domainObjectServiceFactory = domainObjectServiceFactory;
+         _domainObjectSearchFactory = domainObjectSearchFactory;
+         _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
 
          Roots = new ObservableCollection<IDomainObjectTreeViewNode>();
 
@@ -149,7 +162,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          ContextViewModel = domainObjectViewModel;
          await _domainObjectTreeSearchViewModel.SearchAsync(domainObjectViewModel);
+
+         await _domainObjectEditorViewModelsSemaphore.WaitAsync();
+
          await ConstructTreeAsync(domainObjectViewModel);
+
+         _domainObjectEditorViewModelsSemaphore.Release();
 
          _isInitializingTree = false;
 
@@ -188,16 +206,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _inlineNodes.ToList().ForEach(n => n.Expand());
       }
 
-      public virtual void Dispose()
-      {
-         Clear();
-      }
-
-      #endregion
-
-      #region Private Methods
-
-      protected virtual void AddRootNode(DomainObjectViewModel domainObjectViewModel)
+      public virtual void AddRootNode(DomainObjectViewModel domainObjectViewModel)
       {
          var domainObjectRootTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
          Roots.Add(domainObjectRootTreeViewNode);
@@ -206,7 +215,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      protected void AddChildNode(DomainObjectViewModel domainObjectViewModel, DomainObjectViewModel parentViewModel)
+      public void AddChildNode(DomainObjectViewModel domainObjectViewModel, DomainObjectViewModel parentViewModel)
       {
          var domainObjectTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
          var parentNode = GetNode(parentViewModel);
@@ -216,21 +225,21 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      protected virtual void RemoveRootNode(IDomainObjectTreeViewNode rootNodeToRemove)
+      public virtual void RemoveRootNode(IDomainObjectTreeViewNode rootNodeToRemove)
       {
          UnregisterNode(rootNodeToRemove);
          Roots.Remove(rootNodeToRemove);
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      protected void RemoveChildNode(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
+      public void RemoveChildNode(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
       {
          UnregisterNode(nodeToRemove);
          parent.RemoveChild(nodeToRemove);
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      protected void Clear()
+      public void Clear()
       {
          _inlineNodes.ToList().ForEach(n => UnregisterNode(n));
          _inlineNodes.ToList().ForEach(n => n.Dispose());
@@ -238,6 +247,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
+
+      public virtual void Dispose()
+      {
+         Clear();
+      }
+
+      #endregion
+
+      #region Private Methods      
 
       private void RegisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {

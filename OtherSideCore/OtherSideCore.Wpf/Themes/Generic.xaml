@@ -185,6 +185,7 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="SvgImageTextRadioButton_CheckedIconGeometry" Value="{Binding SvgImageTextRadioButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextRadioButton_CheckedBackgroundColor" Value="{Binding SvgImageTextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="SvgImageTextRadioButton_MouseDownBackgroundColor" Value="{Binding SvgImageTextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -246,6 +247,7 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="SvgImageTextToggleButton_CheckedIconGeometry" Value="{Binding SvgImageTextToggleButton_IconGeometry, RelativeSource={RelativeSource Self}}" />
       <Setter Property="SvgImageTextToggleButton_CheckedBackgroundColor" Value="{Binding SvgImageTextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
+      <Setter Property="SvgImageTextToggleButton_MouseDownBackgroundColor" Value="{Binding SvgImageTextToggleButton_OverBackgroundColor, RelativeSource={RelativeSource Self}}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="SnapsToDevicePixels" Value="True" />

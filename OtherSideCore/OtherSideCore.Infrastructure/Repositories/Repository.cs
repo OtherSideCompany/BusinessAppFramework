@@ -54,30 +54,32 @@ namespace OtherSideCore.Infrastructure.Repositories
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
 
-         if (parent == null)
+         using (var context = _dbContextFactory.CreateDbContext())
          {
-            using (var context = _dbContextFactory.CreateDbContext())
+            var query = context.Set<TEntity>().AsNoTracking();
+
+            if (parent != null)
             {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .ToListAsync(cancellationToken);
+               if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
+               {
+                  query = query.Where(GetParentRelationPredicate(parent));
+               }
+               else
+               {
+                  throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+               }
             }
-         }
-         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
+
+            query = query.OrderByDescending(e => e.Id);
+
+            var entities = await query.ToListAsync(cancellationToken);
+
+            foreach (var revisionUsedGoodsEntity in entities)
             {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .Where(GetParentRelationPredicate(parent))
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .ToListAsync(cancellationToken);
+               await LoadNavigationPropertiesAsync(context, revisionUsedGoodsEntity);
             }
-         }
-         else
-         {
-            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+
+            return _mapper.Map<List<TDomainObject>>(entities);
          }
       }
 
@@ -346,7 +348,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          await context.SaveChangesAsync();
       }
 
-      private async Task LoadNavigationPropertiesAsync(DbContext context, TEntity entity)
+      protected async Task LoadNavigationPropertiesAsync(DbContext context, TEntity entity)
       {
          foreach (var navigation in context.Entry(entity).Navigations)
          {

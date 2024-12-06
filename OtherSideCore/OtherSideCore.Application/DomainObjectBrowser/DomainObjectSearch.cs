@@ -15,9 +15,9 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       private Func<CancellationToken, Task> _selectedSearchResultChangedAsync;
       protected Constraint<T> _activatedConstraint;
       private List<Constraint<T>> _constraints;
+
       protected CancellationTokenSource? _currentSearchCancellationTokenSource;
       private readonly SemaphoreSlim _searchSemaphore = new SemaphoreSlim(1, 1);
-
       protected CancellationToken _currentSearchCancellationToken => _currentSearchCancellationTokenSource.Token;
 
       #endregion
