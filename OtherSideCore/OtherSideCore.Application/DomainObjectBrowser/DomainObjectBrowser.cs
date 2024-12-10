@@ -105,12 +105,12 @@ namespace OtherSideCore.Application.DomainObjectBrowser
       {
          DomainObjectSearch.Dispose();
          NestedDomainObjectBrowser.ForEach(domainObjectBrowser => domainObjectBrowser.Dispose());
-      }
+      }      
 
       #endregion
 
       #region Private Methods
-      
+
 
 
       #endregion

@@ -34,11 +34,12 @@
             <RowDefinition Height="*" />
          </Grid.RowDefinitions>
 
-         <Border Grid.Row="0" >
+         <Border Grid.Row="0">
             <customcontrols:SvgImageToggleButton x:Name="MenuToggleButton"
                                                  Background="Transparent" 
                                                  Height="32"
                                                  Width="38"
+                                                 BorderThickness="0"
                                                  HorizontalAlignment="Left"
                                                  SvgImageToggleButton_ImageSize="24"
                                                  SvgImageToggleButton_IconGeometry="{StaticResource icon_menu}"

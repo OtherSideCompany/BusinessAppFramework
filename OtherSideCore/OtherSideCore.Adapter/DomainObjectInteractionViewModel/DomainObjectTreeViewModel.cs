@@ -28,7 +28,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private DomainObjectViewModel _ContextViewModel;
       protected bool _isInitializingTree;
 
-      private bool _isLoadingNestedBrowsers;
+      private bool _isLoadingNestedStructures;
 
       protected IEnumerable<IDomainObjectTreeViewNode> _inlineNodes
       {
@@ -74,10 +74,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public IDomainObjectEditorViewModel SelectedDomainObjectEditorViewModel => SelectedDomainObjectTreeViewNode?.DomainObjectEditorViewModel;
 
-      public bool IsLoadingNestedBrowsers
+      public bool IsLoadingNestedStructures
       {
-         get => _isLoadingNestedBrowsers;
-         private set => SetProperty(ref _isLoadingNestedBrowsers, value);
+         get => _isLoadingNestedStructures;
+         private set => SetProperty(ref _isLoadingNestedStructures, value);
       }
 
       public DomainObjectViewModel ContextViewModel
@@ -187,11 +187,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
                OnPropertyChanged(nameof(SelectedDomainObjectEditorViewModel));
 
-               IsLoadingNestedBrowsers = true;
+               IsLoadingNestedStructures = true;
 
                await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
 
-               IsLoadingNestedBrowsers = false;
+               IsLoadingNestedStructures = false;
             }
          }
       }

@@ -26,7 +26,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected ObservableCollection<IDomainObjectEditorViewModel> _domainObjectEditorViewModels;
       protected DomainObjectViewModelSelection _selection;
       private bool _isSelectionLocked;
-      private bool _isLoadingNestedBrowsers;
+      private bool _isLoadingNestedStructures;
       private bool _isLoadingDomainObjectEditors;
       private DomainObjectViewModel _contextViewModel;
 
@@ -66,10 +66,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          private set => SetProperty(ref _isSelectionLocked, value);
       }
 
-      public bool IsLoadingNestedBrowsers
+      public bool IsLoadingNestedStructures
       {
-         get => _isLoadingNestedBrowsers;
-         private set => SetProperty(ref _isLoadingNestedBrowsers, value);
+         get => _isLoadingNestedStructures;
+         private set => SetProperty(ref _isLoadingNestedStructures, value);
       }
 
       public bool IsLoadingDomainObjectEditors
@@ -160,11 +160,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
                if (_loadNestedStructureOnSelection)
                {
-                  IsLoadingNestedBrowsers = true;
+                  IsLoadingNestedStructures = true;
 
                   await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
 
-                  IsLoadingNestedBrowsers = false;
+                  IsLoadingNestedStructures = false;
                }
             }
          }

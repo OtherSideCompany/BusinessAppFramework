@@ -55,7 +55,7 @@
 
          <osc_customcontrols:SvgImageButton Grid.Column="3" Width="32" Height="32" Margin="4,0,0,0"
                                             SvgImageButton_ImageSize="16" 
-                                            SvgImageButton_IconGeometry="{StaticResource icon_magnify_plus_outline}"
+                                            SvgImageButton_IconGeometry="{StaticResource icon_magnify-expand}"
                                             Command="{Binding PaginatedSearchCommandAsync}">
             <osc_customcontrols:SvgImageButton.CommandParameter>
                <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource True}" ParentViewModel="{x:Null}" />

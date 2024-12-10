@@ -625,7 +625,7 @@
                                        Content="{TemplateBinding SelectionBoxItem}"
                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                       Margin="8,0,24,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                       Margin="8,0,28,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
                      <Popup x:Name="Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=ToggleButton}" IsOpen="{TemplateBinding IsDropDownOpen}"
                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" 
@@ -635,14 +635,16 @@
                            <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
 
                               <Border x:Name="DropDownBorder" BorderThickness="1" BorderBrush="{StaticResource OtherSide_LightGray}" Background="#F5F5F5" CornerRadius="4">
-                                 <ScrollViewer SnapsToDevicePixels="True" ScrollChanged="ComboBox_ScrollViewer_ScrollChanged"
-                                               CanContentScroll="False">
+                                 <ScrollViewer SnapsToDevicePixels="True" 
+                                               ScrollChanged="ComboBox_ScrollViewer_ScrollChanged"
+                                               CanContentScroll="False"
+                                               Margin="0,4,0,4">
                                     <StackPanel>
 
                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
 
                                        <Border Visibility="{Binding Path=(extensions:ComboBoxExtension.AdditionalContent), RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}, Converter={StaticResource NullToVisibilityConverter}}"
-                                               Padding="5">
+                                               Padding="4">
                                           <ContentPresenter Content="{Binding Path=(extensions:ComboBoxExtension.AdditionalContent), RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" />
                                        </Border>
 
