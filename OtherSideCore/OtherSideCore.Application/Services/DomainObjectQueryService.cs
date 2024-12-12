@@ -1,10 +1,11 @@
-﻿using OtherSideCore.Application.DomainObjectBrowser;
+﻿using OtherSideCore.Application.Browser;
+using OtherSideCore.Application.Repository;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Domain.RepositoryInterfaces;
 
 namespace OtherSideCore.Application.Services
 {
-    public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
+   public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
    {
       #region Fields
 
@@ -29,12 +30,7 @@ namespace OtherSideCore.Application.Services
 
       #region Public Methods
 
-      public async Task<List<T>> GetAll(DomainObject? parent, CancellationToken cancellationToken = default)
-      {
-         return await _repository.GetAllAsync(parent, cancellationToken);
-      }
-
-      public virtual async Task<List<T>> SearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, CancellationToken cancellationToken = default)
+      public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, CancellationToken cancellationToken = default)
       {
          var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
          var filterExpressions = GetFilterConstraints(filters, extendedSearch).Select(c => c.Expression);
@@ -47,7 +43,7 @@ namespace OtherSideCore.Application.Services
          }
 
          var totalCount = await _repository.CountAsync(combinedExpressions, parent, cancellationToken);
-         return await _repository.GetAllAsync(combinedExpressions, parent, cancellationToken);
+         return await _repository.SearchAsync(combinedExpressions, parent, cancellationToken);
       }
 
       public virtual async Task<PagedResult<T>> PaginatedSearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
@@ -63,7 +59,7 @@ namespace OtherSideCore.Application.Services
          }
 
          var totalCount = await _repository.CountAsync(combinedExpressions, parent, cancellationToken);
-         var results = await _repository.GetAllPaginatedAsync(combinedExpressions, parent, pageNumber, pageSize, cancellationToken);
+         var results = await _repository.PaginatedSearchAsync(combinedExpressions, parent, pageNumber, pageSize, cancellationToken);
 
          return new PagedResult<T>
          {

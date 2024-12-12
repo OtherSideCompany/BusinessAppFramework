@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
@@ -47,13 +49,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Events
 
-      public event EventHandler<DomainObjectViewModel> DomainObjectDeletedEvent;
+      public event EventHandler<int> DomainObjectDeletedEvent;
 
       #endregion
 
       #region Commands
 
-      public AsyncRelayCommand<DomainObjectViewModel> DeleteAsyncCommand { get; private set; }
+      public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
 
       #endregion
 
@@ -73,7 +75,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _userDialogService = userDialogService;
          _windowService = windowService;
 
-         DeleteAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel>(DeleteAsync, CanDelete);
+         DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanDelete);
 
          _domainObjectViewModel.PropertyChanged += DomainObjectViewModel_PropertyChanged;
 
@@ -172,19 +174,20 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      protected virtual bool CanDelete(DomainObjectViewModel domainObjectViewModel)
+      protected virtual bool CanDelete()
       {
-         return domainObjectViewModel != null;
+         return DomainObjectViewModel != null && !HasUnsavedChanges;
       }
 
-      private async Task DeleteAsync(DomainObjectViewModel domainObjectViewModel)
+      private async Task DeleteAsync()
       {
          var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
 
          if (confirmation)
          {
-            await _domainObjectService.DeleteAsync((T)domainObjectViewModel.DomainObject);
-            DomainObjectDeletedEvent?.Invoke(this, domainObjectViewModel);
+            var domainObjectId = DomainObjectViewModel.DomainObject.Id;
+            await _domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject);
+            DomainObjectDeletedEvent?.Invoke(this, domainObjectId);
          }
       }
 

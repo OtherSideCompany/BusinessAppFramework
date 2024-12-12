@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter
 {
-   public class DomainObjectViewModel : ObservableObject, IDisposable
+    public class DomainObjectViewModel : ObservableObject, IDisposable
    {
       #region Fields
 

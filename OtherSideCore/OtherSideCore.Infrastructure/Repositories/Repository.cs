@@ -6,44 +6,54 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Infrastructure.Entities;
-using OtherSideCore.Domain.RepositoryInterfaces;
 using OtherSideCore.Domain.DomainObjects;
 using AutoMapper;
 using System.Linq.Expressions;
 using AutoMapper.QueryableExtensions;
+using OtherSideCore.Application.Search;
+using AutoMapper.Extensions.ExpressionMapping;
+using OtherSideCore.Application.Repository;
+using OtherSideCore.Application.Factories;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-   public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
-                                                                                             where TEntity : EntityBase, new()
+    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
+                                                                                              where TEntity : EntityBase, new()
    {
       #region Fields
 
       protected List<Type> _supportedDomainObjectParentTypes;
 
-      protected IDbContextFactory<DbContext> _dbContextFactory { get; set; }
-      protected ILoggerFactory _loggerFactory { get; set; }
-      protected ILogger<Repository<TDomainObject, TEntity>> _logger { get; set; }
-      protected IMapper _mapper { get; set; }
+      protected IDbContextFactory<DbContext> _dbContextFactory;
+      protected ILoggerFactory _loggerFactory;
+      protected ILogger<Repository<TDomainObject, TEntity>> _logger;
+      protected IMapper _mapper;
+      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
 
       #endregion
 
       #region Contructor
 
-      public Repository(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory, List<Type> supportedDomainObjectParentTypes)
+      public Repository(
+         IDbContextFactory<DbContext> dbContextFactory,
+         IMapper mapper,
+         ILoggerFactory loggerFactory,
+         IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
+         List<Type> supportedDomainObjectParentTypes)
       {
          _dbContextFactory = dbContextFactory;
          _loggerFactory = loggerFactory;
          _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
          _mapper = mapper;
+         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
 
          _supportedDomainObjectParentTypes = new List<Type>();
 
          if (supportedDomainObjectParentTypes != null)
-         { 
-            _supportedDomainObjectParentTypes.AddRange(supportedDomainObjectParentTypes); 
+         {
+            _supportedDomainObjectParentTypes.AddRange(supportedDomainObjectParentTypes);
          }
-         
+
       }
 
       #endregion
@@ -83,78 +93,22 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public virtual async Task<List<TDomainObject>> GetAllAsync(Expression<Func<TDomainObject, bool>> where, DomainObject? parent, CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(Expression<Func<TDomainObject, bool>> where, DomainObject? parent, CancellationToken cancellationToken)
       {
-         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
+         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(SearchAsync));
 
-         if (parent == null)
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .Where(where)
-                                                  .ToListAsync(cancellationToken);
-            }
-         }
-         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .Where(GetParentRelationPredicate(parent))
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .Where(where)
-                                                  .ToListAsync(cancellationToken);
-            }
-         }
-         else
-         {
-            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
-         }
-      }
+         return await SearchAsync(where, parent, false, 0, 0, cancellationToken);
+      }      
 
-      public virtual async Task<List<TDomainObject>> GetAllPaginatedAsync(Expression<Func<TDomainObject, bool>> where,
-                                                                          DomainObject? parent,
-                                                                          int pageNumber,
-                                                                          int pageSize,
-                                                                          CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(Expression<Func<TDomainObject, bool>> where,
+                                                                                                    DomainObject? parent,
+                                                                                                    int pageNumber,
+                                                                                                    int pageSize,
+                                                                                                    CancellationToken cancellationToken)
       {
-         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
+         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(PaginatedSearchAsync));
 
-         if (parent == null)
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .Where(where)
-                                                  .Skip((pageNumber - 1) * pageSize)
-                                                  .Take(pageSize)
-                                                  .ToListAsync(cancellationToken);
-            }
-         }
-         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .Where(GetParentRelationPredicate(parent))
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .OrderByDescending(e => e.Id)
-                                                  .Where(where)
-                                                  .Skip((pageNumber - 1) * pageSize)
-                                                  .Take(pageSize)
-                                                  .ToListAsync(cancellationToken);
-            }
-         }
-         else
-         {
-            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
-         }
+         return await SearchAsync(where, parent, true, pageNumber, pageSize, cancellationToken);
       }
 
       public virtual async Task<int> CountAsync(Expression<Func<TDomainObject, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken)
@@ -309,6 +263,54 @@ namespace OtherSideCore.Infrastructure.Repositories
       #endregion
 
       #region Private Methods
+
+      protected virtual void AddIncludeToSearchQuery(IQueryable<TEntity> query)
+      {
+         
+      }
+
+      protected virtual IQueryable<DomainObjectSearchResult> ProjectToSearchResult(IQueryable<TEntity> query)
+      {
+         throw new NotImplementedException($"Project to search result not implemented in repository of type { GetType() }");
+      }
+
+      private async Task<List<DomainObjectSearchResult>> SearchAsync(Expression<Func<TDomainObject, bool>> where,
+                                                                     DomainObject? parent,
+                                                                     bool paginated,
+                                                                     int pageNumber,
+                                                                     int pageSize,
+                                                                     CancellationToken cancellationToken)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var query = context.Set<TEntity>().AsNoTracking();
+
+            AddIncludeToSearchQuery(query);
+
+            if (parent != null)
+            {
+               if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
+               {
+                  query = query.Where(GetParentRelationPredicate(parent));
+               }
+               else
+               {
+                  throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+               }
+            }
+
+            var entityConstraint = _mapper.MapExpression<Expression<Func<TEntity, bool>>>(where);
+
+            query = query.OrderByDescending(e => e.Id).Where(entityConstraint);
+
+            if (paginated)
+            {
+               query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            }
+                         
+            return await ProjectToSearchResult(query).ToListAsync(cancellationToken);
+         }
+      }
 
       protected void LogGetAllAsync(List<string> filters, bool extendedSearch)
       {

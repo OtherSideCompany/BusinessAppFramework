@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectTreeSearchViewModel : ObservableObject, IDomainObjectTreeSearchViewModel
+    public class DomainObjectTreeSearchViewModel : ObservableObject, IDomainObjectTreeSearchViewModel
    {
       #region Fields
 

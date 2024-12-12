@@ -1,12 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Browser;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
+    public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
    {
       #region Fields
 
@@ -35,15 +37,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Constructor
 
       public DomainObjectSelectorViewModel(DomainObjectBrowser<T> domainObjectBrowser,
-                                           IDomainObjectViewModelFactory domainObjectViewModelFactory,
+                                           IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
+                                           IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
                                            IWindowService windowService,
                                            IDomainObjectInteractionFactory domainObjectInteractionFactory) :
          base(domainObjectBrowser,
-              domainObjectViewModelFactory,
               userDialogService,
               domainObjectsSearchViewModelFactory,
+              domainObjectSearchResultViewModelFactory,
+              domainObjectSearchResultFactory,
               windowService,
               domainObjectInteractionFactory)
       {

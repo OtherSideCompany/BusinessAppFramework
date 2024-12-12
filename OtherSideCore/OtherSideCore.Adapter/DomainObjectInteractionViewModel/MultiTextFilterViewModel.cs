@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Application.Browser;
 using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction

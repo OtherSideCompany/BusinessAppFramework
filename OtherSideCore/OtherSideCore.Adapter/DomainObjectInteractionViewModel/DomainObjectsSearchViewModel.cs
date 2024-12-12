@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,8 +18,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected DomainObjectSearch<T> _domainObjectSearch;
 
-      private IDomainObjectViewModelFactory _viewModelFactory;
-      private ObservableCollection<DomainObjectViewModel> _searchResultViewModels;
+      private IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
+      private IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
+      private ObservableCollection<DomainObjectSearchResultViewModel> _searchResultViewModels;
       private SingleTextFilterViewModel _singleTextFilterViewModel;
       private MultiTextFilterViewModel _multiTextFilterViewModel;
       private PageNavigationViewModel _pageNavigationViewModel;
@@ -34,7 +38,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          set => SetProperty(ref _isInAdvancedSearchMode, value);
       }
 
-      public ObservableCollection<DomainObjectViewModel> SearchResultViewModels
+      public ObservableCollection<DomainObjectSearchResultViewModel> SearchResultViewModels
       {
          get => _searchResultViewModels;
          set => SetProperty(ref _searchResultViewModels, value);
@@ -93,12 +97,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectsSearchViewModel(DomainObjectSearch<T> domainObjectSearch, IDomainObjectViewModelFactory viewModelFactory)
+      public DomainObjectsSearchViewModel(
+         DomainObjectSearch<T> domainObjectSearch, 
+         IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
+         IDomainObjectSearchResultFactory domainObjectSearchResultFactory)
       {
          _domainObjectSearch = domainObjectSearch;
-         _viewModelFactory = viewModelFactory;
+         _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
+         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
 
-         SearchResultViewModels = new ObservableCollection<DomainObjectViewModel>();
+         SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();
 
          SearchCommandAsync = new AsyncRelayCommand<SearchParameters>(SearchAsync);
          PaginatedSearchCommandAsync = new AsyncRelayCommand<PaginatedSearchParameters>(PaginatedSearchAsync);
@@ -134,7 +142,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          foreach (var searchResult in snapshot)
          {
-            var viewModel = _viewModelFactory.CreateViewModel(searchResult);
+            var viewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
             SearchResultViewModels.Add(viewModel);
          }
       }
@@ -151,15 +159,30 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          SearchResultViewModels.Clear();
       }
 
-      public void AddSearchResultViewModel(DomainObjectViewModel domainObjectViewModel)
+      public void AddSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
-         SearchResultViewModels.Add(domainObjectViewModel);
+         SearchResultViewModels.Add(domainObjectSearchResultViewModel);
       }
 
-      public void RemoveSearchResultViewModel(DomainObjectViewModel domainObjectViewModel)
+      public DomainObjectSearchResultViewModel AddSearchResultViewModel(int domainObjectId)
       {
-         domainObjectViewModel.Dispose();
-         SearchResultViewModels.Remove(domainObjectViewModel);
+         var searchResult = _domainObjectSearchResultFactory.CreateSearchResult<T>(domainObjectId);
+         var searchResultViewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
+         SearchResultViewModels.Add(searchResultViewModel);
+
+         return searchResultViewModel;
+      }
+
+      public void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      {
+         domainObjectSearchResultViewModel.Dispose();
+         SearchResultViewModels.Remove(domainObjectSearchResultViewModel);
+      }
+
+      public void RemoveSearchResultViewModel(int domainObjectId)
+      {
+         var domainObjectSearchResultViewModel = SearchResultViewModels.FirstOrDefault(vm => vm.DomainObjectSearchResult.DomainObjectId == domainObjectId);
+         RemoveSearchResultViewModel(domainObjectSearchResultViewModel);
       }
 
       public void Dispose()
@@ -225,7 +248,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          foreach (var constraint in _domainObjectSearch.GetConstraints())
          {
-            ConstraintViewModels.Add(new ConstraintViewModel<T>(constraint));
+            var constraintViewModel = new ConstraintViewModel<T>(constraint);
+            constraintViewModel.IsSelected = _domainObjectSearch.ActivatedConstraint == null ? false : _domainObjectSearch.ActivatedConstraint.Equals(constraintViewModel.Constraint);
+            ConstraintViewModels.Add(constraintViewModel);
          }
 
          ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);

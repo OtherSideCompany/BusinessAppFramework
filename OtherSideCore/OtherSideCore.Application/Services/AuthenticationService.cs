@@ -1,5 +1,4 @@
-﻿using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Domain.RepositoryInterfaces;
+﻿using OtherSideCore.Application.Repository;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Services

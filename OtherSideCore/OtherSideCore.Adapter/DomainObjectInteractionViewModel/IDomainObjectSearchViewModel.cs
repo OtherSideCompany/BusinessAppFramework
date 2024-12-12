@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -12,7 +8,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
       void LoadSearchResultViewModels();
       void UnloadSearchResultViewModels();
-      void AddSearchResultViewModel(DomainObjectViewModel domainObjectViewModel);
-      void RemoveSearchResultViewModel(DomainObjectViewModel domainObjectViewModel);
+      void AddSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
+      DomainObjectSearchResultViewModel AddSearchResultViewModel(int domainObjectId);
+      void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
+      void RemoveSearchResultViewModel(int domainObjectId);
    }
 }

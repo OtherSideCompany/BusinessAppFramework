@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class MainWindowViewModel : WindowViewModel
+    public abstract class MainWindowViewModel : WindowViewModel
    {
       #region Fields
 

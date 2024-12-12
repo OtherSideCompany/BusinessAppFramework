@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OtherSideCore.Domain.RepositoryInterfaces;
+using OtherSideCore.Application.Repository;
 using OtherSideCore.Infrastructure.Entities;
 using System.Linq;
 using System.Threading.Tasks;

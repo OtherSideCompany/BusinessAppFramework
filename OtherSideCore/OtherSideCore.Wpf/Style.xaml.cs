@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,13 +44,13 @@ namespace OtherSideCore.Wpf.CustomControls
       private async void DomainObjectSearchListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
       {
          var listView = (sender as ListView);
-         var selectedDomainObjectViewModel = listView.SelectedItem as DomainObjectViewModel;
+         var selectedDomainObjectSearchResultViewModel = listView.SelectedItem as DomainObjectSearchResultViewModel;
 
-         if (selectedDomainObjectViewModel != null)
+         if (selectedDomainObjectSearchResultViewModel != null)
          {
             var domainObjectBrowserViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
 
-            await domainObjectBrowserViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectViewModel);
+            await domainObjectBrowserViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectSearchResultViewModel);
          }
       }
 

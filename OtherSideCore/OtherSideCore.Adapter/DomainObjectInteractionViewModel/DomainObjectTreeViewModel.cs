@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
-using OtherSideCore.Application.Services;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public abstract class DomainObjectTreeViewModel : UIInteractionHost, IDisposable
+    public abstract class DomainObjectTreeViewModel : UIInteractionHost, IDisposable
    {
       #region Fields
 
@@ -19,7 +19,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
       protected IDomainObjectSearchFactory _domainObjectSearchFactory;
-      protected IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
 
       private ObservableCollection<IDomainObjectTreeViewNode> _roots;
       private bool _isSelectionLocked;
@@ -113,8 +112,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                                        IDomainObjectTreeSearchViewModel domainObjectTreeSearchViewModel,
                                        IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                        IDomainObjectServiceFactory domainObjectServiceFactory,
-                                       IDomainObjectSearchFactory domainObjectSearchFactory,
-                                       IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) :
+                                       IDomainObjectSearchFactory domainObjectSearchFactory) :
        base(userDialogService, windowService)
       {
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
@@ -122,7 +120,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _domainObjectServiceFactory = domainObjectServiceFactory;
          _domainObjectSearchFactory = domainObjectSearchFactory;
-         _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
 
          Roots = new ObservableCollection<IDomainObjectTreeViewNode>();
 

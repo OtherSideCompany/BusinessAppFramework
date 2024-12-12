@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.Services;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectTreeViewNode<T> : UIInteractionHost, IDomainObjectTreeViewNode where T : DomainObject, new()
+    public class DomainObjectTreeViewNode<T> : UIInteractionHost, IDomainObjectTreeViewNode where T : DomainObject, new()
    {
 
       #region Fields

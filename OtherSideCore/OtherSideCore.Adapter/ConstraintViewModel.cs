@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Application.Browser;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter

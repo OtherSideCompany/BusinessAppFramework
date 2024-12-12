@@ -1,5 +1,5 @@
-﻿using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Domain.RepositoryInterfaces;
+﻿using OtherSideCore.Application.Repository;
+using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Services
@@ -10,7 +10,6 @@ namespace OtherSideCore.Application.Services
 
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
-      protected readonly IGlobalDataService _globalDataService;
 
       #endregion
 
@@ -28,16 +27,20 @@ namespace OtherSideCore.Application.Services
 
       #region Constructor
 
-      public DomainObjectService(IRepository<T> repository, IUserContext userContext, IGlobalDataService globalDataService)
+      public DomainObjectService(IRepository<T> repository, IUserContext userContext)
       {
          _repository = repository;
          _userContext = userContext;
-         _globalDataService = globalDataService;
       }
 
       #endregion
 
       #region Public Methods
+
+      public async Task<List<T>> GetAll(DomainObject? parent, CancellationToken cancellationToken = default)
+      {
+         return await _repository.GetAllAsync(parent, cancellationToken);
+      }
 
       public virtual async Task CreateAsync(T domainObject, DomainObject? parent)
       {

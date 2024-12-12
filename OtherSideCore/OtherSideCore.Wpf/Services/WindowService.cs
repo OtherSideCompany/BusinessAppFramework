@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
@@ -12,7 +13,7 @@ using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.Services
 {
-   public abstract class WindowService : IWindowService
+    public abstract class WindowService : IWindowService
    {
       #region Fields
 

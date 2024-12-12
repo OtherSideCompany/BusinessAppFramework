@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Application.DomainObjectBrowser;
+using OtherSideCore.Application.Search;
 
 namespace OtherSideCore.Adapter
 {
-   public class PageNavigationViewModel : ObservableObject
+    public class PageNavigationViewModel : ObservableObject
    {
       #region Fields
 

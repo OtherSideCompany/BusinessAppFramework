@@ -1,10 +1,11 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class SingleDomainObjectBrowserWorkspaceViewModel<T> : WorkspaceViewModel where T : DomainObject, new()
+    public class SingleDomainObjectBrowserWorkspaceViewModel<T> : WorkspaceViewModel where T : DomainObject, new()
    {
       #region Fields
 
