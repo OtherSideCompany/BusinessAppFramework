@@ -9,16 +9,16 @@ using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Domain.DomainObjects;
 using AutoMapper;
 using System.Linq.Expressions;
-using AutoMapper.QueryableExtensions;
 using OtherSideCore.Application.Search;
 using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
-                                                                                              where TEntity : EntityBase, new()
+   public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
+                                                                                             where TEntity : EntityBase, new()
    {
       #region Fields
 
@@ -93,54 +93,43 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(Expression<Func<TDomainObject, bool>> where, DomainObject? parent, CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(
+         List<string> filters,
+         bool extendedSearch,
+         Expression<Func<TDomainObject, bool>> constraints,
+         DomainObject? parent,
+         CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(SearchAsync));
 
-         return await SearchAsync(where, parent, false, 0, 0, cancellationToken);
-      }      
+         return await SearchAsync(filters, extendedSearch, constraints, parent, false, 0, 0, cancellationToken);
+      }
 
-      public virtual async Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(Expression<Func<TDomainObject, bool>> where,
-                                                                                                    DomainObject? parent,
-                                                                                                    int pageNumber,
-                                                                                                    int pageSize,
-                                                                                                    CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(
+         List<string> filters,
+         bool extendedSearch,
+         Expression<Func<TDomainObject, bool>> constraints,
+         DomainObject? parent,
+         int pageNumber,
+         int pageSize,
+         CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(PaginatedSearchAsync));
 
-         return await SearchAsync(where, parent, true, pageNumber, pageSize, cancellationToken);
+         return await SearchAsync(filters, extendedSearch, constraints, parent, true, pageNumber, pageSize, cancellationToken);
       }
 
-      public virtual async Task<int> CountAsync(Expression<Func<TDomainObject, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken)
+      public virtual async Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<TDomainObject, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken)
       {
-         if (parent == null)
+         using (var context = _dbContextFactory.CreateDbContext())
          {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .CountAsync(predicate, cancellationToken);
-            }
-         }
-         else if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
-         {
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-               return await context.Set<TEntity>().AsNoTracking()
-                                                  .Where(GetParentRelationPredicate(parent))
-                                                  .ProjectTo<TDomainObject>(_mapper.ConfigurationProvider)
-                                                  .CountAsync(predicate, cancellationToken);
-            }
-         }
-         else
-         {
-            throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+            return await GetSearchQuery(filters, extendedSearch, predicate, parent, false, 0, 0, context).CountAsync(cancellationToken);
          }
       }
 
       public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
-         return await CountAsync(_ => true, parent, cancellationToken);
+         return await CountAsync([], false, _ => true, parent, cancellationToken);
       }
 
       public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId)
@@ -266,15 +255,17 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       protected virtual void AddIncludeToSearchQuery(IQueryable<TEntity> query)
       {
-         
+
       }
 
       protected virtual IQueryable<DomainObjectSearchResult> ProjectToSearchResult(IQueryable<TEntity> query)
       {
-         throw new NotImplementedException($"Project to search result not implemented in repository of type { GetType() }");
+         throw new NotImplementedException($"Project to search result not implemented in repository of type {GetType()}");
       }
 
-      private async Task<List<DomainObjectSearchResult>> SearchAsync(Expression<Func<TDomainObject, bool>> where,
+      private async Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters,
+                                                                     bool extendedSearch,
+                                                                     Expression<Func<TDomainObject, bool>> constraints,
                                                                      DomainObject? parent,
                                                                      bool paginated,
                                                                      int pageNumber,
@@ -283,33 +274,70 @@ namespace OtherSideCore.Infrastructure.Repositories
       {
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var query = context.Set<TEntity>().AsNoTracking();
-
-            AddIncludeToSearchQuery(query);
-
-            if (parent != null)
-            {
-               if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
-               {
-                  query = query.Where(GetParentRelationPredicate(parent));
-               }
-               else
-               {
-                  throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
-               }
-            }
-
-            var entityConstraint = _mapper.MapExpression<Expression<Func<TEntity, bool>>>(where);
-
-            query = query.OrderByDescending(e => e.Id).Where(entityConstraint);
-
-            if (paginated)
-            {
-               query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-            }
-                         
-            return await ProjectToSearchResult(query).ToListAsync(cancellationToken);
+            return await GetSearchQuery(filters, extendedSearch, constraints, parent, paginated, pageNumber, pageSize, context).ToListAsync(cancellationToken);
          }
+      }
+
+      private IQueryable<DomainObjectSearchResult> GetSearchQuery(List<string> filters,
+                                                                  bool extendedSearch,
+                                                                  Expression<Func<TDomainObject, bool>> constraints,
+                                                                  DomainObject? parent,
+                                                                  bool paginated,
+                                                                  int pageNumber,
+                                                                  int pageSize,
+                                                                  DbContext context)
+      {
+         var query = context.Set<TEntity>().AsNoTracking();
+
+         AddIncludeToSearchQuery(query);
+
+         if (parent != null)
+         {
+            if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
+            {
+               query = query.Where(GetParentRelationPredicate(parent));
+            }
+            else
+            {
+               throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+            }
+         }
+
+         var entityConstraint = _mapper.MapExpression<Expression<Func<TEntity, bool>>>(constraints);
+
+         query = query.OrderByDescending(e => e.Id).Where(entityConstraint);
+
+         foreach (var filterConstraint in GetFilterConstraints(filters, extendedSearch))
+         {
+            query = query.Where(filterConstraint);
+         }
+
+         if (paginated)
+         {
+            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+         }
+
+         return ProjectToSearchResult(query);
+      }
+
+      protected List<Expression<Func<TEntity, bool>>> GetFilterConstraints(List<string> filters, bool extendedSearch)
+      {
+         var constraints = new List<Expression<Func<TEntity, bool>>>();
+
+         foreach (var filter in filters)
+         {
+            var lowerFilter = filter.ToLower();
+            var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
+
+            constraints.Add(GetFilterConstraint(lowerFilter, extendedSearch, maxSearchDistance));
+         }
+
+         return constraints;
+      }
+
+      protected virtual Expression<Func<TEntity, bool>> GetFilterConstraint(string lowerFilter, bool extendedSearch, int maxSearchDistance)
+      {
+         throw new NotImplementedException($"GetFilterConstraint not implemented in repository of type {GetType()}");
       }
 
       protected void LogGetAllAsync(List<string> filters, bool extendedSearch)

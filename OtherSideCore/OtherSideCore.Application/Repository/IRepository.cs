@@ -8,9 +8,9 @@ namespace OtherSideCore.Application.Repository
    {
       Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<DomainObjectSearchResult>> SearchAsync(Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
+      Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
+      Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
       Task CreateAsync(T domainObject, DomainObject? parent, int userId);
 
@@ -22,7 +22,8 @@ namespace OtherSideCore.Application.Repository
 
       Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);
 
-      Task<int> CountAsync(Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
+      Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
+
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
    }
 }

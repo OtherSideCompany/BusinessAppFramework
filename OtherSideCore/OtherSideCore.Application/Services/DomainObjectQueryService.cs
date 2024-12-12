@@ -33,33 +33,17 @@ namespace OtherSideCore.Application.Services
       public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, CancellationToken cancellationToken = default)
       {
          var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
-         var filterExpressions = GetFilterConstraints(filters, extendedSearch).Select(c => c.Expression);
 
-         var combinedExpressions = constraintExpression;
-
-         foreach (var filterExpression in filterExpressions)
-         {
-            combinedExpressions = combinedExpressions.And(filterExpression);
-         }
-
-         var totalCount = await _repository.CountAsync(combinedExpressions, parent, cancellationToken);
-         return await _repository.SearchAsync(combinedExpressions, parent, cancellationToken);
+         var totalCount = await _repository.CountAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
+         return await _repository.SearchAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
       }
 
       public virtual async Task<PagedResult<T>> PaginatedSearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
       {
          var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
-         var filterExpressions = GetFilterConstraints(filters, extendedSearch).Select(c => c.Expression);
 
-         var combinedExpressions = constraintExpression;
-
-         foreach (var filterExpression in filterExpressions)
-         {
-            combinedExpressions = combinedExpressions.And(filterExpression);
-         }
-
-         var totalCount = await _repository.CountAsync(combinedExpressions, parent, cancellationToken);
-         var results = await _repository.PaginatedSearchAsync(combinedExpressions, parent, pageNumber, pageSize, cancellationToken);
+         var totalCount = await _repository.CountAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
+         var results = await _repository.PaginatedSearchAsync(filters, extendedSearch, constraintExpression, parent, pageNumber, pageSize, cancellationToken);
 
          return new PagedResult<T>
          {
