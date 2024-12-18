@@ -14,6 +14,7 @@ using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application;
+using System.Drawing.Printing;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -117,6 +118,20 @@ namespace OtherSideCore.Infrastructure.Repositories
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(PaginatedSearchAsync));
 
          return await SearchAsync(filters, extendedSearch, constraints, parent, true, pageNumber, pageSize, cancellationToken);
+      }
+
+      public async Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken)
+      {
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var query = context.Set<TEntity>().AsNoTracking();
+
+            AddIncludeToSearchQuery(query);
+
+            query = query.Where(e => e.Id == domainObjectId);
+
+            return await ProjectToSearchResult(query).FirstAsync(cancellationToken);
+         }
       }
 
       public virtual async Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<TDomainObject, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken)

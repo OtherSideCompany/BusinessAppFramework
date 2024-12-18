@@ -38,6 +38,11 @@ namespace OtherSideCore.Application.Services
          return await _repository.SearchAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
       }
 
+      public virtual async Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      {
+         return await _repository.SearchAsync(domainObjectId, cancellationToken);
+      }
+
       public virtual async Task<PagedResult<T>> PaginatedSearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
       {
          var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;

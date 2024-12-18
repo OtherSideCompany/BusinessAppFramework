@@ -8,6 +8,9 @@
     <Compile Update="UserControls\DomainObjectDirectoryView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\DomainObjectHistoryView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\EmptyListIndicator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -62,6 +65,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\DomainObjectDirectoryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\DomainObjectHistoryView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\EmptyListIndicator.xaml">

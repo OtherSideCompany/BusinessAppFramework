@@ -992,21 +992,39 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="Button">
-               
-               <TextBlock Text="{TemplateBinding Content}" 
-                           Foreground="{TemplateBinding Foreground}" 
-                           FontWeight="{TemplateBinding FontWeight}"
-                           HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                           VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                           TextDecorations="Underline"/>
-               
+
+               <Grid>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <ContentPresenter Grid.Row="0" 
+                                    Content="{TemplateBinding Content}" 
+                                    TextBlock.Foreground="{TemplateBinding Foreground}" 
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}" 
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                                    TextBlock.FontWeight="{TemplateBinding FontWeight}"/>
+
+                  <Border x:Name="Border"
+                          Grid.Row="1"
+                          BorderThickness="0,1,0,0"
+                          BorderBrush="{TemplateBinding Foreground}" />
+               </Grid>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.3" TargetName="Border" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
+
             </ControlTemplate>
          </Setter.Value>
       </Setter>
-      <Setter Property="Padding" Value="0" />
+      
    </Style>
 
 </ResourceDictionary>

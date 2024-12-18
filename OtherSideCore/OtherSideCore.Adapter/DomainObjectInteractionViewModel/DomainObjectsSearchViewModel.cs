@@ -185,6 +185,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          RemoveSearchResultViewModel(domainObjectSearchResultViewModel);
       }
 
+      public async Task ReloadSearchResultAsync(int domainObjectId)
+      {
+         var searchResultViewModel = SearchResultViewModels.FirstOrDefault(vm => vm.DomainObjectSearchResult.DomainObjectId == domainObjectId);
+
+         if (searchResultViewModel != null)
+         {
+            var searchResult = await _domainObjectSearch.GetSearchResultAsync(domainObjectId);
+            searchResultViewModel.DomainObjectSearchResult = searchResult;
+         }
+      }
+
       public void Dispose()
       {
          UnloadSearchResultViewModels();

@@ -101,6 +101,36 @@ namespace OtherSideCore.Application.Search
          }
       }
 
+      public async Task<DomainObjectSearchResult> GetSearchResultAsync(int domainObjectId)
+      {
+         await InitializeSearchAsync();
+
+         DomainObjectSearchResult searchResult = null;
+
+         try
+         {
+            searchResult = await SearchAsync(domainObjectId, _currentSearchCancellationTokenSource.Token);
+         }
+         catch (InvalidOperationException)
+         {
+            UnloadSearchResults();
+         }
+         catch (SqlException)
+         {
+            UnloadSearchResults();
+         }
+         catch (OperationCanceledException)
+         {
+            UnloadSearchResults();
+         }
+         finally
+         {
+            ShutdownSearch();            
+         }
+
+         return searchResult;
+      }
+
       public async Task PaginatedSearchAsync(bool resetPages, bool extendedSearch, List<string> filters, DomainObject parent = null)
       {
          await InitializeSearchAsync();
@@ -181,6 +211,11 @@ namespace OtherSideCore.Application.Search
          {
             _searchResults.AddRange(results);
          }
+      }
+
+      protected async Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken)
+      {
+         return await _domainObjectQueryService.SearchAsync(domainObjectId, cancellationToken);
       }
 
       protected async Task PaginatedSearchAsync(bool resetPages, bool extendedSearch, List<string> filters, DomainObject? parent, CancellationToken cancellationToken)

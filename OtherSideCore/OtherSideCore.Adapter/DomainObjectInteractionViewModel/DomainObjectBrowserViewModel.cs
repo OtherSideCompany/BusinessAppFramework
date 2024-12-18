@@ -185,6 +185,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual async Task SaveChangesAsync()
       {
          await SelectedDomainObjectEditorViewModel?.SaveChangesAsync();
+
+         _domainObjectsSearchViewModel.ReloadSearchResultAsync(((DomainObjectSearchResultViewModel)Selection.SelectedItem).DomainObjectSearchResult.DomainObjectId);
       }
 
       public virtual bool CanCancelChanges()

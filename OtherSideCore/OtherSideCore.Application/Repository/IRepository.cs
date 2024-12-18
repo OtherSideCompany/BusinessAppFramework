@@ -10,6 +10,8 @@ namespace OtherSideCore.Application.Repository
 
       Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
 
+      Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken);
+
       Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
 
       Task CreateAsync(T domainObject, DomainObject? parent, int userId);

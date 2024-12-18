@@ -7,6 +7,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
       void LoadSearchResultViewModels();
+      Task ReloadSearchResultAsync(int domainObjectId);
       void UnloadSearchResultViewModels();
       void AddSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       DomainObjectSearchResultViewModel AddSearchResultViewModel(int domainObjectId);
