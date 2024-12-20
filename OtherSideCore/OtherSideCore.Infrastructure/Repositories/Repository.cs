@@ -146,7 +146,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          return await CountAsync([], false, _ => true, parent, cancellationToken);
       }
 
-      public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId)
+      public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId, string userName)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(CreateAsync));
 
@@ -159,13 +159,13 @@ namespace OtherSideCore.Infrastructure.Repositories
                SetParent(entity, parent);
             }
 
-            await CreateEntityAsync(context, entity, userId);
+            await CreateEntityAsync(context, entity, userId, userName);
 
             _mapper.Map(entity, domainObject);
          }
       }
 
-      public virtual async Task SaveAsync(TDomainObject domainObject, int? userId)
+      public virtual async Task SaveAsync(TDomainObject domainObject, int userId, string userName)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}",
                                 GetType(),
@@ -182,6 +182,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                existingEntity.LastModifiedDateTime = DateTime.Now;
                existingEntity.LastModifiedById = userId;
+               existingEntity.LastModifiedByName = userName;
 
                await context.SaveChangesAsync();
 
@@ -224,8 +225,10 @@ namespace OtherSideCore.Infrastructure.Repositories
                await context.SaveChangesAsync();
 
                domainObject.Id = 0;
-               domainObject.LastModifiedBy = null;
-               domainObject.CreatedBy = null;
+               domainObject.LastModifiedById = null;
+               domainObject.LastModifiedByName = null;
+               domainObject.CreatedById = null;
+               domainObject.CreatedByName = null;
                domainObject.CreationDate = default;
                domainObject.LastModifiedDateTime = default;
             }
@@ -378,12 +381,14 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       }
 
-      protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId)
+      protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)
       {
          entity.CreationDate = DateTime.Now;
          entity.LastModifiedDateTime = DateTime.Now;
          entity.CreatedById = userId;
+         entity.CreatedByName = userName;
          entity.LastModifiedById = userId;
+         entity.LastModifiedByName = userName;
 
          await context.Set<TEntity>().AddAsync(entity);
 

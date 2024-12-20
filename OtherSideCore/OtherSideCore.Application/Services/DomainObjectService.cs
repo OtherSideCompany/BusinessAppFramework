@@ -44,7 +44,7 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task CreateAsync(T domainObject, DomainObject? parent)
       {
-         await _repository.CreateAsync(domainObject, parent, _userContext.Id);
+         await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
       }
 
       public virtual async Task<T> CreateAsync(DomainObject? parent)
@@ -66,7 +66,7 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task SaveAsync(T domainObject)
       {
-         await _repository.SaveAsync(domainObject, _userContext.Id);
+         await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
       }
 
       #endregion

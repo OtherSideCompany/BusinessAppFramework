@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,6 @@ namespace OtherSideCore.Infrastructure.Entities
 
       [Required]
       [StringLength(64, MinimumLength = 64)]
-      public string PasswordHash { get; set; }
+      public string PasswordHash { get; set; }      
    }
 }

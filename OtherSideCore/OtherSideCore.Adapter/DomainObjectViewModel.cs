@@ -51,9 +51,9 @@ namespace OtherSideCore.Adapter
 
       public HashSet<string> MonitoredProperties { get; set; }
 
-      public string CreationDescription => GetHistoryDescription(DomainObject.CreationDate, DomainObject.CreatedBy);
+      public string CreationDescription => GetHistoryDescription(DomainObject.CreationDate, DomainObject.CreatedByName);
 
-      public string ModificationDescription => GetHistoryDescription(DomainObject.LastModifiedDateTime, DomainObject.LastModifiedBy);
+      public string ModificationDescription => GetHistoryDescription(DomainObject.LastModifiedDateTime, DomainObject.LastModifiedByName);
 
       #endregion
 
@@ -120,13 +120,13 @@ namespace OtherSideCore.Adapter
 
       #region private Methods
 
-      private string GetHistoryDescription(DateTime dateTime, User user)
+      private string GetHistoryDescription(DateTime dateTime, string? userName)
       {
          var creationDescription = "";
 
-         if (user != null)
+         if (!String.IsNullOrEmpty(userName))
          {
-            creationDescription += user.FirstName + " " + user.LastName;
+            creationDescription += userName;
          }
          else
          {

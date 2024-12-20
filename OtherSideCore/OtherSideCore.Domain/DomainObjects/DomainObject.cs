@@ -14,9 +14,11 @@ namespace OtherSideCore.Domain.DomainObjects
 
       public int Id { get; set; }
       public DateTime CreationDate { get; set; }
-      public User CreatedBy { get; set; }
+      public int? CreatedById { get; set; }
+      public string? CreatedByName { get; set; }
       public DateTime LastModifiedDateTime { get; set; }
-      public User LastModifiedBy { get; set; }
+      public int? LastModifiedById { get; set; }
+      public string? LastModifiedByName { get; set; }
 
       #endregion
 
@@ -54,8 +56,7 @@ namespace OtherSideCore.Domain.DomainObjects
 
       public virtual void Dispose()
       {
-         CreatedBy?.Dispose();
-         LastModifiedBy?.Dispose();
+         
       }
 
       #endregion
