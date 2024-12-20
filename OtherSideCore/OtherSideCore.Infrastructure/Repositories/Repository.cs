@@ -14,7 +14,6 @@ using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application;
-using System.Drawing.Printing;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -293,7 +292,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      private IQueryable<DomainObjectSearchResult> GetSearchQuery(List<string> filters,
+      protected IQueryable<DomainObjectSearchResult> GetSearchQuery(List<string> filters,
                                                                   bool extendedSearch,
                                                                   Expression<Func<TDomainObject, bool>> constraints,
                                                                   DomainObject? parent,

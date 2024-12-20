@@ -44,6 +44,9 @@
     <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\ProcessWorkflowHeader.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\SingleTextFilter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,6 +104,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\ModuleHeader.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\ProcessWorkflowHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\SingleTextFilter.xaml">

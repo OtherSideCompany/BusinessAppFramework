@@ -7,7 +7,7 @@ using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter
 {
-    public class DomainObjectViewModel : ObservableObject, IDisposable
+   public class DomainObjectViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -94,7 +94,7 @@ namespace OtherSideCore.Adapter
 
       }
 
-      public virtual void Dispose() 
+      public virtual void Dispose()
       {
          _nestedDomainObjectViewModels.ToList().ForEach(vm => vm.Dispose());
          _nestedDomainObjectViewModels.Clear();

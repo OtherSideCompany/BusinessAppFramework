@@ -59,12 +59,12 @@
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type Thumb}">
-               <Border Background="Transparent" Width="20" x:Name="ParentBorder" BorderThickness="0,0,0,0" BorderBrush="{StaticResource OtherSide_LightGray}">
+               <Border Background="Transparent" Width="20" x:Name="ParentBorder">
                   <Border Width="2" 
                           HorizontalAlignment="Right" 
                           Background="{Binding Path=(extensions:ListViewExtension.ThumbColor), RelativeSource={RelativeSource AncestorType={x:Type ListView}}}" 
                           x:Name="Splitter" 
-                          Visibility="Hidden"/>
+                          Visibility="Hidden"/>                  
                </Border>
                <ControlTemplate.Triggers>
                   <Trigger SourceName="ParentBorder" Property="IsMouseOver" Value="True">
@@ -130,6 +130,7 @@
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+               
                <Grid Background="{TemplateBinding Background}">
                   <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="*" />
@@ -193,7 +194,8 @@
                   <Border Grid.Column="1"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}">
-                     <Thumb x:Name="PART_HeaderGripper" HorizontalAlignment="Right" DragDelta="GridViewColumnHeader_ThumbDragDelta" 
+                     <Thumb x:Name="PART_HeaderGripper" HorizontalAlignment="Right" 
+                            DragDelta="GridViewColumnHeader_ThumbDragDelta" 
                             Style="{StaticResource GridViewThumbStyle}" />
                   </Border>
 
@@ -237,13 +239,13 @@
          <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource GridViewColumnHeaderContainerStyle}" />
       </Style.Resources>
 
-      <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemContainerStyle}" />
       <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
       <EventSetter Event="PreviewMouseWheel" Handler="ListView_PreviewMouseWheel" />
 
-   </Style>
+   </Style>  
 
    <!-- DomainObjectSearch List View-->
    <Style TargetType="{x:Type ListViewItem}" x:Key="DomainObjectSearchListViewItemContainerStyle" BasedOn="{StaticResource ListViewItemContainerStyle}">
@@ -282,6 +284,144 @@
       <Setter Property="ItemContainerStyle" Value="{StaticResource DomainObjectSearchListViewItemContainerStyle}" />
       <EventSetter Event="PreviewMouseLeftButtonUp" Handler="DomainObjectSearchListView_PreviewMouseLeftButtonUp" />
    </Style>
+   
+   <!-- Data Grid -->
+
+   <Style x:Key="DataGridColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+      <Setter Property="Cursor" Value="SizeWE" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Thumb}">
+
+               <Border Background="{StaticResource OtherSide_SuperLightGray}" Width="20" x:Name="ParentBorder"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
+                       BorderThickness="0,1,1,0">
+                  <Border Width="2" 
+                       HorizontalAlignment="{TemplateBinding HorizontalAlignment}" 
+                       Background="{Binding Path=(extensions:DataGridExtension.ThumbColor), RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                       x:Name="Splitter" 
+                       Visibility="Hidden"/>
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger SourceName="ParentBorder" Property="IsMouseOver" Value="True">
+                     <Setter TargetName="Splitter" Property="Visibility" Value="Visible"></Setter>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <Style TargetType="{x:Type DataGridColumnHeader}" x:Key="DataGridColumnHeaderStyle">
+      <Setter Property="VerticalContentAlignment" Value="Bottom" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="FontWeight" Value="Normal" />
+      <Setter Property="Foreground" Value="{StaticResource OtherSide_Gray}" />
+      <Setter Property="OverridesDefaultStyle" Value="True" />
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="MinWidth" Value="50" />
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+
+               <Grid Background="{TemplateBinding Background}">
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto" />
+                     <ColumnDefinition Width="*" />
+                     <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+
+                  <Border Grid.Column="1" 
+                          x:Name="columnHeaderBorder"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          Padding="3,0,3,0"
+                          Background="{StaticResource OtherSide_SuperLightGray}">
+                     <ContentPresenter Margin="4,10,4,5" 
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <ContentPresenter.Resources>
+                           <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                              <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+                              <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
+                              <Setter Property="LineHeight" Value="16" />
+                              <Setter Property="Margin" Value="0,0,0,0" />
+                           </Style>
+                        </ContentPresenter.Resources>
+                     </ContentPresenter>
+                  </Border>
+
+                  <Thumb Grid.Column="2" x:Name="PART_RightHeaderGripper"
+                         Style="{StaticResource DataGridColumnHeaderGripperStyle}" 
+                         HorizontalAlignment="Right"/>                  
+               </Grid>
+
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
+
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
+   <Style TargetType="{x:Type DataGridCell}" x:Key="OtherSideDataGridCell">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DataGridCell}">
+               <Border BorderBrush="{StaticResource OtherSide_LightGray}"
+                       Padding="4"
+                       Background="{TemplateBinding Background}">
+                  <Border Background="Transparent"
+                          SnapsToDevicePixels="True"
+                          VerticalAlignment="Center">
+                     <ContentPresenter HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Stretch"
+                                       SnapsToDevicePixels="True" />
+                  </Border>
+               </Border>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+         <Trigger Property="IsSelected" Value="True">
+            <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
+            <Setter Property="Foreground" Value="Black" />
+         </Trigger>
+      </Style.Triggers>
+   </Style>
+
+   <Style TargetType="{x:Type DataGrid}" x:Key="OtherSideCoreDataGrid">
+
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="BorderThickness" Value="1,1,1,0" />
+
+      <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle}" />
+      <Setter Property="CellStyle" Value="{StaticResource OtherSideDataGridCell}" />
+
+      <Setter Property="AutoGenerateColumns" Value="False" />
+      <Setter Property="RowHeight" Value="48" />
+      <Setter Property="CanUserResizeRows" Value="False" />
+      <Setter Property="HeadersVisibility" Value="Column" />
+      <Setter Property="SelectionUnit" Value="Cell" />
+
+      <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="VerticalGridLinesBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="GridLinesVisibility" Value="All" />
+
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+      <EventSetter Event="PreviewMouseWheel" Handler="ListView_PreviewMouseWheel" />
+
+   </Style>
+
 
    <!-- Separator border -->
    <Style x:Key="SeparatorBorder" TargetType="{x:Type Border}">
@@ -361,7 +501,12 @@
    <!-- Property label style -->
    <Style x:Key="PropertyLabelTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
       <Setter Property="Foreground" Value="Gray" />
-      <Setter Property="Margin" Value="0,0,20,0" />
+      <Setter Property="Margin" Value="0,0,24,0" />
+   </Style>
+
+   <Style x:Key="VerticalPropertyLabelTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Setter Property="Foreground" Value="Gray" />
+      <Setter Property="Margin" Value="4,4,0,0" />
    </Style>
 
    <Style x:Key="PropertyLabelWithHelperTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource PropertyLabelTextBlock}">
@@ -441,6 +586,7 @@
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="customControls:ClickSelectTextBox">
+
                <Border BorderThickness="{TemplateBinding BorderThickness}"
                        BorderBrush="{StaticResource OtherSide_LightGray}"                       
                        Background="{TemplateBinding Background}"
@@ -476,6 +622,7 @@
 
                   </Grid>
                </Border>
+
                <ControlTemplate.Triggers>
                   <MultiTrigger>
                      <MultiTrigger.Conditions>
@@ -520,6 +667,24 @@
 
    <Style x:Key="EditorIntegerClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource EditorClickSelectTextBox}">
       <Setter Property="behaviors:TextBoxBehaviour.IsInteger" Value="True" />
+   </Style>
+
+   <Style x:Key="DataGridClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource {x:Type customControls:ClickSelectTextBox}}">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="ClickSelectTextBox_TextMargin" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="ClickSelectTextBox_TextMargin" Value="0,0,4,0" />
+      <Setter Property="IsReadOnly" Value="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+   </Style>
+
+   <Style x:Key="DataGridDecimalClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource DataGridClickSelectTextBox}">
+      <Setter Property="behaviors:TextBoxBehaviour.IsDecimal" Value="True" />
+      <Setter Property="HorizontalContentAlignment" Value="Right" />
+   </Style>
+
+   <Style x:Key="DataGridIntegerClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource DataGridClickSelectTextBox}">
+      <Setter Property="behaviors:TextBoxBehaviour.IsInteger" Value="True" />
+      <Setter Property="HorizontalContentAlignment" Value="Right" />
    </Style>
 
    <Style x:Key="TrackingInfosClickSelectTextBlock" TargetType="{x:Type TextBlock}">

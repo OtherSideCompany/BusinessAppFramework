@@ -28,6 +28,25 @@ namespace OtherSideCore.Wpf.UserControls
          get { return (string)GetValue(EmptyObjectIndicator_TextProperty); }
          set { SetValue(EmptyObjectIndicator_TextProperty, value); }
       }
+
+      public static readonly DependencyProperty EmptyObjectIndicator_BorderThicknessProperty =
+          DependencyProperty.Register("EmptyObjectIndicator_BorderThickness", typeof(Thickness), typeof(EmptyObjectIndicator), new UIPropertyMetadata(new Thickness(1)));
+
+      public Thickness EmptyObjectIndicator_BorderThickness
+      {
+         get { return (Thickness)GetValue(EmptyObjectIndicator_BorderThicknessProperty); }
+         set { SetValue(EmptyObjectIndicator_BorderThicknessProperty, value); }
+      }
+
+      public static readonly DependencyProperty EmptyObjectIndicator_BackgroundColorProperty =
+          DependencyProperty.Register("EmptyObjectIndicator_BackgroundColor", typeof(SolidColorBrush), typeof(EmptyObjectIndicator), new UIPropertyMetadata(Brushes.White));
+
+      public SolidColorBrush EmptyObjectIndicator_BackgroundColor
+      {
+         get { return (SolidColorBrush)GetValue(EmptyObjectIndicator_BackgroundColorProperty); }
+         set { SetValue(EmptyObjectIndicator_BackgroundColorProperty, value); }
+      }
+
       public EmptyObjectIndicator()
       {
          InitializeComponent();

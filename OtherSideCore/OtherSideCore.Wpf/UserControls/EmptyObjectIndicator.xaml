@@ -11,6 +11,8 @@
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="EmptyObjectIndicatorUserControl">
    <Border Style="{StaticResource EditableTextBoxBorder}"
+           Background="{Binding EmptyObjectIndicator_BackgroundColor, ElementName=EmptyObjectIndicatorUserControl}"
+           BorderThickness="{Binding EmptyObjectIndicator_BorderThickness, ElementName=EmptyObjectIndicatorUserControl}"
            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}">
       <Grid>
          <Grid.ColumnDefinitions>

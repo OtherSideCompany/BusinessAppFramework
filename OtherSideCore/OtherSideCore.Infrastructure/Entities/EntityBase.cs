@@ -13,13 +13,11 @@ namespace OtherSideCore.Infrastructure.Entities
       public DateTime CreationDate { get; set; }
 
       public int? CreatedById { get; set; }
-
       public virtual User CreatedBy { get; set; }
 
       public DateTime LastModifiedDateTime { get; set; }
 
       public int? LastModifiedById { get; set; }
-
       public virtual User LastModifiedBy { get; set; }
 
    }

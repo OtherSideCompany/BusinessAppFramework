@@ -8,4 +8,5 @@
    <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
    <converters:BoolInverter x:Key="BoolInverter" />
    <converters:DateOnlyToDateTimeConverter x:Key="DateOnlyToDateTimeConverter" />
+   <converters:LastColumnIndexConverter x:Key="LastColumnIndexConverter" />
 </ResourceDictionary>
