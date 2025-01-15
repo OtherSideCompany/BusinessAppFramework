@@ -12,7 +12,7 @@ namespace OtherSideCore.Application.Search
       Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject parent = null);
       Task<DomainObjectSearchResult> GetSearchResultAsync(int domainObjectId);
       Task PaginatedSearchAsync(bool resetPages, bool extendedSearch, List<string> filters, DomainObject parent = null);
-      void AddSearchResult(int domainObjectId);
+      Task AddSearchResultAsync(int domainObjectId);
       void RemoveSearchResult(int domainObjectId);
       void Dispose();
    }

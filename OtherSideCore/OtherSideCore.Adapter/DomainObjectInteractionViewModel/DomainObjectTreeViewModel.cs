@@ -1,24 +1,28 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public abstract class DomainObjectTreeViewModel : UIInteractionHost, IDisposable
+   public abstract class DomainObjectTreeViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
       private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
 
-      private IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      private IDomainObjectInteractionService _domainObjectInteractionFactory;
       private IDomainObjectTreeSearchViewModel _domainObjectTreeSearchViewModel;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
       protected IDomainObjectSearchFactory _domainObjectSearchFactory;
+      protected IUserDialogService _userDialogService;
 
       private ObservableCollection<IDomainObjectTreeViewNode> _roots;
       private bool _isSelectionLocked;
@@ -101,19 +105,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
 
-
       #endregion
 
       #region Constructor
 
       public DomainObjectTreeViewModel(IUserDialogService userDialogService,
-                                       IWindowService windowService,
-                                       IDomainObjectInteractionFactory domainObjectInteractionFactory,
+                                       IDomainObjectInteractionService domainObjectInteractionFactory,
                                        IDomainObjectTreeSearchViewModel domainObjectTreeSearchViewModel,
                                        IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                        IDomainObjectServiceFactory domainObjectServiceFactory,
-                                       IDomainObjectSearchFactory domainObjectSearchFactory) :
-       base(userDialogService, windowService)
+                                       IDomainObjectSearchFactory domainObjectSearchFactory)
       {
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
          _domainObjectTreeSearchViewModel = domainObjectTreeSearchViewModel;
@@ -128,6 +129,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          CreateRootNodeAsyncCommand = new AsyncRelayCommand(CreateRootNodeAsync, CanCreateRootNode);
       }
+
 
       #endregion
 
@@ -229,7 +231,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      public void RemoveChildNode(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
+      public async Task RemoveChildNodeAsync(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
       {
          UnregisterNode(nodeToRemove);
          parent.RemoveChild(nodeToRemove);
@@ -252,7 +254,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #endregion
 
-      #region Private Methods      
+      #region Private Methods  
 
       private void RegisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {
@@ -276,36 +278,36 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          AddChildNode(viewModel, ((IDomainObjectTreeViewNode)sender).DomainObjectViewModel);
       }
 
-      private void DomainObjectTreeViewNode_NodeDeleted(object? sender, IDomainObjectTreeViewNode e)
+      private async void DomainObjectTreeViewNode_NodeDeleted(object? sender, IDomainObjectTreeViewNode e)
       {
-         RemoveNode(e);
-      }     
+         await RemoveNodeAsync(e);
+      }
 
-      private void RemoveNode(IDomainObjectTreeViewNode nodeToRemove)
+      private async Task RemoveNodeAsync(IDomainObjectTreeViewNode nodeToRemove)
       {
          foreach (var rootNode in Roots.ToList())
          {
             if (rootNode.Equals(nodeToRemove))
             {
-               RemoveRootNode(nodeToRemove);               
+               RemoveRootNode(nodeToRemove);
                return;
             }
 
-            RemoveNodeFromChildren(nodeToRemove, rootNode);
+            await RemoveNodeFromChildrenAsync(nodeToRemove, rootNode);
          }
       }
 
-      private void RemoveNodeFromChildren(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
+      private async Task RemoveNodeFromChildrenAsync(IDomainObjectTreeViewNode nodeToRemove, IDomainObjectTreeViewNode parent)
       {
          foreach (var childNode in parent.Children.ToList())
          {
             if (childNode.Equals(nodeToRemove))
             {
-               RemoveChildNode(nodeToRemove, parent);               
+               await RemoveChildNodeAsync(nodeToRemove, parent);
                return;
             }
 
-            RemoveNodeFromChildren(nodeToRemove, childNode);
+            await RemoveNodeFromChildrenAsync(nodeToRemove, childNode);
          }
       }
 
@@ -374,7 +376,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected virtual async Task CreateRootNodeAsync()
       {
          var domainObject = await CreateRootDomainObjectAsync();
-            
+
          var viewModel = _domainObjectViewModelFactory.CreateViewModel(domainObject);
          AddRootNode(viewModel);
       }

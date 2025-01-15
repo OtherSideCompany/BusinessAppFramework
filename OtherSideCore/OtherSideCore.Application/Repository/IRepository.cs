@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Application.Search;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Linq.Expressions;
 
@@ -18,6 +19,8 @@ namespace OtherSideCore.Application.Repository
 
       Task SaveAsync(T domainObject, int userId, string userName);
 
+      Task SaveIndexAsync(IIndexable domainObject, int userId, string userName);
+
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken);
 
       Task DeleteAsync(T domainObject);
@@ -27,5 +30,7 @@ namespace OtherSideCore.Application.Repository
       Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
 
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
+
+      Task<List<DomainObjectReference>> GetDomainObjectReferences(int domainObjectId, CancellationToken cancellationToken);
    }
 }

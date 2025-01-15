@@ -10,8 +10,6 @@ namespace OtherSideCore.Application.Search
    {
       #region Fields
 
-      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
-
       protected IDomainObjectQueryService<T> _domainObjectQueryService;
       protected List<DomainObjectSearchResult> _searchResults;
       protected PageNavigation _pageNavigation;
@@ -44,15 +42,12 @@ namespace OtherSideCore.Application.Search
       #region Constructor
 
       public DomainObjectSearch(
-         IDomainObjectQueryService<T> domainObjectQueryService,
-         IDomainObjectSearchResultFactory domainObjectSearchResultFactory)
+         IDomainObjectQueryService<T> domainObjectQueryService)
       {
          _domainObjectQueryService = domainObjectQueryService;
          _searchResults = new List<DomainObjectSearchResult>();
          _constraints = new List<Constraint<T>>();
          _pageNavigation = new PageNavigation();
-
-         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
       }
 
       #endregion
@@ -157,9 +152,9 @@ namespace OtherSideCore.Application.Search
          }
       }
 
-      public void AddSearchResult(int domainObjectId)
+      public async Task AddSearchResultAsync(int domainObjectId)
       {
-         var searchResult = _domainObjectSearchResultFactory.CreateSearchResult<T>(domainObjectId);
+         var searchResult = await _domainObjectQueryService.SearchAsync(domainObjectId);
          _searchResults.Add(searchResult);
       }
 

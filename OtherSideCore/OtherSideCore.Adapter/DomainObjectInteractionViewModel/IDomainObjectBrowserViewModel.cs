@@ -10,6 +10,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task SaveChangesAsync();
       Task CancelChangesAsync();
       Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
+      Task EditDomainObjectViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       Task InitializeAsync();
    }
 }

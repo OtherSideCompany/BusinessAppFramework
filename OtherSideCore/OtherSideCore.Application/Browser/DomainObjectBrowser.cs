@@ -16,7 +16,6 @@ namespace OtherSideCore.Application.Browser
       protected IUserContext _userContext;
       protected ILoggerFactory _loggerFactory;
       protected IUserDialogService _userDialogService;
-      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
 
       #endregion
 
@@ -45,13 +44,12 @@ namespace OtherSideCore.Application.Browser
                                  IGlobalDataService globalDataService,
                                  IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory,
                                  IDomainObjectServiceFactory domainObjectServiceFactory,
-                                 IDomainObjectSearchFactory domainObjectSearchFactory,
-                                 IDomainObjectSearchResultFactory domainObjectSearchResultFactory)
+                                 IDomainObjectSearchFactory domainObjectSearchFactory)
       {
          _userContext = userContext;
          _loggerFactory = loggerFactory;
          _userDialogService = userDialogService;
-         DomainObjectSearch = (DomainObjectSearch<T>)domainObjectSearchFactory.CreateDomainObjectSearch<T>(domainObjectQueryServiceFactory, domainObjectSearchResultFactory);
+         DomainObjectSearch = (DomainObjectSearch<T>)domainObjectSearchFactory.CreateDomainObjectSearch<T>(domainObjectQueryServiceFactory);
          NestedDomainObjectBrowser = new List<DomainObjectBrowser<T>>();
          GlobalDataService = globalDataService;
          DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
@@ -80,7 +78,7 @@ namespace OtherSideCore.Application.Browser
 
          await domainObjectService.CreateAsync(domainObject, parent);
 
-         DomainObjectSearch.AddSearchResult(domainObject.Id);
+         await DomainObjectSearch.AddSearchResultAsync(domainObject.Id);
 
          return domainObject;
       }

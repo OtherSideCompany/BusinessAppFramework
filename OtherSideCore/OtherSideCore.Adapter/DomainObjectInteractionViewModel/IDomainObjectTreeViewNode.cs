@@ -26,6 +26,5 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       void Collapse();
       void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing);
       void RemoveChild(IDomainObjectTreeViewNode childNode);
-
    }
 }

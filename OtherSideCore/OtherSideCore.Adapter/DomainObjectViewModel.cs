@@ -110,6 +110,27 @@ namespace OtherSideCore.Adapter
          _mapper.Map(this, DomainObject);
       }
 
+      public virtual void CopyPropertiesToDomainObject(DomainObject domainObject)
+      {
+         var id = domainObject.Id;
+         var creationDate = domainObject.CreationDate;
+         var createdById = domainObject.CreatedById;
+         var createdByName = domainObject.CreatedByName;
+         var lastModifiedDateTime = domainObject.LastModifiedDateTime;
+         var lastModifiedById = domainObject.LastModifiedById;
+         var lastModifiedByName = domainObject.LastModifiedByName;
+
+         _mapper.Map(this, domainObject);
+
+         domainObject.Id = id;
+         domainObject.CreationDate = creationDate; 
+         domainObject.CreatedById = createdById;
+         domainObject.CreatedByName = createdByName;
+         domainObject.LastModifiedDateTime = lastModifiedDateTime;
+         domainObject.LastModifiedById = lastModifiedById;
+         domainObject.LastModifiedByName = lastModifiedByName;
+      }
+
       public void RefreshTrackingInfos()
       {
          OnPropertyChanged(nameof(CreationDescription));

@@ -2,6 +2,7 @@
 using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
 {
@@ -11,8 +12,11 @@ namespace OtherSideCore.Adapter
       void ShowMainWindow<T>() where T : MainWindowViewModel;
       void CloseWindow(object window);
       void ShowModal(object modalContent);
-      void HideTopModal();
-      void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel);
+      void HideTopModal();      
       ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
+      void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
+      Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
+      void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
    }
 }

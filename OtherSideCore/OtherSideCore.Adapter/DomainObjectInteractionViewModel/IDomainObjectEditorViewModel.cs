@@ -15,5 +15,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       bool CanCancelChanges();
       Task CancelChangesAsync();
       Task LoadNestedStructuresAsync();
+
+      Task LoadDomainObjetReferencesAsync();
    }
 }

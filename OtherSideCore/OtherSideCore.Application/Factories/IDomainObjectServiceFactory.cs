@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.Factories
 {
-    public interface IDomainObjectServiceFactory
-    {
-        IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new();
-    }
+   public interface IDomainObjectServiceFactory
+   {
+      IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new();
+      object CreateDomainObjectService(Type type);
+   }
 }

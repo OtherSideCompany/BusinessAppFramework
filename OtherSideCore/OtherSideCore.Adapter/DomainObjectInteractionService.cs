@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
-namespace OtherSideCore.Adapter.Factories
+namespace OtherSideCore.Adapter
 {
-   public abstract class DomainObjectInteractionFactory : IDomainObjectInteractionFactory
+   public abstract class DomainObjectInteractionService : IDomainObjectInteractionService
    {
       #region Fields
 
@@ -23,7 +24,6 @@ namespace OtherSideCore.Adapter.Factories
       protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
       protected IWindowService _windowService;
       protected IDomainObjectFileService _domainObjectFileService;
-      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
       protected IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
 
 
@@ -37,7 +37,7 @@ namespace OtherSideCore.Adapter.Factories
 
       #region Constructor
 
-      public DomainObjectInteractionFactory(
+      public DomainObjectInteractionService(
          ILoggerFactory loggerFactory,
          IUserContext userContext,
          IUserDialogService userDialogService,
@@ -49,7 +49,6 @@ namespace OtherSideCore.Adapter.Factories
          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
          IWindowService windowService,
          IDomainObjectFileService domainObjectFileService,
-         IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory)
       {
          _loggerFactory = loggerFactory;
@@ -63,7 +62,6 @@ namespace OtherSideCore.Adapter.Factories
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
          _windowService = windowService;
          _domainObjectFileService = domainObjectFileService;
-         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
          _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
       }
 
@@ -86,10 +84,20 @@ namespace OtherSideCore.Adapter.Factories
          var domainObjectType = domainObjectViewModel.DomainObject.GetType();
          var genericType = typeof(DomainObjectTreeViewNode<>).MakeGenericType(domainObjectType);
 
-         return (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, _windowService, this, _domainObjectServiceFactory);
+         return (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, this, _domainObjectServiceFactory);
       }
 
       public abstract DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
+
+      public abstract Task DisplayDomainObjectAsync(DomainObject domainObject, DisplayType displayType);
+      public abstract Task DisplayDomainObjectAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
+      public abstract Task DisplayDomainObjectAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
+      public abstract Task DisplayDomainObjectTreeViewAsync(DomainObject domainObject, DisplayType displayType);
+      public abstract Task DisplayDomainObjectTreeViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
+      public abstract Task DisplayDomainObjectTreeViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
+      public abstract Task DisplayDomainObjectEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
+      public abstract Task DisplayDomainObjectEditorViewAsync(DomainObject domainObject, DisplayType displayType);
+      public abstract Task DisplayDomainObjectEditorViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
 
 
       #endregion

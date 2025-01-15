@@ -1,6 +1,6 @@
 ﻿using OtherSideCore.Application.Repository;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Services
 {
@@ -37,7 +37,7 @@ namespace OtherSideCore.Application.Services
 
       #region Public Methods
 
-      public async Task<List<T>> GetAll(DomainObject? parent, CancellationToken cancellationToken = default)
+      public async Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken = default)
       {
          return await _repository.GetAllAsync(parent, cancellationToken);
       }
@@ -67,6 +67,16 @@ namespace OtherSideCore.Application.Services
       public virtual async Task SaveAsync(T domainObject)
       {
          await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
+      }
+
+      public async Task SaveIndexAsync(IIndexable domainObject)
+      {
+         await _repository.SaveIndexAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
+      }
+
+      public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      {
+         return await _repository.GetDomainObjectReferences(domainObjectId, cancellationToken);
       }
 
       #endregion

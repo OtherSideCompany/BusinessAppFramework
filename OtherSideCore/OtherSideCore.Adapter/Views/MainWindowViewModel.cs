@@ -15,7 +15,8 @@ namespace OtherSideCore.Adapter.Views
 
       private IAuthenticationService _authenticationService;
       private IModuleViewModelFactory _viewModelFactory;
-      private IDomainObjectInteractionFactory domainObjectInteractionFactory;
+      private IDomainObjectInteractionService domainObjectInteractionFactory;
+      private IUserDialogService _userDialogService;
 
       private bool _isNavigationMenuDisplayed;
       private List<ViewDescriptionBase> _viewDescriptions;
@@ -129,14 +130,14 @@ namespace OtherSideCore.Adapter.Views
                                  IAppConfiguration appConfiguration,
                                  IWindowService windowService,
                                  IModuleViewModelFactory viewModelFactory) :
-         base(userDialogService,
-              userContext,
+         base(userContext,
               globalDataService,
               appConfiguration,
               windowService)
       {
          _authenticationService = authenticationService;
          _viewModelFactory = viewModelFactory;
+         _userDialogService = userDialogService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();

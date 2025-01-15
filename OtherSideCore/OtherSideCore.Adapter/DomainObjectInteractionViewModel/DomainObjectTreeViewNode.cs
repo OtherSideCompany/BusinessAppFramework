@@ -1,13 +1,16 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.Factories;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectTreeViewNode<T> : UIInteractionHost, IDomainObjectTreeViewNode where T : DomainObject, new()
+   public class DomainObjectTreeViewNode<T> : ObservableObject, IDomainObjectTreeViewNode where T : DomainObject, new()
    {
 
       #region Fields
@@ -15,8 +18,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isExpanded;
       private bool _isSelected;
 
-      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
+      protected IUserDialogService _userDialogService;
 
       private DomainObjectViewModel _domainObjectViewModel;
       private IDomainObjectEditorViewModel _domainObjectEditorViewModel;
@@ -87,6 +91,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Commands
 
       public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
+      public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateChildNodeAsyncCommand { get; private set; }
 
       #endregion
 
@@ -94,13 +99,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public DomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel,
                                       IUserDialogService userDialogService,
-                                      IWindowService windowService,
-                                      IDomainObjectInteractionFactory domainObjectInteractionFactory,
-                                      IDomainObjectServiceFactory domainObjectServiceFactory) :
-         base(userDialogService, windowService)
+                                      IDomainObjectInteractionService domainObjectInteractionFactory,
+                                      IDomainObjectServiceFactory domainObjectServiceFactory)
       {
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
          _domainObjectServiceFactory = domainObjectServiceFactory;
+         _userDialogService = userDialogService;
 
          DomainObjectViewModel = domainObjectViewModel;
 
@@ -110,7 +114,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Children = new ObservableCollection<IDomainObjectTreeViewNode>();
 
          DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanDelete);
-      }      
+         DupplicateChildNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateChildNodeAsync, CanDupplicateChildNodeAsync);
+      }
 
       #endregion
 
@@ -118,7 +123,31 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing)
       {
-         Children.Add(childNode);
+         if (childNode.DomainObjectViewModel.DomainObject is IIndexable indexableDomainObject)
+         {
+            if (!Children.Any())
+            {
+               Children.Add(childNode);
+            }
+            else
+            {
+               var previousItems = Children.Where(c => ((IIndexable)c.DomainObjectViewModel.DomainObject).Index < indexableDomainObject.Index);
+
+               if (previousItems.Any())
+               {
+                  var previousItem = previousItems.OrderByDescending(c => ((IIndexable)c.DomainObjectViewModel.DomainObject).Index).First();
+                  Children.Insert(Children.IndexOf(previousItem) + 1, childNode);
+               }
+               else
+               {
+                  Children.Insert(0, childNode);
+               }
+            }
+         }
+         else
+         {
+            Children.Add(childNode);
+         }
       }
 
       public virtual void RemoveChild(IDomainObjectTreeViewNode childNode)
@@ -153,7 +182,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsExpanded = false;
       }
 
-      public void Dispose()
+      public virtual void Dispose()
       {
          DomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
          DomainObjectEditorViewModel.Dispose();
@@ -198,6 +227,41 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
          DeleteAsyncCommand.NotifyCanExecuteChanged();
+      }
+
+      private bool CanDupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
+      {
+         return node != null && _inlineNodes.Contains(node);
+      }
+
+      private async Task DupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
+      {
+         var domainObject = await CreateChildNodeDomainObjectCopyAsync(node);
+
+         await IndexChildren(node.DomainObjectViewModel.DomainObject.GetType());         
+      }
+
+      private async Task IndexChildren(Type domainObjectChildrenType)
+      {
+         var indexableDomainObjects = Children.Select(c => c.DomainObjectViewModel.DomainObject)
+                                              .Where(d => d.GetType() == domainObjectChildrenType)
+                                              .OfType<IIndexable>()
+                                              .OrderBy(d => d.Index)
+                                              .ToList();
+
+         foreach (var indexableDomainObject in indexableDomainObjects)
+
+         {
+            indexableDomainObject.Index = indexableDomainObjects.IndexOf(indexableDomainObject);
+
+            var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
+            await domainObjectService.SaveIndexAsync(indexableDomainObject);
+         }
+      }
+
+      protected virtual Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      {
+         throw new NotImplementedException();
       }
 
       #endregion

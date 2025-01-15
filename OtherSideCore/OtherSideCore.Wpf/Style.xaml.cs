@@ -51,6 +51,19 @@ namespace OtherSideCore.Wpf.CustomControls
             var domainObjectBrowserViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
 
             await domainObjectBrowserViewModel.SelectSearchResultViewModelAsync(selectedDomainObjectSearchResultViewModel);
+         }         
+      }
+
+      private async void DomainObjectSearchListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+      {
+         var listView = (sender as ListView);
+         var selectedDomainObjectSearchResultViewModel = listView.SelectedItem as DomainObjectSearchResultViewModel;
+
+         if (selectedDomainObjectSearchResultViewModel != null)
+         {
+            var domainObjectBrowserViewModel = listView.DataContext as IDomainObjectBrowserViewModel;
+
+            await domainObjectBrowserViewModel.EditDomainObjectViewModelAsync(selectedDomainObjectSearchResultViewModel);
          }
       }
 

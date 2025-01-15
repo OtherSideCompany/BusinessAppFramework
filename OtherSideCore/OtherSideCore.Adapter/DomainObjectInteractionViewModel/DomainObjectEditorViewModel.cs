@@ -1,27 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectEditorViewModel<T> : UIInteractionHost, IDomainObjectEditorViewModel where T : DomainObject, new()
+    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel where T : DomainObject, new()
    {
       #region Fields
 
       protected DomainObjectViewModel _domainObjectViewModel;
       protected IDomainObjectService<T> _domainObjectService;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
-      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionService;
+      protected IUserDialogService _userDialogService;
 
       protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
+      protected ObservableCollection<DomainObjectReferenceViewModel> _domainObjectReferenceViewModels;
 
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
@@ -32,6 +33,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
 
       public DomainObjectViewModel DomainObjectViewModel => _domainObjectViewModel;
+
+      public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
 
       public bool IsEnabled
       {
@@ -56,6 +59,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Commands
 
       public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
+      public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
 
       #endregion
 
@@ -63,25 +68,26 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public DomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel,
                                          IDomainObjectServiceFactory domainObjectServiceFactory,
-                                         IDomainObjectInteractionFactory domainObjectInteractionFactory,
-                                         IUserDialogService userDialogService,
-                                         IWindowService windowService) :
-         base (userDialogService, windowService)
+                                         IDomainObjectInteractionService domainObjectInteractionService,
+                                         IUserDialogService userDialogService)
+
       {
          _domainObjectViewModel = domainObjectViewModel;
          _domainObjectServiceFactory = domainObjectServiceFactory;
          _domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
-         _domainObjectInteractionFactory = domainObjectInteractionFactory;
+         _domainObjectInteractionService = domainObjectInteractionService;
          _userDialogService = userDialogService;
-         _windowService = windowService;
 
          DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanDelete);
+         SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
+         CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
 
          _domainObjectViewModel.PropertyChanged += DomainObjectViewModel_PropertyChanged;
 
          IsEnabled = true;
 
          _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
+         _domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
       }
 
       #endregion
@@ -146,9 +152,24 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       }
 
+      public async Task LoadDomainObjetReferencesAsync()
+      {
+         var domainObjectReferences = await _domainObjectService.GetDomainObjectReferencesAsync(_domainObjectViewModel.DomainObject.Id);
+
+         foreach (var domainObjectReference in domainObjectReferences)
+         {
+            var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, _domainObjectInteractionService);
+            _domainObjectReferenceViewModels.Add(domainObjectReferenceViewModel);
+         }
+      }
+
       public virtual void Dispose()
       {
          UnRegisterNestedStructures();
+
+         _domainObjectReferenceViewModels.ToList().ForEach(vm => vm.Dispose());
+         _domainObjectReferenceViewModels.Clear();
+
          _domainObjectViewModel.PropertyChanged -= DomainObjectViewModel_PropertyChanged;
       }
 
@@ -179,7 +200,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return DomainObjectViewModel != null && !HasUnsavedChanges;
       }
 
-      private async Task DeleteAsync()
+      protected async Task DeleteAsync()
       {
          var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
 
@@ -197,21 +218,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null)
          {
-            HasUnsavedChanges = true;
+            HasUnsavedChanges = true;            
          }
+
+         NotifyCommandsCanExecuteChanged();
       }
 
       private void NestedDomainObjectTreeViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
          if (e.PropertyName.Equals(nameof(DomainObjectTreeViewModel.HasUnsavedChanges)) && !HasUnsavedChanges)
          {
-            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);
+            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);            
          }
+
+         NotifyCommandsCanExecuteChanged();
       }
 
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
          DeleteAsyncCommand.NotifyCanExecuteChanged();
+         SaveChangesAsyncCommand.NotifyCanExecuteChanged();
+         CancelChangesAsyncCommand.NotifyCanExecuteChanged();
       }
       #endregion
    }

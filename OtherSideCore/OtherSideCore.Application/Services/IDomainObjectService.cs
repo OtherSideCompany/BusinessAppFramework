@@ -1,12 +1,13 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Domain;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Services
 {
    public interface IDomainObjectService<T> where T : DomainObject, new()
    {
-      Task<List<T>> GetAll(DomainObject? parent, CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken = default);
 
-      Task<T> GetAsync(int entityId, CancellationToken cancellationToken = default);
+      Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
       Task CreateAsync(T domainObject, DomainObject? parent);
 
@@ -14,6 +15,10 @@ namespace OtherSideCore.Application.Services
 
       Task SaveAsync(T domainObject);
 
+      Task SaveIndexAsync(IIndexable domainObject);
+
       Task DeleteAsync(T domainObject);
+
+      Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default);
    }
 }

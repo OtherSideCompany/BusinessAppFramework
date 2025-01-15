@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Appplication.Services;
 
@@ -38,7 +37,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public DomainObjectTreeSearchViewModel(IDomainObjectTreeSearch domainObjectTreeSearch,
                                              IUserDialogService userDialogService,
                                              IWindowService windowService,
-                                             IDomainObjectInteractionFactory domainObjectInteractionFactory)
+                                             IDomainObjectInteractionService domainObjectInteractionFactory)
       {
          _domainObjectTreeSearch = domainObjectTreeSearch;
       }

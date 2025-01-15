@@ -14,6 +14,7 @@ using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application;
+using OtherSideCore.Domain;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -28,7 +29,6 @@ namespace OtherSideCore.Infrastructure.Repositories
       protected ILoggerFactory _loggerFactory;
       protected ILogger<Repository<TDomainObject, TEntity>> _logger;
       protected IMapper _mapper;
-      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
 
       #endregion
 
@@ -38,14 +38,12 @@ namespace OtherSideCore.Infrastructure.Repositories
          IDbContextFactory<DbContext> dbContextFactory,
          IMapper mapper,
          ILoggerFactory loggerFactory,
-         IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
          List<Type> supportedDomainObjectParentTypes)
       {
          _dbContextFactory = dbContextFactory;
          _loggerFactory = loggerFactory;
          _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
          _mapper = mapper;
-         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
 
          _supportedDomainObjectParentTypes = new List<Type>();
 
@@ -197,6 +195,57 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
+      public virtual async Task SaveIndexAsync(IIndexable domainObject, int userId, string userName)
+      {
+         if (!(domainObject is TDomainObject))
+         {
+            throw new ArgumentException("Domain Object type " + domainObject.GetType() + " does not match repository type " + typeof(TDomainObject));
+         }
+
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}",
+                                GetType(),
+                                nameof(SaveIndexAsync),
+                                ((TDomainObject)domainObject).Id);
+
+         if (domainObject is IIndexable indexableDomainObject)
+         {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+               TEntity existingEntity = await context.Set<TEntity>().FindAsync(((TDomainObject)domainObject).Id);
+
+               if (existingEntity != null)
+               {
+                  if (existingEntity is IIndexable existingIndexableEntity)
+                  {
+                     existingIndexableEntity.Index = indexableDomainObject.Index;
+
+                     existingEntity.LastModifiedDateTime = DateTime.Now;
+                     existingEntity.LastModifiedById = userId;
+                     existingEntity.LastModifiedByName = userName;
+
+                     await context.SaveChangesAsync();
+
+                     await LoadNavigationPropertiesAsync(context, existingEntity);
+
+                     _mapper.Map(existingEntity, domainObject);
+                  }
+                  else
+                  {
+                     throw new ArgumentException("Entity type " + existingEntity.GetType() + " does not implement IIndexable interface");
+                  }
+               }
+               else
+               {
+                  throw new ArgumentNullException($"Entity with Id {((TDomainObject)domainObject).Id} not found in data repository {nameof(TEntity).ToString()}");
+               }
+            }
+         }
+         else
+         {
+            throw new ArgumentException("Domain Object type " + domainObject.GetType() + " does not implement IIndexable interface");
+         }
+      }
+
       public async Task<TDomainObject> GetAsync(int domainObjectId, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetAsync), domainObjectId.ToString());
@@ -259,6 +308,12 @@ namespace OtherSideCore.Infrastructure.Repositories
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
             }
          }
+      }
+
+      public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferences(int domainObjectId, CancellationToken cancellationToken)
+      {
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferences), domainObjectId);
+         return new List<DomainObjectReference>();
       }
 
       public void Dispose()

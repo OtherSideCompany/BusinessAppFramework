@@ -1,5 +1,4 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
-using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Domain.DomainObjects;
 
@@ -10,7 +9,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private DomainObjectBrowserViewModel<T> _browserViewModel;
-      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionFactory;
 
       #endregion
 
@@ -34,7 +33,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public SingleDomainObjectBrowserWorkspaceViewModel(IWindowService windowService, IDomainObjectInteractionFactory domainObjectInteractionFactory) : base()
+      public SingleDomainObjectBrowserWorkspaceViewModel(IWindowService windowService, IDomainObjectInteractionService domainObjectInteractionFactory) : base()
       {
          _domainObjectInteractionFactory = domainObjectInteractionFactory;
 

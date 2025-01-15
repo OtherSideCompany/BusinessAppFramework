@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.DomainObjectInteraction;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class WindowViewModel : UIInteractionHost, IDisposable
+   public class WindowViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -15,6 +14,7 @@ namespace OtherSideCore.Adapter.Views
       protected readonly IGlobalDataService _globalDataService;
       protected IUserContext _userContext;
       protected IAppConfiguration _appConfiguration;
+      protected IWindowService _windowService;
 
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
@@ -69,16 +69,15 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public WindowViewModel(IUserDialogService userDialogService,
-                             IUserContext userContext,
+      public WindowViewModel(IUserContext userContext,
                              IGlobalDataService globalDataService,
                              IAppConfiguration appConfiguration,
-                             IWindowService windowService) :
-         base(userDialogService, windowService)
+                             IWindowService windowService)
       {
          UserContext = userContext;
          _globalDataService = globalDataService;
          _appConfiguration = appConfiguration;
+         _windowService = windowService;
 
          ApplicationName = "Unnamed App";
          WindowName = "Unnamed Window";

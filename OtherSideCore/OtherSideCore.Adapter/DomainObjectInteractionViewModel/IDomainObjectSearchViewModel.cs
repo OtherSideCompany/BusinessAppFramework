@@ -10,7 +10,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task ReloadSearchResultAsync(int domainObjectId);
       void UnloadSearchResultViewModels();
       void AddSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
-      DomainObjectSearchResultViewModel AddSearchResultViewModel(int domainObjectId);
+      Task<DomainObjectSearchResultViewModel> AddSearchResultViewModelAsync(int domainObjectId);
       void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       void RemoveSearchResultViewModel(int domainObjectId);
    }

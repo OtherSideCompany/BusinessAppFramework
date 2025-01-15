@@ -13,7 +13,6 @@ namespace OtherSideCore.Infrastructure.Factories
       protected IDbContextFactory<DbContext> _dbContextFactory;
       protected IMapper _mapper;
       protected ILoggerFactory _loggerFactory;
-      protected IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
 
       #endregion
 
@@ -31,12 +30,11 @@ namespace OtherSideCore.Infrastructure.Factories
 
       #region Constructor
 
-      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory, IDomainObjectSearchResultFactory domainObjectSearchResultFactory)
+      public RepositoryFactory(IDbContextFactory<DbContext> dbContextFactory, IMapper mapper, ILoggerFactory loggerFactory)
       {
          _dbContextFactory = dbContextFactory;
          _mapper = mapper;
          _loggerFactory = loggerFactory;
-         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
       }
 
 

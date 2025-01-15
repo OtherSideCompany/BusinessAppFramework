@@ -40,15 +40,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                                            IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
-                                           IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
                                            IWindowService windowService,
-                                           IDomainObjectInteractionFactory domainObjectInteractionFactory) :
+                                           IDomainObjectInteractionService domainObjectInteractionFactory) :
          base(domainObjectBrowser,
-              userDialogService,
               domainObjectsSearchViewModelFactory,
               domainObjectSearchResultViewModelFactory,
-              domainObjectSearchResultFactory,
-              windowService,
               domainObjectInteractionFactory)
       {
          DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;

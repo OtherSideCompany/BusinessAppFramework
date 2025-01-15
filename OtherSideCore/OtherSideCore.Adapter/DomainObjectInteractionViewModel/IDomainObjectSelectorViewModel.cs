@@ -8,6 +8,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public interface IDomainObjectSelectorViewModel
    {
+      Task InitializeAsync();
       bool CanValidateSelection();
       void ValidateSelection();
    }

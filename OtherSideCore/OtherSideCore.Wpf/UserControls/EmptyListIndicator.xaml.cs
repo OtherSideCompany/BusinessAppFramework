@@ -16,6 +16,15 @@ namespace OtherSideCore.Wpf.UserControls
          get { return (string)GetValue(EmptyListIndicator_TextProperty); }
          set { SetValue(EmptyListIndicator_TextProperty, value); }
       }
+
+      public static readonly DependencyProperty EmptyListIndicator_BorderThicknessProperty =
+          DependencyProperty.Register("EmptyListIndicator_BorderThickness", typeof(Thickness), typeof(EmptyListIndicator), new UIPropertyMetadata(new Thickness(1)));
+
+      public string EmptyListIndicator_BorderThickness
+      {
+         get { return (string)GetValue(EmptyListIndicator_BorderThicknessProperty); }
+         set { SetValue(EmptyListIndicator_BorderThicknessProperty, value); }
+      }
       public EmptyListIndicator()
       {
          InitializeComponent();

@@ -19,7 +19,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected DomainObjectSearch<T> _domainObjectSearch;
 
       private IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
-      private IDomainObjectSearchResultFactory _domainObjectSearchResultFactory;
+      private IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
       private ObservableCollection<DomainObjectSearchResultViewModel> _searchResultViewModels;
       private SingleTextFilterViewModel _singleTextFilterViewModel;
       private MultiTextFilterViewModel _multiTextFilterViewModel;
@@ -100,11 +100,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public DomainObjectsSearchViewModel(
          DomainObjectSearch<T> domainObjectSearch, 
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
-         IDomainObjectSearchResultFactory domainObjectSearchResultFactory)
+         IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
       {
          _domainObjectSearch = domainObjectSearch;
          _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
-         _domainObjectSearchResultFactory = domainObjectSearchResultFactory;
+         _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
 
          SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();
 
@@ -164,9 +164,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          SearchResultViewModels.Add(domainObjectSearchResultViewModel);
       }
 
-      public DomainObjectSearchResultViewModel AddSearchResultViewModel(int domainObjectId)
+      public async Task<DomainObjectSearchResultViewModel> AddSearchResultViewModelAsync(int domainObjectId)
       {
-         var searchResult = _domainObjectSearchResultFactory.CreateSearchResult<T>(domainObjectId);
+         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<T>().SearchAsync(domainObjectId);
          var searchResultViewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
          SearchResultViewModels.Add(searchResultViewModel);
 

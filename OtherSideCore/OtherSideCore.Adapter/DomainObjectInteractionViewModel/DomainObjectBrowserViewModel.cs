@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Browser;
@@ -9,7 +10,7 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectBrowserViewModel<T> : UIInteractionHost, IDomainObjectBrowserViewModel where T : DomainObject, new()
+    public class DomainObjectBrowserViewModel<T> : ObservableObject, IDomainObjectBrowserViewModel where T : DomainObject, new()
    {
       #region Fields
 
@@ -18,7 +19,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected bool _loadNestedStructureOnSelection;
 
       protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
-      protected IDomainObjectInteractionFactory _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionService;
 
       protected DomainObjectsSearchViewModel<T> _domainObjectsSearchViewModel;
 
@@ -98,18 +99,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectBrowserViewModel(DomainObjectBrowser<T> domainObjectBrowser,                                          
-                                          IUserDialogService userDialogService,                                          
+      public DomainObjectBrowserViewModel(DomainObjectBrowser<T> domainObjectBrowser,                                        
                                           IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
                                           IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
-                                          IDomainObjectSearchResultFactory domainObjectSearchResultFactory,
-                                          IWindowService windowService,
-                                          IDomainObjectInteractionFactory domainObjectInteractionFactory) :
-         base(userDialogService, windowService)
+                                          IDomainObjectInteractionService domainObjectInteractionFactory)
       {
          _domainObjectBrowser = domainObjectBrowser;
          _domainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
-         _domainObjectInteractionFactory = domainObjectInteractionFactory;
+         _domainObjectInteractionService = domainObjectInteractionFactory;
 
          _loadNestedStructureOnSelection = true;
 
@@ -117,7 +114,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
 
-         DomainObjectsSearchViewModel = (DomainObjectsSearchViewModel<T>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, domainObjectSearchResultViewModelFactory, domainObjectSearchResultFactory);
+         DomainObjectsSearchViewModel = (DomainObjectsSearchViewModel<T>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, domainObjectSearchResultViewModelFactory);
          DomainObjectsSearchViewModel.PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
 
          Selection = new Selection(SelectionType.Single);
@@ -177,6 +174,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
+      public virtual async Task EditDomainObjectViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      {
+
+      }
+
       public virtual bool CanSaveChanges()
       {
          return HasUnsavedChanges;
@@ -216,6 +218,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsLoadingDomainObjectEditor = true;
 
          var editorViewModel = await CreateDomainObjectEditorViewModelAsync(domainObjectSearchResultViewModel);
+         await editorViewModel.LoadDomainObjetReferencesAsync();
 
          editorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
          editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;
@@ -257,7 +260,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected virtual async Task CreateAsync(DomainObjectViewModel? parentViewModel)
       {
          var domainObject = await _domainObjectBrowser.CreateAsync(parentViewModel?.DomainObject);
-         var searchResultViewModel = _domainObjectsSearchViewModel.AddSearchResultViewModel(domainObject.Id);
+         var searchResultViewModel = await _domainObjectsSearchViewModel.AddSearchResultViewModelAsync(domainObject.Id);
 
          await SelectSearchResultViewModelAsync(searchResultViewModel);
       }
@@ -276,7 +279,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected async virtual Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
-         return await _domainObjectInteractionFactory.CreateDomainObjectEditorViewModelAsync<T>(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         return await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync<T>(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
       }
 
       private void DomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

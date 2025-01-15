@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Domain.DomainObjects
 {
-   public abstract class DomainObject : IDisposable
+   public abstract class DomainObject : IDisposable, ICloneable
    {
       #region Fields
 
@@ -52,6 +54,21 @@ namespace OtherSideCore.Domain.DomainObjects
          {
             return Id == item.Id;
          }
+      }
+
+      public virtual object Clone()
+      {
+         var domainObject = (DomainObject)MemberwiseClone();
+
+         domainObject.Id = 0;
+         domainObject.CreatedById = null;
+         domainObject.LastModifiedById = null;
+         domainObject.CreatedByName = null;
+         domainObject.LastModifiedByName = null;
+         domainObject.CreationDate = DateTime.Now;
+         domainObject.LastModifiedDateTime = DateTime.Now;
+
+         return domainObject;
       }
 
       public virtual void Dispose()

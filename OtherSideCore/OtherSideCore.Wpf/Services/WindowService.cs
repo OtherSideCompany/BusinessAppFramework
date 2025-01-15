@@ -7,6 +7,7 @@ using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -143,7 +144,10 @@ namespace OtherSideCore.Wpf.Services
          return window;
       }
 
-      public abstract void ShowDomainObjectViewModelInSubWindow(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel);
+      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
+      public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
 
       public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
 

@@ -59,7 +59,7 @@ namespace OtherSideCore.Adapter.Workflows
       {
          RefreshWorkflowState();
 
-         var initialStep = ProcessWorkflowStepViewModels.Last(vm => vm.ProcessWorkflowStep.IsExecutable() && vm.IsPreviousStepCompleted);
+         var initialStep = ProcessWorkflowStepViewModels.LastOrDefault(vm => vm.ProcessWorkflowStep.IsExecutable() && vm.IsPreviousStepCompleted);
 
          GoToStep(initialStep != null ? initialStep : ProcessWorkflowStepViewModels.First());
       }
