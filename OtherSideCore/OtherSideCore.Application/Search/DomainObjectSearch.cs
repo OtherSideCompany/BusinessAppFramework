@@ -134,7 +134,7 @@ namespace OtherSideCore.Application.Search
          {
             await PaginatedSearchAsync(resetPages, extendedSearch, filters, parent, _currentSearchCancellationTokenSource.Token);
          }
-         catch (InvalidOperationException)
+         catch (InvalidOperationException e)
          {
             UnloadSearchResults();
          }

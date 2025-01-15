@@ -631,12 +631,23 @@
                      </MultiTrigger.Conditions>
                      <Setter Property="Visibility" TargetName="UserMessage" Value="Visible"/>
                   </MultiTrigger>
+                  <MultiTrigger>
+                     <MultiTrigger.Conditions>
+                        <Condition Property="Text" Value=""/>
+                        <Condition Property="IsReadOnly" Value="True"/>
+                     </MultiTrigger.Conditions>
+                     <Setter Property="Visibility" TargetName="UserMessage" Value="Visible"/>
+                  </MultiTrigger>
                   <Trigger Property="IsKeyboardFocusWithin" Value="True">
                      <Setter TargetName="InnerTextBox" Property="FocusManager.FocusedElement" Value="{Binding ElementName=InnerTextBox}" />
                   </Trigger>
-                  <Trigger Property="IsMouseOver" Value="True">
-                     <Setter Property="BorderBrush" Value="{StaticResource OtherSide_Gray}" TargetName="Border" />
-                  </Trigger>
+                  <MultiTrigger>
+                     <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                        <Condition Property="IsReadOnly" Value="False"/>
+                     </MultiTrigger.Conditions>
+                     <Setter Property="BorderBrush" Value="{StaticResource OtherSide_Gray}" TargetName="Border"/>
+                  </MultiTrigger>
                   <Trigger Property="IsEnabled" Value="False">
                      <Setter Property="Opacity" Value="0.5" TargetName="InnerTextBox" />
                   </Trigger>
