@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
@@ -11,7 +12,7 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public abstract class DomainObjectTreeViewModel : ObservableObject, IDisposable
+   public abstract class DomainObjectTreeViewModel : ObservableObject, IDisposable, ISavable
    {
       #region Fields
 

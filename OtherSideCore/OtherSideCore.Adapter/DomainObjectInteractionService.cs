@@ -71,7 +71,7 @@ namespace OtherSideCore.Adapter
 
       public abstract IDomainObjectBrowserViewModel CreateDomainObjectBrowserViewModel<T>() where T : DomainObject, new();
 
-      public abstract IDomainObjectBrowserViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
+      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
 
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
 
@@ -91,6 +91,7 @@ namespace OtherSideCore.Adapter
 
       public abstract Task DisplayDomainObjectAsync(DomainObject domainObject, DisplayType displayType);
       public abstract Task DisplayDomainObjectAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
+      public abstract Task DisplayDomainObjectBrowserAsync(Type domainObjectType, DisplayType displayType);
       public abstract Task DisplayDomainObjectAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
       public abstract Task DisplayDomainObjectTreeViewAsync(DomainObject domainObject, DisplayType displayType);
       public abstract Task DisplayDomainObjectTreeViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);

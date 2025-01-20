@@ -4,7 +4,7 @@ using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter.Views
 {
-    public class SingleDomainObjectBrowserWorkspaceViewModel<T> : WorkspaceViewModel where T : DomainObject, new()
+   public class SingleDomainObjectBrowserWorkspaceViewModel<T> : WorkspaceViewModel where T : DomainObject, new()
    {
       #region Fields
 
@@ -39,7 +39,7 @@ namespace OtherSideCore.Adapter.Views
 
          WorkspaceDescription = (WorkspaceDescription)windowService.GetDescription(this);
 
-         CreateBrowserViewModel();         
+         CreateBrowserViewModel();
 
          BrowserViewModel.PropertyChanged += BrowserViewModel_PropertyChanged;
       }
@@ -51,6 +51,26 @@ namespace OtherSideCore.Adapter.Views
       public override async Task InitializeAsync()
       {
          await BrowserViewModel.InitializeAsync();
+      }
+
+      public override bool CanCancelChanges()
+      {
+         return BrowserViewModel.CanCancelChanges();
+      }
+
+      public override async Task CancelChangesAsync()
+      {
+         await BrowserViewModel.CancelChangesAsync();
+      }
+
+      public override bool CanSaveChanges()
+      {
+         return BrowserViewModel.CanSaveChanges();
+      }
+
+      public override async Task SaveChangesAsync()
+      {
+         await BrowserViewModel.SaveChangesAsync();
       }
 
       public override void Dispose()
@@ -74,7 +94,7 @@ namespace OtherSideCore.Adapter.Views
          {
             OnPropertyChanged(nameof(HasUnsavedChanges));
          }
-      }
+      }      
 
       #endregion
    }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Factories;
@@ -8,24 +9,28 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
+   public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
    {
       #region Fields
 
-
+      private IWindowService _windowService;
+      private IDomainObjectServiceFactory _domainObjectServiceFactory;
 
       #endregion
 
       #region Properties
 
       public bool DynamicSearch { get; set; }
+      public bool HideOnValidate { get; set; } = true;
 
       #endregion
 
       #region Commands
 
       public RelayCommand ValidateSelectionCommand { get; private set; }
-
+      public AsyncRelayCommand DisplaySelectorAsyncCommand { get; private set; }
+      public AsyncRelayCommand<DomainObjectViewModel> DisplaySelectorInContextAsyncCommand { get; private set; }
+      public AsyncRelayCommand DisplayDomainObjectBrowserAsyncCommand { get; private set; }
       #endregion
 
       #region Events
@@ -41,20 +46,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
                                            IWindowService windowService,
-                                           IDomainObjectInteractionService domainObjectInteractionFactory) :
+                                           IDomainObjectInteractionService domainObjectInteractionFactory,
+                                           IDomainObjectServiceFactory domainObjectServiceFactory) :
          base(domainObjectBrowser,
               domainObjectsSearchViewModelFactory,
               domainObjectSearchResultViewModelFactory,
               domainObjectInteractionFactory)
       {
+         _windowService = windowService;
+         _domainObjectServiceFactory = domainObjectServiceFactory;
+
          DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
+         DisplaySelectorAsyncCommand = new AsyncRelayCommand(DisplaySelectorAsync);
+         DisplaySelectorInContextAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel>(DisplaySelectorInContextAsync);
+         DisplayDomainObjectBrowserAsyncCommand = new AsyncRelayCommand(DisplayDomainObjectBrowserAsync);
 
          Selection.PropertyChanged += Selection_PropertyChanged;
 
          _loadNestedStructureOnSelection = false;
-      }
+      }      
 
       #endregion
 
@@ -68,6 +80,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public void ValidateSelection()
       {
          SelectionValidated?.Invoke(this, EventArgs.Empty);
+
+         if (HideOnValidate)
+         {
+            _windowService.HideTopModal();
+         }
       }
 
       public override void Dispose()
@@ -83,6 +100,30 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Private Methods
+
+      protected virtual async Task DisplayDomainObjectBrowserAsync()
+      {
+         if (Selection.IsSelectionEmpty)
+         {
+            await _domainObjectInteractionService.DisplayDomainObjectBrowserAsync(typeof(T), DisplayType.SubWindow);
+         }
+         else
+         {
+            var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
+            await _domainObjectInteractionService.DisplayDomainObjectAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId, typeof(T), DisplayType.SubWindow);
+         }
+      }
+
+      private async Task DisplaySelectorAsync()
+      {
+         await _windowService.ShowDomainObjectSelectorViewAsync(this, DisplayType.Modal);
+      }
+
+      private async Task DisplaySelectorInContextAsync(DomainObjectViewModel domainObjectViewModel)
+      {
+         ContextViewModel = domainObjectViewModel;
+         await DisplaySelectorAsync();
+      }
 
       private async void SingleTextFilterViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {

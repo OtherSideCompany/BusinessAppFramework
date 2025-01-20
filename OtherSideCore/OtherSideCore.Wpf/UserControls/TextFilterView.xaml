@@ -66,8 +66,8 @@
 
       <osc_customcontrols:SvgImageToggleButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
                                                IsChecked="{Binding IsInAdvancedSearchMode}"
-                                               SvgImageToggleButton_IconGeometry="{StaticResource icon_plus}"
-                                               SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_minus}"
+                                               SvgImageToggleButton_IconGeometry="{StaticResource icon_magnify_plus}"
+                                               SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_magnify_minus}"
                                                SvgImageToggleButton_ImageSize="16"
                                                BorderThickness="0"
                                                Background="{StaticResource MMColor_Green}"

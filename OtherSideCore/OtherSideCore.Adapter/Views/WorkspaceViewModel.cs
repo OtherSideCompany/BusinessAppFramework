@@ -1,10 +1,13 @@
-﻿using OtherSideCore.Adapter.ViewDescriptions;
+﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.ViewDescriptions;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class WorkspaceViewModel : ViewBaseViewModel
+   public abstract class WorkspaceViewModel : ViewBaseViewModel, ISavable
    {
       #region Fields
+
+      protected bool _hasUnsavedChanges;
 
       private WorkspaceDescription _workspaceDescription;
 
@@ -18,7 +21,12 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _workspaceDescription, value);
       }
 
-      public virtual bool HasUnsavedChanges => false;
+      public virtual bool HasUnsavedChanges
+      {
+         get => _hasUnsavedChanges;
+         set { SetProperty(ref _hasUnsavedChanges, value); NotifyCommandsCanExecuteChanged(); }
+      }
+
 
       #endregion
 
@@ -36,7 +44,19 @@ namespace OtherSideCore.Adapter.Views
 
       #region Public Methods      
 
+      public virtual bool CanCancelChanges() 
+      { 
+         return HasUnsavedChanges;
+      }
 
+      public abstract Task CancelChangesAsync();
+
+      public virtual bool CanSaveChanges()
+      {
+         return HasUnsavedChanges;
+      }
+
+      public abstract Task SaveChangesAsync();
 
       #endregion
 

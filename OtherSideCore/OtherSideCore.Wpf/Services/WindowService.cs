@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
@@ -14,7 +15,7 @@ using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.Services
 {
-    public abstract class WindowService : IWindowService
+   public abstract class WindowService : IWindowService
    {
       #region Fields
 
@@ -96,14 +97,11 @@ namespace OtherSideCore.Wpf.Services
 
             var @continue = true;
 
-            if (modalOverlay.DataContext is WorkspaceViewModel)
+            if (modalOverlay.DataContext is ISavable iSavableContext && iSavableContext.HasUnsavedChanges)
             {
-               if (((WorkspaceViewModel)modalOverlay.DataContext).HasUnsavedChanges)
-               {
-                  var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+               var res = MessageBox.Show("Abandonner les changements ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                  @continue = res == MessageBoxResult.Yes;
-               }
+               @continue = res == MessageBoxResult.Yes;
             }
 
             if (@continue)
@@ -127,7 +125,7 @@ namespace OtherSideCore.Wpf.Services
 
          _mainWindow.DataContext = _mainWindowViewModel;
          _mainWindow.Show();
-      }      
+      }
 
       public object ShowSubWindow()
       {
@@ -145,6 +143,7 @@ namespace OtherSideCore.Wpf.Services
       }
 
       public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
@@ -154,7 +153,7 @@ namespace OtherSideCore.Wpf.Services
       public void CloseWindow(object window)
       {
          _modalPopupStacks.Remove((Window)window);
-         ((Window)window).Close(); 
+         ((Window)window).Close();
       }
 
       #endregion
@@ -180,7 +179,7 @@ namespace OtherSideCore.Wpf.Services
          var window = _serviceProvider.GetRequiredService<MainWindow>();
          window.MainWindow_ModalContent = new UserControl();
          window.MainWindow_ModalContent.Content = new Grid() { Name = "ContentGrid" };
-         
+
          _modalPopupStacks.Add(window, new Stack<Border>());
 
          window.Activated += OnWindowActivated;

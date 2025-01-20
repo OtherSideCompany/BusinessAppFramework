@@ -783,10 +783,13 @@
       <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Background" Value="White" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type ComboBox}">
-               <Border Background="{TemplateBinding Background}" Style="{StaticResource EditableTextBoxBorder}" x:Name="Bd">
+               <Border Background="{TemplateBinding Background}" 
+                       Style="{StaticResource EditableTextBoxBorder}" 
+                       BorderThickness="{TemplateBinding BorderThickness}" x:Name="Bd">
                   <Grid>
                      <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

@@ -26,7 +26,6 @@ namespace OtherSideCore.Application.Browser
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; private set; }
       public IGlobalDataService GlobalDataService { get; private set; }
       public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; private set; }
-      public virtual bool HasUnsavedChanges => false;
 
       #endregion
 

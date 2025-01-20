@@ -82,9 +82,9 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             var entities = await query.ToListAsync(cancellationToken);
 
-            foreach (var revisionUsedGoodsEntity in entities)
+            foreach (var entity in entities)
             {
-               await LoadNavigationPropertiesAsync(context, revisionUsedGoodsEntity);
+               await LoadNavigationPropertiesAsync(context, entity);
             }
 
             return _mapper.Map<List<TDomainObject>>(entities);

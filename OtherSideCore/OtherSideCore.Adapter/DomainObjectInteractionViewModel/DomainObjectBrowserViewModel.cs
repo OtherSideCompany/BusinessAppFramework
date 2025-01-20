@@ -3,14 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Browser;
-using OtherSideCore.Application.Factories;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectBrowserViewModel<T> : ObservableObject, IDomainObjectBrowserViewModel where T : DomainObject, new()
+    public class DomainObjectBrowserViewModel<T> : ObservableObject, IDomainObjectBrowserViewModel, ISavable where T : DomainObject, new()
    {
       #region Fields
 

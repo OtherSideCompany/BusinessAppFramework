@@ -15,6 +15,7 @@ namespace OtherSideCore.Adapter
       void HideTopModal();      
       ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
       void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
       void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);

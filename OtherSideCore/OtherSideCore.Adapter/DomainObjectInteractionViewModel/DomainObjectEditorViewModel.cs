@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel where T : DomainObject, new()
+    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel, ISavable where T : DomainObject, new()
    {
       #region Fields
 
