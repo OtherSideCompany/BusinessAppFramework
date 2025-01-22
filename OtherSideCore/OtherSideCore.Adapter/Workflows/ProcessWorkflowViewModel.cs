@@ -72,11 +72,20 @@ namespace OtherSideCore.Adapter.Workflows
 
             processWorkflowStepViewModel.RefreshState(previousStepViewModel);
          }
+
+         NotifyCommandCanExecuteChanged();
       }
 
       #endregion
 
       #region Private Methods
+
+      private void NotifyCommandCanExecuteChanged()
+      {
+         GoNextCommand.NotifyCanExecuteChanged();
+         GoBackCommand.NotifyCanExecuteChanged();
+         GoToStepCommand.NotifyCanExecuteChanged();
+      }
 
       private bool CanGoBack()
       {

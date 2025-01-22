@@ -90,7 +90,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Commands
 
-      public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
       public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateChildNodeAsyncCommand { get; private set; }
 
       #endregion
@@ -110,12 +109,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          DomainObjectEditorViewModel = domainObjectInteractionFactory.CreateDomainObjectEditorViewModel(domainObjectViewModel.DomainObject.GetType(), domainObjectViewModel);
          DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
+         DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
 
          Children = new ObservableCollection<IDomainObjectTreeViewNode>();
 
-         DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanDelete);
          DupplicateChildNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateChildNodeAsync, CanDupplicateChildNodeAsync);
-      }
+      }      
 
       #endregion
 
@@ -185,6 +184,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual void Dispose()
       {
          DomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
+         DomainObjectEditorViewModel.DomainObjectDeletedEvent -= DomainObjectEditorViewModel_DomainObjectDeleted;
          DomainObjectEditorViewModel.Dispose();
       }
 
@@ -200,23 +200,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      protected virtual bool CanDelete()
+      private void DomainObjectEditorViewModel_DomainObjectDeleted(object? sender, int e)
       {
-         return !DomainObjectEditorViewModel.HasUnsavedChanges;
-      }
-
-      protected virtual async Task DeleteAsync()
-      {
-         var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
-
-         if (confirmation)
-         {
-            var domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
-
-            await domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject);
-
-            NodeDeleted?.Invoke(this, this);
-         }
+         NodeDeleted?.Invoke(this, this);
       }
 
       protected void NotifyChildCreated(DomainObject domainObject)
@@ -226,7 +212,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
-         DeleteAsyncCommand.NotifyCanExecuteChanged();
+         DupplicateChildNodeAsyncCommand.NotifyCanExecuteChanged();
       }
 
       private bool CanDupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)

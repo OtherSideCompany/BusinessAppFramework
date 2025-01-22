@@ -12,7 +12,6 @@ using System.Linq.Expressions;
 using OtherSideCore.Application.Search;
 using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
-using OtherSideCore.Application.Factories;
 using OtherSideCore.Application;
 using OtherSideCore.Domain;
 

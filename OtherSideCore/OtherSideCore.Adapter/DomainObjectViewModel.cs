@@ -51,6 +51,8 @@ namespace OtherSideCore.Adapter
 
       public HashSet<string> MonitoredProperties { get; set; }
 
+      public bool IsInitializingProperties { get; set; }
+
       public string CreationDescription => GetHistoryDescription(DomainObject.CreationDate, DomainObject.CreatedByName);
 
       public string ModificationDescription => GetHistoryDescription(DomainObject.LastModifiedDateTime, DomainObject.LastModifiedByName);
@@ -102,7 +104,11 @@ namespace OtherSideCore.Adapter
 
       public virtual void InitializeProperties()
       {
+         IsInitializingProperties = true;
+
          _mapper.Map(DomainObject, this);
+
+         IsInitializingProperties = false;
       }
 
       public virtual void SetPropertiesToDomainObject()

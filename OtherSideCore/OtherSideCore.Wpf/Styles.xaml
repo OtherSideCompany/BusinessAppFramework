@@ -850,7 +850,7 @@
             <ControlTemplate TargetType="{x:Type Thumb}">
                <Grid x:Name="Grid">
                   <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                  <Border x:Name="Rectangle1" CornerRadius="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  
+                  <Border x:Name="Rectangle1" CornerRadius="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  
                        Background="{TemplateBinding Background}" />
                </Grid>
                <ControlTemplate.Triggers>
@@ -867,12 +867,12 @@
    <!--ScrollBars-->
    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
       <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-      <Setter Property="Foreground" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="Foreground" Value="{StaticResource OtherSide_Gray}" />
       <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type ScrollBar}">
-               <Border x:Name="BorderRoot" CornerRadius="4" Background="{TemplateBinding Background}" Width="7">
+               <Border x:Name="BorderRoot" CornerRadius="4" Background="{TemplateBinding Background}" Width="8">
                   <Grid x:Name="GridRoot" Background="Transparent">
                      <Grid.RowDefinitions>
                         <RowDefinition Height="0.00001*" />

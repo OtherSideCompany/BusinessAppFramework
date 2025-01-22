@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.Workflows;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -23,6 +24,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
       protected ObservableCollection<DomainObjectReferenceViewModel> _domainObjectReferenceViewModels;
+      protected ObservableCollection<ProcessWorkflowViewModel> _processWorkflowViewModels;
 
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
@@ -88,6 +90,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
          _domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
+         _processWorkflowViewModels = new ObservableCollection<ProcessWorkflowViewModel>();
       }
 
       #endregion
@@ -117,6 +120,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             }
 
             _domainObjectViewModel.ResetState();
+
+            RefreshWorkflows();
          }
 
          HasUnsavedChanges = false;
@@ -141,6 +146,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          _domainObjectViewModel.ResetState();
+
+         RefreshWorkflows();
 
          HasUnsavedChanges = false;
 
@@ -177,6 +184,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
+      protected void RefreshWorkflows()
+      {
+         foreach (var workflowViewModel in _processWorkflowViewModels)
+         {
+            workflowViewModel.RefreshWorkflowState();
+         }
+      }
+
       protected void RegisterNestedStructures()
       {
          UnRegisterNestedStructures();
@@ -184,14 +199,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
             nestedDomainObjectTreeViewModel.PropertyChanged += NestedDomainObjectTreeViewModel_PropertyChanged;
+            nestedDomainObjectTreeViewModel.TreeModified += NestedDomainObjectTreeViewModel_TreeModified;
          }
-      }
+      }      
 
       private void UnRegisterNestedStructures()
       {
          foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
             nestedDomainObjectTreeViewModel.PropertyChanged -= NestedDomainObjectTreeViewModel_PropertyChanged;
+            nestedDomainObjectTreeViewModel.TreeModified -= NestedDomainObjectTreeViewModel_TreeModified;
          }
       }
 
@@ -200,7 +217,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return DomainObjectViewModel != null && !HasUnsavedChanges;
       }
 
-      protected async Task DeleteAsync()
+      protected virtual async Task DeleteAsync()
       {
          var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
 
@@ -209,6 +226,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             var domainObjectId = DomainObjectViewModel.DomainObject.Id;
             await _domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject);
             DomainObjectDeletedEvent?.Invoke(this, domainObjectId);
+
+            RefreshWorkflows();
          }
       }
 
@@ -216,7 +235,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          var property = sender.GetType().GetProperty(e.PropertyName);
 
-         if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null)
+         if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null && !((DomainObjectViewModel)sender).IsInitializingProperties)
          {
             HasUnsavedChanges = true;            
          }
@@ -232,6 +251,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          NotifyCommandsCanExecuteChanged();
+      }
+
+      private void NestedDomainObjectTreeViewModel_TreeModified(object? sender, EventArgs e)
+      {
+         RefreshWorkflows();
       }
 
       protected virtual void NotifyCommandsCanExecuteChanged()

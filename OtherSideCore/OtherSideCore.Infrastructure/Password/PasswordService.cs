@@ -2,7 +2,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace OtherSideCore.Infrastructure.Services
+namespace OtherSideCore.Infrastructure.Password
 {
    public class PasswordService : IPasswordService
    {
