@@ -156,7 +156,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task LoadNestedStructuresAsync()
       {
-
+         RefreshWorkflows();
       }
 
       public async Task LoadDomainObjetReferencesAsync()
@@ -237,7 +237,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null && !((DomainObjectViewModel)sender).IsInitializingProperties)
          {
-            HasUnsavedChanges = true;            
+            HasUnsavedChanges = true; 
+            RefreshWorkflows();
          }
 
          NotifyCommandsCanExecuteChanged();

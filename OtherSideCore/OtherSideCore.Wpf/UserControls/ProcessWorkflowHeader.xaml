@@ -112,20 +112,84 @@
                         </Border.Style>
                      </Border>
 
-                     <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,8,0,0"
-                                HorizontalAlignment="Center"
-                                Text="{Binding ProcessWorkflowStep.Name}">
-                        <TextBlock.Style>
-                           <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource PropertyLabelTextBlock}">
+                     <ToggleButton Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,8,0,0" HorizontalAlignment="Center" 
+                                   Content="{Binding ProcessWorkflowStep.Name}"
+                                   Cursor="Hand"
+                                   x:Name="ProccesWorkflowStepHeaderToggleButton">
+                        <ToggleButton.Style>
+                           <Style TargetType="{x:Type ToggleButton}">
+                              <Style.Setters>
+                                 <Setter Property="Foreground" Value="Gray" />
+                                 <Setter Property="Background" Value="Transparent" />
+                                 <Setter Property="Template">
+                                    <Setter.Value>
+                                       <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                          <Border x:Name="BackgroundBorder" Background="{TemplateBinding Background}" 
+                                                  Padding="8,4,8,4"
+                                                  CornerRadius="8">
+                                             <TextBlock Text="{TemplateBinding Content}" />
+                                          </Border>
+                                       </ControlTemplate>
+                                    </Setter.Value>
+                                 </Setter>
+                              </Style.Setters>
                               <Style.Triggers>
                                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                     <Setter Property="FontWeight" Value="SemiBold" />
                                     <Setter Property="Foreground" Value="{Binding ProcessWorkflowHeader_CompletedColor, ElementName=ProcessWorkflowHeaderUserControl}" />
                                  </DataTrigger>
+                                 <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
+                                 </Trigger>
+                                 <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource OtherSide_LightLightGray}" />
+                                 </Trigger>
                               </Style.Triggers>
                            </Style>
-                        </TextBlock.Style>
-                     </TextBlock>
+                        </ToggleButton.Style>
+                     </ToggleButton>
+
+                     <Popup Style="{StaticResource UiPopup}" 
+                            IsOpen="{Binding IsChecked, ElementName=ProccesWorkflowStepHeaderToggleButton}"
+                            PlacementTarget="{Binding ElementName=ProccesWorkflowStepHeaderToggleButton}">
+                        <ContentControl Style="{StaticResource UiPopupContentStyle}">
+                           <Grid>
+
+                              <local:EmptyListIndicator DataContext="{Binding CompletionProcessWorkflowStepConditionViewModels}"
+                                                        EmptyListIndicator_BorderThickness="0"
+                                                        EmptyListIndicator_Text="Aucune action à effectuer" />
+
+                              <ItemsControl ItemsSource="{Binding CompletionProcessWorkflowStepConditionViewModels}" Margin="12">
+                                 <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                       <Grid Height="32">
+                                          <Grid.ColumnDefinitions>
+                                             <ColumnDefinition Width="Auto" />
+                                             <ColumnDefinition Width="*" />
+                                          </Grid.ColumnDefinitions>
+
+                                          <osc_customcontrols:SvgViewer Grid.Column="0"
+                                                                        SvgViewer_ImageGeometry="{StaticResource icon_check}" 
+                                                                        SvgViewer_ImageHeight="16" 
+                                                                        SvgViewer_ImageColor="Gray"
+                                                                        Visibility="{Binding IsConditionVerified, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
+
+                                          <osc_customcontrols:SvgViewer Grid.Column="0"
+                                                                        SvgViewer_ImageGeometry="{StaticResource icon_close}" 
+                                                                        SvgViewer_ImageHeight="16" 
+                                                                        SvgViewer_ImageColor="{StaticResource OtherSide_Red}"
+                                                                        Visibility="{Binding IsConditionVerified, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
+
+                                          <TextBlock Grid.Column="1" Text="{Binding ProcessWorkflowStepCondition.Description}" VerticalAlignment="Center" Style="{StaticResource PropertyLabelTextBlock}"/>
+                                       
+                                       </Grid>
+                                    </DataTemplate>
+                                 </ItemsControl.ItemTemplate>
+                              </ItemsControl>
+
+                           </Grid>
+                        </ContentControl>
+                     </Popup>
 
                   </Grid>
 

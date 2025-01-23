@@ -9,6 +9,7 @@ using OtherSideCore.Domain.DomainObjects;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -103,8 +104,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Commands
 
       public AsyncRelayCommand CreateRootNodeAsyncCommand { get; private set; }
+      public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateRootNodeAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }      
 
       #endregion
 
@@ -129,7 +131,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
 
          CreateRootNodeAsyncCommand = new AsyncRelayCommand(CreateRootNodeAsync, CanCreateRootNode);
-      }
+         DupplicateRootNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateRootNodeAsync, CanDupplicateRootNodeAsync);
+      }     
 
 
       #endregion
@@ -209,7 +212,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual void AddRootNode(DomainObjectViewModel domainObjectViewModel)
       {
          var domainObjectRootTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
-         Roots.Add(domainObjectRootTreeViewNode);
+
+         DomainObjectTreeViewModelExtension.InsertNodeInList(domainObjectRootTreeViewNode, Roots);
+
          RegisterNode(domainObjectRootTreeViewNode);
 
          TreeModified?.Invoke(this, EventArgs.Empty);
@@ -248,6 +253,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
+      public virtual Task<DomainObject> CreateRootNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      {
+         throw new NotImplementedException();
+      }
+
       public virtual void Dispose()
       {
          Clear();
@@ -263,7 +273,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          domainObjectTreeViewNode.NodeSelectionRequested += DomainObjectRootTreeViewNode_NodeSelected;
          domainObjectTreeViewNode.NodeDeleted += DomainObjectTreeViewNode_NodeDeleted;
          domainObjectTreeViewNode.ChildCreated += DomainObjectTreeViewNode_ChildCreated;
-      }
+      }      
 
       private void UnregisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {
@@ -382,9 +392,38 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          AddRootNode(viewModel);
       }
 
+      private bool CanDupplicateRootNodeAsync(IDomainObjectTreeViewNode? node)
+      {
+         return node != null && Roots.Contains(node);
+      }
+
+      private async Task DupplicateRootNodeAsync(IDomainObjectTreeViewNode? node)
+      {
+         var domainObject = await CreateRootNodeDomainObjectCopyAsync(node);
+
+         await IndexRoots(node.DomainObjectViewModel.DomainObject.GetType());
+      }
+
       protected virtual async Task<DomainObject> CreateRootDomainObjectAsync()
       {
          return null;
+      }
+
+      private async Task IndexRoots(Type domainObjectChildrenType)
+      {
+         var indexableCollection = Roots.Select(c => c.DomainObjectViewModel.DomainObject)
+                                        .Where(d => d.GetType() == domainObjectChildrenType)
+                                        .OfType<IIndexable>()
+                                        .OrderBy(d => d.Index)
+                                        .ToList();
+
+         IndexableCollectionExtension.Reindex(indexableCollection);
+
+         foreach (var indexableDomainObject in indexableCollection)
+         {
+            var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
+            await domainObjectService.SaveIndexAsync(indexableDomainObject);
+         }
       }
 
       #endregion

@@ -172,6 +172,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          return searchResultViewModel;
       }
+      public async Task<DomainObjectSearchResultViewModel> InsertSearchResultViewModelAsync(int domainObjectId, int index)
+      {
+         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<T>().SearchAsync(domainObjectId);
+         var searchResultViewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
+         SearchResultViewModels.Insert(index, searchResultViewModel);
+
+         return searchResultViewModel;
+      }
 
       public void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {

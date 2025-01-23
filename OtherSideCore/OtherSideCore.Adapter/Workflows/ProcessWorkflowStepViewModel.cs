@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OtherSideCore.Application.Workflows;
+using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.Workflows
 {
@@ -14,6 +15,8 @@ namespace OtherSideCore.Adapter.Workflows
       private bool _isCompleted;
       private bool _isPreviousStepCompleted;
       private bool _isNextStepCompleted;
+
+      private ObservableCollection<ProcessWorkflowStepConditionViewModel> _completionProcessWorkflowStepConditionViewModels;
 
       #endregion
 
@@ -55,6 +58,12 @@ namespace OtherSideCore.Adapter.Workflows
          set => SetProperty(ref _processWorkflowStep, value);
       }
 
+      public ObservableCollection<ProcessWorkflowStepConditionViewModel> CompletionProcessWorkflowStepConditionViewModels
+      {
+         get => _completionProcessWorkflowStepConditionViewModels;
+         set => SetProperty(ref _completionProcessWorkflowStepConditionViewModels, value);
+      }
+
       #endregion
 
       #region Commands
@@ -68,6 +77,13 @@ namespace OtherSideCore.Adapter.Workflows
       public ProcessWorkflowStepViewModel(ProcessWorkflowStep processWorkflowStep)
       {
          _processWorkflowStep = processWorkflowStep;
+
+         CompletionProcessWorkflowStepConditionViewModels = new ObservableCollection<ProcessWorkflowStepConditionViewModel>();
+
+         foreach (var condition in _processWorkflowStep.CompletionConditions)
+         {
+            CompletionProcessWorkflowStepConditionViewModels.Add(new ProcessWorkflowStepConditionViewModel(condition));
+         }
       }
 
       #endregion
@@ -80,6 +96,11 @@ namespace OtherSideCore.Adapter.Workflows
          IsCompleted = _processWorkflowStep.IsCompleted();
 
          IsPreviousStepCompleted = previousProcessWorkflowStepViewModel == null ? false : previousProcessWorkflowStepViewModel.ProcessWorkflowStep.IsCompleted();
+
+         foreach (var completionProcessWorkflowStepConditionViewModels in CompletionProcessWorkflowStepConditionViewModels)
+         {
+            completionProcessWorkflowStepConditionViewModels.RefreshConditionVerified();
+         }
       }
 
       #endregion

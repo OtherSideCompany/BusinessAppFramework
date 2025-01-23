@@ -48,6 +48,14 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(ModuleHeader_ForegroundProperty, value); }
       }
 
+      public static readonly DependencyProperty ModuleHeader_HasUnsavedChangesProperty =
+        DependencyProperty.Register("ModuleHeader_HasUnsavedChanges", typeof(bool), typeof(ModuleHeader), new UIPropertyMetadata(false));
+
+      public SolidColorBrush ModuleHeader_HasUnsavedChanges
+      {
+         get { return (SolidColorBrush)GetValue(ModuleHeader_HasUnsavedChangesProperty); }
+         set { SetValue(ModuleHeader_HasUnsavedChangesProperty, value); }
+      }
 
 
       public ModuleHeader()

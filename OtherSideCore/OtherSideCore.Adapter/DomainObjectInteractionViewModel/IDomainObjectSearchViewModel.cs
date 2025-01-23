@@ -11,6 +11,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       void UnloadSearchResultViewModels();
       void AddSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       Task<DomainObjectSearchResultViewModel> AddSearchResultViewModelAsync(int domainObjectId);
+      Task<DomainObjectSearchResultViewModel> InsertSearchResultViewModelAsync(int domainObjectId, int index);
       void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       void RemoveSearchResultViewModel(int domainObjectId);
    }

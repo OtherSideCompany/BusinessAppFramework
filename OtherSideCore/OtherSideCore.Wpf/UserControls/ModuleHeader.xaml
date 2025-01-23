@@ -10,8 +10,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="ModuleHeaderUserControl">
-    <Grid>
+   <Grid>
       <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="Auto" />
          <ColumnDefinition Width="Auto" />
          <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
@@ -19,16 +20,26 @@
       <Border Grid.Column="0" Width="32" Height="32" 
               Background="{Binding ModuleHeader_Foreground, ElementName=ModuleHeaderUserControl}" 
               CornerRadius="16">
-         
+
          <osc_customcontrols:SvgViewer SvgViewer_ImageColor="White"
                                        SvgViewer_ImageHeight="20"
                                        SvgViewer_ImageGeometry="{Binding ModuleHeader_IconGeometry, ElementName=ModuleHeaderUserControl}"/>
-         
+
       </Border>
 
-      <TextBlock Grid.Column="1" Text="{Binding ModuleHeader_Name, ElementName=ModuleHeaderUserControl}" 
+      <TextBlock Grid.Column="1" 
+                 Text="{Binding ModuleHeader_Name, ElementName=ModuleHeaderUserControl}"
                  Style="{StaticResource ViewHeader}" 
-                 Margin="8,0,0,0" VerticalAlignment="Center" 
+                 Margin="8,0,0,0" 
+                 VerticalAlignment="Center" 
                  Foreground="{Binding ModuleHeader_Foreground, ElementName=ModuleHeaderUserControl}" />
+
+      <TextBlock Grid.Column="2" 
+                 Text="*"
+                 Style="{StaticResource ViewHeader}" 
+                 Margin="4,0,0,0" 
+                 VerticalAlignment="Center" 
+                 Foreground="{Binding ModuleHeader_Foreground, ElementName=ModuleHeaderUserControl}" 
+                 Visibility="{Binding ModuleHeader_HasUnsavedChanges, ElementName=ModuleHeaderUserControl, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
    </Grid>
 </UserControl>

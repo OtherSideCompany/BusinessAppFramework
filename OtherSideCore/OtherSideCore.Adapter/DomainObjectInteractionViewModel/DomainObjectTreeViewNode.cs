@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -122,31 +123,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing)
       {
-         if (childNode.DomainObjectViewModel.DomainObject is IIndexable indexableDomainObject)
-         {
-            if (!Children.Any())
-            {
-               Children.Add(childNode);
-            }
-            else
-            {
-               var previousItems = Children.Where(c => ((IIndexable)c.DomainObjectViewModel.DomainObject).Index < indexableDomainObject.Index);
-
-               if (previousItems.Any())
-               {
-                  var previousItem = previousItems.OrderByDescending(c => ((IIndexable)c.DomainObjectViewModel.DomainObject).Index).First();
-                  Children.Insert(Children.IndexOf(previousItem) + 1, childNode);
-               }
-               else
-               {
-                  Children.Insert(0, childNode);
-               }
-            }
-         }
-         else
-         {
-            Children.Add(childNode);
-         }
+         DomainObjectTreeViewModelExtension.InsertNodeInList(childNode, Children);
       }
 
       public virtual void RemoveChild(IDomainObjectTreeViewNode childNode)
@@ -179,6 +156,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public void Collapse()
       {
          IsExpanded = false;
+      }
+
+      public virtual Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      {
+         throw new NotImplementedException();
       }
 
       public virtual void Dispose()
@@ -229,26 +211,20 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private async Task IndexChildren(Type domainObjectChildrenType)
       {
-         var indexableDomainObjects = Children.Select(c => c.DomainObjectViewModel.DomainObject)
-                                              .Where(d => d.GetType() == domainObjectChildrenType)
-                                              .OfType<IIndexable>()
-                                              .OrderBy(d => d.Index)
-                                              .ToList();
+         var indexableCollection = Children.Select(c => c.DomainObjectViewModel.DomainObject)
+                                           .Where(d => d.GetType() == domainObjectChildrenType)
+                                           .OfType<IIndexable>()
+                                           .OrderBy(d => d.Index)
+                                           .ToList();
 
-         foreach (var indexableDomainObject in indexableDomainObjects)
+         IndexableCollectionExtension.Reindex(indexableCollection);
 
+         foreach (var indexableDomainObject in indexableCollection)
          {
-            indexableDomainObject.Index = indexableDomainObjects.IndexOf(indexableDomainObject);
-
             var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
             await domainObjectService.SaveIndexAsync(indexableDomainObject);
          }
-      }
-
-      protected virtual Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
-      {
-         throw new NotImplementedException();
-      }
+      }      
 
       #endregion
    }

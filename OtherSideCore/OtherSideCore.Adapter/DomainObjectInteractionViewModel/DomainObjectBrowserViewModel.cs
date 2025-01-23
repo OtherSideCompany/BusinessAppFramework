@@ -258,7 +258,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected virtual async Task CreateAsync(DomainObjectViewModel? parentViewModel)
       {
          var domainObject = await _domainObjectBrowser.CreateAsync(parentViewModel?.DomainObject);
-         var searchResultViewModel = await _domainObjectsSearchViewModel.AddSearchResultViewModelAsync(domainObject.Id);
+         var searchResultViewModel = await _domainObjectsSearchViewModel.InsertSearchResultViewModelAsync(domainObject.Id, 0);
 
          await SelectSearchResultViewModelAsync(searchResultViewModel);
       }
