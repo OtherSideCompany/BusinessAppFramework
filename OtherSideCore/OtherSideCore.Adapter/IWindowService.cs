@@ -8,8 +8,9 @@ namespace OtherSideCore.Adapter
 {
    public interface IWindowService
    {
-      object ShowSubWindow();
+      void ShowSubWindow(object content, string windowName);
       void ShowMainWindow<T>() where T : MainWindowViewModel;
+      void ShowView(object view, string windowName, DisplayType displayType);
       void CloseWindow(object window);
       void ShowModal(object modalContent);
       void HideTopModal();      

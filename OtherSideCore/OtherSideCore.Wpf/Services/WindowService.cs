@@ -87,6 +87,37 @@ namespace OtherSideCore.Wpf.Services
          _modalPopupStacks[_activeWindow].Push(modalOverlay);
       }
 
+      public void ShowSubWindow(object content, string windowName)
+      {
+         if (content is UserControl userControl)
+         {
+            var subWindow = (SubWindow)ShowSubWindow();
+            subWindow.SubWindow_ViewContent = userControl;
+
+            ((WindowViewModel)subWindow.DataContext).WindowName = windowName;
+         }
+         else
+         {
+            throw new ArgumentException("Parameter content must be of type UserControl");
+         }
+      }
+
+      public void ShowView(object view, string windowName, DisplayType displayType)
+      {
+         if (displayType == DisplayType.SubWindow)
+         {
+            ShowSubWindow(view, windowName);
+         }
+         else if (displayType == DisplayType.Modal)
+         {
+            ShowModal(view);
+         }
+         else
+         {
+            throw new ArgumentException("Unknown display type", displayType.ToString());
+         }
+      }
+
       public void HideTopModal()
       {
          var currentModalPopupStack = _modalPopupStacks[_activeWindow];
@@ -127,7 +158,24 @@ namespace OtherSideCore.Wpf.Services
          _mainWindow.Show();
       }
 
-      public object ShowSubWindow()
+      public void CloseWindow(object window)
+      {
+         _modalPopupStacks.Remove((Window)window);
+         ((Window)window).Close();
+      }
+
+      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
+      public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
+      public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);            
+
+      #endregion
+
+      #region Private Methods
+
+      private object ShowSubWindow()
       {
          var window = CreateSubWindow();
 
@@ -140,25 +188,7 @@ namespace OtherSideCore.Wpf.Services
          window.Show();
 
          return window;
-      }
-
-      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
-      public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
-
-      public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
-
-      public void CloseWindow(object window)
-      {
-         _modalPopupStacks.Remove((Window)window);
-         ((Window)window).Close();
-      }
-
-      #endregion
-
-      #region Private Methods
+      }     
 
       private void MainWindowViewModel_LoadedViewModelChanged(object? sender, EventArgs e)
       {
@@ -198,17 +228,7 @@ namespace OtherSideCore.Wpf.Services
          window.Activated += OnWindowActivated;
 
          return window;
-      }
-
-      protected void ShowSubWindow(UserControl content, object viewModel, string windowName)
-      {
-         content.DataContext = viewModel;
-
-         var subWindow = (SubWindow)ShowSubWindow();
-         subWindow.SubWindow_ViewContent = content;
-
-         ((WindowViewModel)subWindow.DataContext).WindowName = windowName;
-      }
+      }      
 
       private void OnWindowActivated(object sender, EventArgs e)
       {
