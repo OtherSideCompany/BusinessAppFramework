@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
@@ -25,6 +26,7 @@ namespace OtherSideCore.Adapter
       protected IWindowService _windowService;
       protected IDomainObjectFileService _domainObjectFileService;
       protected IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
+      protected IDomainObjectReferenceMapFactory _referenceMapFactory;
 
 
       #endregion
@@ -49,7 +51,8 @@ namespace OtherSideCore.Adapter
          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
          IWindowService windowService,
          IDomainObjectFileService domainObjectFileService,
-         IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory)
+         IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
+         IDomainObjectReferenceMapFactory referenceMapFactory)
       {
          _loggerFactory = loggerFactory;
          _userContext = userContext;
@@ -63,6 +66,7 @@ namespace OtherSideCore.Adapter
          _windowService = windowService;
          _domainObjectFileService = domainObjectFileService;
          _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
+         _referenceMapFactory = referenceMapFactory;
       }
 
       #endregion
@@ -73,11 +77,15 @@ namespace OtherSideCore.Adapter
 
       public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
 
+      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(Type type);
+
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
 
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
 
       public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
+
+      public abstract List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);
 
       public virtual IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel)
       {

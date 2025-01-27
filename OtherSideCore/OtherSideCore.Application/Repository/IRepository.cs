@@ -32,5 +32,9 @@ namespace OtherSideCore.Application.Repository
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
 
       Task<List<DomainObjectReference>> GetDomainObjectReferences(int domainObjectId, CancellationToken cancellationToken);
+
+      Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken);
+
+      Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken);
    }
 }

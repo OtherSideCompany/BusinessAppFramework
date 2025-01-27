@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OtherSideCore.Domain.DomainObjects
+namespace OtherSideCore.Application
 {
    public class DomainObjectReference
    {
@@ -27,9 +27,12 @@ namespace OtherSideCore.Domain.DomainObjects
 
       #region Constructor
 
-      public DomainObjectReference()
+      public DomainObjectReference(int domainObjectId, string referenceNumber, string name, Type referenceType)
       {
-
+         DomainObjectId = domainObjectId;
+         ReferenceNumber = referenceNumber;
+         Name = name;
+         ReferenceType = referenceType;
       }
 
       #endregion

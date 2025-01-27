@@ -79,6 +79,16 @@ namespace OtherSideCore.Application.Services
          return await _repository.GetDomainObjectReferences(domainObjectId, cancellationToken);
       }
 
+      public async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default)
+      {
+         return await _repository.CreateDomainObjectReferenceAsync(domainObjectId, domainObjectReferenceId, referenceType, cancellationToken);
+      }
+
+      public async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
+      {
+         await _repository.DeleteDomainObjectReferenceAsync(domainObjectId, domainObjectReference, cancellationToken);
+      }
+
       #endregion
 
       #region Private Methods

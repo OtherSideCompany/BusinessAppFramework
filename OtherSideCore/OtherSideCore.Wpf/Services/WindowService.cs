@@ -142,7 +142,6 @@ namespace OtherSideCore.Wpf.Services
             }
          }
       }
-
       public void ShowMainWindow<T>() where T : MainWindowViewModel
       {
          _mainWindow = CreateMainWindow();
@@ -164,6 +163,7 @@ namespace OtherSideCore.Wpf.Services
          ((Window)window).Close();
       }
 
+      public abstract void ShowDomainObjectReferenceSelectors(List<DomainObjectReferenceSelectorViewModel> domainObjectReferenceSelectorViewModels, DisplayType displayType);
       public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);

@@ -14,6 +14,8 @@ using AutoMapper.Extensions.ExpressionMapping;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application;
 using OtherSideCore.Domain;
+using OtherSideCore.Infrastructure.Factories;
+using OtherSideCore.Application.Factories;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -22,7 +24,9 @@ namespace OtherSideCore.Infrastructure.Repositories
    {
       #region Fields
 
-      protected List<Type> _supportedDomainObjectParentTypes;
+      protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
+
+      protected IDomainObjectReferenceMapFactory _referenceMapFactory;
 
       protected IDbContextFactory<DbContext> _dbContextFactory;
       protected ILoggerFactory _loggerFactory;
@@ -37,20 +41,15 @@ namespace OtherSideCore.Infrastructure.Repositories
          IDbContextFactory<DbContext> dbContextFactory,
          IMapper mapper,
          ILoggerFactory loggerFactory,
-         List<Type> supportedDomainObjectParentTypes)
+         IDomainObjectReferenceFactory domainObjectReferenceFactory,
+         IDomainObjectReferenceMapFactory referenceMapFactory)
       {
          _dbContextFactory = dbContextFactory;
          _loggerFactory = loggerFactory;
          _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
          _mapper = mapper;
-
-         _supportedDomainObjectParentTypes = new List<Type>();
-
-         if (supportedDomainObjectParentTypes != null)
-         {
-            _supportedDomainObjectParentTypes.AddRange(supportedDomainObjectParentTypes);
-         }
-
+         _domainObjectReferenceFactory = domainObjectReferenceFactory;
+         _referenceMapFactory = referenceMapFactory;
       }
 
       #endregion
@@ -67,7 +66,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (parent != null)
             {
-               if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
+               if (_referenceMapFactory.GetDomainObjectParentMap().GetReferenceTypes(typeof(TDomainObject)).Contains(parent.GetType()))
                {
                   query = query.Where(GetParentRelationPredicate(parent));
                }
@@ -315,6 +314,16 @@ namespace OtherSideCore.Infrastructure.Repositories
          return new List<DomainObjectReference>();
       }
 
+      public virtual async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken)
+      {
+         throw new NotImplementedException($"Cannot assing reference to type {GetType()}");
+      }
+
+      public virtual async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)
+      {
+         throw new NotImplementedException($"Cannot delete reference from type {GetType()}");
+      }
+
       public void Dispose()
       {
 
@@ -364,7 +373,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          if (parent != null)
          {
-            if (_supportedDomainObjectParentTypes.Contains(parent.GetType()))
+            if (_referenceMapFactory.GetDomainObjectParentMap().GetReferenceTypes(typeof(TDomainObject)).Contains(parent.GetType()))
             {
                query = query.Where(GetParentRelationPredicate(parent));
             }

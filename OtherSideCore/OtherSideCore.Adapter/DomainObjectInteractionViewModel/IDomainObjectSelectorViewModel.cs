@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public interface IDomainObjectSelectorViewModel
+   public interface IDomainObjectSelectorViewModel : IDisposable
    {
+      event EventHandler SelectionValidated;
+      Selection Selection { get; }
       Task InitializeAsync();
       bool CanValidateSelection();
       void ValidateSelection();

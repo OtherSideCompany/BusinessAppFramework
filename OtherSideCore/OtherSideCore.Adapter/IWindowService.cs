@@ -1,5 +1,6 @@
 ﻿
 using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Domain.DomainObjects;
@@ -20,5 +21,6 @@ namespace OtherSideCore.Adapter
       void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
       void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
+      void ShowDomainObjectReferenceSelectors(List<DomainObjectReferenceSelectorViewModel> domainObjectReferenceSelectorViewModels, DisplayType displayType);
    }
 }

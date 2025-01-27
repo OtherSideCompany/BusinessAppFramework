@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Application;
+using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
@@ -28,7 +29,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       #region Commands
 
       public AsyncRelayCommand DisplayReferenceAsyncCommand { get; private set; }
-      public AsyncRelayCommand BreakReferenceLinkAsyncCommand { get; private set; }
 
       #endregion
 
@@ -42,17 +42,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          _domainObjectInteractionService = domainObjectInteractionService;
 
          DisplayReferenceAsyncCommand = new AsyncRelayCommand(DisplayReferenceAsync);
-         BreakReferenceLinkAsyncCommand = new AsyncRelayCommand(BreakReferenceLinkAsync);
       }
 
       #endregion
 
       #region Public Methods
-
-      private async Task BreakReferenceLinkAsync()
-      {
-         
-      }
 
       private async Task DisplayReferenceAsync()
       {

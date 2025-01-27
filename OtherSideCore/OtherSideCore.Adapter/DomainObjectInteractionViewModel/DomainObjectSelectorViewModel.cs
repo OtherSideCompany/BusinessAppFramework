@@ -35,7 +35,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Events
 
-      public EventHandler SelectionValidated;
+      public event EventHandler SelectionValidated;
 
       #endregion
 

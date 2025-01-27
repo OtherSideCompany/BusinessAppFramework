@@ -430,7 +430,7 @@
                     BorderBrush="{StaticResource OtherSide_LightGray}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="8"
-                    Padding="4,0,4,0">
+                    Padding="8,0,8,0">
 
                   <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
                              Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}" 

@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
@@ -7,9 +8,11 @@ namespace OtherSideCore.Adapter
    {
       IDomainObjectBrowserViewModel CreateDomainObjectBrowserViewModel<T>() where T : DomainObject, new();
       IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
+      IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(Type type);
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
       Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
+      List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);
       IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel);
       DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
       Task DisplayDomainObjectAsync(DomainObject domainObject, DisplayType displayType);
