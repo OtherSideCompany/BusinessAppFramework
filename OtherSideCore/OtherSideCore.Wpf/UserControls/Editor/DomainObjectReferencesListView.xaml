@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.Editor.DomainObjectReferencesListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
+             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" 
+             xmlns:list="clr-namespace:OtherSideCore.Wpf.UserControls.List"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="DomainObjectReferencesListViewUserControl">
+   <Grid>
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto" />
+         <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <list:EmptyListIndicator Grid.Row="0" 
+                               DataContext="{Binding DomainObjectReferenceViewModels}"
+                               EmptyListIndicator_Text="Aucune référence enregistrée" />
+
+      <Grid Grid.Row="0"
+            Visibility="{Binding DomainObjectReferenceViewModels.Count, Converter={StaticResource ZeroToVisibilityConverter}}">
+         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+         </Grid.RowDefinitions>
+
+         <Border Style="{StaticResource ListBorderStyle}" 
+                 Background="{StaticResource OtherSide_LightLightGray}"
+                 Padding="8">
+
+            <ItemsControl Grid.Row="0" ItemsSource="{Binding DomainObjectReferenceViewModels}">
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <WrapPanel Orientation="Horizontal" />
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+
+                     <!-- need reference selector -->
+                     <local:DomainObjectReferenceView DomainObjectReferenceView_DeleteReferenceCommand="{Binding DataContext.DeleteDomainObjectReferenceAsyncCommand, ElementName=DomainObjectReferencesListViewUserControl}" 
+                                                      DomainObjectReferenceView_DataTemplateSelector="{Binding DomainObjectReferencesListView_DataTemplateSelector, ElementName=DomainObjectReferencesListViewUserControl}"/>
+
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+         </Border>      
+
+      </Grid>
+
+      <osc_customcontrols:SvgImageTextButton Grid.Row="1" HorizontalAlignment="Right" Height="32" Margin="0,8,0,0"
+                                             SvgImageTextButton_IconGeometry="{StaticResource icon_plus}" 
+                                             SvgImageTextButton_Text="Ajouter référence" 
+                                             Style="{StaticResource SvgImageTextButtonDark}"
+                                             Command="{Binding DomainObjectReferencesListView_ShowReferenceEditorCommand, ElementName=DomainObjectReferencesListViewUserControl}" />
+
+   </Grid>
+</UserControl>

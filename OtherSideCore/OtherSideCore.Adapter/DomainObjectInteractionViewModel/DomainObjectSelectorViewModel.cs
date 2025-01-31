@@ -56,7 +56,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _windowService = windowService;
          _domainObjectServiceFactory = domainObjectServiceFactory;
 
-         DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
          DisplaySelectorAsyncCommand = new AsyncRelayCommand(DisplaySelectorAsync);
@@ -91,7 +91,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          base.Dispose();
 
-         DomainObjectsSearchViewModel.SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
 
          Selection.PropertyChanged -= Selection_PropertyChanged;
       }
@@ -129,7 +129,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          if (DynamicSearch && e.PropertyName.Equals(nameof(SingleTextFilterViewModel.Filter)))
          {
-            await DomainObjectsSearchViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
+            await DomainObjectSearchViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
          }
       }
 

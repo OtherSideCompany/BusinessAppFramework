@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.Browser.SingleDomainObjectBrowser"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Browser"
+             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" xmlns:modules="clr-namespace:OtherSideCore.Wpf.UserControls.Modules" xmlns:editor="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="SingleDomainObjectBrowserUserControl">
+   <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="*" />
+         <ColumnDefinition Width="Auto" />
+         <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Style="{StaticResource WorkspaceBorder}">
+
+         <Grid>
+            <Grid.RowDefinitions>
+               <RowDefinition Height="Auto" />
+               <RowDefinition Height="Auto" />
+               <RowDefinition Height="Auto" />
+               <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+               <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+               </Grid.ColumnDefinitions>
+
+               <modules:ModuleHeader Grid.Column="0"
+                                     ModuleHeader_IconGeometry="{Binding SingleDomainObjectBrowser_IconGeometry, ElementName=SingleDomainObjectBrowserUserControl}"
+                                     ModuleHeader_Name="{Binding SingleDomainObjectBrowser_Name, ElementName=SingleDomainObjectBrowserUserControl}" />
+
+               <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,2" DataContext="{Binding BrowserViewModel}">
+
+                  <osc_customcontrols:SvgImageTextButton Style="{StaticResource SvgImageTextButtonDark}"  
+                                                         SvgImageTextButton_IconGeometry="{StaticResource icon_plus}"
+                                                         SvgImageTextButton_Text="{Binding SingleDomainObjectBrowser_AddButtonText, ElementName=SingleDomainObjectBrowserUserControl}" 
+                                                         Command="{Binding SingleDomainObjectBrowser_CreateCommand, ElementName=SingleDomainObjectBrowserUserControl}" />
+
+                  <osc_customcontrols:SvgImageTextButton Margin="4,0,0,0"
+                                                         SvgImageTextButton_IconGeometry="{StaticResource icon_trash-can-outline}"
+                                                         SvgImageTextButton_Text="Supprimer" 
+                                                         Command="{Binding SingleDomainObjectBrowser_DeleteCommand, ElementName=SingleDomainObjectBrowserUserControl}" 
+                                                         Visibility="{Binding SingleDomainObjectBrowser_DeleteButtonVisibility, ElementName=SingleDomainObjectBrowserUserControl}"/>
+
+                  <osc_customcontrols:SvgImageToggleButton Grid.Column="2"
+                                                           Style="{StaticResource MoreActionsImageToggleButton}"
+                                                           x:Name="MoreActionsToggleButton"
+                                                           IsEnabled="{Binding Selection.IsSelectionEmpty, Mode=OneWay, Converter={StaticResource BoolInverter}}"
+                                                           Visibility="{Binding SingleDomainObjectBrowser_MoreActionsContent, ElementName=SingleDomainObjectBrowserUserControl, Converter={StaticResource NullToVisibilityConverter}}" />
+
+                  <Popup Style="{StaticResource UiPopup}" 
+                         IsOpen="{Binding IsChecked, ElementName=MoreActionsToggleButton}" 
+                         PlacementTarget="{Binding ElementName=MoreActionsToggleButton}"
+                         x:Name="MoreActionsPopup"
+                         PreviewMouseUp="MoreActionsPopup_PreviewMouseUp">
+
+                     <ContentControl Style="{StaticResource UiPopupContentStyle}"                                      
+                                     Content="{Binding SingleDomainObjectBrowser_MoreActionsContent, ElementName=SingleDomainObjectBrowserUserControl}" />
+                  </Popup>
+
+               </StackPanel>
+
+            </Grid>
+
+
+            <Border Grid.Row="1" Style="{StaticResource RibonBorderStyle}" Margin="0,8,0,8">
+
+               <ContentControl Content="{Binding SingleDomainObjectBrowser_ConstraintsContent, ElementName=SingleDomainObjectBrowserUserControl}"  
+                               DataContext="{Binding BrowserViewModel.DomainObjectSearchViewModel}"/>
+
+            </Border>
+
+            <Border Grid.Row="2" Height="Auto" MinHeight="32" Margin="0,0,0,0">
+
+               <ContentControl Content="{Binding SingleDomainObjectBrowser_FiltersContent, ElementName=SingleDomainObjectBrowserUserControl}" 
+                               DataContext="{Binding BrowserViewModel.DomainObjectSearchViewModel}"/>
+
+            </Border>
+
+            <Grid Grid.Row="3" Margin="0,8,0,0">
+
+               <ContentControl Content="{Binding SingleDomainObjectBrowser_ListContent, ElementName=SingleDomainObjectBrowserUserControl}" 
+                               DataContext="{Binding BrowserViewModel}"/>
+
+            </Grid>
+
+         </Grid>
+
+      </Border>
+
+      <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource VerticalModuleGridSplitter}" HorizontalAlignment="Right" />
+
+      <Border Grid.Column="2" Style="{StaticResource DomainObjectPropertiesPannel}"         
+              Visibility="{Binding Selection.SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"
+              DataContext="{Binding BrowserViewModel}">
+
+         <Grid>
+
+            <osc_usercontrols:LoadingView Visibility="{Binding IsLoadingEditor, Converter={StaticResource BoolToVisibleOrCollapsed}}" 
+                                          VerticalAlignment="Center" />
+
+            <Grid Visibility="{Binding IsLoadingEditor, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
+
+               <Border DataContext="{Binding SelectedDomainObjectEditorViewModel}"
+                       IsEnabled="{Binding IsEnabled}">
+                  <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,4">
+                     <ContentControl Content="{Binding SingleDomainObjectBrowser_EditorContent, ElementName=SingleDomainObjectBrowserUserControl}"  />
+                  </ScrollViewer>
+               </Border>
+
+               <editor:SaveCancelChangesAsyncView Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                                                  SaveCancelChangesAsyncView_SaveCommand="{Binding SaveChangesAsyncCommand}"
+                                                  SaveCancelChangesAsyncView_CancelCommand="{Binding CancelChangesAsyncCommand}"
+                                                  Margin="10"/>
+            </Grid>
+
+         </Grid>
+
+      </Border>
+
+   </Grid>
+</UserControl>

@@ -7,6 +7,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    public interface IDomainObjectBrowserViewModel : IDisposable, INotifyPropertyChanged
    {
       bool HasUnsavedChanges { get; }
+      IDomainObjectSearchViewModel DomainObjectSearchViewModel { get; }
       Task SaveChangesAsync();
       Task CancelChangesAsync();
       Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);

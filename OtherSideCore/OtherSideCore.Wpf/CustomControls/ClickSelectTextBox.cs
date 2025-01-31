@@ -63,7 +63,7 @@ namespace OtherSideCore.Wpf.CustomControls
          }
       }
 
-      private static void SelectAllText(object sender, RoutedEventArgs e)
+      protected static void SelectAllText(object sender, RoutedEventArgs e)
       {
          var textBox = e.OriginalSource as TextBox;
 

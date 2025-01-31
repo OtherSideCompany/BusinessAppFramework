@@ -6,6 +6,7 @@ using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls;
+using OtherSideCore.Wpf.UserControls.Window;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -168,7 +169,7 @@ namespace OtherSideCore.Wpf.Services
       public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectTreeView(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
+      public abstract void ShowDomainObjectTreeViewWorkspace(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
       public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);            
 
       #endregion

@@ -2,58 +2,76 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="UserControls\ConstraintsView.xaml.cs">
+    <Compile Update="UserControls\Browser\ConstraintsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\DomainObjectDirectoryView.xaml.cs">
+    <Compile Update="UserControls\Browser\SingleDomainObjectBrowser.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\DomainObjectHistoryView.xaml.cs">
+    <Compile Update="UserControls\Buttons\DomainObjectLink.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\EmptyListIndicator.xaml.cs">
+    <Compile Update="UserControls\Files\DomainObjectDirectoryView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Editor\DomainObjectHistoryView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Browser\BrowserDomainObjectSearchListView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\List\EmptyListIndicator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UserControls\EmptyObjectIndicator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\FileDropView.xaml.cs">
+    <Compile Update="UserControls\Files\FileDropView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\FileListView.xaml.cs">
+    <Compile Update="UserControls\Files\FileListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\FileTypeIcon.xaml.cs">
+    <Compile Update="UserControls\Files\FileTypeIcon.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\FolderListView.xaml.cs">
+    <Compile Update="UserControls\Files\FolderListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\FolderTypeIcon.xaml.cs">
+    <Compile Update="UserControls\Files\FolderTypeIcon.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\ManagedFileListView.xaml.cs">
+    <Compile Update="UserControls\Files\ManagedFileListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\ModalPopupBorder.xaml.cs">
+    <Compile Update="UserControls\Selector\DomainObjectSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\ModuleHeader.xaml.cs">
+    <Compile Update="UserControls\Tree\TreeViewNode.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\PageNavigationUserControl.xaml.cs">
+    <Compile Update="UserControls\Tree\TreeViewWorkspace.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\ProcessWorkflowHeader.xaml.cs">
+    <Compile Update="UserControls\Window\ModalPopupBorder.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\SingleTextFilter.xaml.cs">
+    <Compile Update="UserControls\Modules\ModuleHeader.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\SubWindow.xaml.cs">
+    <Compile Update="UserControls\List\PageNavigationUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UserControls\TextFilterView.xaml.cs">
+    <Compile Update="UserControls\Workflows\ProcessWorkflowHeader.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Filters\SingleTextFilter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Window\SubWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Filters\TextFilterView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -64,85 +82,112 @@
     <Page Update="Icons\Icons.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ConstraintsView.xaml">
+    <Page Update="UserControls\Browser\ConstraintsView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\DomainObjectDirectoryView.xaml">
+    <Page Update="UserControls\Browser\SingleDomainObjectBrowser.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\DomainObjectHistoryView.xaml">
+    <Page Update="UserControls\Buttons\DomainObjectLink.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\EmptyListIndicator.xaml">
+    <Page Update="UserControls\Editor\DomainObjectReferenceSelectorsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\DomainObjectReferencesListView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\DomainObjectReferenceView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Files\DomainObjectDirectoryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\DomainObjectHistoryView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Inputs\HoursMinutesEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Browser\BrowserDomainObjectSearchListView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\List\EmptyListIndicator.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\EmptyObjectIndicator.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\FileDropView.xaml">
+    <Page Update="UserControls\Files\FileDropView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\FileListView.xaml">
+    <Page Update="UserControls\Files\FileListView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\FileTypeIcon.xaml">
+    <Page Update="UserControls\Files\FileTypeIcon.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\FolderListView.xaml">
+    <Page Update="UserControls\Files\FolderListView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\FolderTypeIcon.xaml">
+    <Page Update="UserControls\Files\FolderTypeIcon.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\LoadingView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\LoginView.xaml">
+    <Page Update="UserControls\Modules\LoginView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\MainWindow.xaml">
+    <Page Update="UserControls\Selector\DomainObjectSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ModuleHeader.xaml">
+    <Page Update="UserControls\Tree\TreeViewNode.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ProcessWorkflowHeader.xaml">
+    <Page Update="UserControls\Tree\TreeViewWorkspace.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\SingleTextFilter.xaml">
+    <Page Update="UserControls\Window\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\SubWindow.xaml">
+    <Page Update="UserControls\Modules\ModuleHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\TextFilterView.xaml">
+    <Page Update="UserControls\Workflows\ProcessWorkflowHeader.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\WindowTitleBar.xaml">
+    <Page Update="UserControls\Filters\SingleTextFilter.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ManagedFileListView.xaml">
+    <Page Update="UserControls\Window\SubWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ModalPopupBorder.xaml">
+    <Page Update="UserControls\Filters\TextFilterView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\MultiTextFilterView.xaml">
+    <Page Update="UserControls\Window\WindowTitleBar.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\NavigationMenu.xaml">
+    <Page Update="UserControls\Files\ManagedFileListView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\PageNavigationUserControl.xaml">
+    <Page Update="UserControls\Window\ModalPopupBorder.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\SaveCancelChangesAsyncView.xaml">
+    <Page Update="UserControls\Filters\MultiTextFilterView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\SearchListAsyncActionButton.xaml">
+    <Page Update="UserControls\Window\NavigationMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\ModuleDescriptionListView.xaml">
+    <Page Update="UserControls\List\PageNavigationUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\SaveCancelChangesAsyncView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Modules\ModuleDescriptionListView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

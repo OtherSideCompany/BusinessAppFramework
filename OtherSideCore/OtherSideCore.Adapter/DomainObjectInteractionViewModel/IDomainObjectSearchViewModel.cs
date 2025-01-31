@@ -4,6 +4,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public interface IDomainObjectSearchViewModel : IDisposable
    {
+      MultiTextFilterViewModel MultiTextFilterViewModel { get; }
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
       void LoadSearchResultViewModels();

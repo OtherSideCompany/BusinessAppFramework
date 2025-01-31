@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.Browser.BrowserDomainObjectSearchListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Browser"
+             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" 
+             xmlns:list="clr-namespace:OtherSideCore.Wpf.UserControls.List"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="BrowserDomainObjectSearchListViewUserControl">
+   <Grid>
+
+      <osc_usercontrols:LoadingView Visibility="{Binding DomainObjectSearchViewModel.IsExecutingSearch, Converter={StaticResource BoolToVisibleOrCollapsed}}" 
+                                    VerticalAlignment="Center"
+                                    LoadingView_CancelCommand="{Binding DomainObjectSearchViewModel.CancelSearchCommand}"/>
+      <Grid>
+         <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+         </Grid.RowDefinitions>
+
+         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <osc_customcontrols:SortableListView Style="{StaticResource DomainObjectSearchListView}"
+                                                 ItemsSource="{Binding DomainObjectSearchViewModel.SearchResultViewModels}"  
+                                                 osc_extensions:ListViewExtension.ThumbColor="{Binding BrowserDomainObjectSearchListView_ThumbColor, ElementName=BrowserDomainObjectSearchListViewUserControl}"
+                                                 osc_extensions:ListViewExtension.SelectedItemBackgroundColor="{Binding BrowserDomainObjectSearchListView_SelectedItemBackgroundColor, ElementName=BrowserDomainObjectSearchListViewUserControl}"
+                                                 osc_extensions:ListViewExtension.HeaderForegroundColor="{Binding BrowserDomainObjectSearchListView_HeaderForegroundColor, ElementName=BrowserDomainObjectSearchListViewUserControl}"
+                                                 Visibility="{Binding DomainObjectSearchViewModel.IsExecutingSearch, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"
+                                                 View="{Binding BrowserDomainObjectSearchListView_GridView, ElementName=BrowserDomainObjectSearchListViewUserControl}">
+            </osc_customcontrols:SortableListView>
+         </ScrollViewer>
+
+         <list:PageNavigationUserControl DataContext="{Binding DomainObjectSearchViewModel.PageNavigationViewModel}" Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" />
+
+      </Grid>
+
+   </Grid>
+</UserControl>

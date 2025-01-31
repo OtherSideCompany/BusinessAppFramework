@@ -15,6 +15,8 @@ namespace OtherSideCore.Adapter.Views
 
       #region Properties
 
+      public IDomainObjectBrowserViewModel IDomainObjectBrowserViewModel => BrowserViewModel;
+
       public DomainObjectBrowserViewModel<T> BrowserViewModel
       {
          get => _browserViewModel;
