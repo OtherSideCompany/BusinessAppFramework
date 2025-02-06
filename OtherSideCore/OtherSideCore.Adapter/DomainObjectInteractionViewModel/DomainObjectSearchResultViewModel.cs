@@ -34,6 +34,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          private set => SetProperty(ref _domainObjectSearchResult, value);
       }
 
+      public virtual string StatusName => string.Empty;
+
 
       #endregion
 
@@ -57,6 +59,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public virtual void UpdateDomainObjectSearchResult(DomainObjectSearchResult domainObjectSearchResult)
       {
          DomainObjectSearchResult = domainObjectSearchResult;
+
+         OnPropertyChanged(nameof(StatusName));
       }
 
       public virtual void Dispose()

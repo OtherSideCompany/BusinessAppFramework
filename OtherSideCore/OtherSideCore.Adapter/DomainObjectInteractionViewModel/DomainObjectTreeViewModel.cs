@@ -272,7 +272,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods  
 
-      private void RegisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
+      protected virtual void RegisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {
          domainObjectTreeViewNode.DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
          domainObjectTreeViewNode.NodeSelectionRequested += DomainObjectRootTreeViewNode_NodeSelected;
@@ -280,7 +280,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          domainObjectTreeViewNode.ChildCreated += DomainObjectTreeViewNode_ChildCreated;
       }
 
-      private void UnregisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
+      protected virtual void UnregisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {
          domainObjectTreeViewNode.DomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
          domainObjectTreeViewNode.NodeSelectionRequested -= DomainObjectRootTreeViewNode_NodeSelected;
