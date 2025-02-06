@@ -200,7 +200,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          if (searchResultViewModel != null)
          {
             var searchResult = await _domainObjectSearch.GetSearchResultAsync(domainObjectId);
-            searchResultViewModel.DomainObjectSearchResult = searchResult;
+
+            if (searchResult != null)
+            {
+               searchResultViewModel.UpdateDomainObjectSearchResult(searchResult);
+            }
          }
       }
 

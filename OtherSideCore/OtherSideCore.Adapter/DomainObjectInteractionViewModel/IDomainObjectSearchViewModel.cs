@@ -1,9 +1,11 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
    public interface IDomainObjectSearchViewModel : IDisposable
    {
+      ObservableCollection<DomainObjectSearchResultViewModel> SearchResultViewModels { get; }
       MultiTextFilterViewModel MultiTextFilterViewModel { get; }
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);

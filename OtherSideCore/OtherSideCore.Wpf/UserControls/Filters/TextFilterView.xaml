@@ -10,6 +10,7 @@
              xmlns:domainobjectbrowser="clr-namespace:OtherSideCore.Adapter.DomainObjectInteraction;assembly=OtherSideCore.Adapter"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
    <Grid>
       <Grid.ColumnDefinitions>
          <ColumnDefinition Width="Auto" />
@@ -27,7 +28,8 @@
          <osc_customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
                                             SvgImageButton_ImageSize="16" 
                                             SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
-                                            Command="{Binding PaginatedSearchCommandAsync}">
+                                            Command="{Binding PaginatedSearchCommandAsync}"
+                                            Background="White">
             <osc_customcontrols:SvgImageButton.CommandParameter>
                <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource False}" ParentViewModel="{x:Null}" />
             </osc_customcontrols:SvgImageButton.CommandParameter>
@@ -43,7 +45,7 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <local:MultiTextFilterView Grid.Column="0" DataContext="{Binding MultiTextFilterViewModel}" Margin="0,0,0,0" />
+         <local:MultiTextFilterView Grid.Column="0" DataContext="{Binding MultiTextFilterViewModel}" />
 
          <osc_customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" Margin="4,0,0,0"
                                             SvgImageButton_ImageSize="16" 
@@ -66,14 +68,11 @@
 
       <osc_customcontrols:SvgImageToggleButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
                                                IsChecked="{Binding IsInAdvancedSearchMode}"
-                                               SvgImageToggleButton_IconGeometry="{StaticResource icon_magnify_plus}"
-                                               SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_magnify_minus}"
+                                               SvgImageToggleButton_IconGeometry="{StaticResource icon_magnify_plus_outline}"
+                                               SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_magnify-minus-outline}"
+                                               SvgImageToggleButton_CheckedBackgroundColor="White"
                                                SvgImageToggleButton_ImageSize="16"
-                                               BorderThickness="0"
-                                               Background="{StaticResource MMColor_Green}"
-                                               SvgImageToggleButton_CheckedBackgroundColor="{StaticResource MMColor_Green}"
-                                               SvgImageToggleButton_OverBackgroundColor="{StaticResource MMColor_Green}"
-                                               SvgImageToggleButton_ImageColor="White" 
                                                ToolTip="Changer le mode de filtrage" />
    </Grid>
+
 </UserControl>

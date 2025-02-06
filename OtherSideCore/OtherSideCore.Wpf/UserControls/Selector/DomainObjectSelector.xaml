@@ -27,7 +27,9 @@
                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Text="{Binding DomainObjectSelector_Name, ElementName=DomainObjectSelectorUserControl}" Style="{StaticResource ViewHeader}" Margin="0,0,0,8" />
+            <TextBlock Grid.Column="0" Margin="0,0,0,8" 
+                       Text="{Binding DomainObjectSelector_Name, ElementName=DomainObjectSelectorUserControl}" 
+                       Style="{StaticResource ViewHeader}" />
 
             <osc_customcontrols:SvgImageButton Grid.Column="1" HorizontalAlignment="Right" Width="32" Height="32"
                                                Background="{StaticResource MMColor_Green}"

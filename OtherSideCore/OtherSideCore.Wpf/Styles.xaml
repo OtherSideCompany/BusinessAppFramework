@@ -1078,7 +1078,10 @@
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type Button}">
                <customControls:SvgImageButton SvgImageButton_IconGeometry="{StaticResource icon_calendar-month}"
-                                              SvgImageButton_ImageSize="20"/>  
+                                              SvgImageButton_ImageSize="20" 
+                                              BorderThickness="0"
+                                              Margin="2"
+                                              Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"/>  
             </ControlTemplate>
          </Setter.Value>
       </Setter>
@@ -1090,7 +1093,8 @@
             <ControlTemplate TargetType="{x:Type DatePickerTextBox}">
                <Grid>
                   <customControls:ClickSelectTextBox Text="{Binding Path=SelectedDate, StringFormat=d, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}}"
-                                                     VerticalAlignment="Center" />
+                                                     VerticalAlignment="Center"
+                                                     Background="{TemplateBinding Background}"/>
                </Grid>
             </ControlTemplate>
          </Setter.Value>
@@ -1100,26 +1104,32 @@
    <Style TargetType="{x:Type DatePicker}" x:Key="EditorDatePicker">
       <Setter Property="IsTodayHighlighted" Value="True" />
       <Setter Property="CalendarStyle" Value="{DynamicResource DatePickerCalendarStyle}" />
+      <Setter Property="Background" Value="White" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type DatePicker}">
 
-               <Grid x:Name="PART_Root" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+               <Border Grid.Column="0" Style="{StaticResource EditableTextBoxBorder}"
+                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                       Background="{TemplateBinding Background}">
+                  
+               <Grid x:Name="PART_Root" >
                   <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="*" />
                      <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
 
-                  <Border Grid.Column="0" Style="{StaticResource EditableTextBoxBorder}">
-                     <DatePickerTextBox x:Name="PART_TextBox"                   
-                                        Foreground="{TemplateBinding Foreground}"
-                                        Focusable="{TemplateBinding Focusable}"
-                                        HorizontalContentAlignment="Stretch"
-                                        Grid.Row="0"
-                                        VerticalContentAlignment="Stretch" />
-                  </Border>
+                  <DatePickerTextBox Grid.Column="0" 
+                                     x:Name="PART_TextBox"                   
+                                     Foreground="{TemplateBinding Foreground}"
+                                     Focusable="{TemplateBinding Focusable}"
+                                     HorizontalContentAlignment="Stretch"
+                                     Grid.Row="0"
+                                     VerticalContentAlignment="Stretch" 
+                                     Background="Transparent"/>                  
 
-                  <Button x:Name="PART_Button" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Focusable="False" Width="32" Height="32"
+                  <Button x:Name="PART_Button" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Focusable="False"
                           HorizontalAlignment="Left" Style="{StaticResource DropDownButtonStyle}" Margin="4,0,0,0" />
 
                   <Grid x:Name="PART_DisabledVisual" Grid.ColumnSpan="2" Grid.Column="0" IsHitTestVisible="False" Opacity="0">
@@ -1132,6 +1142,7 @@
                   </Grid>
 
                </Grid>
+               </Border>
 
                <ControlTemplate.Triggers>
                   <Trigger Property="IsEnabled" Value="False">

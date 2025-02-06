@@ -258,6 +258,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          throw new NotImplementedException();
       }
 
+      public void InitializeTreeDomainObjectViewModelsProperties()
+      {
+         _inlineNodes.Select(r => r.DomainObjectViewModel).ToList().ForEach(vm => vm.InitializeProperties());
+      }
+
       public virtual void Dispose()
       {
          Clear();
@@ -273,7 +278,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          domainObjectTreeViewNode.NodeSelectionRequested += DomainObjectRootTreeViewNode_NodeSelected;
          domainObjectTreeViewNode.NodeDeleted += DomainObjectTreeViewNode_NodeDeleted;
          domainObjectTreeViewNode.ChildCreated += DomainObjectTreeViewNode_ChildCreated;
-      }      
+      }
 
       private void UnregisterNode(IDomainObjectTreeViewNode domainObjectTreeViewNode)
       {

@@ -22,6 +22,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected IDomainObjectSearchViewModel _domainObjectSearchViewModel;
 
       private IDomainObjectEditorViewModel _selectedDomainObjectEditorViewModel;
+      private IDomainObjectEditorViewModel? _selectedDomainObjectDetailsEditorViewModel;
 
       protected Selection _selection;
       private bool _isSelectionLocked;
@@ -83,6 +84,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          set => SetProperty(ref _selectedDomainObjectEditorViewModel, value);
       }
 
+      public IDomainObjectEditorViewModel? SelectedDomainObjectDetailsEditorViewModel
+      {
+         get => _selectedDomainObjectDetailsEditorViewModel;
+         set => SetProperty(ref _selectedDomainObjectDetailsEditorViewModel, value);
+      }
+
       public bool HasUnsavedChanges => SelectedDomainObjectEditorViewModel == null ? false : SelectedDomainObjectEditorViewModel.HasUnsavedChanges;
 
       #endregion
@@ -92,6 +99,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public AsyncRelayCommand<DomainObjectViewModel?> CreateAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
+      public AsyncRelayCommand<DomainObjectSearchResultViewModel> ShowDomainObjectDetailsEditorAsyncCommand { get; private set; }
 
       #endregion
 
@@ -111,12 +119,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          CreateAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel?>(CreateAsync, CanCreate);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
+         ShowDomainObjectDetailsEditorAsyncCommand = new AsyncRelayCommand<DomainObjectSearchResultViewModel>(ShowDomainObjectDetailsEditorAsync, CanShowDomainObjectDetailsEditor);
 
          DomainObjectSearchViewModel = (DomainObjectsSearchViewModel<T>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, domainObjectSearchResultViewModelFactory);
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
 
          Selection = new Selection(SelectionType.Single);
-      }
+      }      
 
       #endregion
 
@@ -166,15 +175,20 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             Selection.ClearSelection();
 
-            DeleteSelectedEditorViewModel();
+            DeleteSelectedEditorsViewModel();
 
             NotifyCommandsCanExecuteChanged();
          }
       }
 
-      public virtual async Task EditDomainObjectViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      public bool CanShowDomainObjectDetailsEditor(DomainObjectSearchResultViewModel? obj)
       {
+         return !HasUnsavedChanges;
+      }
 
+      public virtual async Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel? domainObjectSearchResultViewModel)
+      {
+         await ShowDomainObjectDetailsEditorAsync(domainObjectSearchResultViewModel, typeof(T), domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
       }
 
       public virtual bool CanSaveChanges()
@@ -185,8 +199,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual async Task SaveChangesAsync()
       {
          await SelectedDomainObjectEditorViewModel?.SaveChangesAsync();
-
-         DomainObjectSearchViewModel.ReloadSearchResultAsync(((DomainObjectSearchResultViewModel)Selection.SelectedItem).DomainObjectSearchResult.DomainObjectId);
       }
 
       public virtual bool CanCancelChanges()
@@ -201,7 +213,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual void Dispose()
       {
-         DeleteSelectedEditorViewModel();
+         DeleteSelectedEditorsViewModel();
 
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
          DomainObjectSearchViewModel.Dispose();
@@ -211,6 +223,19 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
+      protected async Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel? domainObjectSearchResultViewModel, Type type, int domainObjectId)
+      {
+         if (domainObjectSearchResultViewModel != null)
+         {
+            SelectedDomainObjectDetailsEditorViewModel = await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(domainObjectId, type, DisplayType.Modal);
+
+            if (SelectedDomainObjectDetailsEditorViewModel != null)
+            {
+               SelectedDomainObjectDetailsEditorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
+            }
+         }
+      }
+
       private async Task CreateEditorViewModelsAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
          IsLoadingDomainObjectEditor = true;
@@ -218,24 +243,33 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          var editorViewModel = await CreateDomainObjectEditorViewModelAsync(domainObjectSearchResultViewModel);
          await editorViewModel.LoadDomainObjetReferencesAsync();
 
-         editorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
-         editorViewModel.DomainObjectDeletedEvent += EditorViewModel_DomainObjectDeletedEvent;
+         editorViewModel.PropertyChanged += SelectedDomainObjectEditorViewModel_PropertyChanged;
+         editorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
+         editorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
 
          SelectedDomainObjectEditorViewModel = editorViewModel;
 
          IsLoadingDomainObjectEditor = false;
       }
 
-      private void DeleteSelectedEditorViewModel()
+      private void DeleteSelectedEditorsViewModel()
       {
          if (SelectedDomainObjectEditorViewModel != null)
          {
             SelectedDomainObjectEditorViewModel.Dispose();
 
-            SelectedDomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
-            SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent -= EditorViewModel_DomainObjectDeletedEvent;
+            SelectedDomainObjectEditorViewModel.PropertyChanged -= SelectedDomainObjectEditorViewModel_PropertyChanged;
+            SelectedDomainObjectEditorViewModel.DomainObjectSavedEvent -= DomainObjectEditorViewModel_DomainObjectSavedEvent;
+            SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent -= SelectedEditorViewModel_DomainObjectDeletedEvent;
 
             SelectedDomainObjectEditorViewModel = null;
+         }
+
+         if (SelectedDomainObjectDetailsEditorViewModel != null)
+         {
+            SelectedDomainObjectDetailsEditorViewModel.DomainObjectSavedEvent -= DomainObjectEditorViewModel_DomainObjectSavedEvent;
+            SelectedDomainObjectDetailsEditorViewModel.Dispose();
+            SelectedDomainObjectDetailsEditorViewModel = null;
          }
       }
 
@@ -263,7 +297,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          await SelectSearchResultViewModelAsync(searchResultViewModel);
       }
 
-      private void EditorViewModel_DomainObjectDeletedEvent(object? sender, int domainObjectId)
+      private void SelectedEditorViewModel_DomainObjectDeletedEvent(object? sender, int domainObjectId)
       {
          DomainObjectSearchViewModel.RemoveSearchResultViewModel(domainObjectId);
          Selection.ClearSelection();
@@ -272,7 +306,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private async void PreviewUnloadSearchResultViewModelsAsync(object? sender, EventArgs e)
       {
-         DeleteSelectedEditorViewModel();
+         DeleteSelectedEditorsViewModel();
       }
 
       protected async virtual Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
@@ -280,7 +314,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync<T>(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
       }
 
-      private void DomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      protected virtual void SelectedDomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
          if (e.PropertyName.Equals(nameof(DomainObjectEditorViewModel<T>.HasUnsavedChanges)))
          {
@@ -318,6 +352,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          CreateAsyncCommand.NotifyCanExecuteChanged();
          SaveChangesAsyncCommand.NotifyCanExecuteChanged();
          CancelChangesAsyncCommand.NotifyCanExecuteChanged();
+         ShowDomainObjectDetailsEditorAsyncCommand.NotifyCanExecuteChanged();
+      }
+
+      protected virtual void DomainObjectEditorViewModel_DomainObjectSavedEvent(object? sender, int e)
+      {
+         DomainObjectSearchViewModel.ReloadSearchResultAsync(((DomainObjectSearchResultViewModel)Selection.SelectedItem).DomainObjectSearchResult.DomainObjectId);
       }
 
       #endregion

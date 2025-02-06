@@ -33,7 +33,15 @@
             </osc_customcontrols:SortableListView>
          </ScrollViewer>
 
-         <list:PageNavigationUserControl DataContext="{Binding DomainObjectSearchViewModel.PageNavigationViewModel}" Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" />
+         <Border Grid.Row="1" 
+                 Margin="0,4,0,4"
+                 HorizontalAlignment="Center"
+                 CornerRadius="8">
+            <list:PageNavigationUserControl DataContext="{Binding DomainObjectSearchViewModel.PageNavigationViewModel}" 
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Margin="4,2,4,2" />
+         </Border>
 
       </Grid>
 

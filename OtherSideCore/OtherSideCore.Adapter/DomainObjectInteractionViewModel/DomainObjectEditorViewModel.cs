@@ -63,6 +63,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Events
 
+      public event EventHandler<int> DomainObjectSavedEvent;
       public event EventHandler<int> DomainObjectDeletedEvent;
 
       #endregion
@@ -141,14 +142,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                await nestedTreeViewModel.SaveChangesAsync();
             }
 
-            _domainObjectViewModel.ResetState();
-
-            RefreshWorkflows();
+            _domainObjectViewModel.ResetState();            
          }
 
          HasUnsavedChanges = false;
 
          IsEnabled = true;
+
+         ExecutePostChangeActions();
       }
 
       public virtual bool CanCancelChanges()
@@ -169,11 +170,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          _domainObjectViewModel.ResetState();
 
-         RefreshWorkflows();
-
          HasUnsavedChanges = false;
 
          IsEnabled = true;
+
+         ExecutePostChangeActions();
       }
 
       public virtual async Task LoadNestedStructuresAsync()
@@ -216,6 +217,18 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
+      protected void ExecutePostChangeActions()
+      {
+         NotifyCommandsCanExecuteChanged();
+         RefreshWorkflows();
+         RaiseDomainObjectSavedEvent();
+      }
+
+      protected void RaiseDomainObjectSavedEvent()
+      {
+         DomainObjectSavedEvent?.Invoke(this, _domainObjectViewModel.DomainObject.Id);
+      }
+
       private async void DomainObjectReferenceSelectorViewModel_ReferenceSelected(object? sender, ReferenceSelectedEventArgs e)
       {
          var domainObjectReference = await _domainObjectService.CreateDomainObjectReferenceAsync(DomainObjectViewModel.DomainObject.Id, e.DomainObjectId, e.ReferenceType);
@@ -228,7 +241,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _windowService.ShowDomainObjectReferenceSelectors(DomainObjectReferenceSelectorViewModels.ToList(), DisplayType.Modal);
       }
 
-      private async Task DeleteDomainObjectReferenceAsync(DomainObjectReferenceViewModel? domainObjectReferenceViewModel)
+      protected virtual async Task DeleteDomainObjectReferenceAsync(DomainObjectReferenceViewModel? domainObjectReferenceViewModel)
       {
          if (_userDialogService.Confirm("Supprimer la référence ?"))
          {

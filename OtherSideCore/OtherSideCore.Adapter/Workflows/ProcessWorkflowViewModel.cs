@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.Workflows
 {
-   public class ProcessWorkflowViewModel : ObservableObject
+   public class ProcessWorkflowViewModel : ObservableObject, IDisposable
    {
       #region Fields
 
@@ -74,6 +74,11 @@ namespace OtherSideCore.Adapter.Workflows
          }
 
          NotifyCommandCanExecuteChanged();
+      }
+
+      public virtual void Dispose()
+      {
+
       }
 
       #endregion

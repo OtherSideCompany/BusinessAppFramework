@@ -31,7 +31,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public DomainObjectSearchResult DomainObjectSearchResult
       {
          get => _domainObjectSearchResult;
-         set => SetProperty(ref _domainObjectSearchResult, value);
+         private set => SetProperty(ref _domainObjectSearchResult, value);
       }
 
 
@@ -47,12 +47,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 
       public DomainObjectSearchResultViewModel(DomainObjectSearchResult domainObjectSearchResult)
       {
-         _domainObjectSearchResult = domainObjectSearchResult;
+         DomainObjectSearchResult = domainObjectSearchResult;
       }
 
       #endregion
 
       #region Public Methods
+
+      public virtual void UpdateDomainObjectSearchResult(DomainObjectSearchResult domainObjectSearchResult)
+      {
+         DomainObjectSearchResult = domainObjectSearchResult;
+      }
 
       public virtual void Dispose()
       {

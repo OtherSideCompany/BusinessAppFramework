@@ -12,6 +12,9 @@ namespace OtherSideCore.Adapter
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
       Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
+      IDomainObjectEditorViewModel? CreateDomainObjectDetailsEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
+      IDomainObjectEditorViewModel? CreateDomainObjectDetailsEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
+      Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
       List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);
       IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel);
       DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
@@ -22,8 +25,8 @@ namespace OtherSideCore.Adapter
       Task DisplayDomainObjectTreeViewAsync(DomainObject domainObject, DisplayType displayType);
       Task DisplayDomainObjectTreeViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
       Task DisplayDomainObjectTreeViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
-      Task DisplayDomainObjectEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
-      Task DisplayDomainObjectEditorViewAsync(DomainObject domainObject, DisplayType displayType);
-      Task DisplayDomainObjectEditorViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
+      Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
+      Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObject domainObject, DisplayType displayType);
+      Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
    }
 }

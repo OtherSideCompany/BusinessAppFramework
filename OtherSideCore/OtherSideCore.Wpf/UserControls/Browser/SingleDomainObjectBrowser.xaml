@@ -100,7 +100,7 @@
       <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource VerticalModuleGridSplitter}" HorizontalAlignment="Right" />
 
       <Border Grid.Column="2" Style="{StaticResource DomainObjectPropertiesPannel}"         
-              Visibility="{Binding Selection.SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"
+              Visibility="{Binding SelectedDomainObjectEditorViewModel, Converter={StaticResource NullToVisibilityConverter}}"
               DataContext="{Binding BrowserViewModel}">
 
          <Grid>
