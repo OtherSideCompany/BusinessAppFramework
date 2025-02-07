@@ -253,9 +253,21 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      public virtual Task<DomainObject> CreateRootNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      public virtual async Task<DomainObject> CreateRootNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
       {
-         throw new NotImplementedException();
+         var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(ContextViewModel?.DomainObject);
+
+         var dupplicatedDomainObjectViewModel = _domainObjectViewModelFactory.CreateViewModel(dupplicatedDomainObject);
+         AddRootNode(dupplicatedDomainObjectViewModel);
+
+         var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObjectViewModel);
+
+         foreach (var childNode in node.Children)
+         {
+            await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+         }
+
+         return dupplicatedDomainObject;
       }
 
       public void InitializeTreeDomainObjectViewModelsProperties()
@@ -414,10 +426,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return null;
       }
 
-      private async Task IndexRoots(Type domainObjectChildrenType)
+      protected async Task IndexRoots(Type rootType)
       {
          var indexableCollection = Roots.Select(c => c.DomainObjectViewModel.DomainObject)
-                                        .Where(d => d.GetType() == domainObjectChildrenType)
+                                        .Where(d => d.GetType() == rootType)
                                         .OfType<IIndexable>()
                                         .OrderBy(d => d.Index)
                                         .ToList();

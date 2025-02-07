@@ -15,7 +15,10 @@ namespace OtherSideCore.Infrastructure.Mapping
             .IncludeAllDerived();
 
          CreateMap<Entities.User, Domain.DomainObjects.User>().ReverseMap();
-         
+
+         // Warning : for each IIndexable, use .IgnoreAllCollections().ReverseMap().IgnoreAllVirtual().AfterMap((src, dest) => dest.Index = src.Index)
+         // because automapper seems to ignore interface defined properties
+
       }
    }
 }

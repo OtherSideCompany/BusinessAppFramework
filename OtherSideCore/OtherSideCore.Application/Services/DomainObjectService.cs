@@ -44,6 +44,11 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task CreateAsync(T domainObject, DomainObject? parent)
       {
+         if (domainObject is IIndexable indexableDomainObject && parent != null)
+         {
+            indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
+         }
+
          await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
       }
 

@@ -2,12 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Application.Factories;
-using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
-using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -158,9 +156,20 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsExpanded = false;
       }
 
-      public virtual Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      public async Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
       {
-         throw new NotImplementedException();
+         var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(DomainObjectEditorViewModel.DomainObjectViewModel.DomainObject);
+
+         NotifyChildCreated(dupplicatedDomainObject);
+
+         var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObject);
+
+         foreach (var childNode in node.Children)
+         {
+            await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+         }
+
+         return dupplicatedDomainObject;
       }
 
       public virtual void Dispose()
@@ -173,6 +182,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Private Methods
+
+      protected IDomainObjectTreeViewNode GetNode(DomainObject domainObject)
+      {
+         return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.DomainObject.Equals(domainObject));
+      }
 
       private void DomainObjectEditorViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
       {

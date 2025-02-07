@@ -6,10 +6,12 @@ using OtherSideCore.Application;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -194,6 +196,24 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, _domainObjectInteractionService);
             DomainObjectReferenceViewModels.Add(domainObjectReferenceViewModel);
          }
+      }
+
+      public async Task<DomainObject> DupplicateAsync(DomainObject? parent)
+      {
+         var dupplicatedDomainObject = (T)DomainObjectViewModel.DomainObject.Clone();
+
+         DomainObjectViewModel.CopyPropertiesToDomainObject(dupplicatedDomainObject);
+
+         var domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
+         await domainObjectService.CreateAsync(dupplicatedDomainObject, parent);
+
+         if (dupplicatedDomainObject is IIndexable indexableDupplicatedDomainObject)
+         {
+            indexableDupplicatedDomainObject.Index = ((IIndexable)DomainObjectViewModel.DomainObject).Index;
+            await domainObjectService.SaveAsync(dupplicatedDomainObject);
+         }
+
+         return dupplicatedDomainObject;
       }
 
       public virtual void Dispose()

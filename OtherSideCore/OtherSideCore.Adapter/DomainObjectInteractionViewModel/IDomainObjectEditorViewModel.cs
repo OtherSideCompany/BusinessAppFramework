@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using OtherSideCore.Domain.DomainObjects;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
@@ -17,7 +18,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       bool CanCancelChanges();
       Task CancelChangesAsync();
       Task LoadNestedStructuresAsync();
-
       Task LoadDomainObjetReferencesAsync();
+      Task<DomainObject> DupplicateAsync(DomainObject? parent);
    }
 }
