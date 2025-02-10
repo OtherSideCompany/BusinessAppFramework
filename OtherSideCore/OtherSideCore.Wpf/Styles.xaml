@@ -213,7 +213,9 @@
 
    <Style TargetType="{x:Type ListViewItem}" x:Key="ListViewItemContainerStyle" >
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Height" Value="32" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightLightGray}" />
+      <Setter Property="Height" Value="48" />
       <Setter Property="Foreground" Value="Black" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="Template">
@@ -250,9 +252,6 @@
 
    <!-- DomainObjectSearch List View-->
    <Style TargetType="{x:Type ListViewItem}" x:Key="DomainObjectSearchListViewItemContainerStyle" BasedOn="{StaticResource ListViewItemContainerStyle}">
-      <Setter Property="BorderThickness" Value="0,0,0,1" />
-      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightLightGray}" />
-      <Setter Property="Height" Value="48" />
       <Style.Triggers>
          <DataTrigger Binding="{Binding IsSelected}" Value="True">
             <Setter Property="Background" Value="{Binding Path=(extensions:ListViewExtension.SelectedItemBackgroundColor), RelativeSource={RelativeSource AncestorType={x:Type ListView}}}" />

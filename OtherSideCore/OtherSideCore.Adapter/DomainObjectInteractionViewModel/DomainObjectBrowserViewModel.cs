@@ -304,7 +304,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          UpdateUnsavedChanges();
       }
 
-      private async void PreviewUnloadSearchResultViewModelsAsync(object? sender, EventArgs e)
+      private void PreviewUnloadSearchResultViewModelsAsync(object? sender, EventArgs e)
       {
          DeleteSelectedEditorsViewModel();
       }

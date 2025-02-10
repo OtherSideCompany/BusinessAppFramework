@@ -17,7 +17,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isExpanded;
       private bool _isSelected;
 
-      protected IDomainObjectInteractionService _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionService;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
       protected IUserDialogService _userDialogService;
 
@@ -97,16 +97,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public DomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel,
                                       IUserDialogService userDialogService,
-                                      IDomainObjectInteractionService domainObjectInteractionFactory,
+                                      IDomainObjectInteractionService domainObjectInteractionService,
                                       IDomainObjectServiceFactory domainObjectServiceFactory)
       {
-         _domainObjectInteractionFactory = domainObjectInteractionFactory;
+         _domainObjectInteractionService = domainObjectInteractionService;
          _domainObjectServiceFactory = domainObjectServiceFactory;
          _userDialogService = userDialogService;
 
          DomainObjectViewModel = domainObjectViewModel;
 
-         DomainObjectEditorViewModel = domainObjectInteractionFactory.CreateDomainObjectEditorViewModel(domainObjectViewModel.DomainObject.GetType(), domainObjectViewModel);
+         DomainObjectEditorViewModel = domainObjectInteractionService.CreateDomainObjectEditorViewModel(domainObjectViewModel.DomainObject.GetType(), domainObjectViewModel);
          DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
          DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
 
