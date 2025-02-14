@@ -275,6 +275,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _inlineNodes.Select(r => r.DomainObjectViewModel).ToList().ForEach(vm => vm.InitializeProperties());
       }
 
+      public IDomainObjectTreeViewNode GetNode(DomainObjectViewModel domainObjectViewModel)
+      {
+         return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.Equals(domainObjectViewModel));
+      }
+
+      public IDomainObjectTreeViewNode GetNode(DomainObject domainObject)
+      {
+         return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.DomainObject.Equals(domainObject));
+      }
+
       public virtual void Dispose()
       {
          Clear();
@@ -352,12 +362,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             UpdateUnsavedChanges();
          }
-      }
-
-      protected IDomainObjectTreeViewNode GetNode(DomainObjectViewModel domainObjectViewModel)
-      {
-         return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.Equals(domainObjectViewModel));
-      }
+      }      
 
       private bool ProceedSelection(DomainObjectViewModel domainObjectViewModel)
       {

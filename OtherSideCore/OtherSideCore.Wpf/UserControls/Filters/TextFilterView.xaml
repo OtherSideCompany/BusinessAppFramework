@@ -23,7 +23,8 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <local:SingleTextFilter Grid.Column="0" DataContext="{Binding SingleTextFilterViewModel}" Margin="4,0,0,0" />
+         <local:SingleTextFilter Grid.Column="0" DataContext="{Binding SingleTextFilterViewModel}" Margin="4,0,0,0" 
+                                 KeyDown="TextFilter_KeyDown"/>
 
          <osc_customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
                                             SvgImageButton_ImageSize="16" 
@@ -45,7 +46,8 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <local:MultiTextFilterView Grid.Column="0" DataContext="{Binding MultiTextFilterViewModel}" />
+         <local:MultiTextFilterView Grid.Column="0" DataContext="{Binding MultiTextFilterViewModel}" 
+                                    KeyDown="TextFilter_KeyDown"/>
 
          <osc_customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" Margin="4,0,0,0"
                                             SvgImageButton_ImageSize="16" 

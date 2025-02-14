@@ -61,7 +61,7 @@ namespace OtherSideCore.Adapter
 
       #region Commands
 
-      public RelayCommand ToggleExpandCommand { get; private set; }
+      public RelayCommand ToggleExpandCommand { get; private set; }     
 
       #endregion
 

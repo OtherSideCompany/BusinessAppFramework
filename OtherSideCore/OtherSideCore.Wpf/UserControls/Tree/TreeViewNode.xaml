@@ -11,7 +11,8 @@
                 d:DesignHeight="450" d:DesignWidth="800"
                 x:Name="TreeViewNodeUserControl">
    <Grid PreviewMouseLeftButtonUp="Grid_PreviewMouseLeftButtonUp">
-      <Border CornerRadius="8" Margin="0,4,0,4" Style="{StaticResource DomainObjectTreeViewSelectableBorder}">
+      <Border CornerRadius="8" Margin="0,4,0,4" 
+              Style="{StaticResource DomainObjectTreeViewSelectableBorder}">
          <ContentControl Content="{Binding TreeViewNode_Content, ElementName=TreeViewNodeUserControl}" />
       </Border>
    </Grid>

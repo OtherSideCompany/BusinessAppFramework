@@ -6,7 +6,9 @@
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Tree"
              xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
              xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
-             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" xmlns:modules="clr-namespace:OtherSideCore.Wpf.UserControls.Modules" xmlns:editor="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" 
+             xmlns:modules="clr-namespace:OtherSideCore.Wpf.UserControls.Modules" 
+             xmlns:editor="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="TreeViewWorkspaceUserControl">
@@ -19,8 +21,8 @@
       </Grid.ColumnDefinitions>
 
       <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
-         
-         <Border Style="{StaticResource WorkspaceBorder}">
+
+         <Border Margin="{Binding TreeViewWorkspace_TreeViewMargin, ElementName=TreeViewWorkspaceUserControl}">
 
             <Grid>
                <Grid.RowDefinitions>
@@ -32,7 +34,8 @@
 
                   <modules:ModuleHeader Grid.Column="0"
                                         ModuleHeader_IconGeometry="{Binding TreeViewWorkspace_Icon, ElementName=TreeViewWorkspaceUserControl}"
-                                        ModuleHeader_Name="{Binding TreeViewWorkspace_Name, ElementName=TreeViewWorkspaceUserControl}" />
+                                        ModuleHeader_Name="{Binding TreeViewWorkspace_Name, ElementName=TreeViewWorkspaceUserControl}" 
+                                        Visibility="{Binding TreeViewWorkspace_HeaderVisibility, ElementName=TreeViewWorkspaceUserControl}"/>
 
                </Grid>
 
@@ -48,27 +51,32 @@
          
       </ScrollViewer>
 
-      <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource VerticalModuleGridSplitter}" HorizontalAlignment="Right" />
+      <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource VerticalModuleGridSplitter}" HorizontalAlignment="Right" 
+                    Visibility="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl, Converter={StaticResource NullToVisibilityConverter}}"/>
 
-      <Border Grid.Column="2" Style="{StaticResource DomainObjectPropertiesPannel}"         
+      <Border Grid.Column="2"                       
               Visibility="{Binding SelectedDomainObjectTreeViewNode, Converter={StaticResource NullToVisibilityConverter}}">
 
-         <Grid>
+         <Border Style="{StaticResource DomainObjectPropertiesPannel}" 
+                 Visibility="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl, Converter={StaticResource NullToVisibilityConverter}}">
 
-            <osc_usercontrols:LoadingView Visibility="{Binding IsLoadingNestedStructures, Converter={StaticResource BoolToVisibleOrCollapsed}}" 
-                                          VerticalAlignment="Center" />
+            <Grid>
 
-            <Grid Visibility="{Binding IsLoadingNestedStructures, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
+               <osc_usercontrols:LoadingView Visibility="{Binding IsLoadingNestedStructures, Converter={StaticResource BoolToVisibleOrCollapsed}}" 
+                                             VerticalAlignment="Center" />
 
-               <ContentControl Content="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl}" />
+               <Grid Visibility="{Binding IsLoadingNestedStructures, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
 
-               <editor:SaveCancelChangesAsyncView Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BoolToVisibleOrCollapsed}}"
-                                                  SaveCancelChangesAsyncView_SaveCommand="{Binding SaveChangesAsyncCommand}"
-                                                  SaveCancelChangesAsyncView_CancelCommand="{Binding CancelChangesAsyncCommand}"
-                                                  Margin="10"/>
+                  <ContentControl Content="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl}" />
+
+                  <editor:SaveCancelChangesAsyncView Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                                                     SaveCancelChangesAsyncView_SaveCommand="{Binding SaveChangesAsyncCommand}"
+                                                     SaveCancelChangesAsyncView_CancelCommand="{Binding CancelChangesAsyncCommand}"
+                                                     Margin="10"/>
+               </Grid>
+
             </Grid>
-
-         </Grid>
+         </Border>
 
       </Border>
 

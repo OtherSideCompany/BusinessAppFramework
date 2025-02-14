@@ -30,6 +30,15 @@ namespace OtherSideCore.Wpf.UserControls.Tree
          set { SetValue(TreeViewNode_ContentProperty, value); }
       }
 
+      public static readonly DependencyProperty TreeViewNode_IsSelectableProperty =
+          DependencyProperty.Register("TreeViewNode_IsSelectable", typeof(bool), typeof(TreeViewNode), new UIPropertyMetadata(true));
+
+      public bool TreeViewNode_IsSelectable
+      {
+         get { return (bool)GetValue(TreeViewNode_IsSelectableProperty); }
+         set { SetValue(TreeViewNode_IsSelectableProperty, value); }
+      }
+
       public TreeViewNode()
       {
          InitializeComponent();
@@ -37,9 +46,12 @@ namespace OtherSideCore.Wpf.UserControls.Tree
 
       private void Grid_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
       {
-         if (!(e.OriginalSource is Button) && ((Grid)sender).DataContext is IDomainObjectTreeViewNode domainObjectTreeViewNode)
+         if (TreeViewNode_IsSelectable)
          {
-            domainObjectTreeViewNode.RequestSelection();
+            if (!(e.OriginalSource is Button) && ((Grid)sender).DataContext is IDomainObjectTreeViewNode domainObjectTreeViewNode)
+            {
+               domainObjectTreeViewNode.RequestSelection();
+            }
          }
       }
    }

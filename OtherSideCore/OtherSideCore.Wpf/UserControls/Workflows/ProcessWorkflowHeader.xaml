@@ -10,6 +10,11 @@
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="ProcessWorkflowHeaderUserControl">
    <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="*" />
+         <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
       <ItemsControl ItemsSource="{Binding ProcessWorkflowStepViewModels}">
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -181,7 +186,7 @@
                                                                         Visibility="{Binding IsConditionVerified, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"/>
 
                                           <TextBlock Grid.Column="1" Text="{Binding ProcessWorkflowStepCondition.Description}" VerticalAlignment="Center" Style="{StaticResource PropertyLabelTextBlock}"/>
-                                       
+
                                        </Grid>
                                     </DataTemplate>
                                  </ItemsControl.ItemTemplate>
@@ -197,5 +202,6 @@
             </DataTemplate>
          </ItemsControl.ItemTemplate>
       </ItemsControl>
+
    </Grid>
 </UserControl>

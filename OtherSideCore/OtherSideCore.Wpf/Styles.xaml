@@ -1268,7 +1268,7 @@
 
    <Style TargetType="{x:Type Border}" x:Key="DomainObjectTreeViewSelectableBorder">
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Background" Value="White" />
       <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightLightGray}" />
       <Style.Triggers>
          <Trigger Property="IsMouseOver" Value="True">

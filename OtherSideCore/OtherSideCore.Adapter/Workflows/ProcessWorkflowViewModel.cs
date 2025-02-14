@@ -22,6 +22,8 @@ namespace OtherSideCore.Adapter.Workflows
          set => SetProperty(ref _processWorkflowStepViewModels, value);
       }
 
+      public bool AreAllStepsCompleted => ProcessWorkflowStepViewModels.All(vm => vm.IsCompleted);
+
       #endregion
 
       #region Commands
@@ -72,6 +74,8 @@ namespace OtherSideCore.Adapter.Workflows
 
             processWorkflowStepViewModel.RefreshState(previousStepViewModel);
          }
+
+         OnPropertyChanged(nameof(AreAllStepsCompleted));
 
          NotifyCommandCanExecuteChanged();
       }

@@ -42,7 +42,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
             }
             else
             {
-               var previousItems = nodes.Where(c => ((IIndexable)c.DomainObjectViewModel.DomainObject).Index <= indexableDomainObject.Index);
+               var previousItems = nodes.Where(n => n.DomainObjectViewModel.DomainObject.GetType() == domainObjectTreeViewNode.DomainObjectViewModel.DomainObject.GetType() &&
+                                                    ((IIndexable)n.DomainObjectViewModel.DomainObject).Index <= indexableDomainObject.Index);
 
                if (previousItems.Any())
                {

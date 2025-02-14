@@ -168,6 +168,12 @@ namespace OtherSideCore.Application.Search
          _activatedConstraint = constraint;
       }
 
+      public void CancelSearch()
+      {
+         ShutdownSearch();
+         UnloadSearchResults();
+      }
+
       public void Dispose()
       {
          _currentSearchCancellationTokenSource?.Cancel();

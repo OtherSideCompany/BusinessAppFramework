@@ -39,6 +39,15 @@ namespace OtherSideCore.Wpf.UserControls.Tree
          set { SetValue(TreeViewWorkspace_IconProperty, value); }
       }
 
+      public static readonly DependencyProperty TreeViewWorkspace_HeaderVisibilityProperty =
+          DependencyProperty.Register("TreeViewWorkspace_HeaderVisibility", typeof(Visibility), typeof(TreeViewWorkspace), new UIPropertyMetadata(Visibility.Visible));
+
+      public Visibility TreeViewWorkspace_HeaderVisibility
+      {
+         get { return (Visibility)GetValue(TreeViewWorkspace_HeaderVisibilityProperty); }
+         set { SetValue(TreeViewWorkspace_HeaderVisibilityProperty, value); }
+      }
+
       public static readonly DependencyProperty TreeViewWorkspace_TreeViewProperty =
           DependencyProperty.Register("TreeViewWorkspace_TreeView", typeof(TreeView), typeof(TreeViewWorkspace), new UIPropertyMetadata());
 
@@ -64,6 +73,15 @@ namespace OtherSideCore.Wpf.UserControls.Tree
       {
          get { return (ResourceDictionary)GetValue(TreeViewWorkspace_EditorResourcesDictionaryProperty); }
          set { SetValue(TreeViewWorkspace_EditorResourcesDictionaryProperty, value); }
+      }
+
+      public static readonly DependencyProperty TreeViewWorkspace_TreeViewMarginProperty =
+         DependencyProperty.Register("TreeViewWorkspace_TreeViewMargin", typeof(Thickness), typeof(TreeViewWorkspace), new UIPropertyMetadata(new Thickness(24,16,0,4)));
+
+      public Thickness TreeViewWorkspace_TreeViewMargin
+      {
+         get { return (Thickness)GetValue(TreeViewWorkspace_TreeViewMarginProperty); }
+         set { SetValue(TreeViewWorkspace_TreeViewMarginProperty, value); }
       }
 
       public TreeViewWorkspace()
