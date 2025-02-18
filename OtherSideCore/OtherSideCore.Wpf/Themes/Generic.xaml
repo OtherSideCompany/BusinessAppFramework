@@ -27,7 +27,7 @@
             </ControlTemplate>
          </Setter.Value>
       </Setter>
-   </Style>
+   </Style>   
 
    <!-- SvgImageButton-->
    <Style TargetType="{x:Type local:SvgImageButton}">

@@ -106,7 +106,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public AsyncRelayCommand CreateRootNodeAsyncCommand { get; private set; }
       public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateRootNodeAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
-      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }      
+      public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
 
       #endregion
 
@@ -132,7 +132,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          CreateRootNodeAsyncCommand = new AsyncRelayCommand(CreateRootNodeAsync, CanCreateRootNode);
          DupplicateRootNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateRootNodeAsync, CanDupplicateRootNodeAsync);
-      }     
+      }
 
 
       #endregion
@@ -362,7 +362,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             UpdateUnsavedChanges();
          }
-      }      
+      }
 
       private bool ProceedSelection(DomainObjectViewModel domainObjectViewModel)
       {
@@ -428,7 +428,19 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual async Task<DomainObject> CreateRootDomainObjectAsync()
       {
-         return null;
+         throw new NotImplementedException();
+      }
+
+      protected async Task<DomainObject> CreateRootDomainObjectAsync(Type rootType)
+      {
+         DomainObject domainObject;
+
+         var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(rootType);
+         domainObject = await domainObjectService.CreateAsync(ContextViewModel.DomainObject);
+
+         await IndexRoots(rootType);
+
+         return domainObject;
       }
 
       protected async Task IndexRoots(Type rootType)

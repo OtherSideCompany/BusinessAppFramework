@@ -1344,6 +1344,6 @@
       <Setter Property="SingleDomainObjectBrowser_DeleteCommand" Value="{Binding BrowserViewModel.SelectedDomainObjectEditorViewModel.DeleteAsyncCommand}" />
       <Setter Property="SingleDomainObjectBrowser_Name" Value="{Binding WorkspaceDescription.Name}" />
       <Setter Property="SingleDomainObjectBrowser_IconGeometry" Value="{Binding WorkspaceDescription.IconResource}" />
-   </Style>
+   </Style>   
 
 </ResourceDictionary>
