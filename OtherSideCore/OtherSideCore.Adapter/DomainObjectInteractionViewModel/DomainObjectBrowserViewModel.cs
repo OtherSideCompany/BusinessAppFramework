@@ -188,7 +188,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel? domainObjectSearchResultViewModel)
       {
-         await ShowDomainObjectDetailsEditorAsync(domainObjectSearchResultViewModel, typeof(T), domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         if (domainObjectSearchResultViewModel != null)
+         {
+            await ShowDomainObjectDetailsEditorAsync(typeof(T), domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         }
       }
 
       public virtual bool CanSaveChanges()
@@ -223,16 +226,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
-      protected async Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel? domainObjectSearchResultViewModel, Type type, int domainObjectId)
+      protected async Task ShowDomainObjectDetailsEditorAsync(Type type, int domainObjectId)
       {
-         if (domainObjectSearchResultViewModel != null)
-         {
-            SelectedDomainObjectDetailsEditorViewModel = await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(domainObjectId, type, DisplayType.Modal);
+         SelectedDomainObjectDetailsEditorViewModel = await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(domainObjectId, type, DisplayType.Modal);
 
-            if (SelectedDomainObjectDetailsEditorViewModel != null)
-            {
-               SelectedDomainObjectDetailsEditorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
-            }
+         if (SelectedDomainObjectDetailsEditorViewModel != null)
+         {
+            SelectedDomainObjectDetailsEditorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
          }
       }
 
