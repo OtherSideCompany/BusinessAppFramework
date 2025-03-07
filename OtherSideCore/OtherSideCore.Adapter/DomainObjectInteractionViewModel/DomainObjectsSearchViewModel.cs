@@ -305,7 +305,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void CancelSearch()
       {
          _domainObjectSearch.CancelSearch();
-      }
+      }      
 
       #endregion
    }

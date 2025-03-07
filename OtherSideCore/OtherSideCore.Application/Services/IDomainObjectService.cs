@@ -5,6 +5,8 @@ namespace OtherSideCore.Application.Services
 {
    public interface IDomainObjectService<T> where T : DomainObject, new()
    {
+      Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
+
       Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken = default);
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
@@ -24,6 +26,8 @@ namespace OtherSideCore.Application.Services
       Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default);
 
       Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default);
-      
+
+      Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken = default);
+
    }
 }

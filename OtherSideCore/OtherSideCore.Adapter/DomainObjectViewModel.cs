@@ -143,6 +143,25 @@ namespace OtherSideCore.Adapter
          OnPropertyChanged(nameof(ModificationDescription));
       }
 
+      public override bool Equals(object? obj)
+      {
+         var item = obj as DomainObjectViewModel;
+
+         if (item == null)
+         {
+            return false;
+         }
+
+         if (DomainObject.Id == 0 && item.DomainObject.Id == 0)
+         {
+            return GetHashCode() == item.GetHashCode();
+         }
+         else
+         {
+            return DomainObject.Equals(item.DomainObject);
+         }
+      }
+
       #endregion
 
       #region private Methods

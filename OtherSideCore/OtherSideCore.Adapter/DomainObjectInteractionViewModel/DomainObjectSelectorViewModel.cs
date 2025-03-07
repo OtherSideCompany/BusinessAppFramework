@@ -14,7 +14,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Fields
 
       private IWindowService _windowService;
-      private IDomainObjectServiceFactory _domainObjectServiceFactory;
 
       #endregion
 
@@ -51,10 +50,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          base(domainObjectBrowser,
               domainObjectsSearchViewModelFactory,
               domainObjectSearchResultViewModelFactory,
-              domainObjectInteractionFactory)
+              domainObjectInteractionFactory,
+              domainObjectServiceFactory)
       {
          _windowService = windowService;
-         _domainObjectServiceFactory = domainObjectServiceFactory;
 
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
@@ -94,6 +93,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
 
          Selection.PropertyChanged -= Selection_PropertyChanged;
+      }
+
+      public async Task<T> GetSelectedSearchResultDomainObjectAsync()
+      {
+         var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
+         var domainObject = await _domainObjectServiceFactory.CreateDomainObjectService<T>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+
+         return domainObject;
       }
 
 

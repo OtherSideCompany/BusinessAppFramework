@@ -7,6 +7,8 @@ namespace OtherSideCore.Application.Repository
 {
    public interface IRepository<T> : IDisposable where T : DomainObject, new()
    {
+      Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
+
       Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
       Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
@@ -36,5 +38,7 @@ namespace OtherSideCore.Application.Repository
       Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken);
 
       Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken);
+
+      Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken);
    }
 }

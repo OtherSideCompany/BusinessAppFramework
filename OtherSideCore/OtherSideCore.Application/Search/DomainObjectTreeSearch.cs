@@ -85,8 +85,12 @@ namespace OtherSideCore.Application.Search
         protected void ShutdownSearch()
         {
             DisposeSearchCancellationTokenSource();
+
+         if (_searchSemaphore.CurrentCount == 0)
+         {
             _searchSemaphore.Release();
-        }
+         }
+      }
 
         protected void CreateSearchCancellationTokenSource()
         {

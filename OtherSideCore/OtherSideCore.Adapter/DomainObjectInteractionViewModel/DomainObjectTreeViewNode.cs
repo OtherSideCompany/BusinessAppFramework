@@ -179,6 +179,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DomainObjectEditorViewModel.Dispose();
       }
 
+      public void NotifyChildCreated(DomainObject domainObject)
+      {
+         ChildCreated?.Invoke(this, domainObject);
+      }
+
       #endregion
 
       #region Private Methods
@@ -199,12 +204,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void DomainObjectEditorViewModel_DomainObjectDeleted(object? sender, int e)
       {
          NodeDeleted?.Invoke(this, this);
-      }
-
-      protected void NotifyChildCreated(DomainObject domainObject)
-      {
-         ChildCreated?.Invoke(this, domainObject);
-      }
+      }      
 
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
@@ -216,11 +216,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return node != null && _inlineNodes.Contains(node);
       }
 
-      private async Task DupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
+      protected virtual async Task<DomainObject> DupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
       {
          var domainObject = await CreateChildNodeDomainObjectCopyAsync(node);
 
-         await IndexChildren(node.DomainObjectViewModel.DomainObject.GetType());         
+         await IndexChildren(node.DomainObjectViewModel.DomainObject.GetType());
+
+         return domainObject;
       }
 
       private async Task IndexChildren(Type domainObjectChildrenType)

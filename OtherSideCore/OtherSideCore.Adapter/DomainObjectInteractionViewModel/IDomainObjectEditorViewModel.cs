@@ -8,6 +8,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    {
       DomainObjectViewModel DomainObjectViewModel { get; }
 
+      ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels { get; }
+
       event EventHandler<int> DomainObjectSavedEvent;
 
       event EventHandler<int> DomainObjectDeletedEvent;

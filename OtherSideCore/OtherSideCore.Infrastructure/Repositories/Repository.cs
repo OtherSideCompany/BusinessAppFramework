@@ -16,6 +16,7 @@ using OtherSideCore.Application;
 using OtherSideCore.Domain;
 using OtherSideCore.Infrastructure.Factories;
 using OtherSideCore.Application.Factories;
+using ImageMagick;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -55,6 +56,16 @@ namespace OtherSideCore.Infrastructure.Repositories
       #endregion
 
       #region Public Methods
+
+      public async Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      {
+         _logger.LogInformation("{Type}, {MethodName}, entityId={EntityId}", GetType(), nameof(ExistsAsync), domainObjectId);
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            return await context.Set<TEntity>().AnyAsync(e => e.Id == domainObjectId, cancellationToken);
+         }
+      }
 
       public virtual async Task<List<TDomainObject>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
@@ -264,13 +275,10 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            var existingEntity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+            int affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObject.Id).ExecuteDeleteAsync();
 
-            if (existingEntity != null)
+            if (affectedRows != 0)
             {
-               context.Set<TEntity>().Remove(existingEntity);
-               await context.SaveChangesAsync();
-
                domainObject.Id = 0;
                domainObject.LastModifiedById = null;
                domainObject.LastModifiedByName = null;
@@ -322,6 +330,22 @@ namespace OtherSideCore.Infrastructure.Repositories
       public virtual async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)
       {
          throw new NotImplementedException($"Cannot delete reference from type {GetType()}");
+      }
+
+      public async Task SetParent(TDomainObject domainObject, DomainObject parent, CancellationToken cancellationToken = default)
+      {
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(SetParent), domainObject.Id);
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+
+            if (entity != null)
+            {
+               SetParent(entity, parent);
+               await context.SaveChangesAsync(cancellationToken);
+            }
+         }
       }
 
       public void Dispose()

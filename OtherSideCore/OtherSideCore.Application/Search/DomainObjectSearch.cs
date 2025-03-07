@@ -197,7 +197,11 @@ namespace OtherSideCore.Application.Search
       protected void ShutdownSearch()
       {
          DisposeSearchCancellationTokenSource();
-         _searchSemaphore.Release();
+
+         if (_searchSemaphore.CurrentCount == 0)
+         {
+            _searchSemaphore.Release();
+         }
       }
 
       protected async Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject? parent, CancellationToken cancellationToken)

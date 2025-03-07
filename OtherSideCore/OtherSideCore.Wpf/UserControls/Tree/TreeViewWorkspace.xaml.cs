@@ -84,6 +84,15 @@ namespace OtherSideCore.Wpf.UserControls.Tree
          set { SetValue(TreeViewWorkspace_TreeViewMarginProperty, value); }
       }
 
+      public static readonly DependencyProperty TreeViewWorkspace_TreeViewHeaderProperty =
+          DependencyProperty.Register("TreeViewWorkspace_TreeViewHeader", typeof(object), typeof(TreeViewWorkspace), new UIPropertyMetadata());
+
+      public object TreeViewWorkspace_TreeViewHeader
+      {
+         get { return (object)GetValue(TreeViewWorkspace_TreeViewHeaderProperty); }
+         set { SetValue(TreeViewWorkspace_TreeViewHeaderProperty, value); }
+      }
+
       public TreeViewWorkspace()
       {
          InitializeComponent();

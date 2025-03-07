@@ -1202,7 +1202,13 @@
       <Setter Property="CornerRadius" Value="8" />
       <Setter Property="Padding" Value="8" />
    </Style>
-   
+
+   <!-- Details Editor Node Border Style-->
+   <Style TargetType="{x:Type Border}" BasedOn="{StaticResource ListBorderStyle}" x:Key="DetailsEditorNodeBorderStyle">
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_LightGray}" />
+      <Setter Property="Background" Value="{StaticResource OtherSide_SuperLightGray}" />
+   </Style>
+
    <!-- TreeView Style -->
    <Style TargetType="{x:Type TreeView}">
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -1299,6 +1305,7 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Padding" Value="0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="Button">
@@ -1335,7 +1342,7 @@
    
    <!-- Tree view node grid style -->
    <Style TargetType="{x:Type Grid}" x:Key="TreeViewNodeGridStyle">
-      <Setter Property="MinHeight" Value="24" />
+      <Setter Property="MinHeight" Value="28" />
    </Style>
    
    <!-- SingleDomainObject default style-->
@@ -1345,5 +1352,52 @@
       <Setter Property="SingleDomainObjectBrowser_Name" Value="{Binding WorkspaceDescription.Name}" />
       <Setter Property="SingleDomainObjectBrowser_IconGeometry" Value="{Binding WorkspaceDescription.IconResource}" />
    </Style> 
-  
+   
+   <!-- Button Separator border-->
+   <Style TargetType="{x:Type Border}" x:Key="ButtonSeparatorBorder">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1,0,0,0" />
+      <Setter Property="BorderBrush" Value="{StaticResource OtherSide_Gray}" />
+      <Setter Property="Height" Value="24" />
+   </Style>
+
+   <Style TargetType="{x:Type ToggleButton}" x:Key="TextExpanderHeaderToggleButton">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+               <Grid>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto" />
+                     <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+
+                  <ContentPresenter Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Height="{TemplateBinding Height}" />
+
+                  <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                     <customControls:SvgImageToggleButton SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-right}" 
+                                                          SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
+                                                          SvgImageToggleButton_CheckedBackgroundColor="Transparent"
+                                                          SvgImageToggleButton_OverBackgroundColor="Transparent"
+                                                          SvgImageToggleButton_ImageSize="20"
+                                                          BorderThickness="0"
+                                                          Height="{TemplateBinding Height}"
+                                                          Margin="2,4,0,0"
+                                                          IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"/>
+                  </Grid>
+
+                  <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="1" BorderThickness="0" BorderBrush="{StaticResource OtherSide_DarkGray}" />
+
+               </Grid>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+
 </ResourceDictionary>

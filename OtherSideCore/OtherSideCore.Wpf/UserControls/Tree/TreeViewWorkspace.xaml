@@ -20,7 +20,7 @@
          <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
 
-      <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+      
 
          <Border Margin="{Binding TreeViewWorkspace_TreeViewMargin, ElementName=TreeViewWorkspaceUserControl}">
 
@@ -41,15 +41,31 @@
 
                <Grid Grid.Row="1" Margin="0,8,0,0">
 
-                  <ContentControl Content="{Binding TreeViewWorkspace_TreeView, ElementName=TreeViewWorkspaceUserControl}" />
+               <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
 
-               </Grid>
+                  <Grid>
+                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                     </Grid.RowDefinitions>                  
+
+                     <ContentControl Grid.Row="0" Margin="0,16,0,16"
+                                     Content="{Binding TreeViewWorkspace_TreeViewHeader, ElementName=TreeViewWorkspaceUserControl}" 
+                                     Visibility="{Binding TreeViewWorkspace_TreeViewHeader, ElementName=TreeViewWorkspaceUserControl, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                     <ContentControl Grid.Row="1" Content="{Binding TreeViewWorkspace_TreeView, ElementName=TreeViewWorkspaceUserControl}" />
+
+                  </Grid>
+
+               </ScrollViewer>
+
+            </Grid>
 
             </Grid>
 
          </Border>
          
-      </ScrollViewer>
+      
 
       <GridSplitter Grid.Row="1" Grid.Column="1" Style="{StaticResource VerticalModuleGridSplitter}" HorizontalAlignment="Right" 
                     Visibility="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl, Converter={StaticResource NullToVisibilityConverter}}"/>

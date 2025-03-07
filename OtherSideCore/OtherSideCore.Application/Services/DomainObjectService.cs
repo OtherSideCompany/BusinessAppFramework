@@ -1,6 +1,8 @@
-﻿using OtherSideCore.Application.Repository;
+﻿using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Repository;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
+using System.Threading;
 
 namespace OtherSideCore.Application.Services
 {
@@ -10,6 +12,7 @@ namespace OtherSideCore.Application.Services
 
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
+      protected readonly IDomainObjectServiceFactory _domainObjectServiceFactory;
 
       #endregion
 
@@ -27,15 +30,21 @@ namespace OtherSideCore.Application.Services
 
       #region Constructor
 
-      public DomainObjectService(IRepository<T> repository, IUserContext userContext)
+      public DomainObjectService(IRepository<T> repository, IUserContext userContext, IDomainObjectServiceFactory domainObjectServiceFactory)
       {
          _repository = repository;
          _userContext = userContext;
+         _domainObjectServiceFactory = domainObjectServiceFactory;
       }
 
       #endregion
 
       #region Public Methods
+
+      public async Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      {
+         return await _repository.ExistsAsync(domainObjectId, cancellationToken);
+      }
 
       public async Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken = default)
       {
@@ -49,6 +58,14 @@ namespace OtherSideCore.Application.Services
             indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
          }
 
+         if (domainObject is ICommentThreadContainer commentThreadContainer)
+         {
+            var commentThreadService = _domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
+            var commentThread = await commentThreadService.CreateAsync(domainObject);
+
+            commentThreadContainer.CommentThread = commentThread;
+         }
+
          await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
       }
 
@@ -60,8 +77,21 @@ namespace OtherSideCore.Application.Services
       }
 
       public virtual async Task DeleteAsync(T domainObject)
-      {
+      {  
+         int? commentThreadId = null;
+         var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
+
+         if (domainObject is ICommentThreadContainer commentThreadContainer)
+         {            
+            commentThreadId = await commentThreadService.GetCommentThreadIdAsync(commentThreadContainer);
+         }         
+
          await _repository.DeleteAsync(domainObject);
+
+         if (commentThreadId.HasValue)
+         {
+            await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
+         }
       }
 
       public async Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
@@ -92,6 +122,11 @@ namespace OtherSideCore.Application.Services
       public async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
       {
          await _repository.DeleteDomainObjectReferenceAsync(domainObjectId, domainObjectReference, cancellationToken);
+      }
+
+      public async Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken = default)
+      {
+         await _repository.SetParent(domainObject, parent, cancellationToken);
       }
 
       #endregion

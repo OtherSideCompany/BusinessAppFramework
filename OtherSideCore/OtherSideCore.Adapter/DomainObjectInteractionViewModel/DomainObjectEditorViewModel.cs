@@ -43,6 +43,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
 
+      public ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels => _nestedDomainObjectTreeViewModels;
+
       public ObservableCollection<DomainObjectReferenceSelectorViewModel> DomainObjectReferenceSelectorViewModels
       {
          get => _domainObjectReferenceSelectorViewModels;

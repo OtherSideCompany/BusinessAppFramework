@@ -303,46 +303,8 @@
          </Setter.Value>
       </Setter>
    </Style>
-
-   <!-- Info Panel Category -->
-   <Style TargetType="{x:Type ToggleButton}" x:Key="InfoPanelCategoryHeaderToggleButton">
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Template">
-         <Setter.Value>
-            <ControlTemplate TargetType="{x:Type ToggleButton}">
-               <Grid>
-                  <Grid.RowDefinitions>
-                     <RowDefinition Height="Auto" />
-                     <RowDefinition Height="Auto" />
-                  </Grid.RowDefinitions>
-                  <Grid.ColumnDefinitions>
-                     <ColumnDefinition Width="Auto" />
-                     <ColumnDefinition Width="*" />
-                  </Grid.ColumnDefinitions>
-
-                  <ContentPresenter Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Height="{TemplateBinding Height}" />
-
-                  <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
-                     <local:SvgImageToggleButton SvgImageToggleButton_IconGeometry="{StaticResource icon_chevron-right}" 
-                                                 SvgImageToggleButton_CheckedIconGeometry="{StaticResource icon_chevron-down}"
-                                                 SvgImageToggleButton_CheckedBackgroundColor="Transparent"
-                                                 SvgImageToggleButton_OverBackgroundColor="Transparent"
-                                                 SvgImageToggleButton_ImageSize="20"
-                                                 BorderThickness="0"
-                                                 Height="{TemplateBinding Height}"
-                                                 Margin="2,4,0,0"
-                                                 IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"/>
-                  </Grid>
-
-                  <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="1" BorderThickness="0" BorderBrush="{StaticResource OtherSide_DarkGray}" />
-
-               </Grid>
-            </ControlTemplate>
-         </Setter.Value>
-      </Setter>
-   </Style>
-
+   
+   <!-- Info Panel Category -->  
    <Style TargetType="{x:Type local:InfoPanelCategory}">
       <Setter Property="Template">
          <Setter.Value>
@@ -358,9 +320,8 @@
                      <ToggleButton x:Name="HeaderToggleButton"
                                    VerticalAlignment="Center"
                                    IsChecked="{Binding InfoPanelCategory_IsExpanded, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
-                                   Style="{StaticResource InfoPanelCategoryHeaderToggleButton}"
-                                   Content="{Binding InfoPanelCategory_HeaderName, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"
-                                   Cursor="Hand"/>
+                                   Style="{StaticResource TextExpanderHeaderToggleButton}"
+                                   Content="{Binding InfoPanelCategory_HeaderName, RelativeSource={RelativeSource AncestorType={x:Type local:InfoPanelCategory}}}"/>
                   </Border>
 
                   <ContentPresenter Grid.Row="1" 
