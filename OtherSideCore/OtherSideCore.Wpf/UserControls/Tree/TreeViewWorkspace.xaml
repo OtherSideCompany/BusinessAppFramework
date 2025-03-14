@@ -83,7 +83,9 @@
 
                <Grid Visibility="{Binding IsLoadingNestedStructures, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
 
-                  <ContentControl Content="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl}" />
+                  <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,4">
+                     <ContentControl Content="{Binding TreeViewWorkspace_Editor, ElementName=TreeViewWorkspaceUserControl}" />
+                  </ScrollViewer>
 
                   <editor:SaveCancelChangesAsyncView Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BoolToVisibleOrCollapsed}}"
                                                      SaveCancelChangesAsyncView_SaveCommand="{Binding SaveChangesAsyncCommand}"

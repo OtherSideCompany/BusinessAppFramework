@@ -200,7 +200,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      public async Task<DomainObject> DupplicateAsync(DomainObject? parent)
+      public virtual async Task<DomainObject> DupplicateAsync(DomainObject? parent)
       {
          var dupplicatedDomainObject = (T)DomainObjectViewModel.DomainObject.Clone();
 

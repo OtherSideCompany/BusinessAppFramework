@@ -24,6 +24,33 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(TextRadioButton_SelectedColorProperty, value); }
       }
 
+      public static readonly DependencyProperty TextRadioButton_OverBackgroundColorProperty =
+        DependencyProperty.Register("TextRadioButton_OverBackgroundColor", typeof(SolidColorBrush), typeof(TextRadioButton), new UIPropertyMetadata(Brushes.Transparent));
+
+      public SolidColorBrush TextRadioButton_OverBackgroundColor
+      {
+         get { return (SolidColorBrush)GetValue(TextRadioButton_OverBackgroundColorProperty); }
+         set { SetValue(TextRadioButton_OverBackgroundColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty TextRadioButton_MouseDownBackgroundColorProperty =
+        DependencyProperty.Register("TextRadioButton_MouseDownBackgroundColor", typeof(SolidColorBrush), typeof(TextRadioButton), new UIPropertyMetadata(Brushes.Transparent));
+
+      public SolidColorBrush TextRadioButton_MouseDownBackgroundColor
+      {
+         get { return (SolidColorBrush)GetValue(TextRadioButton_MouseDownBackgroundColorProperty); }
+         set { SetValue(TextRadioButton_MouseDownBackgroundColorProperty, value); }
+      }
+
+      public static readonly DependencyProperty TextRadioButton_CheckedBackgroundColorProperty =
+        DependencyProperty.Register("TextRadioButton_CheckedBackgroundColor", typeof(SolidColorBrush), typeof(TextRadioButton), new UIPropertyMetadata(Brushes.Transparent));
+
+      public SolidColorBrush TextRadioButton_CheckedBackgroundColor
+      {
+         get { return (SolidColorBrush)GetValue(TextRadioButton_CheckedBackgroundColorProperty); }
+         set { SetValue(TextRadioButton_CheckedBackgroundColorProperty, value); }
+      }
+
       static TextRadioButton()
       {
          DefaultStyleKeyProperty.OverrideMetadata(typeof(TextRadioButton), new FrameworkPropertyMetadata(typeof(TextRadioButton)));

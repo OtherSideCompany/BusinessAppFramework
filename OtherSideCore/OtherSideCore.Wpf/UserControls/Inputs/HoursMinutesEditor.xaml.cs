@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OtherSideCore.Wpf.UserControls.Filters
+namespace OtherSideCore.Wpf.UserControls.Input
 {
    /// <summary>
    /// Interaction logic for HoursMinutesEditor.xaml

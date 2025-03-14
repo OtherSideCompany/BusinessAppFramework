@@ -9,11 +9,12 @@
              xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             x:Name="KpiUserControl">
+             x:Name="ValueSummaryStickerUserControl">
     <Grid>
       <Border Grid.Column="0"
               BorderThickness="1"
               BorderBrush="{StaticResource OtherSide_LightGray}"
+              Background="{Binding ValueSummarySticker_Background, ElementName=ValueSummaryStickerUserControl}"
               CornerRadius="8"
               Padding="16,8,16,8">
          <Grid Grid.Column="0">
@@ -33,14 +34,15 @@
                     Height="32"
                     VerticalAlignment="Center"
                     Margin="0,0,16,0">
-               <osc_customcontrols:SvgViewer SvgViewer_ImageGeometry="{Binding ValueSummarySticker_IconGeometry, ElementName=KpiUserControl}"
+               <osc_customcontrols:SvgViewer SvgViewer_ImageGeometry="{Binding ValueSummarySticker_IconGeometry, ElementName=ValueSummaryStickerUserControl}"
                                              SvgViewer_ImageHeight="20"
-                                             SvgViewer_ImageColor="{Binding ValueSummarySticker_IconColor, ElementName=KpiUserControl}"/>
+                                             SvgViewer_ImageColor="{Binding ValueSummarySticker_IconColor, ElementName=ValueSummaryStickerUserControl}"/>
             </Border>
 
-            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource PropertyLabelTextBlock}" Margin="0" Text="{Binding ValueSummarySticker_Text, ElementName=KpiUserControl}" FontSize="14" />
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ValueSummarySticker_Value, ElementName=KpiUserControl}" FontSize="20" FontWeight="SemiBold"
-                       Foreground="{Binding ValueSummarySticker_ValueTextColor, ElementName=KpiUserControl}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource PropertyLabelTextBlock}" Margin="0" Text="{Binding ValueSummarySticker_Text, ElementName=ValueSummaryStickerUserControl}" FontSize="14" />
+
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ValueSummarySticker_Value, ElementName=ValueSummaryStickerUserControl}" FontSize="20" FontWeight="SemiBold"
+                       Foreground="{Binding ValueSummarySticker_ValueTextColor, ElementName=ValueSummaryStickerUserControl}"/>
 
          </Grid>
       </Border>

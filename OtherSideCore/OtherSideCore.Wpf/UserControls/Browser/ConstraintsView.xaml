@@ -11,6 +11,8 @@
     <Grid>
       <StackPanel Orientation="Horizontal">
          <customcontrols:TextRadioButton Margin="0,0,16,0"
+                                         Style="{StaticResource ConstraintTextRadioButton}"
+                                         TextRadioButton_SelectedColor="{Binding ConstraintsView_SelectedConstraintColor, ElementName=ConstraintsViewUserControl}"
                                          GroupName="{Binding UniqueGroupName, ElementName=ConstraintsViewUserControl}" 
                                          TextRadioButton_Text="Tout"
                                          Command="{Binding ConstraintsView_SearchCommand, ElementName=ConstraintsViewUserControl}"
@@ -26,6 +28,8 @@
             <ItemsControl.ItemTemplate>
                <DataTemplate>
                   <customcontrols:TextRadioButton Margin="0,0,16,0" 
+                                                  Style="{StaticResource ConstraintTextRadioButton}"
+                                                  TextRadioButton_SelectedColor="{Binding ConstraintsView_SelectedConstraintColor, ElementName=ConstraintsViewUserControl}"
                                                   GroupName="{Binding UniqueGroupName, ElementName=ConstraintsViewUserControl}" 
                                                   TextRadioButton_Text="{Binding Constraint.Name}"
                                                   IsChecked="{Binding IsSelected}"/>

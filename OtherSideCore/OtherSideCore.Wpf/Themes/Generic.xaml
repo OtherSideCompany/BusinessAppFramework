@@ -193,13 +193,13 @@
          <Setter.Value>
             <ControlTemplate TargetType="{x:Type local:SvgImageTextRadioButton}">
                <Border Width="{TemplateBinding Width}" 
-                     Height="{TemplateBinding Height}" 
-                     Background="{TemplateBinding Background}"
-                     x:Name="Border"
-                     BorderBrush="{StaticResource OtherSide_LightGray}"
-                     BorderThickness="{TemplateBinding BorderThickness}"
-                     CornerRadius="16"
-                     Padding="8,0,8,0">
+                       Height="{TemplateBinding Height}" 
+                       Background="{TemplateBinding Background}"
+                       x:Name="Border"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       CornerRadius="16"
+                       Padding="8,0,8,0">
                   <StackPanel HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Orientation="Horizontal"
@@ -346,26 +346,35 @@
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Template">
          <Setter.Value>
-            <ControlTemplate TargetType="{x:Type RadioButton}">
-               <StackPanel Background="Transparent">
-                  <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_Text}" 
-                             FontWeight="DemiBold"
-                             Foreground="Black"
+            <ControlTemplate TargetType="{x:Type local:TextRadioButton}">
+               <Border Width="{TemplateBinding Width}" 
+                       Height="{TemplateBinding Height}" 
+                       Background="{TemplateBinding Background}"
+                       x:Name="Border"
+                       BorderBrush="{StaticResource OtherSide_LightGray}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       CornerRadius="8"
+                       Padding="8,0,8,0">
+
+                  <TextBlock VerticalAlignment="Center" 
                              HorizontalAlignment="Center"
-                             x:Name="ConstraintName"/>
-                  <Border Height="2" 
-                          SnapsToDevicePixels="True" 
-                          Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_SelectedColor}" 
-                          Margin="0,3,0,0"
-                 x:Name="UnderlineBorder" Visibility="Hidden"/>
-               </StackPanel>
+                             Text="{Binding TextRadioButton_Text, RelativeSource={RelativeSource TemplatedParent}}" 
+                             TextWrapping="NoWrap"/>
+
+               </Border>
                <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                     <Setter Property="Background" Value="{Binding TextRadioButton_OverBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                  </Trigger>
                   <Trigger Property="IsChecked" Value="True">
-                     <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextRadioButton_SelectedColor}" TargetName="ConstraintName" />
-                     <Setter Property="Visibility" Value="Visible" TargetName="UnderlineBorder" />
-                     <Setter Property="FontWeight" Value="Bold" TargetName="ConstraintName" />
+                     <Setter Property="Background" Value="{Binding TextRadioButton_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                     <Setter Property="BorderThickness" Value="0" TargetName="Border"/>
+                  </Trigger>
+                  <Trigger Property="IsPressed" Value="True">
+                     <Setter Property="Background" Value="{Binding TextRadioButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -444,6 +453,43 @@
                   </Trigger>
                   <Trigger Property="IsPressed" Value="True">
                      <Setter Property="Background" Value="{Binding TextButton_MouseDownBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" TargetName="Border"/>
+                  </Trigger>
+               </ControlTemplate.Triggers>
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+   </Style>
+   
+   <!-- Switch -->
+   <Style TargetType="{x:Type local:Switch}">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Switch_UncheckedBackgroundColor" Value="{StaticResource OtherSide_Gray}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToggleButton}">
+               <Border Name="Border" CornerRadius="10">
+                  <StackPanel Orientation="Horizontal">
+                     <TextBlock Text="{Binding Switch_CheckedText, RelativeSource={RelativeSource TemplatedParent}}" Foreground="White" FontWeight="SemiBold"
+                                VerticalAlignment="Center" Margin="8,0,4,0" Name="CheckedTextBlock"/>
+                     <Ellipse Width="16" Height="16" Fill="White" Margin="4" Name="Ellipse"/>
+                     <TextBlock Text="{Binding Switch_UncheckedText, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center" Margin="4,0,8,0" Name="UncheckedTextBlock"/>
+                  </StackPanel>
+               </Border>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsChecked" Value="True">
+                     <Setter TargetName="Ellipse" Property="HorizontalAlignment" Value="Right" />
+                     <Setter TargetName="CheckedTextBlock" Property="Visibility" Value="Visible" />
+                     <Setter TargetName="UncheckedTextBlock" Property="Visibility" Value="Collapsed" />
+                     <Setter TargetName="Border" Property="Background" Value="{Binding Switch_CheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" />
+                  </Trigger>
+                  <Trigger Property="IsChecked" Value="False">
+                     <Setter TargetName="Ellipse" Property="HorizontalAlignment" Value="Left" />
+                     <Setter TargetName="CheckedTextBlock" Property="Visibility" Value="Collapsed" />
+                     <Setter TargetName="UncheckedTextBlock" Property="Visibility" Value="Visible" />
+                     <Setter TargetName="Border" Property="Background" Value="{Binding Switch_UncheckedBackgroundColor, RelativeSource={RelativeSource TemplatedParent}}" />
                   </Trigger>
                </ControlTemplate.Triggers>
             </ControlTemplate>

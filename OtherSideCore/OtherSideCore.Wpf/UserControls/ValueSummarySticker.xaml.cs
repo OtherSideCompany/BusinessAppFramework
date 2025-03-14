@@ -65,6 +65,15 @@ namespace OtherSideCore.Wpf.UserControls
          set { SetValue(ValueSummarySticker_ValueTextColorProperty, value); }
       }
 
+      public static readonly DependencyProperty ValueSummarySticker_BackgroundProperty =
+          DependencyProperty.Register("ValueSummarySticker_Background", typeof(SolidColorBrush), typeof(ValueSummarySticker), new UIPropertyMetadata(Brushes.Transparent));
+
+      public SolidColorBrush ValueSummarySticker_Background
+      {
+         get { return (SolidColorBrush)GetValue(ValueSummarySticker_BackgroundProperty); }
+         set { SetValue(ValueSummarySticker_BackgroundProperty, value); }
+      }
+
       public ValueSummarySticker()
       {
          InitializeComponent();

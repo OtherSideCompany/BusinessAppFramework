@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.UserControls.Browser
 {
@@ -19,6 +20,15 @@ namespace OtherSideCore.Wpf.UserControls.Browser
       {
          get { return (ICommand)GetValue(ConstraintsView_SearchCommandProperty); }
          set { SetValue(ConstraintsView_SearchCommandProperty, value); }
+      }
+
+      public static readonly DependencyProperty ConstraintsView_SelectedConstraintColorProperty =
+            DependencyProperty.Register("ConstraintsView_SelectedConstraintColor", typeof(SolidColorBrush), typeof(ConstraintsView), new UIPropertyMetadata(Brushes.Blue));
+
+      public SolidColorBrush ConstraintsView_SelectedConstraintColor
+      {
+         get { return (SolidColorBrush)GetValue(ConstraintsView_SelectedConstraintColorProperty); }
+         set { SetValue(ConstraintsView_SelectedConstraintColorProperty, value); }
       }
 
       public ConstraintsView()
