@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OtherSideCore.Application;
 using OtherSideCore.Infrastructure.Entities;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace OtherSideCore.Infrastructure.Context
@@ -11,6 +14,16 @@ namespace OtherSideCore.Infrastructure.Context
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
          modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string), typeof(int) })).HasName("EditDistance");
+
+         RestrictDeleteOnAllForeignKeys(modelBuilder);
+      }
+
+      protected void RestrictDeleteOnAllForeignKeys(ModelBuilder modelBuilder)
+      {
+         foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+         {
+            foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+         }
       }
    }
 }

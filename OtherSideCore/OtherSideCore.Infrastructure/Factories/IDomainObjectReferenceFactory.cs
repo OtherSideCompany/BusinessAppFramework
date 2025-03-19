@@ -10,6 +10,6 @@ namespace OtherSideCore.Infrastructure.Factories
 {
    public interface IDomainObjectReferenceFactory
    {
-      DomainObjectReference CreateDomainObjectReference(EntityBase entityBase);
+      DomainObjectReference CreateDomainObjectReference(IEntity entityBase);
    }
 }

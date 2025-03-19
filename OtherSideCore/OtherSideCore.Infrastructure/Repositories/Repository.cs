@@ -21,7 +21,7 @@ using ImageMagick;
 namespace OtherSideCore.Infrastructure.Repositories
 {
    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
-                                                                                             where TEntity : EntityBase, new()
+                                                                                             where TEntity : class, IEntity, new()
    {
       #region Fields
 
@@ -187,9 +187,9 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                _mapper.Map(domainObject, existingEntity);
 
-               existingEntity.LastModifiedDateTime = DateTime.Now;
-               existingEntity.LastModifiedById = userId;
-               existingEntity.LastModifiedByName = userName;
+               existingEntity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
+               existingEntity.HistoryInfo.LastModifiedById = userId;
+               existingEntity.HistoryInfo.LastModifiedByName = userName;
 
                await context.SaveChangesAsync();
 
@@ -228,9 +228,9 @@ namespace OtherSideCore.Infrastructure.Repositories
                   {
                      existingIndexableEntity.Index = indexableDomainObject.Index;
 
-                     existingEntity.LastModifiedDateTime = DateTime.Now;
-                     existingEntity.LastModifiedById = userId;
-                     existingEntity.LastModifiedByName = userName;
+                     existingEntity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
+                     existingEntity.HistoryInfo.LastModifiedById = userId;
+                     existingEntity.HistoryInfo.LastModifiedByName = userName;
 
                      await context.SaveChangesAsync();
 
@@ -264,7 +264,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
             await LoadNavigationPropertiesAsync(context, entity);
-
+            
             return _mapper.Map<TDomainObject>(entity);
          }
       }
@@ -306,7 +306,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                return await context.Set<TEntity>().AsNoTracking()
                                                   .Where(e => e.Id == domainObject.Id)
-                                                  .Select(e => e.LastModifiedDateTime)
+                                                  .Select(e => e.HistoryInfo.LastModifiedDateTime)
                                                   .FirstAsync(cancellationToken);
             }
             else
@@ -470,12 +470,12 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)
       {
-         entity.CreationDate = DateTime.Now;
-         entity.LastModifiedDateTime = DateTime.Now;
-         entity.CreatedById = userId;
-         entity.CreatedByName = userName;
-         entity.LastModifiedById = userId;
-         entity.LastModifiedByName = userName;
+         entity.HistoryInfo.CreationDate = DateTime.Now;
+         entity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
+         entity.HistoryInfo.CreatedById = userId;
+         entity.HistoryInfo.CreatedByName = userName;
+         entity.HistoryInfo.LastModifiedById = userId;
+         entity.HistoryInfo.LastModifiedByName = userName;
 
          await context.Set<TEntity>().AddAsync(entity);
 

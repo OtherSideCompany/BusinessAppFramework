@@ -2,6 +2,7 @@
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Entities;
+using System.Collections.Generic;
 
 namespace OtherSideCore.Infrastructure.Mapping
 {
@@ -9,11 +10,6 @@ namespace OtherSideCore.Infrastructure.Mapping
    {
       public InfrastructureMappingProfile()
       {
-         CreateMap<EntityBase, DomainObject>()
-            .IncludeAllDerived()
-            .ReverseMap()
-            .IncludeAllDerived();
-
          CreateMap<Entities.User, Domain.DomainObjects.User>().ReverseMap();
 
          // Warning : for each IIndexable, use .IgnoreAllCollections().ReverseMap().IgnoreAllVirtual().AfterMap((src, dest) => dest.Index = src.Index)

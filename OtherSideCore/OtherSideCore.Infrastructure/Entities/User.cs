@@ -6,8 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OtherSideCore.Infrastructure.Entities
 {
    [Table("Users")]
-   public class User : EntityBase
+   public class User : IEntity
    {
+      [Key]
+      [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+      public int Id { get; set; }
+
+      public HistoryInfo HistoryInfo { get; set; } = new HistoryInfo();
+
       public bool IsActive { get; set; }
 
       [Required]
