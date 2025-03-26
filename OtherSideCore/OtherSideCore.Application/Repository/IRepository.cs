@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Repository
 {
-   public interface IRepository<T> : IDisposable where T : DomainObject, new()
+   public interface IRepository<T> : IDisposable where T : DomainObject
    {
       Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
@@ -33,12 +33,14 @@ namespace OtherSideCore.Application.Repository
 
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<DomainObjectReference>> GetDomainObjectReferences(int domainObjectId, CancellationToken cancellationToken);
+      Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken);
 
       Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken);
 
       Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken);
 
-      Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken);
+      Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken);
+
+      Task<int?> GetParentIdAsync<U>(T domainObject, CancellationToken cancellationToken = default) where U : DomainObject;
    }
 }

@@ -727,7 +727,8 @@
                                                     BorderThickness="0"
                                                     SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
                                                     SvgImageButton_ImageSize="20"
-                                                    Command="{Binding ClickSelectSearchTextBox_SearchCommand, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                    Command="{Binding ClickSelectSearchTextBox_SearchCommand, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                    IsEnabled="{Binding ClickSelectSearchTextBox_CanSearch, RelativeSource={RelativeSource TemplatedParent}}"/>
 
                   </Grid>
                </Border>

@@ -10,4 +10,5 @@
    <converters:DateOnlyToDateTimeConverter x:Key="DateOnlyToDateTimeConverter" />
    <converters:LastColumnIndexConverter x:Key="LastColumnIndexConverter" />
    <converters:KeyToValueConverter x:Key="KeyToValueConverter" />
+   <converters:ToStringConverter x:Key="ToStringConverter" />
 </ResourceDictionary>

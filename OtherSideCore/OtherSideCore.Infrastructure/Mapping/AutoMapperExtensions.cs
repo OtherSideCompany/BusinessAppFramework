@@ -3,6 +3,7 @@ using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Entities;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 
 namespace OtherSideCore.Infrastructure.Mapping
 {

@@ -1,8 +1,8 @@
 ﻿using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Repository;
+using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
-using System.Threading;
 
 namespace OtherSideCore.Application.Services
 {
@@ -13,6 +13,8 @@ namespace OtherSideCore.Application.Services
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
       protected readonly IDomainObjectServiceFactory _domainObjectServiceFactory;
+      protected IUserDialogService _userDialogService;
+      protected IDomainObjectFileService _domainObjectFileService;
 
       #endregion
 
@@ -30,11 +32,18 @@ namespace OtherSideCore.Application.Services
 
       #region Constructor
 
-      public DomainObjectService(IRepository<T> repository, IUserContext userContext, IDomainObjectServiceFactory domainObjectServiceFactory)
+      public DomainObjectService(
+         IRepository<T> repository, 
+         IUserContext userContext, 
+         IDomainObjectServiceFactory domainObjectServiceFactory,
+         IUserDialogService userDialogService,
+         IDomainObjectFileService domainObjectFileService)
       {
          _repository = repository;
          _userContext = userContext;
          _domainObjectServiceFactory = domainObjectServiceFactory;
+         _userDialogService = userDialogService;
+         _domainObjectFileService = domainObjectFileService;
       }
 
       #endregion
@@ -84,13 +93,29 @@ namespace OtherSideCore.Application.Services
          if (domainObject is ICommentThreadContainer commentThreadContainer)
          {            
             commentThreadId = await commentThreadService.GetCommentThreadIdAsync(commentThreadContainer);
-         }         
+         }
 
-         await _repository.DeleteAsync(domainObject);
-
-         if (commentThreadId.HasValue)
+         try
          {
-            await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
+            await _repository.DeleteAsync(domainObject);
+
+            if (commentThreadId.HasValue)
+            {
+               await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
+            }
+         }
+         catch (Exception)
+         {
+            _userDialogService.Error("Suppression impossible car des données sont associées");
+         }
+
+         try
+         {
+            _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
+         }
+         catch (IOException)
+         {
+            _userDialogService.Error("Impossible de supprimer le dossier associé. Veuillez le supprimer manuellement.\n\n" + _domainObjectFileService.GetAssociatedDirectoryInfo(domainObject).FullName);
          }
       }
 
@@ -111,7 +136,7 @@ namespace OtherSideCore.Application.Services
 
       public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
       {
-         return await _repository.GetDomainObjectReferences(domainObjectId, cancellationToken);
+         return await _repository.GetDomainObjectReferencesAsync(domainObjectId, cancellationToken);
       }
 
       public async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default)
@@ -124,9 +149,9 @@ namespace OtherSideCore.Application.Services
          await _repository.DeleteDomainObjectReferenceAsync(domainObjectId, domainObjectReference, cancellationToken);
       }
 
-      public async Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken = default)
+      public virtual async Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken = default)
       {
-         await _repository.SetParent(domainObject, parent, cancellationToken);
+         await _repository.SetParentAsync(domainObject, parent, cancellationToken);
       }
 
       #endregion

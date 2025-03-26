@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
+   public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
    {
       #region Fields
 
@@ -98,7 +98,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Constructor
 
       public DomainObjectsSearchViewModel(
-         DomainObjectSearch<T> domainObjectSearch, 
+         DomainObjectSearch<T> domainObjectSearch,
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
          IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
       {
@@ -181,10 +181,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return searchResultViewModel;
       }
 
-      public void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      public void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel? domainObjectSearchResultViewModel)
       {
-         domainObjectSearchResultViewModel.Dispose();
-         SearchResultViewModels.Remove(domainObjectSearchResultViewModel);
+         if (domainObjectSearchResultViewModel != null)
+         {
+            domainObjectSearchResultViewModel.Dispose();
+            SearchResultViewModels.Remove(domainObjectSearchResultViewModel);
+         }
       }
 
       public void RemoveSearchResultViewModel(int domainObjectId)
@@ -305,7 +308,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void CancelSearch()
       {
          _domainObjectSearch.CancelSearch();
-      }      
+      }
 
       #endregion
    }

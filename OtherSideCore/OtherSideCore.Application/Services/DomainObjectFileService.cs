@@ -68,12 +68,16 @@ namespace OtherSideCore.Application.Services
          return directoryInfos.OrderBy(d => d.Name).ToList();
       }
 
-      public abstract DirectoryInfo GetAssociatedDirectoryInfo(DomainObject domainObject);
+      public abstract DirectoryInfo? GetAssociatedDirectoryInfo(DomainObject domainObject);
 
       public void CreateFolder(DomainObject domainObject)
       {
-         var folderName = GetAssociatedDirectoryInfo(domainObject).FullName;
-         Directory.CreateDirectory(folderName);
+         var folderName = GetAssociatedDirectoryInfo(domainObject)?.FullName;
+
+         if (folderName != null)
+         {
+            Directory.CreateDirectory(folderName);
+         }
       }
 
       public void OpenFolder(DomainObject domainObject)
@@ -81,11 +85,14 @@ namespace OtherSideCore.Application.Services
          OpenFolder(GetAssociatedDirectoryInfo(domainObject));
       }
 
-      public void OpenFolder(DirectoryInfo directoryInfo)
+      public void OpenFolder(DirectoryInfo? directoryInfo)
       {
          try
          {
-            Process.Start("explorer.exe", directoryInfo.FullName);
+            if (directoryInfo != null && directoryInfo.Exists)
+            {
+               Process.Start("explorer.exe", directoryInfo.FullName);
+            }
          }
          catch (System.ComponentModel.Win32Exception e)
          {
@@ -172,7 +179,7 @@ namespace OtherSideCore.Application.Services
       {
          var associatedFolder = GetAssociatedDirectoryInfo(domainObject);
 
-         if (associatedFolder.Exists)
+         if (associatedFolder != null && associatedFolder.Exists)
          {
             try
             {

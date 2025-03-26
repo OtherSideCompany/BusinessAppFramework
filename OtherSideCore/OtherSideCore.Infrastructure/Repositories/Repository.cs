@@ -16,7 +16,6 @@ using OtherSideCore.Application;
 using OtherSideCore.Domain;
 using OtherSideCore.Infrastructure.Factories;
 using OtherSideCore.Application.Factories;
-using ImageMagick;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -316,9 +315,9 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferences(int domainObjectId, CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken)
       {
-         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferences), domainObjectId);
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
          return new List<DomainObjectReference>();
       }
 
@@ -332,9 +331,9 @@ namespace OtherSideCore.Infrastructure.Repositories
          throw new NotImplementedException($"Cannot delete reference from type {GetType()}");
       }
 
-      public async Task SetParent(TDomainObject domainObject, DomainObject parent, CancellationToken cancellationToken = default)
+      public async Task SetParentAsync(TDomainObject domainObject, DomainObject parent, CancellationToken cancellationToken = default)
       {
-         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(SetParent), domainObject.Id);
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(SetParentAsync), domainObject.Id);
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
@@ -346,6 +345,13 @@ namespace OtherSideCore.Infrastructure.Repositories
                await context.SaveChangesAsync(cancellationToken);
             }
          }
+      }
+
+      public virtual async Task<int?> GetParentIdAsync<U>(TDomainObject domainObject, CancellationToken cancellationToken = default) where U : DomainObject
+      {
+         _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetParentIdAsync));
+
+         return await Task.FromResult<int?>(null);
       }
 
       public void Dispose()
