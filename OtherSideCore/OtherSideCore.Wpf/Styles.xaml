@@ -24,6 +24,8 @@
 
    <SolidColorBrush Color="#FF0bc136" x:Key="OtherSide_Green" />
 
+   <SolidColorBrush Color="#FFFFEF00" x:Key="OtherSide_Yellow" />
+
    <SolidColorBrush Color="#ff1789fc" x:Key="Highlight_Blue" />
 
    <SolidColorBrush Color="#FFc90219" x:Key="Locked_Red" Opacity="0.3"/>  

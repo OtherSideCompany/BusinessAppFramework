@@ -244,7 +244,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                nestedTreeViewModel.TreeModified += DomainObjectDetailsEditorViewModel_NestedTreeViewModelTreeModifiedAsync;
             }
          }
-      }
+      }  
 
       private async Task CreateEditorViewModelsAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
@@ -256,6 +256,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          editorViewModel.PropertyChanged += SelectedDomainObjectEditorViewModel_PropertyChanged;
          editorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
          editorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
+         editorViewModel.DomainObjectReferencesModified += SelectedEditorViewModel_DomainObjectReferencesModified;
 
          SelectedDomainObjectEditorViewModel = editorViewModel;
 
@@ -277,6 +278,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             SelectedDomainObjectEditorViewModel.PropertyChanged -= SelectedDomainObjectEditorViewModel_PropertyChanged;
             SelectedDomainObjectEditorViewModel.DomainObjectSavedEvent -= DomainObjectEditorViewModel_DomainObjectSavedEvent;
             SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent -= SelectedEditorViewModel_DomainObjectDeletedEvent;
+            SelectedDomainObjectEditorViewModel.DomainObjectReferencesModified -= SelectedEditorViewModel_DomainObjectReferencesModified;
 
             SelectedDomainObjectEditorViewModel = null;
          }         
@@ -330,6 +332,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Selection.ClearSelection();
          DeleteSelectedEditorsViewModel();
          UpdateUnsavedChanges();
+      }
+
+      private void SelectedEditorViewModel_DomainObjectReferencesModified(object? sender, EventArgs e)
+      {
+         DomainObjectSearchViewModel.ReloadSearchResultAsync(((DomainObjectSearchResultViewModel)Selection.SelectedItem).DomainObjectSearchResult.DomainObjectId);
       }
 
       private void PreviewUnloadSearchResultViewModelsAsync(object? sender, EventArgs e)

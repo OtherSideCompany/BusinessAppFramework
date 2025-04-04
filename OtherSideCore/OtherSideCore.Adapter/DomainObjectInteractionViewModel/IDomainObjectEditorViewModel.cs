@@ -13,6 +13,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       event EventHandler<int> DomainObjectSavedEvent;
 
       event EventHandler<int> DomainObjectDeletedEvent;
+
+      event EventHandler DomainObjectReferencesModified;
+
       bool HasUnsavedChanges { get; }
       bool IsEnabled { get; }
       bool CanSaveChanges();

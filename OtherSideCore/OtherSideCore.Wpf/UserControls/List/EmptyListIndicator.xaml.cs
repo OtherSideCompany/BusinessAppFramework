@@ -25,6 +25,16 @@ namespace OtherSideCore.Wpf.UserControls.List
          get { return (string)GetValue(EmptyListIndicator_BorderThicknessProperty); }
          set { SetValue(EmptyListIndicator_BorderThicknessProperty, value); }
       }
+
+      public static readonly DependencyProperty EmptyListIndicator_TextHorizontalAlignmentProperty =
+          DependencyProperty.Register("EmptyListIndicator_TextHorizontalAlignment", typeof(HorizontalAlignment), typeof(EmptyListIndicator), new UIPropertyMetadata(HorizontalAlignment.Left));
+
+      public HorizontalAlignment EmptyListIndicator_TextHorizontalAlignment
+      {
+         get { return (HorizontalAlignment)GetValue(EmptyListIndicator_TextHorizontalAlignmentProperty); }
+         set { SetValue(EmptyListIndicator_TextHorizontalAlignmentProperty, value); }
+      }
+
       public EmptyListIndicator()
       {
          InitializeComponent();

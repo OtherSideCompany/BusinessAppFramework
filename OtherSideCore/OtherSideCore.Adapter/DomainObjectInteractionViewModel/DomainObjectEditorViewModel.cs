@@ -69,6 +69,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public event EventHandler<int> DomainObjectSavedEvent;
       public event EventHandler<int> DomainObjectDeletedEvent;
+      public event EventHandler DomainObjectReferencesModified;
 
       #endregion
 
@@ -184,7 +185,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual async Task LoadNestedStructuresAsync()
       {
          RefreshWorkflows();
-         DomainObjectReferenceSelectorViewModels.ToList().ForEach(async vm => await vm.DomainObjectSelectorViewModel.InitializeAsync());
+
+         foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
+         {
+            await domainObjectReferenceSelectorViewModel.DomainObjectSelectorViewModel.InitializeAsync();
+         }
       }
 
       public async Task LoadDomainObjetReferencesAsync()
@@ -256,6 +261,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          var domainObjectReference = await _domainObjectService.CreateDomainObjectReferenceAsync(DomainObjectViewModel.DomainObject.Id, e.DomainObjectId, e.ReferenceType);
 
          await LoadDomainObjetReferencesAsync();
+
+         DomainObjectReferencesModified?.Invoke(this, EventArgs.Empty);
       }
 
       private void ShowDomainObjectReferenceSelectors()
@@ -271,6 +278,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
             DomainObjectReferenceViewModels.Remove(domainObjectReferenceViewModel);
          }
+
+         DomainObjectReferencesModified?.Invoke(this, EventArgs.Empty);
       }
 
       protected void RefreshWorkflows()

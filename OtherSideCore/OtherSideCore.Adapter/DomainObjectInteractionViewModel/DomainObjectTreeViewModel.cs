@@ -19,7 +19,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
 
-      private IDomainObjectInteractionService _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionService;
       private IDomainObjectTreeSearchViewModel _domainObjectTreeSearchViewModel;
       protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
       protected IDomainObjectServiceFactory _domainObjectServiceFactory;
@@ -114,13 +114,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Constructor
 
       public DomainObjectTreeViewModel(IUserDialogService userDialogService,
-                                       IDomainObjectInteractionService domainObjectInteractionFactory,
+                                       IDomainObjectInteractionService domainObjectInteractionService,
                                        IDomainObjectTreeSearchViewModel domainObjectTreeSearchViewModel,
                                        IDomainObjectViewModelFactory domainObjectViewModelFactory,
                                        IDomainObjectServiceFactory domainObjectServiceFactory,
                                        IDomainObjectSearchFactory domainObjectSearchFactory)
       {
-         _domainObjectInteractionFactory = domainObjectInteractionFactory;
+         _domainObjectInteractionService = domainObjectInteractionService;
          _domainObjectTreeSearchViewModel = domainObjectTreeSearchViewModel;
          _domainObjectViewModelFactory = domainObjectViewModelFactory;
          _domainObjectServiceFactory = domainObjectServiceFactory;
@@ -147,7 +147,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task SaveChangesAsync()
       {
-         _inlineNodes.Select(n => n.DomainObjectEditorViewModel).ToList().ForEach(async vm => await vm.SaveChangesAsync());
+         foreach (var viewModel in _inlineNodes.Select(n => n.DomainObjectEditorViewModel))
+         {
+            await viewModel.SaveChangesAsync();
+         }
       }
 
       public virtual bool CanCancelChanges()
@@ -157,7 +160,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task CancelChangesAsync()
       {
-         _inlineNodes.Select(n => n.DomainObjectEditorViewModel).ToList().ForEach(async vm => await vm.CancelChangesAsync());
+         foreach (var viewModel in _inlineNodes.Select(n => n.DomainObjectEditorViewModel))
+         {
+            await viewModel.CancelChangesAsync();
+         }
       }
 
       public async Task InitializeAsync(DomainObjectViewModel domainObjectViewModel)
@@ -214,7 +220,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectRootTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
+         var domainObjectRootTreeViewNode = _domainObjectInteractionService.CreateDomainObjectTreeViewNode(domainObjectViewModel);
 
          DomainObjectTreeViewModelExtension.InsertNodeInList(domainObjectRootTreeViewNode, Roots);
 
@@ -231,7 +237,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectTreeViewNode = _domainObjectInteractionFactory.CreateDomainObjectTreeViewNode(domainObjectViewModel);
+         var domainObjectTreeViewNode = _domainObjectInteractionService.CreateDomainObjectTreeViewNode(domainObjectViewModel);
          var parentNode = GetNode(parentViewModel);
          parentNode.AddChild(domainObjectTreeViewNode, _isInitializingTree);
          RegisterNode(domainObjectTreeViewNode);

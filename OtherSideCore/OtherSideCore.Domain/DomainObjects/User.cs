@@ -42,11 +42,16 @@ namespace OtherSideCore.Domain.DomainObjects
          IsActive = true;
       }
 
+      public override string ToString()
+      {
+         return FirstName + " " + LastName;
+      }
+
       #endregion
 
       #region Public Methods
 
-      
+
 
       #endregion
    }

@@ -27,6 +27,8 @@ namespace OtherSideCore.Application.Services
 
       Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default);
 
-      Task SetParent(T domainObject, DomainObject parent, CancellationToken cancellationToken = default);
+      Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken = default);
+
+      Task<int?> GetParentIdAsync<U>(T domainObject, CancellationToken cancellationToken = default) where U : DomainObject;
    }
 }

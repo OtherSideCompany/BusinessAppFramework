@@ -15,7 +15,7 @@
            Padding="4"
            BorderThickness="{Binding EmptyListIndicator_BorderThickness, ElementName=EmptyListIndicatorUserControl}"
            Visibility="{Binding Count, Converter={StaticResource ZeroToVisibilityConverter}, ConverterParameter=invert}">
-      <Grid>
+      <Grid HorizontalAlignment="{Binding EmptyListIndicator_TextHorizontalAlignment, ElementName=EmptyListIndicatorUserControl}">
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />

@@ -11,4 +11,6 @@
    <converters:LastColumnIndexConverter x:Key="LastColumnIndexConverter" />
    <converters:KeyToValueConverter x:Key="KeyToValueConverter" />
    <converters:ToStringConverter x:Key="ToStringConverter" />
+   <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+   <converters:IntEqualsConverter x:Key="IntEqualsConverter" />
 </ResourceDictionary>
