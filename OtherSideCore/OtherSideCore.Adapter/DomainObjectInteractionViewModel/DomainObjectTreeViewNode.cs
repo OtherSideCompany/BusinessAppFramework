@@ -90,6 +90,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Commands
 
       public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateChildNodeAsyncCommand { get; private set; }
+      public AsyncRelayCommand ShowDomainObjectDetailsEditorAsyncCommand { get; private set; }
 
       #endregion
 
@@ -113,7 +114,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Children = new ObservableCollection<IDomainObjectTreeViewNode>();
 
          DupplicateChildNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateChildNodeAsync, CanDupplicateChildNodeAsync);
-      }      
+         ShowDomainObjectDetailsEditorAsyncCommand = new AsyncRelayCommand(ShowDomainObjectDetailsEditorAsync, CanShowDomainObjectDetailsEditor);
+      }
 
       #endregion
 
@@ -204,7 +206,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void DomainObjectEditorViewModel_DomainObjectDeleted(object? sender, int e)
       {
          NodeDeleted?.Invoke(this, this);
-      }      
+      }
 
       protected virtual void NotifyCommandsCanExecuteChanged()
       {
@@ -240,7 +242,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
             await domainObjectService.SaveIndexAsync(indexableDomainObject);
          }
-      }      
+      }
+
+      public bool CanShowDomainObjectDetailsEditor()
+      {
+         return !DomainObjectEditorViewModel.HasUnsavedChanges;
+      }
+
+      public virtual async Task ShowDomainObjectDetailsEditorAsync()
+      {
+         await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectViewModel, DisplayType.Modal);
+      }
 
       #endregion
    }
