@@ -322,10 +322,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          if (confirmation)
          {
             var domainObjectId = DomainObjectViewModel.DomainObject.Id;
-            await _domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject);
-            DomainObjectDeletedEvent?.Invoke(this, domainObjectId);
 
-            RefreshWorkflows();
+            if (await _domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject))
+            {
+               DomainObjectDeletedEvent?.Invoke(this, domainObjectId);
+               RefreshWorkflows();
+            }
          }
       }
 
@@ -352,7 +354,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          NotifyCommandsCanExecuteChanged();
       }
 
-      private void NestedDomainObjectTreeViewModel_TreeModified(object? sender, EventArgs e)
+      protected virtual void NestedDomainObjectTreeViewModel_TreeModified(object? sender, EventArgs e)
       {
          RefreshWorkflows();
       }

@@ -19,7 +19,7 @@ namespace OtherSideCore.Application.Services
 
       Task SaveIndexAsync(IIndexable domainObject);
 
-      Task DeleteAsync(T domainObject);
+      Task<bool> DeleteAsync(T domainObject);
 
       Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default);
 

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.UserControls.List
 {
@@ -33,6 +34,15 @@ namespace OtherSideCore.Wpf.UserControls.List
       {
          get { return (HorizontalAlignment)GetValue(EmptyListIndicator_TextHorizontalAlignmentProperty); }
          set { SetValue(EmptyListIndicator_TextHorizontalAlignmentProperty, value); }
+      }
+
+      public static readonly DependencyProperty EmptyListIndicator_BackgroundProperty =
+          DependencyProperty.Register("EmptyListIndicator_Background", typeof(SolidColorBrush), typeof(EmptyListIndicator), new UIPropertyMetadata(Brushes.White));
+
+      public SolidColorBrush EmptyListIndicator_Background
+      {
+         get { return (SolidColorBrush)GetValue(EmptyListIndicator_BackgroundProperty); }
+         set { SetValue(EmptyListIndicator_BackgroundProperty, value); }
       }
 
       public EmptyListIndicator()

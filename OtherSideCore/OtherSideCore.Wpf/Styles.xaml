@@ -23,6 +23,7 @@
    <SolidColorBrush Color="#FFb20015" x:Key="OtherSide_Red_Dark"/>
 
    <SolidColorBrush Color="#FF0bc136" x:Key="OtherSide_Green" />
+   <SolidColorBrush Color="#FF078024" x:Key="OtherSide_Green_Dark" />
 
    <SolidColorBrush Color="#FFFFEF00" x:Key="OtherSide_Yellow" />
 
@@ -1347,7 +1348,48 @@
       </Setter>
       
    </Style>
-   
+
+   <Style TargetType="{x:Type ToggleButton}" x:Key="LinkToggleButton">
+      <Setter Property="Foreground" Value="Black" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Template">
+         <Setter.Value>
+            <ControlTemplate TargetType="ToggleButton">
+
+               <Grid>
+                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto" />
+                     <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <ContentPresenter Grid.Row="0" 
+                                    Content="{TemplateBinding Content}" 
+                                    TextBlock.Foreground="{TemplateBinding Foreground}" 
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}" 
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                                    TextBlock.FontWeight="{TemplateBinding FontWeight}"/>
+
+                  <Border x:Name="Border"
+                       Grid.Row="1"
+                       BorderThickness="0,1,0,0"
+                       BorderBrush="{TemplateBinding Foreground}" />
+               </Grid>
+               <ControlTemplate.Triggers>
+                  <Trigger Property="IsEnabled" Value="False">
+                     <Setter Property="Opacity" Value="0.3" TargetName="Border" />
+                  </Trigger>
+               </ControlTemplate.Triggers>
+
+            </ControlTemplate>
+         </Setter.Value>
+      </Setter>
+
+   </Style>
+
    <!-- Tree view node grid style -->
    <Style TargetType="{x:Type Grid}" x:Key="TreeViewNodeGridStyle">
       <Setter Property="MinHeight" Value="28" />

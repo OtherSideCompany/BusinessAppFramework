@@ -87,7 +87,7 @@ namespace OtherSideCore.Application.Services
          return domainObject;
       }
 
-      public virtual async Task DeleteAsync(T domainObject)
+      public virtual async Task<bool> DeleteAsync(T domainObject)
       {
          var deletedDomainObjectId = domainObject.Id;
 
@@ -101,6 +101,8 @@ namespace OtherSideCore.Application.Services
 
          try
          {
+            await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectDeletingEvent(domainObject));
+
             await _repository.DeleteAsync(domainObject);
 
             if (commentThreadId.HasValue)
@@ -109,20 +111,23 @@ namespace OtherSideCore.Application.Services
             }
 
             await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
+
+            try
+            {
+               _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
+            }
+            catch (IOException)
+            {
+               _userDialogService.Error("Impossible de supprimer le dossier associé. Veuillez le supprimer manuellement.\n\n" + _domainObjectFileService.GetAssociatedDirectoryInfo(domainObject).FullName);
+            }
+
+            return true;
          }
          catch (Exception)
          {
             _userDialogService.Error("Suppression impossible car des données sont associées");
-         }
-
-         try
-         {
-            _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
-         }
-         catch (IOException)
-         {
-            _userDialogService.Error("Impossible de supprimer le dossier associé. Veuillez le supprimer manuellement.\n\n" + _domainObjectFileService.GetAssociatedDirectoryInfo(domainObject).FullName);
-         }
+            return false;
+         }         
       }
 
       public async Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)

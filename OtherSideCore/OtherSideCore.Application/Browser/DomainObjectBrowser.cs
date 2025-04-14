@@ -80,26 +80,7 @@ namespace OtherSideCore.Application.Browser
          await DomainObjectSearch.AddSearchResultAsync(domainObject.Id);
 
          return domainObject;
-      }
-
-      public async Task DeleteAsync(T domainObject)
-      {
-         var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<T>();
-
-         await domainObjectService.DeleteAsync(domainObject);
-         DomainObjectSearch.RemoveSearchResult(domainObject.Id);
-      }
-
-      public async Task DeleteAsync(List<T> domainObjects)
-      {
-         var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<T>();
-
-         foreach (var domainObject in domainObjects)
-         {
-            await domainObjectService.DeleteAsync(domainObject);
-            DomainObjectSearch.RemoveSearchResult(domainObject.Id);
-         }
-      }
+      }      
 
       public virtual void Dispose()
       {
