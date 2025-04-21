@@ -1,12 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using OtherSideCore.Application.Browser;
-using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Search
 {
-    public class DomainObjectSearch<T> : IDomainObjectSearch<T> where T : DomainObject, new()
+   public class DomainObjectSearch<T> : IDomainObjectSearch<T> where T : DomainObject, new()
    {
       #region Fields
 
@@ -16,7 +15,8 @@ namespace OtherSideCore.Application.Search
 
       private Func<CancellationToken, Task> _selectedSearchResultChangedAsync;
       protected Constraint<T> _activatedConstraint;
-      private List<Constraint<T>> _constraints;
+      private List<Constraint<T>> _activableConstraints;
+      private List<Constraint<T>> _filterConstraints;
 
       protected CancellationTokenSource? _currentSearchCancellationTokenSource;
       private readonly SemaphoreSlim _searchSemaphore = new SemaphoreSlim(1, 1);
@@ -29,7 +29,7 @@ namespace OtherSideCore.Application.Search
       public int PageSize = 20;
       public PageNavigation PageNavigation => _pageNavigation;
       public List<DomainObjectSearchResult> SearchResults => _searchResults;
-      public Constraint<T>  ActivatedConstraint => _activatedConstraint;
+      public Constraint<T> ActivatedConstraint => _activatedConstraint;
 
       #endregion
 
@@ -46,7 +46,8 @@ namespace OtherSideCore.Application.Search
       {
          _domainObjectQueryService = domainObjectQueryService;
          _searchResults = new List<DomainObjectSearchResult>();
-         _constraints = new List<Constraint<T>>();
+         _activableConstraints = new List<Constraint<T>>();
+         _filterConstraints = new List<Constraint<T>>();
          _pageNavigation = new PageNavigation();
       }
 
@@ -54,20 +55,31 @@ namespace OtherSideCore.Application.Search
 
       #region Public Methods
 
-      public void ClearConstraints()
+      public void ClearActivableConstraints()
       {
-         _constraints.Clear();
+         _activableConstraints.Clear();
       }
 
-      public List<Constraint<T>> GetConstraints()
+      public void ClearFilterConstraints()
       {
-         return _constraints;
+         _filterConstraints.Clear();
       }
 
-      public void SetConstraints(List<Constraint<T>> constraints)
+      public List<Constraint<T>> GetActivableConstraints()
       {
-         _constraints.Clear();
-         _constraints.AddRange(constraints);
+         return _activableConstraints;
+      }
+
+      public void SetActivableConstraints(List<Constraint<T>> constraints)
+      {
+         ClearActivableConstraints();
+         _activableConstraints.AddRange(constraints);
+      }
+
+      public void SetFilterConstraints(List<Constraint<T>> constraints)
+      {
+         ClearFilterConstraints();
+         _filterConstraints.AddRange(constraints);
       }
 
       public async Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject parent = null)
@@ -120,7 +132,7 @@ namespace OtherSideCore.Application.Search
          }
          finally
          {
-            ShutdownSearch();            
+            ShutdownSearch();
          }
 
          return searchResult;
@@ -204,10 +216,22 @@ namespace OtherSideCore.Application.Search
          }
       }
 
+      private Constraint<T> GetConstraints()
+      {
+         var expression = _activatedConstraint != null ? _activatedConstraint.Expression : x => true;
+
+         foreach (var filterConstraint in _filterConstraints)
+         {
+            expression = expression.And(filterConstraint.Expression);
+         }
+
+         return new Constraint<T>(expression);
+      }
+
       protected async Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject? parent, CancellationToken cancellationToken)
       {
          var results = await _domainObjectQueryService.SearchAsync(filters,
-                                                                   _activatedConstraint,
+                                                                   GetConstraints(),
                                                                    parent,
                                                                    extendedSearch,
                                                                    cancellationToken);
@@ -228,7 +252,7 @@ namespace OtherSideCore.Application.Search
          var pageToSelect = resetPages ? 1 : Math.Max(1, _pageNavigation.CurrentPageNumber);
 
          var pagedResult = await _domainObjectQueryService.PaginatedSearchAsync(filters,
-                                                                                _activatedConstraint,
+                                                                                GetConstraints(),
                                                                                 parent,
                                                                                 extendedSearch,
                                                                                 pageToSelect,

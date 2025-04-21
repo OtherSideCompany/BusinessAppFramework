@@ -9,7 +9,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private DomainObjectBrowserViewModel<T> _browserViewModel;
-      protected IDomainObjectInteractionService _domainObjectInteractionFactory;
+      protected IDomainObjectInteractionService _domainObjectInteractionService;
 
       #endregion
 
@@ -37,7 +37,7 @@ namespace OtherSideCore.Adapter.Views
 
       public SingleDomainObjectBrowserWorkspaceViewModel(IWindowService windowService, IDomainObjectInteractionService domainObjectInteractionFactory) : base()
       {
-         _domainObjectInteractionFactory = domainObjectInteractionFactory;
+         _domainObjectInteractionService = domainObjectInteractionFactory;
 
          WorkspaceDescription = (WorkspaceDescription)windowService.GetDescription(this);
 
@@ -87,7 +87,7 @@ namespace OtherSideCore.Adapter.Views
 
       protected virtual void CreateBrowserViewModel()
       {
-         BrowserViewModel = (DomainObjectBrowserViewModel<T>)_domainObjectInteractionFactory.CreateDomainObjectBrowserViewModel<T>();
+         BrowserViewModel = (DomainObjectBrowserViewModel<T>)_domainObjectInteractionService.CreateDomainObjectBrowserViewModel<T>();
       }
 
       private void BrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
@@ -24,7 +23,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private SingleTextFilterViewModel _singleTextFilterViewModel;
       private MultiTextFilterViewModel _multiTextFilterViewModel;
       private PageNavigationViewModel _pageNavigationViewModel;
-      private ObservableCollection<ConstraintViewModel<T>> _constraintViewModels;
+      private ObservableCollection<ConstraintViewModel<T>> _activableConstraintViewModels;
 
       private bool _isExecutingSearch;
 
@@ -62,15 +61,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          set => SetProperty(ref _pageNavigationViewModel, value);
       }
 
-      public ObservableCollection<ConstraintViewModel<T>> ConstraintViewModels
+      public ObservableCollection<ConstraintViewModel<T>> ActivableConstraintViewModels
       {
-         get => _constraintViewModels;
-         set => SetProperty(ref _constraintViewModels, value);
+         get => _activableConstraintViewModels;
+         set => SetProperty(ref _activableConstraintViewModels, value);
       }
 
-      public ConstraintViewModel<T> SelectedConstraintViewModel => ConstraintViewModels.FirstOrDefault(vm => vm.IsSelected);
+      public ConstraintViewModel<T> ActivatedConstraintViewModel => ActivableConstraintViewModels.FirstOrDefault(vm => vm.IsSelected);
 
-      public bool IsAnyConstraintSelected => SelectedConstraintViewModel != null;
+      public bool IsAnyConstraintActivated => ActivatedConstraintViewModel != null;
 
 
       public bool IsExecutingSearch
@@ -89,9 +88,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Commands
 
-      public AsyncRelayCommand<SearchParameters> SearchCommandAsync { get; private set; }
-      public AsyncRelayCommand<PaginatedSearchParameters> PaginatedSearchCommandAsync { get; private set; }
-      public RelayCommand CancelSearchCommand { get; private set; }
+      
 
       #endregion
 
@@ -106,13 +103,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
          _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
 
-         SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();
+         SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();         
 
-         SearchCommandAsync = new AsyncRelayCommand<SearchParameters>(SearchAsync);
-         PaginatedSearchCommandAsync = new AsyncRelayCommand<PaginatedSearchParameters>(PaginatedSearchAsync);
-         CancelSearchCommand = new RelayCommand(CancelSearch);
-
-         ConstraintViewModels = new ObservableCollection<ConstraintViewModel<T>>();
+         ActivableConstraintViewModels = new ObservableCollection<ConstraintViewModel<T>>();
          ConstructConstraintViewModels();
 
          MultiTextFilterViewModel = new MultiTextFilterViewModel();
@@ -134,6 +127,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public async Task PaginatedSearchAsync(PaginatedSearchParameters parameters)
       {
          await PaginatedSearchAsync(parameters.ResetPage, parameters.ExtendedSearch, parameters.ParentViewModel);
+      }
+
+      public void CancelSearch()
+      {
+         _domainObjectSearch.CancelSearch();
       }
 
       public virtual void LoadSearchResultViewModels()
@@ -215,7 +213,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          UnloadSearchResultViewModels();
 
-         ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
+         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
 
          PageNavigationViewModel.PropertyChanged -= PageNavigationViewModel_SelectPageRequested;
       }
@@ -269,17 +267,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected void ConstructConstraintViewModels()
       {
-         ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
-         ConstraintViewModels.Clear();
+         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
+         ActivableConstraintViewModels.Clear();
 
-         foreach (var constraint in _domainObjectSearch.GetConstraints())
+         foreach (var constraint in _domainObjectSearch.GetActivableConstraints())
          {
             var constraintViewModel = new ConstraintViewModel<T>(constraint);
             constraintViewModel.IsSelected = _domainObjectSearch.ActivatedConstraint == null ? false : _domainObjectSearch.ActivatedConstraint.Equals(constraintViewModel.Constraint);
-            ConstraintViewModels.Add(constraintViewModel);
+            ActivableConstraintViewModels.Add(constraintViewModel);
          }
 
-         ConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
+         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
       }
 
       private async void ConstraintViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -288,11 +286,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             if ((sender as ConstraintViewModel<T>).IsSelected)
             {
-               ConstraintViewModels.Where(vm => vm != sender).ToList().ForEach(vm => vm.IsSelected = false);
-               _domainObjectSearch.ActivateConstraint(SelectedConstraintViewModel?.Constraint);
+               ActivableConstraintViewModels.Where(vm => vm != sender).ToList().ForEach(vm => vm.IsSelected = false);
+               _domainObjectSearch.ActivateConstraint(ActivatedConstraintViewModel?.Constraint);
                await PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
             }
-            else if (ConstraintViewModels.All(vm => !vm.IsSelected))
+            else if (ActivableConstraintViewModels.All(vm => !vm.IsSelected))
             {
                _domainObjectSearch.ActivateConstraint(null);
                await PaginatedSearchAsync(new PaginatedSearchParameters() { ResetPage = true });
@@ -303,12 +301,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private async void PageNavigationViewModel_SelectPageRequested(object? sender, EventArgs e)
       {
          await PaginatedSearchAsync(new PaginatedSearchParameters());
-      }
-
-      private void CancelSearch()
-      {
-         _domainObjectSearch.CancelSearch();
-      }
+      }      
 
       #endregion
    }

@@ -14,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OtherSideCore.Wpf.UserControls.Filters
+namespace OtherSideCore.Wpf.UserControls.Browser
 {
    /// <summary>
-   /// Interaction logic for TextFilterView.xaml
+   /// Interaction logic for BrowserFilterView.xaml
    /// </summary>
-   public partial class TextFilterView : UserControl
+   public partial class BrowserFilterView : UserControl
    {
-      public TextFilterView()
+      public BrowserFilterView()
       {
          InitializeComponent();
       }
@@ -30,9 +30,9 @@ namespace OtherSideCore.Wpf.UserControls.Filters
       {
          if (e.Key == Key.Enter)
          {
-            if (DataContext is IDomainObjectSearchViewModel domainObjectSearchViewModel)
+            if (DataContext is IDomainObjectBrowserViewModel domainObjectBrowserViewModel)
             {
-               await domainObjectSearchViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ExtendedSearch = false, ResetPage = true });
+               await domainObjectBrowserViewModel.PaginatedSearchAsync(new PaginatedSearchParameters() { ExtendedSearch = false, ResetPage = true });
             }
          }
       }

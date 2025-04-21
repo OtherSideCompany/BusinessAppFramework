@@ -10,6 +10,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       IDomainObjectSearchViewModel DomainObjectSearchViewModel { get; }
       Task SaveChangesAsync();
       Task CancelChangesAsync();
+      Task SearchAsync(SearchParameters parameters);
+      Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
+      void CancelSearch();
       Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       bool CanShowDomainObjectDetailsEditor(DomainObjectSearchResultViewModel? obj);
       Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);

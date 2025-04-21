@@ -5,9 +5,9 @@ namespace OtherSideCore.Application.Search
 {
    public interface IDomainObjectSearch<T> : IDisposable where T : DomainObject, new()
    {
-      void ClearConstraints();
-      List<Constraint<T>> GetConstraints();
-      void SetConstraints(List<Constraint<T>> constraints);
+      void ClearActivableConstraints();
+      List<Constraint<T>> GetActivableConstraints();
+      void SetActivableConstraints(List<Constraint<T>> constraints);
       void ActivateConstraint(Constraint<T> constraint);
       Task SearchAsync(bool extendedSearch, List<string> filters, DomainObject parent = null);
       Task<DomainObjectSearchResult> GetSearchResultAsync(int domainObjectId);

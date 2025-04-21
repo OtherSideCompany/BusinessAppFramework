@@ -15,7 +15,7 @@
 
       <osc_usercontrols:LoadingView Visibility="{Binding DomainObjectSearchViewModel.IsExecutingSearch, Converter={StaticResource BoolToVisibleOrCollapsed}}" 
                                     VerticalAlignment="Center"
-                                    LoadingView_CancelCommand="{Binding DomainObjectSearchViewModel.CancelSearchCommand}"/>
+                                    LoadingView_CancelCommand="{Binding CancelSearchCommand}"/>
       <Grid>
          <Grid.RowDefinitions>
             <RowDefinition Height="*" />

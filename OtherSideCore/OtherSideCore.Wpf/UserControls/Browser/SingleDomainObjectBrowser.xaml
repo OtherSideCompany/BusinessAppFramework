@@ -82,7 +82,7 @@
             <Border Grid.Row="2" Height="Auto" MinHeight="32" Margin="0,0,0,0">
 
                <ContentControl Content="{Binding SingleDomainObjectBrowser_FiltersContent, ElementName=SingleDomainObjectBrowserUserControl}" 
-                               DataContext="{Binding BrowserViewModel.DomainObjectSearchViewModel}"/>
+                               DataContext="{Binding BrowserViewModel}"/>
 
             </Border>
 

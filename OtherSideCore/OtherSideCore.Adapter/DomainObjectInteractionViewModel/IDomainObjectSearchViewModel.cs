@@ -9,6 +9,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       MultiTextFilterViewModel MultiTextFilterViewModel { get; }
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
+      void CancelSearch();
       void LoadSearchResultViewModels();
       Task ReloadSearchResultAsync(int domainObjectId);
       void UnloadSearchResultViewModels();

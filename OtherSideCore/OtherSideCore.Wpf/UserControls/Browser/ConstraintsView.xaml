@@ -17,9 +17,9 @@
                                          TextRadioButton_Text="Tout"
                                          Command="{Binding ConstraintsView_SearchCommand, ElementName=ConstraintsViewUserControl}"
                                          CommandParameter="{StaticResource False}"
-                                         IsChecked="{Binding IsAnyConstraintSelected, Mode=OneWay, Converter={StaticResource BoolInverter}}"/>
+                                         IsChecked="{Binding IsAnyConstraintActivated, Mode=OneWay, Converter={StaticResource BoolInverter}}"/>
 
-         <ItemsControl ItemsSource="{Binding ConstraintViewModels}" VerticalAlignment="Center">
+         <ItemsControl ItemsSource="{Binding ActivableConstraintViewModels}" VerticalAlignment="Center">
             <ItemsControl.ItemsPanel>
                <ItemsPanelTemplate>
                   <WrapPanel Orientation="Horizontal" />

@@ -119,7 +119,7 @@ namespace OtherSideCore.Wpf.UserControls.Browser
          InitializeComponent();
 
          SingleDomainObjectBrowser_ConstraintsContent = new ConstraintsView();
-         SingleDomainObjectBrowser_FiltersContent = new TextFilterView();       
+         SingleDomainObjectBrowser_FiltersContent = new BrowserFilterView();       
       }
 
 

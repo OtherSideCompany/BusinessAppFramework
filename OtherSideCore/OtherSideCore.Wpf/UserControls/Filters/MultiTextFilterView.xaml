@@ -14,14 +14,9 @@
          <ColumnDefinition Width="Auto" />
          <ColumnDefinition Width="Auto" />
          <ColumnDefinition Width="Auto" />
-      </Grid.ColumnDefinitions>
+      </Grid.ColumnDefinitions>      
 
-      <customcontrols:SvgImageButton Grid.Column="0" Width="32" Height="32" 
-                                     SvgImageButton_ImageSize="16" 
-                                     SvgImageButton_IconGeometry="{StaticResource icon_filter-plus-outline}"
-                                     Command="{Binding AddFilterCommand}" />
-
-      <ItemsControl Grid.Column="1" 
+      <ItemsControl Grid.Column="0" 
                     ItemsSource="{Binding Filters}" 
                     VerticalAlignment="Center" 
                     Margin="8,0,0,0"
@@ -61,7 +56,12 @@
                </Border>
             </DataTemplate>
          </ItemsControl.ItemTemplate>
-      </ItemsControl>      
+      </ItemsControl>
+
+      <customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32" 
+                                     SvgImageButton_ImageSize="16" 
+                                     SvgImageButton_IconGeometry="{StaticResource icon_filter-plus-outline}"
+                                     Command="{Binding AddFilterCommand}" />
 
       <customcontrols:SvgImageTextButton Grid.Column="2" Height="32" Margin="4,0,0,0"
                                          SvgImageTextButton_IconGeometry="{StaticResource icon_close}"

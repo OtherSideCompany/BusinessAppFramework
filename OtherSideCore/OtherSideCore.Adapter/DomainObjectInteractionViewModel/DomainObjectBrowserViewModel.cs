@@ -102,6 +102,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand<DomainObjectSearchResultViewModel> ShowDomainObjectDetailsEditorAsyncCommand { get; private set; }
+      public AsyncRelayCommand<SearchParameters> SearchCommandAsync { get; private set; }
+      public AsyncRelayCommand<PaginatedSearchParameters> PaginatedSearchCommandAsync { get; private set; }
+      public RelayCommand CancelSearchCommand { get; private set; }
 
       #endregion
 
@@ -124,6 +127,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
          ShowDomainObjectDetailsEditorAsyncCommand = new AsyncRelayCommand<DomainObjectSearchResultViewModel>(ShowDomainObjectDetailsEditorAsync, CanShowDomainObjectDetailsEditor);
+         SearchCommandAsync = new AsyncRelayCommand<SearchParameters>(SearchAsync);
+         PaginatedSearchCommandAsync = new AsyncRelayCommand<PaginatedSearchParameters>(PaginatedSearchAsync);
+         CancelSearchCommand = new RelayCommand(CancelSearch);
 
          DomainObjectSearchViewModel = (DomainObjectsSearchViewModel<T>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<T>(domainObjectBrowser.DomainObjectSearch, domainObjectSearchResultViewModelFactory);
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
@@ -134,6 +140,21 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Public Methods
+
+      public virtual async Task SearchAsync(SearchParameters parameters)
+      {
+         await DomainObjectSearchViewModel.SearchAsync(parameters);
+      }
+
+      public virtual async Task PaginatedSearchAsync(PaginatedSearchParameters parameters)
+      {
+         await DomainObjectSearchViewModel.PaginatedSearchAsync(parameters);
+      }
+
+      public void CancelSearch()
+      {
+         DomainObjectSearchViewModel.CancelSearch();
+      }
 
       public virtual async Task InitializeAsync()
       {

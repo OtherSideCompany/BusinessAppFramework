@@ -63,7 +63,7 @@ namespace OtherSideCore.Wpf.UserControls.Selector
          InitializeComponent();
 
          DomainObjectSelector_ConstraintsContent = new ConstraintsView();
-         DomainObjectSelector_FiltersContent = new TextFilterView();
+         DomainObjectSelector_FiltersContent = new BrowserFilterView();
       }
    }
 }
