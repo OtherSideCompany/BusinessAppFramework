@@ -50,6 +50,15 @@ namespace OtherSideCore.Wpf.UserControls.Browser
          set { SetValue(SingleDomainObjectBrowser_ListContentProperty, value); }
       }
 
+      public static readonly DependencyProperty SingleDomainObjectBrowser_ListSummaryContentProperty =
+          DependencyProperty.Register("SingleDomainObjectBrowser_ListSummaryContent", typeof(object), typeof(SingleDomainObjectBrowser), new UIPropertyMetadata());
+
+      public object SingleDomainObjectBrowser_ListSummaryContent
+      {
+         get { return GetValue(SingleDomainObjectBrowser_ListSummaryContentProperty); }
+         set { SetValue(SingleDomainObjectBrowser_ListSummaryContentProperty, value); }
+      }
+
       public static readonly DependencyProperty SingleDomainObjectBrowser_EditorContentProperty =
           DependencyProperty.Register("SingleDomainObjectBrowser_EditorContent", typeof(object), typeof(SingleDomainObjectBrowser), new UIPropertyMetadata());
 

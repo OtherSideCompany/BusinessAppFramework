@@ -33,6 +33,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
+      private bool _isReadOnly;
+
+      private readonly SemaphoreSlim _loadDomainObjectReferencesLock = new(1, 1);
 
       #endregion
 
@@ -61,6 +64,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          get => _hasUnsavedChanges;
          set => SetProperty(ref _hasUnsavedChanges, value);
+      }
+
+      public bool IsReadOnly
+      {
+         get => _isReadOnly;
+         set => SetProperty(ref _isReadOnly, value);
       }
 
       #endregion
@@ -124,6 +133,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Public Methods
+
+      public virtual async Task InitializeAsync()
+      {
+         await Task.CompletedTask;
+      }
 
       public virtual bool CanSaveChanges()
       {
@@ -194,14 +208,23 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public async Task LoadDomainObjetReferencesAsync()
       {
-         DomainObjectReferenceViewModels.Clear();
+         await _loadDomainObjectReferencesLock.WaitAsync();
 
-         var domainObjectReferences = await _domainObjectService.GetDomainObjectReferencesAsync(_domainObjectViewModel.DomainObject.Id);
-
-         foreach (var domainObjectReference in domainObjectReferences)
+         try
          {
-            var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, _domainObjectInteractionService);
-            DomainObjectReferenceViewModels.Add(domainObjectReferenceViewModel);
+            DomainObjectReferenceViewModels.Clear();
+
+            var domainObjectReferences = await _domainObjectService.GetDomainObjectReferencesAsync(_domainObjectViewModel.DomainObject.Id);
+
+            foreach (var domainObjectReference in domainObjectReferences)
+            {
+               var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, _domainObjectInteractionService);
+               DomainObjectReferenceViewModels.Add(domainObjectReferenceViewModel);
+            }
+         }
+         finally
+         {
+            _loadDomainObjectReferencesLock.Release();
          }
       }
 

@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OtherSideCore.Application;
-using OtherSideCore.Infrastructure.Entities;
-using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace OtherSideCore.Infrastructure.Context
 {

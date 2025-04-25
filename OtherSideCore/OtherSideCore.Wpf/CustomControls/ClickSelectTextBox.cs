@@ -35,6 +35,15 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(ClickSelectTextBox_UnitsProperty, value); }
       }
 
+      public static readonly DependencyProperty ClickSelectTextBox_IsInputValidProperty =
+        DependencyProperty.Register(nameof(ClickSelectTextBox_IsInputValid), typeof(bool), typeof(ClickSelectTextBox), new UIPropertyMetadata(true));
+
+      public bool ClickSelectTextBox_IsInputValid
+      {
+         get { return (bool)GetValue(ClickSelectTextBox_IsInputValidProperty); }
+         set { SetValue(ClickSelectTextBox_IsInputValidProperty, value); }
+      }
+
       public ClickSelectTextBox()
       {
          AddHandler(PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(SelectivelyIgnoreMouseButton), true);

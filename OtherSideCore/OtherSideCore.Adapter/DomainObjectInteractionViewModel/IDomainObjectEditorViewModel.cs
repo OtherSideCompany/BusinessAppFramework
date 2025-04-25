@@ -18,10 +18,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       bool HasUnsavedChanges { get; }
       bool IsEnabled { get; }
+      bool IsReadOnly { get; set; }
       bool CanSaveChanges();
       Task SaveChangesAsync();
       bool CanCancelChanges();
       Task CancelChangesAsync();
+      Task InitializeAsync();
       Task LoadNestedStructuresAsync();
       Task LoadDomainObjetReferencesAsync();
       Task<DomainObject> DupplicateAsync(DomainObject? parent);

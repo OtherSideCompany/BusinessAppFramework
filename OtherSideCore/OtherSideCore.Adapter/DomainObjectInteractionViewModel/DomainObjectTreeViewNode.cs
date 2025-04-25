@@ -105,11 +105,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectServiceFactory = domainObjectServiceFactory;
          _userDialogService = userDialogService;
 
-         DomainObjectViewModel = domainObjectViewModel;
-
-         DomainObjectEditorViewModel = domainObjectInteractionService.CreateDomainObjectEditorViewModel(domainObjectViewModel.DomainObject.GetType(), domainObjectViewModel);
-         DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
-         DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
+         DomainObjectViewModel = domainObjectViewModel;         
 
          Children = new ObservableCollection<IDomainObjectTreeViewNode>();
 
@@ -120,6 +116,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #endregion
 
       #region Public Methods
+
+      public async Task InitializeAsync()
+      {
+         DomainObjectEditorViewModel = await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(DomainObjectViewModel.DomainObject.GetType(), DomainObjectViewModel);
+         DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
+         DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
+      }
 
       public virtual void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing)
       {

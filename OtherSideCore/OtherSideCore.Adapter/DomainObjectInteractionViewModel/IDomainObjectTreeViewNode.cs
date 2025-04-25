@@ -23,5 +23,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       void RemoveChild(IDomainObjectTreeViewNode childNode);
       Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node);
       void NotifyChildCreated(DomainObject domainObject);
+      Task InitializeAsync();
    }
 }

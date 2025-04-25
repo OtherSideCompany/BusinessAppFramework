@@ -13,4 +13,5 @@
    <converters:ToStringConverter x:Key="ToStringConverter" />
    <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
    <converters:IntEqualsConverter x:Key="IntEqualsConverter" />
+   <converters:MonthNumberToNameConverter x:Key="MonthNumberToNameConverter" />
 </ResourceDictionary>

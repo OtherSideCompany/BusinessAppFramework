@@ -56,6 +56,15 @@ namespace OtherSideCore.Wpf.CustomControls
          set { SetValue(ClickSelectSearchTextBox_CanSearchProperty, value); }
       }
 
+      public static readonly DependencyProperty ClickSelectSearchTextBox_IsInputValidProperty =
+        DependencyProperty.Register(nameof(ClickSelectSearchTextBox_IsInputValid), typeof(bool), typeof(ClickSelectSearchTextBox), new UIPropertyMetadata(true));
+
+      public bool ClickSelectSearchTextBox_IsInputValid
+      {
+         get { return (bool)GetValue(ClickSelectSearchTextBox_IsInputValidProperty); }
+         set { SetValue(ClickSelectSearchTextBox_IsInputValidProperty, value); }
+      }
+
       public ClickSelectSearchTextBox()
       {
          

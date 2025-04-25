@@ -50,8 +50,7 @@
 
          <Border Grid.Row="2" Height="Auto" MinHeight="32" Margin="0,0,0,0">
 
-            <ContentControl Content="{Binding DomainObjectSelector_FiltersContent, ElementName=DomainObjectSelectorUserControl}" 
-                            DataContext="{Binding DomainObjectSearchViewModel}"/>
+            <ContentControl Content="{Binding DomainObjectSelector_FiltersContent, ElementName=DomainObjectSelectorUserControl}" />
 
          </Border>
 

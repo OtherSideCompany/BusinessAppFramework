@@ -27,7 +27,7 @@
          <ContentPresenter Content="{Binding DomainObjectReference.ReferenceType}" 
                            ContentTemplateSelector="{Binding DomainObjectReferenceView_DataTemplateSelector, ElementName=DomainObjectReferenceViewUserControl}"/>
 
-         <Button Grid.Column="1" Margin="8,0,0,0" 
+         <Button Grid.Column="1" Margin="8,0,8,0" 
                  HorizontalAlignment="Left"
                  VerticalAlignment="Center"
                  Style="{StaticResource LinkButton}"
@@ -50,11 +50,12 @@
          <osc_customcontrols:SvgImageButton Grid.Column="2"
                                             BorderThickness="0"
                                             Width="24" 
-                                            Margin="4"
+                                            Margin="-4,4,4,4"
                                             SvgImageButton_IconGeometry="{StaticResource icon_close}" 
                                             SvgImageButton_ImageSize="12" 
                                             Command="{Binding DomainObjectReferenceView_DeleteReferenceCommand, ElementName=DomainObjectReferenceViewUserControl}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding DomainObjectReferenceView_DeleteReferenceCommand, ElementName=DomainObjectReferenceViewUserControl, Converter={StaticResource NullToVisibilityConverter}}"/>
 
       </Grid>
    </Border>

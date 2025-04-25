@@ -209,6 +209,19 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
+      public async Task ReloadSearchResultsAsync()
+      {
+         foreach (var searchResultViewModel in SearchResultViewModels)
+         {
+            var searchResult = await _domainObjectSearch.GetSearchResultAsync(searchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+
+            if (searchResult != null)
+            {
+               searchResultViewModel.UpdateDomainObjectSearchResult(searchResult);
+            }
+         }
+      }
+
       public void Dispose()
       {
          UnloadSearchResultViewModels();

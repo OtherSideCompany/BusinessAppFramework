@@ -216,11 +216,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _inlineNodes.ToList().ForEach(n => n.Expand());
       }
 
-      public virtual IDomainObjectTreeViewNode AddRootNode(DomainObjectViewModel domainObjectViewModel)
+      public virtual async Task<IDomainObjectTreeViewNode> AddRootNodeAsync(DomainObjectViewModel domainObjectViewModel)
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectRootTreeViewNode = _domainObjectInteractionService.CreateDomainObjectTreeViewNode(domainObjectViewModel);
+         var domainObjectRootTreeViewNode = await _domainObjectInteractionService.CreateDomainObjectTreeViewNodeAsync(domainObjectViewModel);
 
          DomainObjectTreeViewModelExtension.InsertNodeInList(domainObjectRootTreeViewNode, Roots);
 
@@ -233,11 +233,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return domainObjectRootTreeViewNode;
       }
 
-      public IDomainObjectTreeViewNode AddChildNode(DomainObjectViewModel domainObjectViewModel, DomainObjectViewModel parentViewModel)
+      public async Task<IDomainObjectTreeViewNode> AddChildNodeAsync(DomainObjectViewModel domainObjectViewModel, DomainObjectViewModel parentViewModel)
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectTreeViewNode = _domainObjectInteractionService.CreateDomainObjectTreeViewNode(domainObjectViewModel);
+         var domainObjectTreeViewNode = await _domainObjectInteractionService.CreateDomainObjectTreeViewNodeAsync(domainObjectViewModel);
          var parentNode = GetNode(parentViewModel);
          parentNode.AddChild(domainObjectTreeViewNode, _isInitializingTree);
          RegisterNode(domainObjectTreeViewNode);
@@ -283,7 +283,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(ContextViewModel?.DomainObject);
 
          var dupplicatedDomainObjectViewModel = _domainObjectViewModelFactory.CreateViewModel(dupplicatedDomainObject);
-         AddRootNode(dupplicatedDomainObjectViewModel);
+         AddRootNodeAsync(dupplicatedDomainObjectViewModel);
 
          var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObjectViewModel);
 
@@ -335,10 +335,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          domainObjectTreeViewNode.ChildCreated -= DomainObjectTreeViewNode_ChildCreated;
       }
 
-      protected virtual void DomainObjectTreeViewNode_ChildCreated(object? sender, Domain.DomainObjects.DomainObject e)
+      protected virtual async void DomainObjectTreeViewNode_ChildCreated(object? sender, Domain.DomainObjects.DomainObject e)
       {
          var viewModel = _domainObjectViewModelFactory.CreateViewModel(e);
-         AddChildNode(viewModel, ((IDomainObjectTreeViewNode)sender).DomainObjectViewModel);
+         await AddChildNodeAsync(viewModel, ((IDomainObjectTreeViewNode)sender).DomainObjectViewModel);
       }
 
       protected virtual async void DomainObjectTreeViewNode_NodeDeleted(object? sender, IDomainObjectTreeViewNode e)
@@ -443,7 +443,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          var domainObject = await CreateRootDomainObjectAsync();
 
          var viewModel = _domainObjectViewModelFactory.CreateViewModel(domainObject);
-         return AddRootNode(viewModel);
+         return await AddRootNodeAsync(viewModel);
       }
 
       private bool CanDupplicateRootNodeAsync(IDomainObjectTreeViewNode? node)

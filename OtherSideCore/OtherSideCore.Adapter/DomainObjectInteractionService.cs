@@ -79,26 +79,29 @@ namespace OtherSideCore.Adapter
 
       public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(Type type);
 
-      public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
 
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
 
-      public abstract IDomainObjectEditorViewModel? CreateDomainObjectDetailsEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
+      public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
 
-      public abstract IDomainObjectEditorViewModel? CreateDomainObjectDetailsEditorViewModel<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
+      public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
 
       public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
 
-      public abstract IDomainObjectEditorViewModel CreateDomainObjectEditorViewModel(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
 
       public abstract List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);
 
-      public virtual IDomainObjectTreeViewNode CreateDomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel)
+      public virtual async Task<IDomainObjectTreeViewNode> CreateDomainObjectTreeViewNodeAsync(DomainObjectViewModel domainObjectViewModel)
       {
          var domainObjectType = domainObjectViewModel.DomainObject.GetType();
          var genericType = typeof(DomainObjectTreeViewNode<>).MakeGenericType(domainObjectType);
 
-         return (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, this, _domainObjectServiceFactory);
+         var treeViewNode = (IDomainObjectTreeViewNode)Activator.CreateInstance(genericType, domainObjectViewModel, _userDialogService, this, _domainObjectServiceFactory);
+         await treeViewNode.InitializeAsync();
+
+         return treeViewNode;
       }
 
       public abstract DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
