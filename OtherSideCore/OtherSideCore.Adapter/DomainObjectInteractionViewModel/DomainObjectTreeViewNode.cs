@@ -117,7 +117,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Public Methods
 
-      public async Task InitializeAsync()
+      public virtual async Task InitializeAsync()
       {
          DomainObjectEditorViewModel = await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(DomainObjectViewModel.DomainObject.GetType(), DomainObjectViewModel);
          DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;

@@ -9,7 +9,7 @@ using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Browser
 {
-    public class DomainObjectBrowser<T> where T : DomainObject, new()
+   public class DomainObjectBrowser<T> where T : DomainObject, new()
    {
       #region Fields
 
@@ -59,9 +59,9 @@ namespace OtherSideCore.Application.Browser
 
       #region Public Methods
 
-      public virtual async Task InitializeAsync()
+      public virtual async Task InitializeAsync(List<string> filters)
       {
-         await DomainObjectSearch.PaginatedSearchAsync(true, false, []);
+         await DomainObjectSearch.PaginatedSearchAsync(true, false, filters);
       }
 
       public async Task<T> CreateAsync(DomainObject? parent)
@@ -80,7 +80,7 @@ namespace OtherSideCore.Application.Browser
          await DomainObjectSearch.AddSearchResultAsync(domainObject.Id);
 
          return domainObject;
-      }      
+      }
 
       public virtual void Dispose()
       {

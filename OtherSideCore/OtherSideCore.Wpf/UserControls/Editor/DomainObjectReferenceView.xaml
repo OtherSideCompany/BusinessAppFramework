@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
              xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
              xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
-             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" 
+             xmlns:buttons="clr-namespace:OtherSideCore.Wpf.UserControls.Buttons"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="DomainObjectReferenceViewUserControl">
@@ -27,25 +28,10 @@
          <ContentPresenter Content="{Binding DomainObjectReference.ReferenceType}" 
                            ContentTemplateSelector="{Binding DomainObjectReferenceView_DataTemplateSelector, ElementName=DomainObjectReferenceViewUserControl}"/>
 
-         <Button Grid.Column="1" Margin="8,0,8,0" 
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Center"
-                 Style="{StaticResource LinkButton}"
-                 Command="{Binding DisplayReferenceAsyncCommand}">
-            <Button.Content>
-               <StackPanel Orientation="Horizontal">
-
-                  <TextBlock Text="{Binding DomainObjectReference.ReferenceNumber}" />
-
-                  <TextBlock Margin="4,0,0,0"
-                             Visibility="{Binding IsNameDefault, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}">
-                     <Run Text="-" />
-                     <Run Text="{Binding DomainObjectReference.Name}" />
-                  </TextBlock>
-
-               </StackPanel>
-            </Button.Content>
-         </Button>
+         <buttons:DomainObjectLink Grid.Column="1" Margin="8,0,0,0" 
+                                   DomainObjectLink_Id="{Binding DomainObjectReference.DomainObjectId}"
+                                   DomainObjectLink_DomainObjectType="{Binding DomainObjectReference.ReferenceType}"
+                                   DomainObjectLink_Name="{Binding DomainObjectReference.ReferenceNumber}" />
 
          <osc_customcontrols:SvgImageButton Grid.Column="2"
                                             BorderThickness="0"

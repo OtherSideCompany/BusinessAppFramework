@@ -55,6 +55,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          _windowService = windowService;
 
+         _constructEditorOnSelectSearchResult = false;
+
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);

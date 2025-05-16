@@ -20,7 +20,53 @@
               Style="{StaticResource LinkButton}" 
               Content="{Binding DomainObjectLink_Name, ElementName=DomainObjectLinkUserControl}" 
               Command="{Binding DomainObjectLink_LinkClickedCommand, ElementName=DomainObjectLinkUserControl}"
-              CommandParameter="{Binding DomainObjectLink_Id, ElementName=DomainObjectLinkUserControl}"/>
+              CommandParameter="{Binding DomainObjectLink_Id, ElementName=DomainObjectLinkUserControl}"
+              Click="Button_Click"/>
+
+      <osc_customcontrols:SvgImageToggleButton Grid.Column="1" Margin="4,0,0,0" Width="24" Height="24"
+                                               BorderThickness="0"
+                                               HorizontalAlignment="Left"
+                                               SvgImageToggleButton_IconGeometry="{StaticResource icon_dots-vertical}" 
+                                               SvgImageToggleButton_ImageSize="16"
+                                               SvgImageToggleButton_ImageColor="{StaticResource OtherSide_DarkGray}" 
+                                               x:Name="LinkActionsToggleButton"/>
+
+      <Popup Style="{StaticResource UiPopup}" 
+             IsOpen="{Binding IsChecked, ElementName=LinkActionsToggleButton}" 
+             PlacementTarget="{Binding ElementName=LinkActionsToggleButton}"
+             x:Name="LinkActionsPopUp"
+             PreviewMouseUp="LinkActionsPopup_PreviewMouseUp">
+
+         <ContentControl Style="{StaticResource UiPopupContentStyle}">
+
+            <StackPanel>
+
+               <osc_customcontrols:SvgImageTextButton SvgImageTextButton_IconGeometry="{StaticResource icon_navigation-variant-outline}"
+                                                      SvgImageTextButton_Text="Ouvrir module associé" 
+                                                      SvgImageTextButton_ImageSize="20"
+                                                      Height="32"
+                                                      BorderThickness="0"
+                                                      Click="OpenAssociatedModule_ButtonClick"/>
+
+               <osc_customcontrols:SvgImageTextButton SvgImageTextButton_IconGeometry="{StaticResource icon_file-tree-outline}"
+                                                      SvgImageTextButton_Text="Ouvrir arborescence" 
+                                                      SvgImageTextButton_ImageSize="20"
+                                                      Height="32"
+                                                      BorderThickness="0"
+                                                      Click="OpenTreeView_ButtonClick"/>
+
+               <osc_customcontrols:SvgImageTextButton SvgImageTextButton_IconGeometry="{StaticResource icon_pencil-outline}"
+                                                      SvgImageTextButton_Text="Éditer les détails" 
+                                                      SvgImageTextButton_ImageSize="20"
+                                                      Height="32"
+                                                      BorderThickness="0"
+                                                      Click="OpenDetails_ButtonClick"/>
+
+            </StackPanel>
+            
+         </ContentControl>
+         
+      </Popup>
 
    </Grid>
 </UserControl>

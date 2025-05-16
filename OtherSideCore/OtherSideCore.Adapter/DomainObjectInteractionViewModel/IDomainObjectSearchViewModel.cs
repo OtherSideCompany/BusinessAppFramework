@@ -7,6 +7,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    {
       ObservableCollection<DomainObjectSearchResultViewModel> SearchResultViewModels { get; }
       MultiTextFilterViewModel MultiTextFilterViewModel { get; }
+      bool IsInAdvancedSearchMode { get; set; }
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);
       void CancelSearch();
@@ -19,5 +20,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task<DomainObjectSearchResultViewModel> InsertSearchResultViewModelAsync(int domainObjectId, int index);
       void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       void RemoveSearchResultViewModel(int domainObjectId);
+      List<string> GetTextFilters();
    }
 }

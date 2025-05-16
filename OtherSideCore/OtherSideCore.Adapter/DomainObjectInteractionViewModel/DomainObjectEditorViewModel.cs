@@ -15,7 +15,7 @@ using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel, ISavable where T : DomainObject, new()
+    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel, ISavable, IDomainObjectInteractionHost where T : DomainObject, new()
    {
       #region Fields
 
@@ -71,6 +71,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          get => _isReadOnly;
          set => SetProperty(ref _isReadOnly, value);
       }
+
+      public IDomainObjectInteractionService DomainObjectInteractionService => _domainObjectInteractionService;
 
       #endregion
 

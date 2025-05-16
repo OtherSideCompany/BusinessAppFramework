@@ -222,6 +222,18 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
+      public List<string> GetTextFilters()
+      {
+         if (IsInAdvancedSearchMode)
+         {
+            return _multiTextFilterViewModel.Filters.Where(f => !String.IsNullOrEmpty(f.Text)).Select(f => f.Text).ToList();
+         }
+         else
+         {
+            return String.IsNullOrEmpty(_singleTextFilterViewModel.Filter) ? [] : new List<string>() { _singleTextFilterViewModel.Filter };
+         }
+      }
+
       public void Dispose()
       {
          UnloadSearchResultViewModels();
@@ -264,19 +276,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          IsExecutingSearch = false;
-      }
-
-      protected List<string> GetTextFilters()
-      {
-         if (IsInAdvancedSearchMode)
-         {
-            return _multiTextFilterViewModel.Filters.Where(f => !String.IsNullOrEmpty(f.Text)).Select(f => f.Text).ToList();
-         }
-         else
-         {
-            return String.IsNullOrEmpty(_singleTextFilterViewModel.Filter) ? [] : new List<string>() { _singleTextFilterViewModel.Filter };
-         }
-      }
+      }      
 
       protected void ConstructConstraintViewModels()
       {

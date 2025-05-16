@@ -28,7 +28,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 
       #region Commands
 
-      public AsyncRelayCommand DisplayReferenceAsyncCommand { get; private set; }
+      
 
       #endregion
 
@@ -40,19 +40,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       {
          DomainObjectReference = domainObjectReference;
          _domainObjectInteractionService = domainObjectInteractionService;
-
-         DisplayReferenceAsyncCommand = new AsyncRelayCommand(DisplayReferenceAsync);
       }
 
       #endregion
 
       #region Public Methods
 
-      private async Task DisplayReferenceAsync()
+      public async Task DisplayReferenceAsync()
       {
          await _domainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
       }
-       
+
+      public async Task DisplayReferenceTreeViewAsync()
+      {
+         await _domainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
+      }
+
+      public async Task DisplayReferenceDetailsAsync()
+      {
+         await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.Modal);
+      }
+
       public void Dispose()
       {
          

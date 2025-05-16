@@ -52,7 +52,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Public Methods
 
+      public void InitializeFilters(List<string> filters)
+      {
+         ClearFilters();
 
+         foreach (var filter in filters)
+         {
+            Filters.Add(new TextFilterViewModel() { Text = filter });
+         }
+      }
 
       #endregion
 
@@ -71,7 +79,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private void AddFilter()
       {
          Filters.Add(new TextFilterViewModel());
-      }
+      }      
 
       #endregion
    }

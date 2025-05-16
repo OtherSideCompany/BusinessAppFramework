@@ -9,13 +9,14 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectBrowserViewModel<T> : ObservableObject, IDomainObjectBrowserViewModel, ISavable where T : DomainObject, new()
+   public class DomainObjectBrowserViewModel<T> : ObservableObject, IDomainObjectBrowserViewModel, ISavable, IDomainObjectInteractionHost where T : DomainObject, new()
    {
       #region Fields
 
       private bool _isExpanded;
 
       protected bool _loadNestedStructureOnSelection;
+      protected bool _constructEditorOnSelectSearchResult;
 
       protected IDomainObjectsSearchViewModelFactory _domainObjectsSearchViewModelFactory;
       protected IDomainObjectInteractionService _domainObjectInteractionService;
@@ -94,6 +95,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public bool HasUnsavedChanges => SelectedDomainObjectEditorViewModel == null ? false : SelectedDomainObjectEditorViewModel.HasUnsavedChanges;
 
+      public IDomainObjectInteractionService DomainObjectInteractionService => _domainObjectInteractionService;
+
       #endregion
 
       #region Commands
@@ -122,6 +125,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectServiceFactory = domainObjectServiceFactory;
 
          _loadNestedStructureOnSelection = true;
+         _constructEditorOnSelectSearchResult = true;
 
          CreateAsyncCommand = new AsyncRelayCommand<DomainObjectViewModel?>(CreateAsync, CanCreate);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
@@ -158,13 +162,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task InitializeAsync()
       {
-         await _domainObjectBrowser.InitializeAsync();
+         await _domainObjectBrowser.InitializeAsync(DomainObjectSearchViewModel.GetTextFilters());
          DomainObjectSearchViewModel.UnloadSearchResultViewModels();
          DomainObjectSearchViewModel.LoadSearchResultViewModels();
          ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).PageNavigationViewModel.Refresh();
       }
 
-      public virtual async Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      public async Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
          if (!IsSelectionLocked)
          {
@@ -178,11 +182,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
                   IsLoadingEditor = true;
 
-                  await CreateEditorViewModelsAsync(domainObjectSearchResultViewModel);
-
-                  if (_loadNestedStructureOnSelection)
+                  if (_constructEditorOnSelectSearchResult)
                   {
-                     await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
+                     await CreateEditorViewModelsAsync(domainObjectSearchResultViewModel);
+
+                     if (_loadNestedStructureOnSelection)
+                     {
+                        await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
+                     }
                   }
 
                   IsLoadingEditor = false;

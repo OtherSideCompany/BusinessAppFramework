@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Wpf.UserControls;
+﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Wpf.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
