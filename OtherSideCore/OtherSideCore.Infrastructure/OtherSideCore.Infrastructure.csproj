@@ -36,7 +36,6 @@
     <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MalcourantMecanique\MMSoft\MMSoft.Application\MMSoft.Application.csproj" />
     <ProjectReference Include="..\OtherSideCore.Application\OtherSideCore.Application.csproj" />
     <ProjectReference Include="..\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
   </ItemGroup>

@@ -32,6 +32,7 @@ namespace OtherSideCore.Infrastructure.Repositories
       protected ILoggerFactory _loggerFactory;
       protected ILogger<Repository<TDomainObject, TEntity>> _logger;
       protected IMapper _mapper;
+      protected IParentChildRelationResolver _parentChildRelationResolver;
 
       #endregion
 
@@ -42,7 +43,8 @@ namespace OtherSideCore.Infrastructure.Repositories
          IMapper mapper,
          ILoggerFactory loggerFactory,
          IDomainObjectReferenceFactory domainObjectReferenceFactory,
-         IDomainObjectReferenceMapFactory referenceMapFactory)
+         IDomainObjectReferenceMapFactory referenceMapFactory,
+         IParentChildRelationResolver parentChildRelationResolver)
       {
          _dbContextFactory = dbContextFactory;
          _loggerFactory = loggerFactory;
@@ -50,6 +52,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          _mapper = mapper;
          _domainObjectReferenceFactory = domainObjectReferenceFactory;
          _referenceMapFactory = referenceMapFactory;
+         _parentChildRelationResolver = parentChildRelationResolver;
       }
 
       #endregion
@@ -464,14 +467,14 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      protected virtual Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
+      protected Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
       {
-         return entity => false;
+         return _parentChildRelationResolver.GetParentRelationPredicate<TEntity>(parent);
       }
 
-      protected virtual void SetParent(TEntity entity, DomainObject parent)
+      protected void SetParent(TEntity entity, DomainObject parent)
       {
-
+         _parentChildRelationResolver.SetParent(entity, parent);
       }
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)

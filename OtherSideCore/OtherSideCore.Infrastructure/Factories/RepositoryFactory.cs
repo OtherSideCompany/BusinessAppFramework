@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Infrastructure.Entities;
 namespace OtherSideCore.Infrastructure.Factories
 {
    public abstract class RepositoryFactory : IRepositoryFactory
@@ -15,6 +16,7 @@ namespace OtherSideCore.Infrastructure.Factories
       protected ILoggerFactory _loggerFactory;
       protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
       protected IDomainObjectReferenceMapFactory _referenceMapFactory;
+      protected IParentChildRelationResolver _parentChildRelationResolver;
 
       #endregion
 
@@ -37,13 +39,15 @@ namespace OtherSideCore.Infrastructure.Factories
          IMapper mapper, 
          ILoggerFactory loggerFactory, 
          IDomainObjectReferenceFactory domainObjectReferenceFactory,
-         IDomainObjectReferenceMapFactory referenceMapFactory)
+         IDomainObjectReferenceMapFactory referenceMapFactory,
+         IParentChildRelationResolver parentChildRelationResolver)
       {
          _dbContextFactory = dbContextFactory;
          _mapper = mapper;
          _loggerFactory = loggerFactory;
          _domainObjectReferenceFactory = domainObjectReferenceFactory;
          _referenceMapFactory = referenceMapFactory;
+         _parentChildRelationResolver = parentChildRelationResolver;
       }
 
 
