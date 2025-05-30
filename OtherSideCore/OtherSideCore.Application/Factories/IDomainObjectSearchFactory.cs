@@ -5,7 +5,7 @@ namespace OtherSideCore.Application.Factories
 {
     public interface IDomainObjectSearchFactory
     {
-        IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObject, new();
+        IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObjectSearchResult, new();
         IDomainObjectTreeSearch CreateDomainObjectTreeSearch<T>(IDomainObjectServiceFactory domainObjectServiceFactory) where T : DomainObject, new();
     }
 }

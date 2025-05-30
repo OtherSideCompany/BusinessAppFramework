@@ -1,9 +1,9 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Application.Search;
 using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Browser
 {
-   public class Constraint<T> where T : DomainObject, new()
+   public class Constraint<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
@@ -15,9 +15,9 @@ namespace OtherSideCore.Application.Browser
 
       public string Name { get; set; }
 
-      public Expression<Func<T, bool>> Expression { get; private set; }
+      public Expression<Func<TSearchResult, bool>> Expression { get; private set; }
 
-      public static Constraint<T> Empty => new Constraint<T>("", x => true);
+      public static Constraint<TSearchResult> Empty => new Constraint<TSearchResult>("", x => true);
 
       #endregion
 
@@ -29,13 +29,13 @@ namespace OtherSideCore.Application.Browser
 
       #region Constructor
 
-      public Constraint(string name, Expression<Func<T, bool>> expression)
+      public Constraint(string name, Expression<Func<TSearchResult, bool>> expression)
       {
          Name = name;
          Expression = expression;
       }
 
-      public Constraint(Expression<Func<T, bool>> expression)
+      public Constraint(Expression<Func<TSearchResult, bool>> expression)
       {
          Name = "Contrainte";
          Expression = expression;

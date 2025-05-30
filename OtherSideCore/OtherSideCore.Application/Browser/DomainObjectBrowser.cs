@@ -9,7 +9,8 @@ using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Browser
 {
-   public class DomainObjectBrowser<T> where T : DomainObject, new()
+   public class DomainObjectBrowser<TDomainObject, TSearchResult> where TDomainObject : DomainObject, new()
+                                                                  where TSearchResult : DomainObjectSearchResult, new()                
    {
       #region Fields
 
@@ -21,8 +22,7 @@ namespace OtherSideCore.Application.Browser
 
       #region Properties
 
-      public DomainObjectSearch<T> DomainObjectSearch { get; private set; }
-      public List<DomainObjectBrowser<T>> NestedDomainObjectBrowser { get; private set; }
+      public DomainObjectSearch<TSearchResult> DomainObjectSearch { get; private set; }      
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; private set; }
       public IGlobalDataService GlobalDataService { get; private set; }
       public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; private set; }
@@ -48,8 +48,7 @@ namespace OtherSideCore.Application.Browser
          _userContext = userContext;
          _loggerFactory = loggerFactory;
          _userDialogService = userDialogService;
-         DomainObjectSearch = (DomainObjectSearch<T>)domainObjectSearchFactory.CreateDomainObjectSearch<T>(domainObjectQueryServiceFactory);
-         NestedDomainObjectBrowser = new List<DomainObjectBrowser<T>>();
+         DomainObjectSearch = (DomainObjectSearch<TSearchResult>)domainObjectSearchFactory.CreateDomainObjectSearch<TSearchResult>(domainObjectQueryServiceFactory);
          GlobalDataService = globalDataService;
          DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
          DomainObjectServiceFactory = domainObjectServiceFactory;
@@ -64,16 +63,16 @@ namespace OtherSideCore.Application.Browser
          await DomainObjectSearch.PaginatedSearchAsync(true, false, filters);
       }
 
-      public async Task<T> CreateAsync(DomainObject? parent)
+      public async Task<TDomainObject> CreateAsync(DomainObject? parent)
       {
-         var domainObject = new T();
+         var domainObject = new TDomainObject();
 
          return await CreateAsync(domainObject, parent);
       }
 
-      public async Task<T> CreateAsync(T domainObject, DomainObject? parent)
+      public async Task<TDomainObject> CreateAsync(TDomainObject domainObject, DomainObject? parent)
       {
-         var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<T>();
+         var domainObjectService = DomainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
 
          await domainObjectService.CreateAsync(domainObject, parent);
 
@@ -85,7 +84,6 @@ namespace OtherSideCore.Application.Browser
       public virtual void Dispose()
       {
          DomainObjectSearch.Dispose();
-         NestedDomainObjectBrowser.ForEach(domainObjectBrowser => domainObjectBrowser.Dispose());
       }
 
       #endregion

@@ -10,12 +10,8 @@
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Migrations\CreateTSqlEditDistanceFunction.sql" />
-    <None Remove="Migrations\CreateTSqlLevenshteinDistanceFunction.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\CreateTSqlEditDistanceFunction.sql" />
-    <EmbeddedResource Include="Migrations\CreateTSqlLevenshteinDistanceFunction.sql" />
+    <EmbeddedResource Include="Services\CreateTSqlEditDistanceFunction.sql" />
+    <EmbeddedResource Include="Services\CreateTSqlLevenshteinDistanceFunction.sql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />

@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OtherSideCore.Adapter\OtherSideCore.Adapter.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Presentation\OtherSideCore.Presentation.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\icon-pack-source.txt" />
@@ -47,8 +48,5 @@
     <Compile Update="UserControls\Editor\SaveCancelChangesAsyncView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
   </ItemGroup>
 </Project>

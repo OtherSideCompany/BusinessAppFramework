@@ -47,14 +47,6 @@ namespace OtherSideCore.Application.Search
             {
                 await SpecificSearchAsync(parent);
             }
-            catch (InvalidOperationException)
-            {
-
-            }
-            catch (SqlException)
-            {
-
-            }
             catch (OperationCanceledException)
             {
 

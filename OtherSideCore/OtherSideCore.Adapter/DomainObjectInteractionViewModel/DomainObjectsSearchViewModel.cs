@@ -3,19 +3,18 @@ using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
-using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectsSearchViewModel<T> : ObservableObject, IDomainObjectSearchViewModel where T : DomainObject, new()
+   public class DomainObjectsSearchViewModel<TSearchResult> : ObservableObject, IDomainObjectSearchViewModel where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
       private bool _isInAdvancedSearchMode;
 
-      protected DomainObjectSearch<T> _domainObjectSearch;
+      protected DomainObjectSearch<TSearchResult> _domainObjectSearch;
 
       private IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
       private IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
@@ -23,7 +22,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private SingleTextFilterViewModel _singleTextFilterViewModel;
       private MultiTextFilterViewModel _multiTextFilterViewModel;
       private PageNavigationViewModel _pageNavigationViewModel;
-      private ObservableCollection<ConstraintViewModel<T>> _activableConstraintViewModels;
+      private ObservableCollection<ConstraintViewModel<TSearchResult>> _activableConstraintViewModels;
 
       private bool _isExecutingSearch;
 
@@ -61,13 +60,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          set => SetProperty(ref _pageNavigationViewModel, value);
       }
 
-      public ObservableCollection<ConstraintViewModel<T>> ActivableConstraintViewModels
+      public ObservableCollection<ConstraintViewModel<TSearchResult>> ActivableConstraintViewModels
       {
          get => _activableConstraintViewModels;
          set => SetProperty(ref _activableConstraintViewModels, value);
       }
 
-      public ConstraintViewModel<T> ActivatedConstraintViewModel => ActivableConstraintViewModels.FirstOrDefault(vm => vm.IsSelected);
+      public ConstraintViewModel<TSearchResult> ActivatedConstraintViewModel => ActivableConstraintViewModels.FirstOrDefault(vm => vm.IsSelected);
 
       public bool IsAnyConstraintActivated => ActivatedConstraintViewModel != null;
 
@@ -95,7 +94,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Constructor
 
       public DomainObjectsSearchViewModel(
-         DomainObjectSearch<T> domainObjectSearch,
+         DomainObjectSearch<TSearchResult> domainObjectSearch,
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
          IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
       {
@@ -105,7 +104,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();         
 
-         ActivableConstraintViewModels = new ObservableCollection<ConstraintViewModel<T>>();
+         ActivableConstraintViewModels = new ObservableCollection<ConstraintViewModel<TSearchResult>>();
          ConstructConstraintViewModels();
 
          MultiTextFilterViewModel = new MultiTextFilterViewModel();
@@ -121,12 +120,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public async Task SearchAsync(SearchParameters parameters)
       {
-         await SearchAsync(parameters.ExtendedSearch, parameters.ParentViewModel);
+         await SearchAsync(parameters.ExtendedSearch);
       }
 
       public async Task PaginatedSearchAsync(PaginatedSearchParameters parameters)
       {
-         await PaginatedSearchAsync(parameters.ResetPage, parameters.ExtendedSearch, parameters.ParentViewModel);
+         await PaginatedSearchAsync(parameters.ResetPage, parameters.ExtendedSearch);
       }
 
       public void CancelSearch()
@@ -164,7 +163,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public async Task<DomainObjectSearchResultViewModel> AddSearchResultViewModelAsync(int domainObjectId)
       {
-         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<T>().SearchAsync(domainObjectId);
+         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<TSearchResult>().SearchAsync(domainObjectId);
          var searchResultViewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
          SearchResultViewModels.Add(searchResultViewModel);
 
@@ -172,7 +171,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       }
       public async Task<DomainObjectSearchResultViewModel> InsertSearchResultViewModelAsync(int domainObjectId, int index)
       {
-         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<T>().SearchAsync(domainObjectId);
+         var searchResult = await _domainObjectQueryServiceFactory.CreateDomainObjectQueryService<TSearchResult>().SearchAsync(domainObjectId);
          var searchResultViewModel = _domainObjectSearchResultViewModelFactory.CreateViewModel(searchResult);
          SearchResultViewModels.Insert(index, searchResultViewModel);
 
@@ -247,26 +246,26 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods  
 
-      protected virtual async Task SearchAsync(bool extendedSearch, DomainObjectViewModel? parentViewModel)
+      protected virtual async Task SearchAsync(bool extendedSearch)
       {
          IsExecutingSearch = true;
 
          UnloadSearchResultViewModels();
 
-         await _domainObjectSearch.SearchAsync(extendedSearch, GetTextFilters(), parentViewModel?.DomainObject);
+         await _domainObjectSearch.SearchAsync(extendedSearch, GetTextFilters());
 
          LoadSearchResultViewModels();
 
          IsExecutingSearch = false;
       }
 
-      protected virtual async Task PaginatedSearchAsync(bool resetPage, bool extendedSearch, DomainObjectViewModel? parentViewModel)
+      protected virtual async Task PaginatedSearchAsync(bool resetPage, bool extendedSearch)
       {
          IsExecutingSearch = true;
 
          UnloadSearchResultViewModels();
 
-         await _domainObjectSearch.PaginatedSearchAsync(resetPage, extendedSearch, GetTextFilters(), parentViewModel?.DomainObject);
+         await _domainObjectSearch.PaginatedSearchAsync(resetPage, extendedSearch, GetTextFilters());
 
          LoadSearchResultViewModels();
 
@@ -285,7 +284,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          foreach (var constraint in _domainObjectSearch.GetActivableConstraints())
          {
-            var constraintViewModel = new ConstraintViewModel<T>(constraint);
+            var constraintViewModel = new ConstraintViewModel<TSearchResult>(constraint);
             constraintViewModel.IsSelected = _domainObjectSearch.ActivatedConstraint == null ? false : _domainObjectSearch.ActivatedConstraint.Equals(constraintViewModel.Constraint);
             ActivableConstraintViewModels.Add(constraintViewModel);
          }
@@ -295,9 +294,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private async void ConstraintViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
-         if (e.PropertyName.Equals(nameof(ConstraintViewModel<T>.IsSelected)))
+         if (e.PropertyName.Equals(nameof(ConstraintViewModel<TSearchResult>.IsSelected)))
          {
-            if ((sender as ConstraintViewModel<T>).IsSelected)
+            if ((sender as ConstraintViewModel<TSearchResult>).IsSelected)
             {
                ActivableConstraintViewModels.Where(vm => vm != sender).ToList().ForEach(vm => vm.IsSelected = false);
                _domainObjectSearch.ActivateConstraint(ActivatedConstraintViewModel?.Constraint);

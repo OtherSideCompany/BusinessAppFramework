@@ -1,4 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Context
 {
@@ -6,13 +12,13 @@ namespace OtherSideCore.Infrastructure.Context
    {
       #region Fields
 
-
+      protected string _password;
 
       #endregion
 
       #region Properties
 
-      public string UserId { get; set; }
+      public string UserId { get; set; }      
       public string DataSource { get; set; }
       public string InitialCatalog { get; set; }
 
@@ -43,15 +49,19 @@ namespace OtherSideCore.Infrastructure.Context
 
       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
       {
-         var connectionString = $"User ID={UserId};";
-         connectionString += "Persist Security Info=False;";
-         connectionString += $"Data Source = {DataSource};";
-         connectionString += "Integrated Security=SSPI;";
-         connectionString += $"Initial Catalog={InitialCatalog};";
-         connectionString += "TrustServerCertificate = True;";
-         connectionString += "App=EntityFramework";
+         var builder = new SqlConnectionStringBuilder
+         {
+            UserID = "app_user",
+            Password = _password,
+            DataSource = DataSource,
+            InitialCatalog = InitialCatalog,
+            TrustServerCertificate = true,
+            Encrypt = true,
+            PersistSecurityInfo = false,
+            ApplicationName = "EntityFramework"
+         };
 
-         optionsBuilder.UseSqlServer(connectionString);
+         optionsBuilder.UseSqlServer(builder.ConnectionString);
       }
 
       #endregion

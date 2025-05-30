@@ -31,7 +31,9 @@ namespace OtherSideCore.Infrastructure.FileSerialization
          }
          else
          {
-            return null;
+            var defaultInstance = Activator.CreateInstance(type);
+            SerializeToFile(filePath, defaultInstance);
+            return defaultInstance;
          }
       }      
    }

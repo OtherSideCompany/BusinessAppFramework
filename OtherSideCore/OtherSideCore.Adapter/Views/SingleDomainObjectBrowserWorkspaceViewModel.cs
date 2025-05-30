@@ -1,14 +1,17 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.ViewDescriptions;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class SingleDomainObjectBrowserWorkspaceViewModel<T> : WorkspaceViewModel where T : DomainObject, new()
+   public class SingleDomainObjectBrowserWorkspaceViewModel<TDomainObject, TSearchResult> : WorkspaceViewModel 
+      where TDomainObject : DomainObject, new()
+      where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
-      private DomainObjectBrowserViewModel<T> _browserViewModel;
+      private DomainObjectBrowserViewModel<TDomainObject, TSearchResult> _browserViewModel;
       protected IDomainObjectInteractionService _domainObjectInteractionService;
 
       #endregion
@@ -17,7 +20,7 @@ namespace OtherSideCore.Adapter.Views
 
       public IDomainObjectBrowserViewModel IDomainObjectBrowserViewModel => BrowserViewModel;
 
-      public DomainObjectBrowserViewModel<T> BrowserViewModel
+      public DomainObjectBrowserViewModel<TDomainObject, TSearchResult> BrowserViewModel
       {
          get => _browserViewModel;
          set => SetProperty(ref _browserViewModel, value);
@@ -87,7 +90,7 @@ namespace OtherSideCore.Adapter.Views
 
       protected virtual void CreateBrowserViewModel()
       {
-         BrowserViewModel = (DomainObjectBrowserViewModel<T>)_domainObjectInteractionService.CreateDomainObjectBrowserViewModel<T>();
+         BrowserViewModel = (DomainObjectBrowserViewModel<TDomainObject, TSearchResult>)_domainObjectInteractionService.CreateDomainObjectBrowserViewModel<TDomainObject>();
       }
 
       private void BrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

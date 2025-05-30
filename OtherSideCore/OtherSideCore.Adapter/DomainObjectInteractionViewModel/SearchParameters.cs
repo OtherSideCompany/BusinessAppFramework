@@ -9,6 +9,5 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    public class SearchParameters
    {
       public bool ExtendedSearch { get; set; }
-      public DomainObjectViewModel? ParentViewModel { get; set; }
    }
 }

@@ -9,6 +9,5 @@ namespace OtherSideCore.Application.Factories
    public interface IDomainObjectReferenceMapFactory
    {
       ReferenceMap GetDomainObjectReferenceMap();
-      ReferenceMap GetDomainObjectParentMap();
    }
 }

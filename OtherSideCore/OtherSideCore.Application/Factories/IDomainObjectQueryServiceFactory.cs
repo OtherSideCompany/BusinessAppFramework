@@ -1,15 +1,10 @@
-﻿using OtherSideCore.Application.Services;
-using OtherSideCore.Domain.DomainObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OtherSideCore.Application.Search;
+using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Application.Factories
 {
     public interface IDomainObjectQueryServiceFactory
     {
-        IDomainObjectQueryService<T> CreateDomainObjectQueryService<T>() where T : DomainObject, new();
+        IDomainObjectQueryService<TSearchResult> CreateDomainObjectQueryService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new();
     }
 }

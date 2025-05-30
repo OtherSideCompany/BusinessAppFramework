@@ -1,6 +1,6 @@
 ﻿namespace OtherSideCore.Application.Search
 {
-   public abstract class DomainObjectSearchResult : IDisposable
+   public class DomainObjectSearchResult : IDisposable
    {
       #region Fields
 

@@ -14,7 +14,6 @@ namespace OtherSideCore.Infrastructure.Mapping
 
          // Warning : for each IIndexable, use .IgnoreAllCollections().ReverseMap().IgnoreAllVirtual().AfterMap((src, dest) => dest.Index = src.Index)
          // because automapper seems to ignore interface defined properties
-
       }
    }
 }

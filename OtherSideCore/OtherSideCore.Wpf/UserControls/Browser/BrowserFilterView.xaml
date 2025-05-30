@@ -33,7 +33,7 @@
                                             Command="{Binding PaginatedSearchCommandAsync}"
                                             Background="White">
             <osc_customcontrols:SvgImageButton.CommandParameter>
-               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource False}" ParentViewModel="{x:Null}" />
+               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource False}" />
             </osc_customcontrols:SvgImageButton.CommandParameter>
          </osc_customcontrols:SvgImageButton>
 
@@ -55,7 +55,7 @@
                                             SvgImageButton_IconGeometry="{StaticResource icon_magnify}"
                                             Command="{Binding PaginatedSearchCommandAsync}">
             <osc_customcontrols:SvgImageButton.CommandParameter>
-               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource False}" ParentViewModel="{x:Null}" />
+               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource False}" />
             </osc_customcontrols:SvgImageButton.CommandParameter>
          </osc_customcontrols:SvgImageButton>
 
@@ -64,7 +64,7 @@
                                             SvgImageButton_IconGeometry="{StaticResource icon_magnify-expand}"
                                             Command="{Binding PaginatedSearchCommandAsync}">
             <osc_customcontrols:SvgImageButton.CommandParameter>
-               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource True}" ParentViewModel="{x:Null}" />
+               <domainobjectbrowser:PaginatedSearchParameters ResetPage="{StaticResource True}" ExtendedSearch="{StaticResource True}" />
             </osc_customcontrols:SvgImageButton.CommandParameter>
          </osc_customcontrols:SvgImageButton>
       </Grid>

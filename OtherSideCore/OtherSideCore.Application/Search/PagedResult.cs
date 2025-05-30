@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.Search
 {
-    public class PagedResult<T> where T : DomainObject, new()
+    public class PagedResult<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
     {
-        public IEnumerable<DomainObjectSearchResult> Items { get; set; }
+        public IEnumerable<TSearchResult> Items { get; set; }
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

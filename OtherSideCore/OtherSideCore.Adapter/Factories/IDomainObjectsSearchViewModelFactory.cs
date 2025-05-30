@@ -7,8 +7,8 @@ namespace OtherSideCore.Adapter.Factories
 {
     public interface IDomainObjectsSearchViewModelFactory
     {
-        IDomainObjectSearchViewModel CreateDomainObjectSearchViewModel<T>(
-           DomainObjectSearch<T> domainObjectSearch,
-           IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory) where T : DomainObject, new();
+        IDomainObjectSearchViewModel CreateDomainObjectSearchViewModel<TSearchResult>(
+           DomainObjectSearch<TSearchResult> domainObjectSearch,
+           IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory) where TSearchResult : DomainObjectSearchResult, new();
     }
 }

@@ -1,7 +1,5 @@
-﻿using OtherSideCore.Application.Search;
-using OtherSideCore.Domain;
+﻿using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
-using System.Linq.Expressions;
 
 namespace OtherSideCore.Application.Repository
 {
@@ -9,13 +7,7 @@ namespace OtherSideCore.Application.Repository
    {
       Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
-
-      Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, CancellationToken cancellationToken);
-
-      Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken);
-
-      Task<List<DomainObjectSearchResult>> PaginatedSearchAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> where, DomainObject? parent, int pageNumber, int pageSize, CancellationToken cancellationToken);
+      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);    
 
       Task CreateAsync(T domainObject, DomainObject? parent, int userId, string userName);
 
@@ -27,9 +19,7 @@ namespace OtherSideCore.Application.Repository
 
       Task DeleteAsync(T domainObject);
 
-      Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);
-
-      Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<T, bool>> predicate, DomainObject? parent, CancellationToken cancellationToken);
+      Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);      
 
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
 

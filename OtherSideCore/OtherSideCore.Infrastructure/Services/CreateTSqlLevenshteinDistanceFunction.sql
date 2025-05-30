@@ -1,8 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE FUNCTION [dbo].[Levenshtein](
+CREATE OR ALTER FUNCTION [dbo].[Levenshtein](
     @s nvarchar(4000)
   , @t nvarchar(4000)
   , @max int

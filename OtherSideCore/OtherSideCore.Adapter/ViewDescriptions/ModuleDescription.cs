@@ -14,6 +14,7 @@ namespace OtherSideCore.Adapter.ViewDescriptions
 
       #region Properties
 
+
       public bool IsExpanded
       {
          get => _isExpanded;

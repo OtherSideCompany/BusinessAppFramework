@@ -5,11 +5,10 @@ using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
-using System.Diagnostics;
 
 namespace OtherSideCore.Adapter.Views
 {
-    public abstract class MainWindowViewModel : WindowViewModel
+   public abstract class MainWindowViewModel : WindowViewModel
    {
       #region Fields
 
@@ -17,6 +16,7 @@ namespace OtherSideCore.Adapter.Views
       private IModuleViewModelFactory _viewModelFactory;
       private IDomainObjectInteractionService domainObjectInteractionFactory;
       private IUserDialogService _userDialogService;
+      protected readonly IGlobalDataService _globalDataService;
 
       private bool _isNavigationMenuDisplayed;
       private List<ViewDescriptionBase> _viewDescriptions;
@@ -131,13 +131,13 @@ namespace OtherSideCore.Adapter.Views
                                  IWindowService windowService,
                                  IModuleViewModelFactory viewModelFactory) :
          base(userContext,
-              globalDataService,
               appConfiguration,
               windowService)
       {
          _authenticationService = authenticationService;
          _viewModelFactory = viewModelFactory;
          _userDialogService = userDialogService;
+         _globalDataService = globalDataService;
 
          ViewDescriptions = new List<ViewDescriptionBase>();
          QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();

@@ -3,13 +3,16 @@ using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectSelectorViewModel<T> : DomainObjectBrowserViewModel<T>, IDomainObjectSelectorViewModel where T : DomainObject, new()
+   public class DomainObjectSelectorViewModel<TDomainObject, TSearchResult> : DomainObjectBrowserViewModel<TDomainObject, TSearchResult>, IDomainObjectSelectorViewModel 
+      where TDomainObject : DomainObject, new()
+      where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
@@ -40,7 +43,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectSelectorViewModel(DomainObjectBrowser<T> domainObjectBrowser,
+      public DomainObjectSelectorViewModel(DomainObjectBrowser<TDomainObject, TSearchResult> domainObjectBrowser,
                                            IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
                                            IUserDialogService userDialogService,
                                            IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
@@ -57,7 +60,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          _constructEditorOnSelectSearchResult = false;
 
-         ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
          DisplaySelectorAsyncCommand = new AsyncRelayCommand(DisplaySelectorAsync);
@@ -92,15 +95,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          base.Dispose();
 
-         ((DomainObjectsSearchViewModel<T>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
 
          Selection.PropertyChanged -= Selection_PropertyChanged;
       }
 
-      public async Task<T> GetSelectedSearchResultDomainObjectAsync()
+      public async Task<DomainObject> GetSelectedSearchResultDomainObjectAsync()
       {
          var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-         var domainObject = await _domainObjectServiceFactory.CreateDomainObjectService<T>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         var domainObject = await _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
 
          return domainObject;
       }
@@ -114,12 +117,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          if (Selection.IsSelectionEmpty)
          {
-            await _domainObjectInteractionService.DisplayDomainObjectBrowserAsync(typeof(T), DisplayType.SubWindow);
+            await _domainObjectInteractionService.DisplayDomainObjectBrowserAsync(typeof(TDomainObject), DisplayType.SubWindow);
          }
          else
          {
             var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-            await _domainObjectInteractionService.DisplayDomainObjectAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId, typeof(T), DisplayType.SubWindow);
+            await _domainObjectInteractionService.DisplayDomainObjectAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId, typeof(TDomainObject), DisplayType.SubWindow);
          }
       }
 

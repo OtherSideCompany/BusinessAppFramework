@@ -1,15 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OtherSideCore.Application.Browser;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
 {
-    public class ConstraintViewModel<T> : ObservableObject where T : DomainObject, new()
+    public class ConstraintViewModel<TSearchResult> : ObservableObject where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
       private bool _isSelected;
-      private Constraint<T> _constraint;
+      private Constraint<TSearchResult> _constraint;
 
       #endregion
 
@@ -21,7 +22,7 @@ namespace OtherSideCore.Adapter
          set => SetProperty(ref _isSelected, value);
       }
 
-      public Constraint<T> Constraint
+      public Constraint<TSearchResult> Constraint
       {
          get => _constraint;
          private set => SetProperty(ref _constraint, value);
@@ -37,7 +38,7 @@ namespace OtherSideCore.Adapter
 
       #region Constructor
 
-      public ConstraintViewModel(Constraint<T> constraint)
+      public ConstraintViewModel(Constraint<TSearchResult> constraint)
       {
          Constraint = constraint;
       }

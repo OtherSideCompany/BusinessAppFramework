@@ -5,7 +5,6 @@ using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
-using OtherSideCore.Wpf.UserControls;
 using OtherSideCore.Wpf.UserControls.Window;
 using System;
 using System.Collections.Generic;

@@ -3,7 +3,6 @@ using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
-using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
 {

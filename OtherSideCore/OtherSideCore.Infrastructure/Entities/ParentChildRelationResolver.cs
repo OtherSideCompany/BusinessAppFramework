@@ -36,6 +36,11 @@ namespace OtherSideCore.Infrastructure.Entities
 
       #region Public Methods
 
+      public bool Contains(Type entityType, Type domainObjectType)
+      {
+        return _entries.ContainsKey((entityType, domainObjectType));
+      }
+
       public Expression<Func<TEntity, bool>> GetParentRelationPredicate<TEntity>(DomainObject parent) where TEntity : IEntity
       {
          var key = (typeof(TEntity), parent.GetType());

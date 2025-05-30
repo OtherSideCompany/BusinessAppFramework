@@ -1,15 +1,15 @@
 ﻿using OtherSideCore.Application.Browser;
-using OtherSideCore.Application.Repository;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
-using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Services
 {
-   public class DomainObjectQueryService<T> : IDomainObjectQueryService<T> where T : DomainObject, new()
+   public class DomainObjectQueryService<TSearchResult> : IDomainObjectQueryService<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
-      protected IRepository<T> _repository;
+      protected ISearchServiceFactory _searchServiceFactory;
+      protected ISearchService<TSearchResult> _searchService;
 
       #endregion
 
@@ -21,36 +21,37 @@ namespace OtherSideCore.Application.Services
 
       #region Constructor
 
-      public DomainObjectQueryService(IRepository<T> repository)
+      public DomainObjectQueryService(ISearchServiceFactory searchServiceFactory)
       {
-         _repository = repository;
+         _searchServiceFactory = searchServiceFactory;
+         _searchService = (ISearchService<TSearchResult>)_searchServiceFactory.CreateSearchService<TSearchResult>();
       }
 
       #endregion
 
       #region Public Methods
 
-      public virtual async Task<List<DomainObjectSearchResult>> SearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, CancellationToken cancellationToken = default)
+      public virtual async Task<List<TSearchResult>> SearchAsync(List<string> filters, Constraint<TSearchResult> constraint, bool extendedSearch = false, CancellationToken cancellationToken = default)
       {
-         var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
+         var constraintExpression = constraint == null ? Constraint<TSearchResult>.Empty.Expression : constraint.Expression;         
 
-         var totalCount = await _repository.CountAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
-         return await _repository.SearchAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
+         var totalCount = await _searchService.CountAsync(filters, extendedSearch, constraintExpression, cancellationToken);
+         return await _searchService.SearchAsync(filters, extendedSearch, constraintExpression, cancellationToken);
       }
 
-      public virtual async Task<DomainObjectSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      public virtual async Task<TSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken = default)
       {
-         return await _repository.SearchAsync(domainObjectId, cancellationToken);
+         return (TSearchResult)await _searchService.SearchAsync(domainObjectId, cancellationToken);
       }
 
-      public virtual async Task<PagedResult<T>> PaginatedSearchAsync(List<string> filters, Constraint<T> constraint, DomainObject? parent, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+      public virtual async Task<PagedResult<TSearchResult>> PaginatedSearchAsync(List<string> filters, Constraint<TSearchResult> constraint, bool extendedSearch = false, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
       {
-         var constraintExpression = constraint == null ? Constraint<T>.Empty.Expression : constraint.Expression;
+         var constraintExpression = constraint == null ? Constraint<TSearchResult>.Empty.Expression : constraint.Expression;
 
-         var totalCount = await _repository.CountAsync(filters, extendedSearch, constraintExpression, parent, cancellationToken);
-         var results = await _repository.PaginatedSearchAsync(filters, extendedSearch, constraintExpression, parent, pageNumber, pageSize, cancellationToken);
+         var totalCount = await _searchService.CountAsync(filters, extendedSearch, constraintExpression, cancellationToken);
+         var results = await _searchService.PaginatedSearchAsync(filters, extendedSearch, constraintExpression, pageNumber, pageSize, cancellationToken);
 
-         return new PagedResult<T>
+         return new PagedResult<TSearchResult>
          {
             Items = results,
             TotalCount = totalCount,
@@ -59,15 +60,11 @@ namespace OtherSideCore.Application.Services
          };
       }
 
-      public virtual List<Constraint<T>> GetFilterConstraints(List<string> filters, bool extendedSearch)
-      {
-         return new List<Constraint<T>>();
-      }
-
       public void Dispose()
       {
 
       }
+      
       #endregion
 
       #region Private Methods

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -11,7 +10,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       protected readonly ILoggerFactory _loggerFactory;
-      protected readonly IGlobalDataService _globalDataService;
+      
       protected IUserContext _userContext;
       protected IAppConfiguration _appConfiguration;
       protected IWindowService _windowService;
@@ -70,12 +69,11 @@ namespace OtherSideCore.Adapter.Views
       #region Constructor
 
       public WindowViewModel(IUserContext userContext,
-                             IGlobalDataService globalDataService,
                              IAppConfiguration appConfiguration,
                              IWindowService windowService)
       {
          UserContext = userContext;
-         _globalDataService = globalDataService;
+         
          _appConfiguration = appConfiguration;
          _windowService = windowService;
 

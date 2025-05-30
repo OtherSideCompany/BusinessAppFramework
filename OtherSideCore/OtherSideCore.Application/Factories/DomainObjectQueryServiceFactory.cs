@@ -1,17 +1,18 @@
-﻿using OtherSideCore.Application.Services;
+﻿using OtherSideCore.Application.Search;
+using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Factories
 {
     public abstract class DomainObjectQueryServiceFactory : IDomainObjectQueryServiceFactory
     {
-        protected IRepositoryFactory _repositoryFactory;
+        protected ISearchServiceFactory _searchServiceFactory;
 
-        public DomainObjectQueryServiceFactory(IRepositoryFactory repositoryFactory)
+        public DomainObjectQueryServiceFactory(ISearchServiceFactory searchServiceFactory)
         {
-            _repositoryFactory = repositoryFactory;
+         _searchServiceFactory = searchServiceFactory;
         }
 
-        public abstract IDomainObjectQueryService<T> CreateDomainObjectQueryService<T>() where T : DomainObject, new();
+        public abstract IDomainObjectQueryService<TSearchResult> CreateDomainObjectQueryService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new();
     }
 }

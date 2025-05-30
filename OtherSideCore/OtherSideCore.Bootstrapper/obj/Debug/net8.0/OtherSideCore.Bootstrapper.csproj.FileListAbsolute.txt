@@ -1,0 +1,13 @@
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Bootstrapper.deps.json
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Bootstrapper.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Bootstrapper.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.csproj.AssemblyReference.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.GeneratedMSBuildEditorConfig.editorconfig
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.AssemblyInfoInputs.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.AssemblyInfo.cs
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.csproj.CoreCompileInputs.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.sourcelink.json
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\refint\OtherSideCore.Bootstrapper.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\ref\OtherSideCore.Bootstrapper.dll
