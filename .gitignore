@@ -10,6 +10,10 @@
 /OtherSideCore/OtherSideCore.Domain/obj
 /OtherSideCore/OtherSideCore.ViewModel/bin
 /OtherSideCore/OtherSideCore.ViewModel/obj
+/OtherSideCore/OtherSideCore.Bootstrapper/bin 
+/OtherSideCore/OtherSideCore.Bootstrapper/obj
+/OtherSideCore/OtherSideCore.Presentation/bin 
+/OtherSideCore/OtherSideCore.Presentation/obj
 /OtherSideCore/.vs
 /.vs
 /OtherSideCore/OtherSideCore.Domain.Tests/bin/Debug/net8.0
