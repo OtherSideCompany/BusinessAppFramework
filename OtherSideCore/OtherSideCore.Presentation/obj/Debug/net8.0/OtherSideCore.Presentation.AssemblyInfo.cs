@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OtherSideCore.Presentation")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d1978a43ddaa4afc35d96aac0a1d37d92f0bd80")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf0b5d04213d38ee250784e3e612db3505b3db6a")]
 [assembly: System.Reflection.AssemblyProductAttribute("OtherSideCore.Presentation")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OtherSideCore.Presentation")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

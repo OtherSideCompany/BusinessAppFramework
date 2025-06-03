@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.Factories;
-using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -13,19 +11,11 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private IAuthenticationService _authenticationService;
-      private IModuleViewModelFactory _viewModelFactory;
       private IDomainObjectInteractionService domainObjectInteractionFactory;
-      private IUserDialogService _userDialogService;
+      protected IUserDialogService _userDialogService;
       protected readonly IGlobalDataService _globalDataService;
-
-      private bool _isNavigationMenuDisplayed;
-      private List<ViewDescriptionBase> _viewDescriptions;
-      private List<ViewDescriptionBase> _quickNavigationViewescriptions;
-      private IDisposable _instanciatedViewModel;
-      private ViewDescriptionBase _defaultViewDescription;
-      private ViewBaseViewModel _loadedViewViewModel;
+      
       private bool _isLoadingContent;
-
       private string _connexionUserName;
       private string _connexionPassword;
       private bool _rememberUserName;
@@ -34,24 +24,6 @@ namespace OtherSideCore.Adapter.Views
       #endregion
 
       #region Properties      
-
-      public bool IsNavigationMenuDisplayed
-      {
-         get => _isNavigationMenuDisplayed;
-         set => SetProperty(ref _isNavigationMenuDisplayed, value);
-      }
-
-      public List<ViewDescriptionBase> ViewDescriptions
-      {
-         get => _viewDescriptions;
-         set => SetProperty(ref _viewDescriptions, value);
-      }
-
-      public List<ViewDescriptionBase> QuickNavigationViewDescriptions
-      {
-         get => _quickNavigationViewescriptions;
-         set => SetProperty(ref _quickNavigationViewescriptions, value);
-      }
 
       public string ConnexionUserName
       {
@@ -71,23 +43,11 @@ namespace OtherSideCore.Adapter.Views
          set => SetProperty(ref _rememberUserName, value);
       }
 
-      public ViewDescriptionBase DefaultViewDescription
-      {
-         get => _defaultViewDescription;
-         set => SetProperty(ref _defaultViewDescription, value);
-      }
-
-      public ViewBaseViewModel LoadedViewViewModel
-      {
-         get => _loadedViewViewModel;
-         set => SetProperty(ref _loadedViewViewModel, value);
-      }
-
       public bool IsLoadingContent
       {
          get => _isLoadingContent;
          set => SetProperty(ref _isLoadingContent, value);
-      }
+      }      
 
       public bool IsUserContextInitialized
       {
@@ -102,23 +62,14 @@ namespace OtherSideCore.Adapter.Views
 
       public IWindowService WindowService => _windowService;
       public string UserContextFirstName => UserContext?.FirstName;
-      public string UserContextLastName => UserContext?.LastName;
-      public ViewDescriptionBase LoadedViewDescription => ViewDescriptions.FirstOrDefault(vd => vd.IsLoaded);
+      public string UserContextLastName => UserContext?.LastName;      
 
-      #endregion
-
-      #region Events
-
-      public EventHandler LoadedViewModelChanged;
-
-      #endregion
+      #endregion      
 
       #region Commands
 
       public AsyncRelayCommand LogInAsyncCommand { get; set; }
       public AsyncRelayCommand LogOutAsyncCommand { get; set; }
-      public AsyncRelayCommand<ViewDescriptionBase> DisplayViewAsyncCommand { get; set; }
-
       #endregion
 
       #region Constructor
@@ -128,23 +79,17 @@ namespace OtherSideCore.Adapter.Views
                                  IUserContext userContext,
                                  IGlobalDataService globalDataService,
                                  IAppConfiguration appConfiguration,
-                                 IWindowService windowService,
-                                 IModuleViewModelFactory viewModelFactory) :
+                                 IWindowService windowService) :
          base(userContext,
               appConfiguration,
               windowService)
       {
          _authenticationService = authenticationService;
-         _viewModelFactory = viewModelFactory;
          _userDialogService = userDialogService;
-         _globalDataService = globalDataService;
-
-         ViewDescriptions = new List<ViewDescriptionBase>();
-         QuickNavigationViewDescriptions = new List<ViewDescriptionBase>();
+         _globalDataService = globalDataService;         
 
          LogInAsyncCommand = new AsyncRelayCommand(LogInAsync);
          LogOutAsyncCommand = new AsyncRelayCommand(LogOutAsync);
-         DisplayViewAsyncCommand = new AsyncRelayCommand<ViewDescriptionBase>(DisplayViewAsync);
 
          _appConfiguration.Load();
          LoadSettings();
@@ -154,15 +99,13 @@ namespace OtherSideCore.Adapter.Views
 
       #endregion
 
-      #region Public Methods      
+      #region Public Methods
 
       public void Dispose()
       {
          base.Dispose();
 
          _globalDataService.UnloadData();
-         ViewDescriptions.ForEach(vd => vd.Dispose());
-         QuickNavigationViewDescriptions.ForEach(vd => vd.Dispose());
       }
 
       #endregion
@@ -219,14 +162,11 @@ namespace OtherSideCore.Adapter.Views
             {
                SaveSettings();
 
-               if (DefaultViewDescription != null)
-               {
-                  await InitializeUserContextAsync(userId);
-                  IsUserContextInitialized = true;
+               await InitializeUserContextAsync(userId);
+               IsUserContextInitialized = true;
 
-                  await _globalDataService.LoadGlobalDataAsync();
-                  await DisplayViewAsync(DefaultViewDescription);
-               }
+               await _globalDataService.LoadGlobalDataAsync();
+               await DisplayDefaultViewAsync();
             }
 
             ResetConnexionInfos();
@@ -235,8 +175,9 @@ namespace OtherSideCore.Adapter.Views
          {
             _userDialogService.Error("Veuillez entrer un nom d'utilisateur et un mot de passe valides.");
          }
-
       }
+
+      protected abstract Task DisplayDefaultViewAsync();
 
       private async Task LogOutAsync()
       {
@@ -246,48 +187,6 @@ namespace OtherSideCore.Adapter.Views
          IsUserContextInitialized = false;
 
          LoadSettings();
-      }
-
-      public async Task DisplayViewAsync(ViewDescriptionBase viewDescriptionBase)
-      {
-         IsLoadingContent = true;
-
-         var proceed = true;
-
-         if (LoadedViewViewModel is WorkspaceViewModel workspaceViewModel && workspaceViewModel.HasUnsavedChanges)
-         {
-            proceed = _userDialogService.Confirm("Vous avez des modifications non sauvegardées. Voulez-vous continuer ?");
-         }
-
-         if (proceed)
-         {
-            LoadedViewViewModel?.Dispose();
-            LoadedViewViewModel = null;
-
-            ViewDescriptions.ForEach(vd => vd.Unload());
-
-            viewDescriptionBase.Load();
-
-            LoadedViewViewModel = _viewModelFactory.CreateViewModel(LoadedViewDescription);
-
-            await LoadedViewViewModel.InitializeAsync();
-
-            if (viewDescriptionBase is ModuleDescription)
-            {
-               ((ModuleViewModel)LoadedViewViewModel).ModuleDescription = (ModuleDescription)viewDescriptionBase;
-            }
-            else if (viewDescriptionBase is WorkspaceDescription)
-            {
-               ((WorkspaceViewModel)LoadedViewViewModel).WorkspaceDescription = (WorkspaceDescription)viewDescriptionBase;
-            }
-
-            OnPropertyChanged(nameof(LoadedViewDescription));
-            WindowName = LoadedViewDescription.ViewNavigationPath;
-         }
-
-         LoadedViewModelChanged?.Invoke(this, new EventArgs());
-
-         IsLoadingContent = false;
       }
 
       #endregion

@@ -10,3 +10,11 @@ D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\O
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\refint\OtherSideCore.Presentation.dll
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\OtherSideCore.Presentation.pdb
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\ref\OtherSideCore.Presentation.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Adapter.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Application.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Domain.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Adapter.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Application.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\bin\Debug\net8.0\OtherSideCore.Domain.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\OtherSideCore.Presentation.csproj.AssemblyReference.cache
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Presentation\obj\Debug\net8.0\OtherSid.3D78B0E6.Up2Date

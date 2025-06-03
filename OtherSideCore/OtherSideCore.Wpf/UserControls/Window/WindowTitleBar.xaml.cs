@@ -23,6 +23,24 @@ namespace OtherSideCore.Wpf.UserControls.Window
          set { SetValue(WindowTitleBar_ApplicationLogoColorProperty, value); }
       }
 
+      public static readonly DependencyProperty WindowTitleBar_ApplicationLogoProperty =
+          DependencyProperty.Register("WindowTitleBar_ApplicationLogo", typeof(string), typeof(WindowTitleBar), new UIPropertyMetadata(""));
+
+      public string WindowTitleBar_ApplicationLogo
+      {
+         get { return (string)GetValue(WindowTitleBar_ApplicationLogoProperty); }
+         set { SetValue(WindowTitleBar_ApplicationLogoProperty, value); }
+      }
+
+      public static readonly DependencyProperty WindowTitleBar_ApplicationNameProperty =
+         DependencyProperty.Register("WindowTitleBar_ApplicationName", typeof(string), typeof(WindowTitleBar), new UIPropertyMetadata("Unammed App"));
+
+      public string WindowTitleBar_ApplicationName
+      {
+         get { return (string)GetValue(WindowTitleBar_ApplicationNameProperty); }
+         set { SetValue(WindowTitleBar_ApplicationNameProperty, value); }
+      }
+
       public WindowTitleBar()
       {
          InitializeComponent();

@@ -1,5 +1,4 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Adapter.ViewDescriptions;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -9,17 +8,9 @@ namespace OtherSideCore.Adapter.Views
 
       protected bool _hasUnsavedChanges;
 
-      private WorkspaceDescription _workspaceDescription;
-
       #endregion
 
       #region Properties
-
-      public WorkspaceDescription WorkspaceDescription
-      {
-         get => _workspaceDescription;
-         set => SetProperty(ref _workspaceDescription, value);
-      }
 
       public virtual bool HasUnsavedChanges
       {

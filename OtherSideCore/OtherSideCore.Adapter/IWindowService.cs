@@ -1,7 +1,6 @@
 ﻿
 using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 
 namespace OtherSideCore.Adapter
@@ -9,12 +8,10 @@ namespace OtherSideCore.Adapter
    public interface IWindowService
    {
       void ShowSubWindow(object content, string windowName);
-      void ShowMainWindow<T>() where T : MainWindowViewModel;
       void ShowView(object view, string windowName, DisplayType displayType);
       void CloseWindow(object window);
       void ShowModal(object modalContent);
-      void HideTopModal();      
-      ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);
+      void HideTopModal();   
       void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       void ShowDomainObjectDetailsEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);

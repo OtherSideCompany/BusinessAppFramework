@@ -23,7 +23,10 @@
          <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
-      <local:WindowTitleBar Grid.Row="0" WindowTitleBar_ApplicationLogoColor="{Binding MainWindow_ApplicationLogoColor, ElementName=MainWindowUserControl}" />
+      <local:WindowTitleBar Grid.Row="0" 
+                            WindowTitleBar_ApplicationLogoColor="{Binding MainWindow_ApplicationLogoColor, ElementName=MainWindowUserControl}" 
+                            WindowTitleBar_ApplicationName="{Binding MainWindow_ApplicationName, ElementName=MainWindowUserControl}"
+                            WindowTitleBar_ApplicationLogo="{Binding MainWindow_ApplicationLogo, ElementName=MainWindowUserControl}"/>
 
       <Border Grid.Row="1" BorderThickness="0,0,1,1">
 
@@ -31,11 +34,11 @@
 
             <Grid Visibility="{Binding IsUserContextInitialized, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Collapsed}">
                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="0" MinWidth="38" />
                   <ColumnDefinition Width="*" />
                </Grid.ColumnDefinitions>
 
-               <local:NavigationMenu Grid.Column="0" />
+               <ContentPresenter Grid.Column="0" Content="{Binding MainWindow_NavigationMenu, ElementName=MainWindowUserControl}" />
 
                <!-- content -->
                <Border Grid.Column="1" Background="White">

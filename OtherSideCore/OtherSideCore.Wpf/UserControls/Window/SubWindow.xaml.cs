@@ -37,6 +37,24 @@ namespace OtherSideCore.Wpf.UserControls.Window
          set { SetValue(SubWindow_ModalContentProperty, value); }
       }
 
+      public static readonly DependencyProperty SubWindow_ApplicationNameProperty =
+          DependencyProperty.Register("SubWindow_ApplicationName", typeof(string), typeof(SubWindow), new UIPropertyMetadata("Unnamed App"));
+
+      public string SubWindow_ApplicationName
+      {
+         get { return (string)GetValue(SubWindow_ApplicationNameProperty); }
+         set { SetValue(SubWindow_ApplicationNameProperty, value); }
+      }
+
+      public static readonly DependencyProperty SubWindow_ApplicationLogoProperty =
+          DependencyProperty.Register("SubWindow_ApplicationLogo", typeof(string), typeof(SubWindow), new UIPropertyMetadata(""));
+
+      public string SubWindow_ApplicationLogo
+      {
+         get { return (string)GetValue(SubWindow_ApplicationLogoProperty); }
+         set { SetValue(SubWindow_ApplicationLogoProperty, value); }
+      }
+
       public SubWindow()
       {
          InitializeComponent();

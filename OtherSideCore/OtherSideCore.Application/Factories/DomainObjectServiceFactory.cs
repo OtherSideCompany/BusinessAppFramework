@@ -1,32 +1,80 @@
 ﻿using OtherSideCore.Application.DomainObjectEvents;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Domain.Services;
+using System.Reflection;
 
 namespace OtherSideCore.Application.Factories
 {
-   public abstract class DomainObjectServiceFactory : IDomainObjectServiceFactory
+   public abstract class DomainObjectServiceFactory : TypeBasedFactory, IDomainObjectServiceFactory
    {
+      #region Fields
+
       protected IRepositoryFactory _repositoryFactory;
-      protected IUserContext _userContext;
       protected IDomainObjectEventPublisher _domainObjectEventPublisher;
+      protected DomainObjectServiceDependencies _domainObjectServiceDependencies;
+
+      #endregion
+
+      #region Properties
 
       public IDomainObjectEventPublisher DomainObjectEventPublisher => _domainObjectEventPublisher;
 
+      #endregion
+
+      #region Constructor
+
       public DomainObjectServiceFactory(
-         IRepositoryFactory repositoryFactory, 
-         IUserContext userContext)
+         IRepositoryFactory repositoryFactory,
+         DomainObjectServiceDependencies domainObjectServiceDependencies)
       {
          _repositoryFactory = repositoryFactory;
-         _userContext = userContext;
+         _domainObjectServiceDependencies = domainObjectServiceDependencies;
 
-         CreateDomainObjectEventPublisher();
-      }     
+         domainObjectServiceDependencies.DomainObjectServiceFactory = this;
 
-      public abstract IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new();
+         SetFallbackFactory(type => CreateDefaultDomainObjectService(type));
+      }
 
-      public abstract object CreateDomainObjectService(Type type);
+      #endregion
+
+      #region Public Methods
+
+      public IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new()
+      {
+         return (IDomainObjectService<T>)CreateFromType<T>();
+      }
+
+      public object CreateDomainObjectService(Type type)
+      {
+         return CreateFromType(type);
+      }
+
+      public void Register<T>(Func<IDomainObjectService<T>> factory) where T : DomainObject, new()
+      {
+         base.Register<T>(() => factory());
+      }
+
+      #endregion
+
+      #region Private Methods
 
       protected abstract void CreateDomainObjectEventPublisher();
+
+      private object CreateDefaultDomainObjectService(Type type)
+      {
+         var method = GetType()
+             .GetMethod(nameof(CreateDefaultDomainObjectServiceGeneric), BindingFlags.NonPublic | BindingFlags.Instance)!
+             .MakeGenericMethod(type);
+
+         return method.Invoke(this, null)!;
+      }
+
+      private object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
+      {
+         var repo = _repositoryFactory.CreateRepository<T>();
+         return new DomainObjectService<T>(repo, _domainObjectServiceDependencies);
+      }
+
+      #endregion
    }
 }

@@ -19,7 +19,10 @@
          <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
-      <local:WindowTitleBar Grid.Row="0" WindowTitleBar_ApplicationLogoColor="{Binding SubWindow_ApplicationLogoColor, ElementName=SubWindowUserControl}" />
+      <local:WindowTitleBar Grid.Row="0" 
+                            WindowTitleBar_ApplicationLogoColor="{Binding SubWindow_ApplicationLogoColor, ElementName=SubWindowUserControl}" 
+                            WindowTitleBar_ApplicationName="{Binding SubWindow_ApplicationName, ElementName=SubWindowUserControl}"
+                            WindowTitleBar_ApplicationLogo="{Binding SubWindow_ApplicationLogo, ElementName=SubWindowUserControl}"/>
 
       <Border Grid.Row="1" BorderThickness="0,0,1,1">
 

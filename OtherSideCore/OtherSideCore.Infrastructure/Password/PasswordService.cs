@@ -30,6 +30,11 @@ namespace OtherSideCore.Infrastructure.Password
 
       public bool VerifyPassword(string storedHash, string providedPassword)
       {
+         if (string.IsNullOrEmpty(storedHash) || string.IsNullOrEmpty(providedPassword))
+         {
+            return false;
+         }
+
          byte[] hashBytes = Convert.FromBase64String(storedHash);
 
          byte[] salt = new byte[SaltSize];

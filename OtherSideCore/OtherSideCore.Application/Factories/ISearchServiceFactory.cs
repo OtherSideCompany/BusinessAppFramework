@@ -1,6 +1,5 @@
 ﻿using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Factories
 {

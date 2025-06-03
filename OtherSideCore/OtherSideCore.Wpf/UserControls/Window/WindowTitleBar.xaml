@@ -93,7 +93,9 @@
 
       <Border Grid.Column="0" Width="38" Height="32" 
               Background="{Binding WindowTitleBar_ApplicationLogoColor, ElementName=WindowTitleBarUserControl}">
-         <Image Width="32" Height="32" Source="{Binding ApplicationLogoImageSource}" HorizontalAlignment="Center" SnapsToDevicePixels="True" />
+         <Image Width="32" Height="32" 
+                Source="{Binding WindowTitleBar_ApplicationLogo, ElementName=WindowTitleBarUserControl}" 
+                HorizontalAlignment="Center" SnapsToDevicePixels="True" />
       </Border>
 
       <Grid Grid.Column="1">
@@ -103,7 +105,9 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <TextBlock Grid.Column="0" Text="{Binding ApplicationName}" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0" />
+         <TextBlock Grid.Column="0" 
+                    Text="{Binding WindowTitleBar_ApplicationName, ElementName=WindowTitleBarUserControl}" 
+                    Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="10,0,0,0" />
          <TextBlock Grid.Column="1" Text="|" Foreground="{StaticResource TextForeGroundColor}" FontSize="14" Margin="7,0,7,0"
                     Visibility="{Binding WindowName, Converter={StaticResource NullOrEmptyStringToVisibilityConverter}}"/>
          <TextBlock Grid.Column="2" Text="{Binding WindowName}" 

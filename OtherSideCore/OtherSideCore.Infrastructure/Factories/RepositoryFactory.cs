@@ -1,28 +1,20 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using OtherSideCore.Application.Factories;
+﻿using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Infrastructure.Entities;
+using System;
 namespace OtherSideCore.Infrastructure.Factories
 {
-   public abstract class RepositoryFactory : IRepositoryFactory
+   public abstract class RepositoryFactory : TypeBasedFactory, IRepositoryFactory
    {
       #region Fields
 
-      protected IDbContextFactory<DbContext> _dbContextFactory;
-      protected IMapper _mapper;
-      protected ILoggerFactory _loggerFactory;
-      protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
-      protected IDomainObjectReferenceMapFactory _referenceMapFactory;
-      protected IParentChildRelationResolver _parentChildRelationResolver;
+      private RepositoryDependencies _repositoryDependencies;
 
       #endregion
 
       #region Properties
 
-
+      public RepositoryDependencies RepositoryDependencies => _repositoryDependencies;
 
       #endregion
 
@@ -34,20 +26,9 @@ namespace OtherSideCore.Infrastructure.Factories
 
       #region Constructor
 
-      public RepositoryFactory(
-         IDbContextFactory<DbContext> dbContextFactory, 
-         IMapper mapper, 
-         ILoggerFactory loggerFactory, 
-         IDomainObjectReferenceFactory domainObjectReferenceFactory,
-         IDomainObjectReferenceMapFactory referenceMapFactory,
-         IParentChildRelationResolver parentChildRelationResolver)
+      public RepositoryFactory(RepositoryDependencies repositoryDependencies) : base()
       {
-         _dbContextFactory = dbContextFactory;
-         _mapper = mapper;
-         _loggerFactory = loggerFactory;
-         _domainObjectReferenceFactory = domainObjectReferenceFactory;
-         _referenceMapFactory = referenceMapFactory;
-         _parentChildRelationResolver = parentChildRelationResolver;
+         _repositoryDependencies = repositoryDependencies;
       }
 
 
@@ -55,7 +36,20 @@ namespace OtherSideCore.Infrastructure.Factories
 
       #region Public Methods
 
-      public abstract IRepository<T> CreateRepository<T>() where T : DomainObject, new();
+      public IRepository<T> CreateRepository<T>() where T : DomainObject
+      {
+         return (IRepository<T>)CreateFromType<T>();
+      }
+
+      public object CreateRepository(Type type)
+      {
+         return CreateFromType(type);
+      }
+
+      public void Register<T>(Func<IRepository<T>> factory) where T : DomainObject
+      {
+         base.Register<T>(() => factory());
+      }
 
       #endregion
 

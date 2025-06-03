@@ -5,6 +5,6 @@ namespace OtherSideCore.Wpf.Services
    public interface IViewLocatorService
    {
       void Register(Type viewModelType, Type viewType);
-      object? ResolveView(object viewModel);
+      object ResolveView(object viewModel);
    }
 }

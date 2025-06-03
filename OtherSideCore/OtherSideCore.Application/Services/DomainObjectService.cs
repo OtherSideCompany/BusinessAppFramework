@@ -1,9 +1,11 @@
 ﻿using OtherSideCore.Application.DomainObjectEvents;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Mail;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Application.Services
 {
@@ -14,8 +16,10 @@ namespace OtherSideCore.Application.Services
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
       protected readonly IDomainObjectServiceFactory _domainObjectServiceFactory;
-      protected IUserDialogService _userDialogService;
-      protected IDomainObjectFileService _domainObjectFileService;
+      protected readonly IUserDialogService _userDialogService;
+      protected readonly IDomainObjectFileService _domainObjectFileService;
+      protected readonly IPasswordService _passwordService;
+      protected readonly IMailService _mailService;
 
       #endregion
 
@@ -34,17 +38,14 @@ namespace OtherSideCore.Application.Services
       #region Constructor
 
       public DomainObjectService(
-         IRepository<T> repository, 
-         IUserContext userContext, 
-         IDomainObjectServiceFactory domainObjectServiceFactory,
-         IUserDialogService userDialogService,
-         IDomainObjectFileService domainObjectFileService)
+         IRepository<T> repository,
+         DomainObjectServiceDependencies domainObjectServiceDependencies)
       {
          _repository = repository;
-         _userContext = userContext;
-         _domainObjectServiceFactory = domainObjectServiceFactory;
-         _userDialogService = userDialogService;
-         _domainObjectFileService = domainObjectFileService;
+         _userContext = domainObjectServiceDependencies.UserContext;
+         _domainObjectServiceFactory = domainObjectServiceDependencies.DomainObjectServiceFactory;
+         _userDialogService = domainObjectServiceDependencies.UserDialogService;
+         _domainObjectFileService = domainObjectServiceDependencies.DomainObjectFileService;
       }
 
       #endregion

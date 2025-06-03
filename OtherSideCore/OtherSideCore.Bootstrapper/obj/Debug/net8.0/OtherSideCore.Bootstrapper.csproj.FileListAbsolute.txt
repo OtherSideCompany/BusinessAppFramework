@@ -11,3 +11,8 @@ D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\O
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\refint\OtherSideCore.Bootstrapper.dll
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSideCore.Bootstrapper.pdb
 D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\ref\OtherSideCore.Bootstrapper.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Application.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Domain.dll
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Application.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\bin\Debug\net8.0\OtherSideCore.Domain.pdb
+D:\Dev\OtherSideCore\OtherSideCore\OtherSideCore.Bootstrapper\obj\Debug\net8.0\OtherSid.028B8E72.Up2Date

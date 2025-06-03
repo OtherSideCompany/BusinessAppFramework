@@ -9,7 +9,6 @@ using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Domain.DomainObjects;
 using AutoMapper;
 using System.Linq.Expressions;
-using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application;
 using OtherSideCore.Domain;
@@ -24,9 +23,7 @@ namespace OtherSideCore.Infrastructure.Repositories
       #region Fields
 
       protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
-
       protected IDomainObjectReferenceMapFactory _referenceMapFactory;
-
       protected IDbContextFactory<DbContext> _dbContextFactory;
       protected ILoggerFactory _loggerFactory;
       protected ILogger<Repository<TDomainObject, TEntity>> _logger;
@@ -38,20 +35,15 @@ namespace OtherSideCore.Infrastructure.Repositories
       #region Contructor
 
       public Repository(
-         IDbContextFactory<DbContext> dbContextFactory,
-         IMapper mapper,
-         ILoggerFactory loggerFactory,
-         IDomainObjectReferenceFactory domainObjectReferenceFactory,
-         IDomainObjectReferenceMapFactory referenceMapFactory,
-         IParentChildRelationResolver parentChildRelationResolver)
+         RepositoryDependencies repositoryDependencies)
       {
-         _dbContextFactory = dbContextFactory;
-         _loggerFactory = loggerFactory;
-         _logger = loggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
-         _mapper = mapper;
-         _domainObjectReferenceFactory = domainObjectReferenceFactory;
-         _referenceMapFactory = referenceMapFactory;
-         _parentChildRelationResolver = parentChildRelationResolver;
+         _dbContextFactory = repositoryDependencies.DbContextFactory;
+         _loggerFactory = repositoryDependencies.LoggerFactory;
+         _logger = repositoryDependencies.LoggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
+         _mapper = repositoryDependencies.Mapper;
+         _domainObjectReferenceFactory = repositoryDependencies.DomainObjectReferenceFactory;
+         _referenceMapFactory = repositoryDependencies.ReferenceMapFactory;
+         _parentChildRelationResolver = repositoryDependencies.ParentChildRelationResolver;
       }
 
       #endregion

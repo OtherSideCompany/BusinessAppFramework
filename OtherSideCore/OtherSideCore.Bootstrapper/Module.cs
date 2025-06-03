@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Application.Factories;
 
 namespace OtherSideCore.Bootstrapper
 {
@@ -35,6 +36,7 @@ namespace OtherSideCore.Bootstrapper
       #region Public Methods
 
       public abstract void RegisterServices(IServiceCollection services);
+      public abstract void RegisterRepositories(IRepositoryFactory repositoryFactory);
 
       #endregion
 

@@ -2,8 +2,6 @@
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Adapter.Factories;
-using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Wpf.UserControls.Window;
 using System;
@@ -20,7 +18,6 @@ namespace OtherSideCore.Wpf.Services
       #region Fields
 
       protected IServiceProvider _serviceProvider;
-      protected IModuleViewFactory _viewFactory;
 
       private readonly Dictionary<Window, Stack<Border>> _modalPopupStacks;
       private readonly List<Window> _windows;
@@ -45,12 +42,11 @@ namespace OtherSideCore.Wpf.Services
 
       #region Constructor
 
-      public WindowService(IServiceProvider serviceProvider, IModuleViewFactory viewFactory)
+      public WindowService(IServiceProvider serviceProvider)
       {
          System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
-         _serviceProvider = serviceProvider;
-         _viewFactory = viewFactory;
+         _serviceProvider = serviceProvider;         
 
          _modalPopupStacks = new Dictionary<Window, Stack<Border>>();
          _windows = new List<Window>();
@@ -141,21 +137,7 @@ namespace OtherSideCore.Wpf.Services
                WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Remove(modalOverlay);
             }
          }
-      }
-      public void ShowMainWindow<T>() where T : MainWindowViewModel
-      {
-         _mainWindow = CreateMainWindow();
-
-         _mainWindowViewModel = _serviceProvider.GetRequiredService<T>();
-
-         _mainWindowViewModel.LoadedViewModelChanged += MainWindowViewModel_LoadedViewModelChanged;
-
-         SetWindowViewModelDefaultProperties(_mainWindowViewModel);
-         BuildModulesAndWorkspaceDescriptions(_mainWindowViewModel);
-
-         _mainWindow.DataContext = _mainWindowViewModel;
-         _mainWindow.Show();
-      }
+      }      
 
       public void CloseWindow(object window)
       {
@@ -168,41 +150,24 @@ namespace OtherSideCore.Wpf.Services
       public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectDetailsEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectTreeViewWorkspace(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);
-      public abstract ViewDescriptionBase GetDescription(ViewBaseViewModel viewBaseViewModel);            
+      public abstract void ShowDomainObjectTreeViewWorkspace(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);           
 
       #endregion
 
       #region Private Methods
 
-      private object ShowSubWindow()
+      protected virtual object ShowSubWindow()
       {
          var window = CreateSubWindow();
 
-         var windowViewModel = _serviceProvider.GetRequiredService<WindowViewModel>();
-
-         SetWindowViewModelDefaultProperties(windowViewModel);
+         var windowViewModel = _serviceProvider.GetRequiredService<WindowViewModel>();         
 
          window.DataContext = windowViewModel;
 
          window.Show();
 
          return window;
-      }     
-
-      private void MainWindowViewModel_LoadedViewModelChanged(object? sender, EventArgs e)
-      {
-         if (_mainWindowViewModel.LoadedViewViewModel is ModuleViewModel moduleViewModel)
-         {
-            _mainWindow.MainWindow_ViewContent = (UserControl)_viewFactory.CreateView(moduleViewModel.ModuleDescription);
-         }
-         else if (_mainWindowViewModel.LoadedViewViewModel is WorkspaceViewModel workspaceViewModel)
-         {
-            _mainWindow.MainWindow_ViewContent = (UserControl)_viewFactory.CreateView(workspaceViewModel.WorkspaceDescription);
-         }
-
-         _mainWindow.MainWindow_ViewContent.DataContext = _mainWindowViewModel.LoadedViewViewModel;
-      }
+      }   
 
       protected MainWindow CreateMainWindow()
       {
@@ -250,10 +215,6 @@ namespace OtherSideCore.Wpf.Services
             return null;
          }
       }
-
-      protected abstract void SetWindowViewModelDefaultProperties(WindowViewModel windowViewModel);
-
-      protected abstract void BuildModulesAndWorkspaceDescriptions(MainWindowViewModel mainWindowViewModel);
 
       #endregion
    }

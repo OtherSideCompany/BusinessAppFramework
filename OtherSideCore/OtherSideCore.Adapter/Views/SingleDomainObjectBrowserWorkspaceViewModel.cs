@@ -1,5 +1,4 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
-using OtherSideCore.Adapter.ViewDescriptions;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 
@@ -41,8 +40,6 @@ namespace OtherSideCore.Adapter.Views
       public SingleDomainObjectBrowserWorkspaceViewModel(IWindowService windowService, IDomainObjectInteractionService domainObjectInteractionFactory) : base()
       {
          _domainObjectInteractionService = domainObjectInteractionFactory;
-
-         WorkspaceDescription = (WorkspaceDescription)windowService.GetDescription(this);
 
          CreateBrowserViewModel();
 
