@@ -64,14 +64,16 @@
          _factories[type] = () => factory();
       }
 
+      public void SetFallbackFactory(Func<Type, object> fallbackFactory)
+      {
+         _fallbackFactory = fallbackFactory;
+      }
+
       #endregion
 
       #region Private Methods
 
-      protected void SetFallbackFactory(Func<Type, object> fallbackFactory)
-      {
-         _fallbackFactory = fallbackFactory;
-      }
+
 
       #endregion
    }

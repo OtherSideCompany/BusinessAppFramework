@@ -1,23 +1,21 @@
-﻿using OtherSideCore.Application.DomainObjectEvents;
-using OtherSideCore.Application.Services;
+﻿using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.Reflection;
 
 namespace OtherSideCore.Application.Factories
 {
-   public abstract class DomainObjectServiceFactory : TypeBasedFactory, IDomainObjectServiceFactory
+   public class DomainObjectServiceFactory : TypeBasedFactory, IDomainObjectServiceFactory
    {
       #region Fields
 
       protected IRepositoryFactory _repositoryFactory;
-      protected IDomainObjectEventPublisher _domainObjectEventPublisher;
       protected DomainObjectServiceDependencies _domainObjectServiceDependencies;
 
       #endregion
 
       #region Properties
 
-      public IDomainObjectEventPublisher DomainObjectEventPublisher => _domainObjectEventPublisher;
+
 
       #endregion
 
@@ -58,8 +56,6 @@ namespace OtherSideCore.Application.Factories
 
       #region Private Methods
 
-      protected abstract void CreateDomainObjectEventPublisher();
-
       private object CreateDefaultDomainObjectService(Type type)
       {
          var method = GetType()
@@ -69,7 +65,7 @@ namespace OtherSideCore.Application.Factories
          return method.Invoke(this, null)!;
       }
 
-      private object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
+      protected object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
       {
          var repo = _repositoryFactory.CreateRepository<T>();
          return new DomainObjectService<T>(repo, _domainObjectServiceDependencies);

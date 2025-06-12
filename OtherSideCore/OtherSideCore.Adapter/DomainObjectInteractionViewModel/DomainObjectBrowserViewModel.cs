@@ -249,10 +249,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          await SelectedDomainObjectEditorViewModel?.CancelChangesAsync();
       }
 
-      public virtual void Dispose()
+      public virtual async void Dispose()
       {
          DeleteSelectedEditorsViewModel();
-
          ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
          DomainObjectSearchViewModel.Dispose();
       }
@@ -450,7 +449,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                DomainObjectSearchViewModel.RemoveSearchResultViewModel(id);
             }
          }
-      }
+      }      
 
       #endregion
    }

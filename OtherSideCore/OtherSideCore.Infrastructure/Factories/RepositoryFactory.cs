@@ -4,7 +4,7 @@ using OtherSideCore.Domain.DomainObjects;
 using System;
 namespace OtherSideCore.Infrastructure.Factories
 {
-   public abstract class RepositoryFactory : TypeBasedFactory, IRepositoryFactory
+   public class RepositoryFactory : TypeBasedFactory, IRepositoryFactory
    {
       #region Fields
 

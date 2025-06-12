@@ -20,6 +20,9 @@
     <Compile Update="UserControls\Browser\BrowserDomainObjectSearchListView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\Modules\WorkspacesNavigator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\ValueSummarySticker.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -118,6 +121,9 @@
     <Page Update="UserControls\Browser\BrowserDomainObjectSearchListView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="UserControls\Modules\WorkspacesNavigator.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UserControls\ValueSummarySticker.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -197,9 +203,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\Editor\SaveCancelChangesAsyncView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UserControls\Modules\ModuleDescriptionListView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

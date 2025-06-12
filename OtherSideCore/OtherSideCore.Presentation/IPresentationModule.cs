@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Wpf.Services;
+﻿using OtherSideCore.Presentation.Services;
 
 namespace OtherSideCore.Presentation
 {
@@ -7,5 +7,6 @@ namespace OtherSideCore.Presentation
       PresentationDescription PresentationDescription { get; }
       List<IPresentationWorkspace> Workspaces { get; }
       void RegisterViews(IViewLocatorService viewLocator);
+      IDisposable GetViewModel();
    }
 }

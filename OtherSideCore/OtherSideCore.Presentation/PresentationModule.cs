@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Wpf.Services;
+﻿using OtherSideCore.Presentation.Services;
 
 namespace OtherSideCore.Presentation
 {
@@ -37,6 +37,8 @@ namespace OtherSideCore.Presentation
       #region Public Methods
 
       public abstract void RegisterViews(IViewLocatorService viewLocator);
+
+      public abstract IDisposable GetViewModel();
 
       #endregion
 

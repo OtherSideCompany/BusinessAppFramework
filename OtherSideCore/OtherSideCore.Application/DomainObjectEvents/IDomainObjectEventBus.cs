@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.DomainObjectEvents
 {
-    public interface IDomainObjectEventPublisher
-    {
-        Task PublishAsync<TEvent>(TEvent domainEvent);
-    }
+   public interface IDomainObjectEventBus
+   {
+      Task PublishAsync<TEvent>(TEvent domainEvent) where TEvent : DomainObjectEvent;
+   }
 }

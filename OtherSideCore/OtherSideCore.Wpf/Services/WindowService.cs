@@ -146,8 +146,8 @@ namespace OtherSideCore.Wpf.Services
       }
 
       public abstract void ShowDomainObjectReferenceSelectors(List<DomainObjectReferenceSelectorViewModel> domainObjectReferenceSelectorViewModels, DisplayType displayType);
-      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectSearchView(Type domainObjectType, WorkspaceViewModel workspaceViewModel, DisplayType displayType);
+      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, Workspace workspace, DisplayType displayType);
+      public abstract void ShowDomainObjectSearchView(Type domainObjectType, Workspace workspaceViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectDetailsEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
       public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
       public abstract void ShowDomainObjectTreeViewWorkspace(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);           

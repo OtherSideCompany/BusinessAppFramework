@@ -34,7 +34,7 @@
 
             <Grid Visibility="{Binding IsUserContextInitialized, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Collapsed}">
                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="0" MinWidth="38" />
+                  <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="*" />
                </Grid.ColumnDefinitions>
 

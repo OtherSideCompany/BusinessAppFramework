@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OtherSideCore.Adapter.Views;
+using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -37,11 +39,11 @@ namespace OtherSideCore.Wpf.UserControls.Window
       }
 
       public static readonly DependencyProperty MainWindow_ApplicationLogoProperty =
-          DependencyProperty.Register("MainWindow_ApplicationLogo", typeof(string), typeof(MainWindow), new UIPropertyMetadata(""));
+          DependencyProperty.Register("MainWindow_ApplicationLogo", typeof(object), typeof(MainWindow), new UIPropertyMetadata(null));
 
-      public string MainWindow_ApplicationLogo
+      public object MainWindow_ApplicationLogo
       {
-         get { return (string)GetValue(MainWindow_ApplicationLogoProperty); }
+         get { return (object)GetValue(MainWindow_ApplicationLogoProperty); }
          set { SetValue(MainWindow_ApplicationLogoProperty, value); }
       }
 
@@ -80,7 +82,9 @@ namespace OtherSideCore.Wpf.UserControls.Window
       {
          InitializeComponent();
 
-         MainWindow_NavigationMenu = new NavigationMenu();
+         MainWindow_NavigationMenu = new NavigationMenu();       
+
+         DataContextChanged += OnDataContextChanged;
       }
 
       #endregion
@@ -88,7 +92,34 @@ namespace OtherSideCore.Wpf.UserControls.Window
       #region Public Methods
 
 
-      
+
+      #endregion
+
+      #region Private Methods
+
+      private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+      {
+         if (DataContext is MainWindowViewModel vm)
+         {            
+            MainWindow_ApplicationName = vm.ApplicationName;
+            MainWindow_ApplicationLogo = vm.ApplicationLogoImageSource;
+            MainWindow_NavigationMenu.DataContext = vm.NavigationMenuViewModel;
+
+            vm.PropertyChanged += MainWindowViewModel_PropertyChanged;
+         }
+      }
+
+      private void MainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+      {
+         if (e.PropertyName.Equals(nameof(MainWindowViewModel.CurrentView)))
+         {
+            var mainWindowViewModel = (MainWindowViewModel)DataContext;
+
+            MainWindow_ViewContent = mainWindowViewModel.CurrentView as UserControl;
+            MainWindow_ViewContent.DataContext = MainWindow_ViewContent != null ? mainWindowViewModel.CurrentViewModel : null;
+         }
+      }
+
       #endregion
    }
 }

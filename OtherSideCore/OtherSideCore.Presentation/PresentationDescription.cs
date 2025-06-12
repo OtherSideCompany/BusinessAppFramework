@@ -11,7 +11,7 @@
       #region Properties
 
       public string Name { get; set; }
-      public string IconResource { get; set; }
+      public object IconResource { get; set; }
 
       #endregion
 

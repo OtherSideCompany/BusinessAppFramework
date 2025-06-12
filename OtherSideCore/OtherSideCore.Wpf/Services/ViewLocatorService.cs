@@ -1,10 +1,11 @@
-﻿using System;
+﻿using OtherSideCore.Adapter.Services;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 
 namespace OtherSideCore.Wpf.Services
 {
-   public class ViewLocatorService : IViewLocatorService
+   public abstract class ViewLocatorService : IViewLocatorService
    {
       #region Fields
 
@@ -54,7 +55,6 @@ namespace OtherSideCore.Wpf.Services
          {
             throw new Exception($"No view registered for ViewModel type {vmType.FullName}");
          }
-
       }
 
       #endregion

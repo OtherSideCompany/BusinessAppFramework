@@ -4,7 +4,7 @@ using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class SingleDomainObjectBrowserWorkspaceViewModel<TDomainObject, TSearchResult> : WorkspaceViewModel 
+   public class SingleDomainObjectBrowserWorkspaceViewModel<TDomainObject, TSearchResult> : Workspace 
       where TDomainObject : DomainObject, new()
       where TSearchResult : DomainObjectSearchResult, new()
    {
@@ -37,7 +37,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public SingleDomainObjectBrowserWorkspaceViewModel(IWindowService windowService, IDomainObjectInteractionService domainObjectInteractionFactory) : base()
+      public SingleDomainObjectBrowserWorkspaceViewModel(
+         IDomainObjectInteractionService domainObjectInteractionFactory) : 
+         base()
       {
          _domainObjectInteractionService = domainObjectInteractionFactory;
 

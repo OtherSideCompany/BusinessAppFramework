@@ -1,4 +1,5 @@
 ﻿using ImageMagick;
+using OtherSideCore.Adapter;
 using OtherSideCore.Application;
 using OtherSideCore.Domain.DomainObjects;
 using System;

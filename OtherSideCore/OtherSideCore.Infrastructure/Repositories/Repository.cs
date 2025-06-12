@@ -14,6 +14,8 @@ using OtherSideCore.Application;
 using OtherSideCore.Domain;
 using OtherSideCore.Infrastructure.Factories;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {

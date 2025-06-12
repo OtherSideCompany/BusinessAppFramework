@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace OtherSideCore.Presentation.Services
+namespace OtherSideCore.Adapter.Services
 {
    public interface IViewLocatorService
    {

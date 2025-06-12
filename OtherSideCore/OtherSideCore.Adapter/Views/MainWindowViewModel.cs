@@ -14,7 +14,12 @@ namespace OtherSideCore.Adapter.Views
       private IDomainObjectInteractionService domainObjectInteractionFactory;
       protected IUserDialogService _userDialogService;
       protected readonly IGlobalDataService _globalDataService;
-      
+
+      private IDisposable? _currentViewModel;
+      private object? _currentView;
+
+      private NavigationMenuViewModel _navigationMenuViewModel;
+
       private bool _isLoadingContent;
       private string _connexionUserName;
       private string _connexionPassword;
@@ -58,6 +63,24 @@ namespace OtherSideCore.Adapter.Views
             OnPropertyChanged(nameof(UserContextFirstName));
             OnPropertyChanged(nameof(UserContextLastName));
          }
+      }
+
+      public IDisposable? CurrentViewModel
+      {
+         get => _currentViewModel;
+         protected set => SetProperty(ref _currentViewModel, value);
+      }
+
+      public object? CurrentView
+      {
+         get => _currentView;
+         set => SetProperty(ref _currentView, value);
+      }
+
+      public NavigationMenuViewModel NavigationMenuViewModel
+      {
+         get => _navigationMenuViewModel;
+         set => SetProperty(ref _navigationMenuViewModel, value);
       }
 
       public IWindowService WindowService => _windowService;

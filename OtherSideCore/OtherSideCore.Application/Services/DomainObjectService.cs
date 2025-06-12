@@ -20,6 +20,7 @@ namespace OtherSideCore.Application.Services
       protected readonly IDomainObjectFileService _domainObjectFileService;
       protected readonly IPasswordService _passwordService;
       protected readonly IMailService _mailService;
+      protected readonly IDomainObjectEventBus _domainObjectEventBus;
 
       #endregion
 
@@ -46,6 +47,7 @@ namespace OtherSideCore.Application.Services
          _domainObjectServiceFactory = domainObjectServiceDependencies.DomainObjectServiceFactory;
          _userDialogService = domainObjectServiceDependencies.UserDialogService;
          _domainObjectFileService = domainObjectServiceDependencies.DomainObjectFileService;
+         _domainObjectEventBus = domainObjectServiceDependencies.DomainObjectEventBus;
       }
 
       #endregion
@@ -78,7 +80,7 @@ namespace OtherSideCore.Application.Services
          }
 
          await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
-         await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectCreatedEvent(domainObject));
+         await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(domainObject));
       }
 
       public virtual async Task<T> CreateAsync(DomainObject? parent)
@@ -102,7 +104,7 @@ namespace OtherSideCore.Application.Services
 
          try
          {
-            await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectDeletingEvent(domainObject));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(domainObject));
 
             await _repository.DeleteAsync(domainObject);
 
@@ -111,7 +113,7 @@ namespace OtherSideCore.Application.Services
                await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
             }
 
-            await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
 
             try
             {
@@ -139,13 +141,13 @@ namespace OtherSideCore.Application.Services
       public virtual async Task SaveAsync(T domainObject)
       {
          await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
-         await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectSavedEvent(domainObject));
+         await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(domainObject));
       }
 
       public async Task SaveIndexAsync(IIndexable domainObject)
       {
          await _repository.SaveIndexAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
-         await _domainObjectServiceFactory.DomainObjectEventPublisher.PublishAsync(new DomainObjectSavedEvent((DomainObject)domainObject));
+         await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent((DomainObject)domainObject));
       }
 
       public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Adapter;
+using OtherSideCore.Domain.DomainObjects;
 using System;
 using System.Linq.Expressions;
 

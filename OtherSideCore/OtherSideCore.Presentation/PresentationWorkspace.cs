@@ -30,7 +30,7 @@ namespace OtherSideCore.Presentation
 
       public PresentationWorkspace()
       {
-
+         PresentationDescription = new PresentationDescription();
       }      
 
       #endregion

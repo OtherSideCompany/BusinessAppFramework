@@ -1,5 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Factories;
 
 namespace OtherSideCore.Bootstrapper
@@ -8,13 +10,13 @@ namespace OtherSideCore.Bootstrapper
    {
       #region Fields
 
-
+      
 
       #endregion
 
       #region Properties
 
-
+      
 
       #endregion
 
@@ -28,8 +30,8 @@ namespace OtherSideCore.Bootstrapper
 
       public Module()
       {
-
-      }
+         
+      }      
 
       #endregion
 
@@ -37,34 +39,15 @@ namespace OtherSideCore.Bootstrapper
 
       public abstract void RegisterServices(IServiceCollection services);
       public abstract void RegisterRepositories(IRepositoryFactory repositoryFactory);
+      public abstract void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory);
+      public abstract void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
+      public abstract List<NavigationItem> GetNavigationItems();
 
       #endregion
 
       #region Private Methods
 
-      protected void AddAutoMapperProfiles(IServiceCollection services, Type infrastructureProfileType, Type adapterProfileType)
-      {
-         services.AddAutoMapper(cfg =>
-         {
-            cfg.AddProfile(infrastructureProfileType);
-            cfg.AddProfile(adapterProfileType);
-         });
 
-#if DEBUG
-         try
-         {
-            var configuration = new MapperConfiguration(cfg => { cfg.AddProfile(infrastructureProfileType); });
-            configuration.AssertConfigurationIsValid();
-
-            configuration = new MapperConfiguration(cfg => { cfg.AddProfile(adapterProfileType); });
-            configuration.AssertConfigurationIsValid();
-         }
-         catch (AutoMapperConfigurationException ex)
-         {
-            System.Diagnostics.Debug.WriteLine($"AutoMapper configuration is invalid: {ex.Message}");
-         }
-#endif
-      }
 
       #endregion
    }

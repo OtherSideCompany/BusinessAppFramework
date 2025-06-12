@@ -6,7 +6,6 @@ namespace OtherSideCore.Application.Factories
 {
    public interface IDomainObjectServiceFactory
    {
-      IDomainObjectEventPublisher DomainObjectEventPublisher { get; }
       IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new();
       object CreateDomainObjectService(Type type);
    }

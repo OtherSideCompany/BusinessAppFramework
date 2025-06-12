@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using OtherSideCore.Adapter;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Entities;
 using System.Collections;
