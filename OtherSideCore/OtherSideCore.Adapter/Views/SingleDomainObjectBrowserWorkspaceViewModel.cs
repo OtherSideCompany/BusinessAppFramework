@@ -90,7 +90,7 @@ namespace OtherSideCore.Adapter.Views
       protected virtual void CreateBrowserViewModel()
       {
          BrowserViewModel = (DomainObjectBrowserViewModel<TDomainObject, TSearchResult>)_domainObjectInteractionService.CreateDomainObjectBrowserViewModel<TDomainObject>();
-      }
+      }    
 
       private void BrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
       {

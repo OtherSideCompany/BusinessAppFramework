@@ -11,6 +11,7 @@ namespace OtherSideCore.Adapter
       void RegisterRepositories(IRepositoryFactory repositoryFactory);
       void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory);
       void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
+      void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
       List<NavigationItem> GetNavigationItems();
    }
 }

@@ -54,8 +54,11 @@
 
       public void Register<T>(Func<object> factory) where T : class
       {
-         var type = typeof(T);
+         Register(typeof(T), factory);
+      }
 
+      public void Register(Type type, Func<object> factory)
+      {
          if (_factories.ContainsKey(type))
          {
             throw new InvalidOperationException($"Factory already registered for type {type.Name}");

@@ -41,6 +41,7 @@ namespace OtherSideCore.Bootstrapper
       public abstract void RegisterRepositories(IRepositoryFactory repositoryFactory);
       public abstract void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory);
       public abstract void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
+      public abstract void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
       public abstract List<NavigationItem> GetNavigationItems();
 
       #endregion
