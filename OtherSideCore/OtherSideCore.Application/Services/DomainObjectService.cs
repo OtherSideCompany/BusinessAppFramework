@@ -48,6 +48,7 @@ namespace OtherSideCore.Application.Services
          _userDialogService = domainObjectServiceDependencies.UserDialogService;
          _domainObjectFileService = domainObjectServiceDependencies.DomainObjectFileService;
          _domainObjectEventBus = domainObjectServiceDependencies.DomainObjectEventBus;
+         _domainObjectServiceFactory = domainObjectServiceDependencies.DomainObjectServiceFactory;
       }
 
       #endregion
@@ -94,11 +95,11 @@ namespace OtherSideCore.Application.Services
       {
          var deletedDomainObjectId = domainObject.Id;
 
-         int? commentThreadId = null;
-         var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
+         int? commentThreadId = null;         
 
          if (domainObject is ICommentThreadContainer commentThreadContainer)
-         {            
+         {
+            var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
             commentThreadId = await commentThreadService.GetCommentThreadIdAsync(commentThreadContainer);
          }
 
@@ -110,6 +111,7 @@ namespace OtherSideCore.Application.Services
 
             if (commentThreadId.HasValue)
             {
+               var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
                await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
             }
 

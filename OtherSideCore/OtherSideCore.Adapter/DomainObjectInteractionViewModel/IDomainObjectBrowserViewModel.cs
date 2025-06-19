@@ -9,7 +9,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       bool HasUnsavedChanges { get; }
       IDomainObjectSearchViewModel DomainObjectSearchViewModel { get; }
       DomainObjectViewModel ContextViewModel { get; set; }
+      bool CanSaveChanges();
       Task SaveChangesAsync();
+      bool CanCancelChanges();
       Task CancelChangesAsync();
       Task SearchAsync(SearchParameters parameters);
       Task PaginatedSearchAsync(PaginatedSearchParameters parameters);

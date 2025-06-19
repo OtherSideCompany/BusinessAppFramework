@@ -47,7 +47,7 @@ namespace OtherSideCore.Application.Factories
          return CreateFromType(type);
       }
 
-      public void Register<T>(Func<IDomainObjectService<T>> factory) where T : DomainObject, new()
+      public void RegisterDomainObjectService<T>(Func<IDomainObjectService<T>> factory) where T : DomainObject, new()
       {
          base.Register<T>(() => factory());
       }
@@ -65,7 +65,7 @@ namespace OtherSideCore.Application.Factories
          return method.Invoke(this, null)!;
       }
 
-      protected object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
+      private object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
       {
          var repo = _repositoryFactory.CreateRepository<T>();
          return new DomainObjectService<T>(repo, _domainObjectServiceDependencies);

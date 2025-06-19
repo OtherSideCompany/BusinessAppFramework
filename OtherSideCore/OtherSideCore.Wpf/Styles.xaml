@@ -1406,8 +1406,8 @@
    <Style TargetType="{x:Type browser:SingleDomainObjectBrowser}">
       <Setter Property="SingleDomainObjectBrowser_CreateCommand" Value="{Binding BrowserViewModel.CreateAsyncCommand}" />
       <Setter Property="SingleDomainObjectBrowser_DeleteCommand" Value="{Binding BrowserViewModel.SelectedDomainObjectEditorViewModel.DeleteAsyncCommand}" />
-      <Setter Property="SingleDomainObjectBrowser_Name" Value="{Binding WorkspaceDescription.Name}" />
-      <Setter Property="SingleDomainObjectBrowser_IconGeometry" Value="{Binding WorkspaceDescription.IconResource}" />
+      <Setter Property="SingleDomainObjectBrowser_Name" Value="{Binding Label}" />
+      <Setter Property="SingleDomainObjectBrowser_IconGeometry" Value="{Binding IconKey, Converter={StaticResource GeometryResourceConverter}}" />
    </Style> 
    
    <!-- Button Separator border-->

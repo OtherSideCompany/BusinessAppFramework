@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter.Services;
+using OtherSideCore.Application;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -9,7 +10,7 @@ namespace OtherSideCore.Wpf.Services
    {
       #region Fields
 
-      private readonly Dictionary<Type, Type> _mappings = new();
+      private readonly Dictionary<StringKey, Type> _mappings = new();
 
       #endregion
 
@@ -36,16 +37,16 @@ namespace OtherSideCore.Wpf.Services
 
       #region Public Methods
 
-      public void Register(Type viewModelType, Type viewType)
+      public void Register(StringKey viewKey, Type viewType)
       {
-         _mappings[viewModelType] = viewType;
+         _mappings[viewKey] = viewType;
       }
 
-      public object ResolveView(object viewModel)
+      public object ResolveView(StringKey viewKey, object viewModel)
       {
          var vmType = viewModel.GetType();
 
-         if (_mappings.TryGetValue(vmType, out var viewType))
+         if (_mappings.TryGetValue(viewKey, out var viewType))
          {
             var view = (FrameworkElement)Activator.CreateInstance(viewType)!;
             view.DataContext = viewModel;

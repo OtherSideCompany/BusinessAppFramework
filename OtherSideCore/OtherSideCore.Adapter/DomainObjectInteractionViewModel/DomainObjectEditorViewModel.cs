@@ -97,18 +97,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       #region Constructor
 
       public DomainObjectEditorViewModel(DomainObjectViewModel domainObjectViewModel,
-                                         IDomainObjectServiceFactory domainObjectServiceFactory,
-                                         IDomainObjectInteractionService domainObjectInteractionService,
-                                         IUserDialogService userDialogService,
-                                         IWindowService windowService)
+                                         DomainObjectEditorViewModelDependencies domainObjectEditorViewModelDependencies)
 
       {
          _domainObjectViewModel = domainObjectViewModel;
-         _domainObjectServiceFactory = domainObjectServiceFactory;
+         _domainObjectServiceFactory = domainObjectEditorViewModelDependencies.DomainObjectServiceFactory;
          _domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
-         _domainObjectInteractionService = domainObjectInteractionService;
-         _userDialogService = userDialogService;
-         _windowService = windowService;
+         _domainObjectInteractionService = domainObjectEditorViewModelDependencies.DomainObjectInteractionService;
+         _userDialogService = domainObjectEditorViewModelDependencies.UserDialogService;
+         _windowService = domainObjectEditorViewModelDependencies.WindowService;
 
          DomainObjectReferenceSelectorViewModels = new ObservableCollection<DomainObjectReferenceSelectorViewModel>(_domainObjectInteractionService.GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel));
 

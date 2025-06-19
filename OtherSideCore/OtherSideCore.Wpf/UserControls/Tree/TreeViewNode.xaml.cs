@@ -48,7 +48,7 @@ namespace OtherSideCore.Wpf.UserControls.Tree
       {
          if (TreeViewNode_IsSelectable)
          {
-            if (!(e.OriginalSource is Button) && ((Grid)sender).DataContext is IDomainObjectTreeViewNode domainObjectTreeViewNode)
+            if (!(e.OriginalSource is Button) && ((Grid)sender).DataContext is IDomainObjectTreeNodeViewModel domainObjectTreeViewNode)
             {
                domainObjectTreeViewNode.RequestSelection();
             }

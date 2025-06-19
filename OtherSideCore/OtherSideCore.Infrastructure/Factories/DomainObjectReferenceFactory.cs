@@ -19,12 +19,6 @@ namespace OtherSideCore.Infrastructure.Factories
 
       #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
       #region Constructor
 
       public DomainObjectReferenceFactory()

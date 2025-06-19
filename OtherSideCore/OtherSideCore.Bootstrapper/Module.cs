@@ -39,10 +39,12 @@ namespace OtherSideCore.Bootstrapper
 
       public abstract void RegisterServices(IServiceCollection services);
       public abstract void RegisterRepositories(IRepositoryFactory repositoryFactory);
-      public abstract void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory);
+      public abstract void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory, IServiceProvider serviceProvider);
+      public abstract void RegisterDomainObjectViewModels(IDomainObjectViewModelFactory domainObjectViewModelFactory, IServiceProvider serviceProvider);
       public abstract void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
+      public abstract void RegisterWorkspaces(WorkspaceFactory workspaceFactory, IServiceProvider serviceProvider);
       public abstract void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
-      public abstract List<NavigationItem> GetNavigationItems();
+      public abstract List<NavigationItem> GetNavigationItems();      
 
       #endregion
 

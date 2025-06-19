@@ -1,16 +1,14 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
-using OtherSideCore.Application.Search;
-using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Application;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class SingleDomainObjectBrowserWorkspaceViewModel<TDomainObject, TSearchResult> : Workspace 
-      where TDomainObject : DomainObject, new()
-      where TSearchResult : DomainObjectSearchResult, new()
+   public class SingleDomainObjectBrowserWorkspace : Workspace
    {
       #region Fields
 
-      private DomainObjectBrowserViewModel<TDomainObject, TSearchResult> _browserViewModel;
+      private IDomainObjectBrowserViewModel _browserViewModel;
+      private StringKey _domainObjectBrowserKey;
       protected IDomainObjectInteractionService _domainObjectInteractionService;
 
       #endregion
@@ -19,7 +17,7 @@ namespace OtherSideCore.Adapter.Views
 
       public IDomainObjectBrowserViewModel IDomainObjectBrowserViewModel => BrowserViewModel;
 
-      public DomainObjectBrowserViewModel<TDomainObject, TSearchResult> BrowserViewModel
+      public IDomainObjectBrowserViewModel BrowserViewModel
       {
          get => _browserViewModel;
          set => SetProperty(ref _browserViewModel, value);
@@ -37,11 +35,13 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public SingleDomainObjectBrowserWorkspaceViewModel(
-         IDomainObjectInteractionService domainObjectInteractionFactory) : 
+      public SingleDomainObjectBrowserWorkspace(
+         StringKey domainObjectBrowserKey,
+         IDomainObjectInteractionService domainObjectInteractionFactory) :
          base()
       {
          _domainObjectInteractionService = domainObjectInteractionFactory;
+         _domainObjectBrowserKey = domainObjectBrowserKey;
 
          CreateBrowserViewModel();
 
@@ -89,8 +89,8 @@ namespace OtherSideCore.Adapter.Views
 
       protected virtual void CreateBrowserViewModel()
       {
-         BrowserViewModel = (DomainObjectBrowserViewModel<TDomainObject, TSearchResult>)_domainObjectInteractionService.CreateDomainObjectBrowserViewModel<TDomainObject>();
-      }    
+         BrowserViewModel = _domainObjectInteractionService.CreateDomainObjectBrowserViewModel(_domainObjectBrowserKey);
+      }
 
       private void BrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
       {
@@ -98,7 +98,7 @@ namespace OtherSideCore.Adapter.Views
          {
             OnPropertyChanged(nameof(HasUnsavedChanges));
          }
-      }      
+      }
 
       #endregion
    }

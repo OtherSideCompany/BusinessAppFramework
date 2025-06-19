@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
@@ -138,8 +139,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          PaginatedSearchCommandAsync = new AsyncRelayCommand<PaginatedSearchParameters>(PaginatedSearchAsync);
          CancelSearchCommand = new RelayCommand(CancelSearch);
 
-         DomainObjectSearchViewModel = (DomainObjectsSearchViewModel<TSearchResult>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<TSearchResult>(domainObjectBrowser.DomainObjectSearch, domainObjectSearchResultViewModelFactory);
-         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
+         DomainObjectSearchViewModel = (DomainObjectSearchViewModel<TSearchResult>)_domainObjectsSearchViewModelFactory.CreateDomainObjectSearchViewModel<TSearchResult>(_domainObjectBrowser.DomainObjectSearch);
+         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels += PreviewUnloadSearchResultViewModelsAsync;
 
          Selection = new Selection(SelectionType.Single);
       }
@@ -168,7 +169,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          await _domainObjectBrowser.InitializeAsync(DomainObjectSearchViewModel.GetTextFilters());
          DomainObjectSearchViewModel.UnloadSearchResultViewModels();
          DomainObjectSearchViewModel.LoadSearchResultViewModels();
-         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PageNavigationViewModel.Refresh();
+         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PageNavigationViewModel.Refresh();
       }
 
       public async Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
@@ -252,7 +253,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual async void Dispose()
       {
          DeleteSelectedEditorsViewModel();
-         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
+         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PreviewUnloadSearchResultViewModels -= PreviewUnloadSearchResultViewModelsAsync;
          DomainObjectSearchViewModel.Dispose();
       }
 
@@ -374,9 +375,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DeleteSelectedEditorsViewModel();
       }
 
-      protected async virtual Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      protected async Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
-         return await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync<TDomainObject>(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         return await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult);
       }
 
       protected virtual void SelectedDomainObjectEditorViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

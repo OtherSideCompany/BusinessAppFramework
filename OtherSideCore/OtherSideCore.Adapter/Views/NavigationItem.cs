@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
+using OtherSideCore.Application;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -14,7 +13,7 @@ namespace OtherSideCore.Adapter.Views
 
       #region Properties
 
-      public string Id { get; }
+      public StringKey Key { get; }
       public string Label { get; }
       public string IconKey { get; }
       public Type ViewModelType { get; }
@@ -35,9 +34,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public NavigationItem(string id, string label, string iconKey, Type viewModelType)
+      public NavigationItem(StringKey id, string label, string iconKey, Type viewModelType)
       {
-         Id = id;
+         Key = id;
          Label = label;
          IconKey = iconKey;
          ViewModelType = viewModelType;

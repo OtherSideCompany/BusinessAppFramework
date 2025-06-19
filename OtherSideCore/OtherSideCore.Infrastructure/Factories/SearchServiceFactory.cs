@@ -1,17 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using OtherSideCore.Application.Factories;
+﻿using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Services;
+using System;
 
 namespace OtherSideCore.Infrastructure.Factories
 {
-   public abstract class SearchServiceFactory : ISearchServiceFactory
+   public class SearchServiceFactory : TypeBasedFactory, ISearchServiceFactory
    {
       #region Fields
 
-      protected IDbContextFactory<DbContext> _dbContextFactory;
-      protected ILoggerFactory _loggerFactory;
+
 
       #endregion
 
@@ -29,19 +27,21 @@ namespace OtherSideCore.Infrastructure.Factories
 
       #region Constructor
 
-      public SearchServiceFactory(
-         IDbContextFactory<DbContext> dbContextFactory,
-         ILoggerFactory loggerFactory)
-      {
-         _dbContextFactory = dbContextFactory;
-         _loggerFactory = loggerFactory;
-      }
+
 
       #endregion
 
       #region Public Methods
 
-      public abstract ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new();
+      public ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new()
+      {
+         return (ISearchService<TSearchResult>)CreateFromType(typeof(TSearchResult));
+      }
+
+      public void Register<TSearchResult>(Func<ISearchService<TSearchResult>> factory) where TSearchResult : DomainObjectSearchResult, new()
+      {
+         Register(typeof(TSearchResult), args => factory());
+      }
 
       #endregion
 

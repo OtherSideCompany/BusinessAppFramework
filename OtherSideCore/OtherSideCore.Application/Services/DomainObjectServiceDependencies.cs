@@ -15,14 +15,14 @@ namespace OtherSideCore.Application.Services
 
       #region Properties
 
-      public IUserContext UserContext { get; set; }
+      public IUserContext UserContext { get; }
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; set; }
-      public IUserDialogService UserDialogService { get; set; }
-      public IDomainObjectFileService DomainObjectFileService { get; set; }
-      public IPasswordService PasswordService { get; set; }
-      public IMailService MailService { get; set; }
-      public IDomainObjectSearchFactory DomainObjectSearchFactory { get; set; }
-      public IDomainObjectEventBus DomainObjectEventBus { get; set; }
+      public IUserDialogService UserDialogService { get; }
+      public IDomainObjectFileService DomainObjectFileService { get; }
+      public IPasswordService PasswordService { get; }
+      public IMailService MailService { get; }
+      public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
+      public IDomainObjectEventBus DomainObjectEventBus { get; }
 
       #endregion
 

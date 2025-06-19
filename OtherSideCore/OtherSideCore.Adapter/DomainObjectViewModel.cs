@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
@@ -15,9 +13,7 @@ namespace OtherSideCore.Adapter
       private bool _isExpanded;
       private DomainObject _domainObject;
 
-      protected IGlobalDataService _globalDataService;
-      protected IMapper _mapper;
-      protected IDomainObjectViewModelFactory _domainObjectViewModelFactory;
+      protected DomainObjectViewModelDependencies _domainObjectViewModelDependencies;
 
       protected List<DomainObjectViewModel> _nestedDomainObjectViewModels;
 
@@ -25,11 +21,7 @@ namespace OtherSideCore.Adapter
 
       #region Properties
 
-      public IGlobalDataService GlobalDataService
-      {
-         get => _globalDataService;
-         set => SetProperty(ref _globalDataService, value);
-      }
+      public IGlobalDataService? GlobalDataService => _domainObjectViewModelDependencies?.GlobalDataService;
 
       public bool IsSelected
       {
@@ -68,13 +60,10 @@ namespace OtherSideCore.Adapter
       #region Constructor
 
       public DomainObjectViewModel(DomainObject domainObject,
-                                   IGlobalDataService globalDataService,
-                                   IMapper mapper,
-                                   IDomainObjectViewModelFactory domainObjectViewModelFactory)
+                                   DomainObjectViewModelDependencies domainObjectViewModelDependencies)
       {
-         _globalDataService = globalDataService;
-         _mapper = mapper;
-         _domainObjectViewModelFactory = domainObjectViewModelFactory;
+         _domainObjectViewModelDependencies = domainObjectViewModelDependencies;
+         OnPropertyChanged(nameof(GlobalDataService));
 
          ToggleExpandCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
 
@@ -106,14 +95,14 @@ namespace OtherSideCore.Adapter
       {
          IsInitializingProperties = true;
 
-         _mapper.Map(DomainObject, this);
+         _domainObjectViewModelDependencies.Mapper.Map(DomainObject, this);
 
          IsInitializingProperties = false;
       }
 
       public virtual void SetPropertiesToDomainObject()
       {
-         _mapper.Map(this, DomainObject);
+         _domainObjectViewModelDependencies.Mapper.Map(this, DomainObject);
       }
 
       public virtual void CopyPropertiesToDomainObject(DomainObject domainObject)
@@ -126,7 +115,7 @@ namespace OtherSideCore.Adapter
          var lastModifiedById = domainObject.LastModifiedById;
          var lastModifiedByName = domainObject.LastModifiedByName;
 
-         _mapper.Map(this, domainObject);
+         _domainObjectViewModelDependencies.Mapper.Map(this, domainObject);
 
          domainObject.Id = id;
          domainObject.CreationDate = creationDate; 

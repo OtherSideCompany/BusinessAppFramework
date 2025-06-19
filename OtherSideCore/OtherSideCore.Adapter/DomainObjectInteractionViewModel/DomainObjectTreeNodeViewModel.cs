@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectTreeViewNode<T> : ObservableObject, IDomainObjectTreeViewNode where T : DomainObject, new()
+   public class DomainObjectTreeNodeViewModel<T> : ObservableObject, IDomainObjectTreeNodeViewModel where T : DomainObject, new()
    {
 
       #region Fields
@@ -23,9 +23,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private DomainObjectViewModel _domainObjectViewModel;
       private IDomainObjectEditorViewModel _domainObjectEditorViewModel;
-      private ObservableCollection<IDomainObjectTreeViewNode> _children;
+      private ObservableCollection<IDomainObjectTreeNodeViewModel> _children;
 
-      private IEnumerable<IDomainObjectTreeViewNode> _inlineNodes
+      private IEnumerable<IDomainObjectTreeNodeViewModel> _inlineNodes
       {
          get
          {
@@ -45,7 +45,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Properties
 
-      public IEnumerable<IDomainObjectTreeViewNode> InlineNodes => _inlineNodes;
+      public IEnumerable<IDomainObjectTreeNodeViewModel> InlineNodes => _inlineNodes;
 
       public bool IsExpanded
       {
@@ -71,7 +71,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          private set => SetProperty(ref _domainObjectEditorViewModel, value);
       }
 
-      public ObservableCollection<IDomainObjectTreeViewNode> Children
+      public ObservableCollection<IDomainObjectTreeNodeViewModel> Children
       {
          get => _children;
          private set => SetProperty(ref _children, value);
@@ -81,22 +81,22 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Events
 
-      public event EventHandler<IDomainObjectTreeViewNode> NodeSelectionRequested;
-      public event EventHandler<IDomainObjectTreeViewNode> NodeDeleted;
+      public event EventHandler<IDomainObjectTreeNodeViewModel> NodeSelectionRequested;
+      public event EventHandler<IDomainObjectTreeNodeViewModel> NodeDeleted;
       public event EventHandler<DomainObject> ChildCreated;
 
       #endregion
 
       #region Commands
 
-      public AsyncRelayCommand<IDomainObjectTreeViewNode> DupplicateChildNodeAsyncCommand { get; private set; }
+      public AsyncRelayCommand<IDomainObjectTreeNodeViewModel> DupplicateChildNodeAsyncCommand { get; private set; }
       public AsyncRelayCommand ShowDomainObjectDetailsEditorAsyncCommand { get; private set; }
 
       #endregion
 
       #region Constructor
 
-      public DomainObjectTreeViewNode(DomainObjectViewModel domainObjectViewModel,
+      public DomainObjectTreeNodeViewModel(DomainObjectViewModel domainObjectViewModel,
                                       IUserDialogService userDialogService,
                                       IDomainObjectInteractionService domainObjectInteractionService,
                                       IDomainObjectServiceFactory domainObjectServiceFactory)
@@ -107,9 +107,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          DomainObjectViewModel = domainObjectViewModel;         
 
-         Children = new ObservableCollection<IDomainObjectTreeViewNode>();
+         Children = new ObservableCollection<IDomainObjectTreeNodeViewModel>();
 
-         DupplicateChildNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeViewNode>(DupplicateChildNodeAsync, CanDupplicateChildNodeAsync);
+         DupplicateChildNodeAsyncCommand = new AsyncRelayCommand<IDomainObjectTreeNodeViewModel>(DupplicateChildNodeAsync, CanDupplicateChildNodeAsync);
          ShowDomainObjectDetailsEditorAsyncCommand = new AsyncRelayCommand(ShowDomainObjectDetailsEditorAsync, CanShowDomainObjectDetailsEditor);
       }
 
@@ -119,17 +119,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task InitializeAsync()
       {
-         DomainObjectEditorViewModel = await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(DomainObjectViewModel.DomainObject.GetType(), DomainObjectViewModel);
+         DomainObjectEditorViewModel = await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(this);
          DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
          DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
       }
 
-      public virtual void AddChild(IDomainObjectTreeViewNode childNode, bool isInitializing)
+      public virtual void AddChild(IDomainObjectTreeNodeViewModel childNode, bool isInitializing)
       {
-         DomainObjectTreeViewModelExtension.InsertNodeInList(childNode, Children);
+         DomainObjectTreeViewModelExtensions.InsertNodeInList(childNode, Children);
       }
 
-      public virtual void RemoveChild(IDomainObjectTreeViewNode childNode)
+      public virtual void RemoveChild(IDomainObjectTreeNodeViewModel childNode)
       {
          Children.Remove(childNode);
       }
@@ -161,7 +161,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsExpanded = false;
       }
 
-      public async Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeViewNode node)
+      public async Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeNodeViewModel node)
       {
          var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(DomainObjectEditorViewModel.DomainObjectViewModel.DomainObject);
 
@@ -193,7 +193,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
-      protected IDomainObjectTreeViewNode GetNode(DomainObject domainObject)
+      protected IDomainObjectTreeNodeViewModel GetNode(DomainObject domainObject)
       {
          return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.DomainObject.Equals(domainObject));
       }
@@ -216,12 +216,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DupplicateChildNodeAsyncCommand.NotifyCanExecuteChanged();
       }
 
-      private bool CanDupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
+      private bool CanDupplicateChildNodeAsync(IDomainObjectTreeNodeViewModel? node)
       {
          return node != null && _inlineNodes.Contains(node);
       }
 
-      protected virtual async Task<DomainObject> DupplicateChildNodeAsync(IDomainObjectTreeViewNode? node)
+      protected virtual async Task<DomainObject> DupplicateChildNodeAsync(IDomainObjectTreeNodeViewModel? node)
       {
          var domainObject = await CreateChildNodeDomainObjectCopyAsync(node);
 

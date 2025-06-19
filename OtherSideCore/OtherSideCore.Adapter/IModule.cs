@@ -9,8 +9,10 @@ namespace OtherSideCore.Adapter
    { 
       void RegisterServices(IServiceCollection services);
       void RegisterRepositories(IRepositoryFactory repositoryFactory);
-      void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory);
+      void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory, IServiceProvider serviceProvider);
+      void RegisterDomainObjectViewModels(IDomainObjectViewModelFactory domainObjectViewModelFactory, IServiceProvider serviceProvider);
       void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
+      void RegisterWorkspaces(WorkspaceFactory workspaceFactory, IServiceProvider serviceProvider);
       void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
       List<NavigationItem> GetNavigationItems();
    }

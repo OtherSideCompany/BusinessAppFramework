@@ -8,13 +8,13 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectsSearchViewModel<TSearchResult> : ObservableObject, IDomainObjectSearchViewModel where TSearchResult : DomainObjectSearchResult, new()
+   public class DomainObjectSearchViewModel<TSearchResult> : ObservableObject, IDomainObjectSearchViewModel where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
       private bool _isInAdvancedSearchMode;
 
-      protected DomainObjectSearch<TSearchResult> _domainObjectSearch;
+      protected IDomainObjectSearch<TSearchResult> _domainObjectSearch;
 
       private IDomainObjectSearchResultViewModelFactory _domainObjectSearchResultViewModelFactory;
       private IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
@@ -93,8 +93,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectsSearchViewModel(
-         DomainObjectSearch<TSearchResult> domainObjectSearch,
+      public DomainObjectSearchViewModel(
+         IDomainObjectSearch<TSearchResult> domainObjectSearch,
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
          IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
       {

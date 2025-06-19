@@ -60,7 +60,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          _constructEditorOnSelectSearchResult = false;
 
-         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
          ValidateSelectionCommand = new RelayCommand(ValidateSelection, CanValidateSelection);
          DisplaySelectorAsyncCommand = new AsyncRelayCommand(DisplaySelectorAsync);
@@ -95,7 +95,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          base.Dispose();
 
-         ((DomainObjectsSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
+         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged -= SingleTextFilterViewModel_PropertyChanged;
 
          Selection.PropertyChanged -= Selection_PropertyChanged;
       }

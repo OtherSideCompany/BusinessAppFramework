@@ -9,6 +9,8 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       protected bool _hasUnsavedChanges;
+      private string _label;
+      private string _iconKey;
 
       #endregion
 
@@ -18,6 +20,18 @@ namespace OtherSideCore.Adapter.Views
       {
          get => _hasUnsavedChanges;
          set { SetProperty(ref _hasUnsavedChanges, value); NotifyCommandsCanExecuteChanged(); }
+      }
+
+      public string Label
+      {
+         get => _label;
+         set => SetProperty(ref _label, value);
+      }
+
+      public string IconKey
+      {
+         get => _iconKey;
+         set => SetProperty(ref _iconKey, value);
       }
 
       public List<NavigationItem> NavigationItems { get; }

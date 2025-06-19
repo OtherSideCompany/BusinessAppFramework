@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.Factories
 {
-   public class EnumBasedFactory<TEnum> where TEnum : struct, Enum
+   public class StringKeyBasedFactory
    {
       #region Fields
 
-      private readonly Dictionary<TEnum, Func<object>> _factories = new();
-      private Func<TEnum, object>? _fallbackFactory = null;
+      private readonly Dictionary<StringKey, Func<object[], object>> _factories = new();
+      private Func<StringKey, object[], object>? _fallbackFactory = null;
 
       #endregion
 
@@ -29,7 +29,7 @@ namespace OtherSideCore.Application.Factories
 
       #region Constructor
 
-      public EnumBasedFactory()
+      public StringKeyBasedFactory()
       {
 
       }
@@ -38,22 +38,27 @@ namespace OtherSideCore.Application.Factories
 
       #region Public Methods
 
-      public object Create(TEnum key)
+      public object Create(StringKey key, params object[] args)
       {
          if (_factories.TryGetValue(key, out var factory))
          {
-            return factory();
+            return factory(args);
          }
 
          if (_fallbackFactory != null)
          {
-            return _fallbackFactory(key);
+            return _fallbackFactory(key, args);
          }
 
          throw new InvalidOperationException($"No factory registered for key {key}.");
       }
 
-      public void Register(TEnum key, Func<object> factory)
+      public void Register(StringKey key, Func<object> factory)
+      {
+         Register(key, _ => factory());
+      }
+
+      public void Register(StringKey key, Func<object[], object> factory)
       {
          if (_factories.ContainsKey(key))
          {
@@ -63,7 +68,12 @@ namespace OtherSideCore.Application.Factories
          _factories[key] = factory;
       }
 
-      public void SetFallbackFactory(Func<TEnum, object> fallbackFactory)
+      public void SetFallbackFactory(Func<StringKey, object> fallbackFactory)
+      {
+         _fallbackFactory = (key, args) => fallbackFactory(key);
+      }
+
+      public void SetFallbackFactory(Func<StringKey, object[], object> fallbackFactory)
       {
          _fallbackFactory = fallbackFactory;
       }

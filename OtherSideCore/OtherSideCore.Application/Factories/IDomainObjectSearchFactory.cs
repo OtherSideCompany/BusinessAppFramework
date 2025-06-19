@@ -1,11 +1,10 @@
 ﻿using OtherSideCore.Application.Search;
-using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Factories
 {
-    public interface IDomainObjectSearchFactory
-    {
-        IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObjectSearchResult, new();
-        IDomainObjectTreeSearch CreateDomainObjectTreeSearch<T>(IDomainObjectServiceFactory domainObjectServiceFactory) where T : DomainObject, new();
-    }
+   public interface IDomainObjectSearchFactory
+   {
+      void RegisterDomainObjectSearch<T>(Func<IDomainObjectSearch<T>> factory) where T : DomainObjectSearchResult, new();
+      IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObjectSearchResult, new();
+   }
 }
