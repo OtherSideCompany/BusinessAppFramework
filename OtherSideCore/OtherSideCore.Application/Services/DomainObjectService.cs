@@ -97,6 +97,7 @@ namespace OtherSideCore.Application.Services
 
          int? commentThreadId = null;         
 
+
          if (domainObject is ICommentThreadContainer commentThreadContainer)
          {
             var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();

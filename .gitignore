@@ -2,33 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/OtherSideCore/OtherSideCore.Wpf/obj
-/OtherSideCore/OtherSideCore.Wpf/bin
-/OtherSideCore/OtherSideCore.Infrastructure/bin
-/OtherSideCore/OtherSideCore.Infrastructure/obj
-/OtherSideCore/OtherSideCore.Domain/bin
-/OtherSideCore/OtherSideCore.Domain/obj
-/OtherSideCore/OtherSideCore.ViewModel/bin
-/OtherSideCore/OtherSideCore.ViewModel/obj
-/OtherSideCore/OtherSideCore.Bootstrapper/bin 
-/OtherSideCore/OtherSideCore.Bootstrapper/obj
-/OtherSideCore/OtherSideCore.Presentation/bin 
-/OtherSideCore/OtherSideCore.Presentation/obj
-/OtherSideCore/.vs
-/.vs
-/OtherSideCore/OtherSideCore.Domain.Tests/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Domain.Tests/obj
-/OtherSideCore/OtherSideCore.Infrastructure.Tests/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Infrastructure.Tests/obj
-/OtherSideCore/OtherSideCore.Test/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Test/obj
-/OtherSideCore/OtherSideCore.ViewModel.Tests/bin/Debug/net8.0-windows
-/OtherSideCore/OtherSideCore.ViewModel.Tests/obj
-/OtherSideCore/OtherSideCore.Adapter/obj
-/OtherSideCore/OtherSideCore.Application/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Application/obj
-/OtherSideCore/OtherSideCore.Application.Tests/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Application.Tests/obj
-/OtherSideCore/OtherSideCore.Adapter/bin/Debug/net8.0
-/OtherSideCore/OtherSideCore.Adapter/bin/Release/net8.0
-/OtherSideCore/OtherSideCore.Application/bin/Release/net8.0
+.vs/
+**/bin/
+**/obj/
