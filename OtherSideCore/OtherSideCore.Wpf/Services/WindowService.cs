@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
-using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Adapter.Views;
+using OtherSideCore.Application;
 using OtherSideCore.Wpf.UserControls.Window;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,12 @@ using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.Services
 {
-   public abstract class WindowService : IWindowService
+   public class WindowService : IWindowService
    {
       #region Fields
 
       protected IServiceProvider _serviceProvider;
+      private IViewLocatorService _viewLocatorService;
 
       private readonly Dictionary<Window, Stack<Border>> _modalPopupStacks;
       private readonly List<Window> _windows;
@@ -25,6 +27,11 @@ namespace OtherSideCore.Wpf.Services
 
       protected MainWindow _mainWindow;
       protected MainWindowViewModel _mainWindowViewModel;
+
+      private Type _windowViewModelType;
+
+      private readonly Dictionary<Border, WindowSession> _modalSessions = new();
+      private readonly Dictionary<Window, WindowSession> _subWindowSessions = new();
 
       #endregion
 
@@ -46,7 +53,8 @@ namespace OtherSideCore.Wpf.Services
       {
          System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
-         _serviceProvider = serviceProvider;         
+         _serviceProvider = serviceProvider;
+         _viewLocatorService = serviceProvider.GetRequiredService<IViewLocatorService>();
 
          _modalPopupStacks = new Dictionary<Window, Stack<Border>>();
          _windows = new List<Window>();
@@ -56,61 +64,25 @@ namespace OtherSideCore.Wpf.Services
 
       #region Public Methods   
 
-      public void ShowModal(object modalContent)
+      public void ConfigureService(Type windowViewModelType)
       {
-         var userControl = (UserControl)modalContent;
-
-         var modalOverlay = new Border
-         {
-            Background = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0)),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-         };
-
-         modalOverlay.MouseDown += (sender, e) => { if (e.OriginalSource == modalOverlay) HideTopModal(); };
-
-         var modalPopupBorder = new ModalPopupBorder();
-         modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
-         modalPopupBorder.HorizontalAlignment = HorizontalAlignment.Center;
-         modalPopupBorder.ContentBorder.Child = userControl;
-         modalPopupBorder.DataContext = userControl.DataContext;
-
-         modalOverlay.Child = new ContentControl { Content = modalPopupBorder };
-         modalOverlay.DataContext = userControl.DataContext;
-
-         WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Add(modalOverlay);
-         Panel.SetZIndex(modalOverlay, 100 + _modalPopupStacks[_activeWindow].Count);
-         _modalPopupStacks[_activeWindow].Push(modalOverlay);
+         _windowViewModelType = windowViewModelType;
       }
 
-      public void ShowSubWindow(object content, string windowName)
+      public void ConfigureMainWindow(object window)
       {
-         if (content is UserControl userControl)
+         if (window is MainWindow mainWindow)
          {
-            var subWindow = (SubWindow)ShowSubWindow();
-            subWindow.SubWindow_ViewContent = userControl;
+            mainWindow.MainWindow_ModalContent = new UserControl();
+            mainWindow.MainWindow_ModalContent.Content = new Grid() { Name = "ContentGrid" };
 
-            ((WindowViewModel)subWindow.DataContext).WindowName = windowName;
+            _modalPopupStacks.Add(mainWindow, new Stack<Border>());
+
+            mainWindow.Activated += OnWindowActivated;
          }
          else
          {
-            throw new ArgumentException("Parameter content must be of type UserControl");
-         }
-      }
-
-      public void ShowView(object view, string windowName, DisplayType displayType)
-      {
-         if (displayType == DisplayType.SubWindow)
-         {
-            ShowSubWindow(view, windowName);
-         }
-         else if (displayType == DisplayType.Modal)
-         {
-            ShowModal(view);
-         }
-         else
-         {
-            throw new ArgumentException("Unknown display type", displayType.ToString());
+            throw new ArgumentException($"Parameter window must be of type {typeof(MainWindow)}");
          }
       }
 
@@ -133,11 +105,17 @@ namespace OtherSideCore.Wpf.Services
 
             if (@continue)
             {
-               currentModalPopupStack.Pop();
+               var overlay = currentModalPopupStack.Pop();
                WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Remove(modalOverlay);
+
+               if (_modalSessions.TryGetValue(overlay, out var session))
+               {
+                  session.NotifyClosed();
+                  _modalSessions.Remove(overlay);
+               }
             }
          }
-      }      
+      }
 
       public void CloseWindow(object window)
       {
@@ -145,42 +123,113 @@ namespace OtherSideCore.Wpf.Services
          ((Window)window).Close();
       }
 
-      public abstract void ShowDomainObjectReferenceSelectors(List<DomainObjectReferenceSelectorViewModel> domainObjectReferenceSelectorViewModels, DisplayType displayType);
-      public abstract void ShowDomainObjectSearchView(DomainObjectViewModel domainObjectViewModel, Workspace workspace, DisplayType displayType);
-      public abstract void ShowDomainObjectSearchView(Type domainObjectType, Workspace workspaceViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectDetailsEditorView(IDomainObjectEditorViewModel editorViewModel, DisplayType displayType);
-      public abstract Task ShowDomainObjectSelectorViewAsync(IDomainObjectSelectorViewModel domainObjectSelectorViewModel, DisplayType displayType);
-      public abstract void ShowDomainObjectTreeViewWorkspace(DomainObjectTreeViewModel domainObjectTreeViewModel, Type domainObjectType, DisplayType displayType);           
+      public IWindowSession DisplayView(StringKey key, string viewName, object viewModel, DisplayType displayType)
+      {
+         UserControl view = (UserControl)_viewLocatorService.ResolveView(key, viewModel);
+
+         if (displayType == DisplayType.Modal)
+         {
+            view.Width = 1200;
+            view.Height = 800;
+            view.Margin = new Thickness(24, 16, 24, 16);
+         }
+
+         var session = new WindowSession();
+
+         ShowView(view, displayType, session);
+
+         return session;
+      }
+
+      public void ShowDomainObjectReferenceSelectors(List<DomainObjectReferenceSelectorViewModel> domainObjectReferenceSelectorViewModels, DisplayType displayType)
+      {
+
+      }      
 
       #endregion
 
       #region Private Methods
 
-      protected virtual object ShowSubWindow()
+      protected void ShowModal(object modalContent, WindowSession windowSession)
+      {
+         var userControl = (UserControl)modalContent;
+
+         var modalOverlay = new Border
+         {
+            Background = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0)),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+         };
+
+         _modalSessions[modalOverlay] = windowSession;
+
+         modalOverlay.MouseDown += (sender, e) => { if (e.OriginalSource == modalOverlay) HideTopModal(); };
+
+         var modalPopupBorder = new ModalPopupBorder();
+         modalPopupBorder.VerticalAlignment = VerticalAlignment.Center;
+         modalPopupBorder.HorizontalAlignment = HorizontalAlignment.Center;
+         modalPopupBorder.ContentBorder.Child = userControl;
+         modalPopupBorder.DataContext = userControl.DataContext;
+
+         modalOverlay.Child = new ContentControl { Content = modalPopupBorder };
+         modalOverlay.DataContext = userControl.DataContext;
+
+         WpfHelper.FindChildByName<Grid>(GetModalContent(_activeWindow), "ContentGrid").Children.Add(modalOverlay);
+         Panel.SetZIndex(modalOverlay, 100 + _modalPopupStacks[_activeWindow].Count);
+         _modalPopupStacks[_activeWindow].Push(modalOverlay);
+      }
+
+      protected void ShowSubWindow(object content, WindowSession windowSession)
+      {
+         if (content is UserControl userControl)
+         {
+            var subWindow = (SubWindow)ShowSubWindow();
+            subWindow.SubWindow_ViewContent = userControl;
+
+            _subWindowSessions[subWindow] = windowSession;
+
+            subWindow.Closed += (_, _) =>
+            {
+               if (_subWindowSessions.TryGetValue(subWindow, out var session))
+               {
+                  session.NotifyClosed();
+                  _subWindowSessions.Remove(subWindow);
+               }
+            };
+         }
+         else
+         {
+            throw new ArgumentException("Parameter content must be of type UserControl");
+         }
+      }
+
+      protected void ShowView(object view, DisplayType displayType, WindowSession windowSession)
+      {
+         if (displayType == DisplayType.SubWindow)
+         {
+            ShowSubWindow(view, windowSession);
+         }
+         else if (displayType == DisplayType.Modal)
+         {
+            ShowModal(view, windowSession);
+         }
+         else
+         {
+            throw new ArgumentException("Unknown display type", displayType.ToString());
+         }
+      }      
+
+      protected object ShowSubWindow()
       {
          var window = CreateSubWindow();
 
-         var windowViewModel = _serviceProvider.GetRequiredService<WindowViewModel>();         
-
+         var windowViewModel = _serviceProvider.GetRequiredService(_windowViewModelType);       
          window.DataContext = windowViewModel;
 
          window.Show();
 
          return window;
-      }   
-
-      protected MainWindow CreateMainWindow()
-      {
-         var window = _serviceProvider.GetRequiredService<MainWindow>();
-         window.MainWindow_ModalContent = new UserControl();
-         window.MainWindow_ModalContent.Content = new Grid() { Name = "ContentGrid" };
-
-         _modalPopupStacks.Add(window, new Stack<Border>());
-
-         window.Activated += OnWindowActivated;
-
-         return window;
-      }
+      }         
 
       protected SubWindow CreateSubWindow()
       {

@@ -58,11 +58,11 @@
                            </Grid>
                            <ControlTemplate.Triggers>
                               <Trigger Property="IsSelected" Value="True">
-                                 <Setter TargetName="HeaderBackground" Property="Background" Value="{StaticResource MMColor_Green}" />
+                                 <Setter TargetName="HeaderBackground" Property="Background" Value="{StaticResource Green}" />
                                  <Setter Property="Foreground" Value="White" />
                               </Trigger>
                               <Trigger Property="IsMouseOver" Value="True">
-                                 <Setter TargetName="HeaderBackground" Property="Background" Value="{StaticResource MMColor_Green}" />
+                                 <Setter TargetName="HeaderBackground" Property="Background" Value="{StaticResource Green}" />
                                  <Setter Property="Foreground" Value="White" />
                               </Trigger>
                            </ControlTemplate.Triggers>

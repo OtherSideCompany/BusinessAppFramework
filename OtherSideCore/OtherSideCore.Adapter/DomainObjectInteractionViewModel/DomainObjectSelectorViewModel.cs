@@ -1,22 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application;
 using OtherSideCore.Application.Browser;
-using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectSelectorViewModel<TDomainObject, TSearchResult> : DomainObjectBrowserViewModel<TDomainObject, TSearchResult>, IDomainObjectSelectorViewModel 
+   public class DomainObjectSelectorViewModel<TDomainObject, TSearchResult> : DomainObjectBrowserViewModel<TDomainObject, TSearchResult>, IDomainObjectSelectorViewModel
       where TDomainObject : DomainObject, new()
       where TSearchResult : DomainObjectSearchResult, new()
    {
       #region Fields
 
-      private IWindowService _windowService;
+      protected DomainObjectSelectorViewModelDependencies _domainObjectSelectorViewModelDependencies;
+      protected StringKey _domainObjectSelectorKey;
 
       #endregion
 
@@ -43,22 +42,18 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectSelectorViewModel(DomainObjectBrowser<TDomainObject, TSearchResult> domainObjectBrowser,
-                                           IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
-                                           IUserDialogService userDialogService,
-                                           IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
-                                           IWindowService windowService,
-                                           IDomainObjectInteractionService domainObjectInteractionFactory,
-                                           IDomainObjectServiceFactory domainObjectServiceFactory) :
+      public DomainObjectSelectorViewModel(
+         StringKey domainObjectSelectorKey,
+         DomainObjectBrowser<TDomainObject, TSearchResult> domainObjectBrowser,
+         DomainObjectSelectorViewModelDependencies domainObjectSelectorViewModelDependencies) :
          base(domainObjectBrowser,
-              domainObjectsSearchViewModelFactory,
-              domainObjectSearchResultViewModelFactory,
-              domainObjectInteractionFactory,
-              domainObjectServiceFactory)
+              domainObjectSelectorViewModelDependencies)
       {
-         _windowService = windowService;
+         _domainObjectSelectorKey = domainObjectSelectorKey;
 
          _constructEditorOnSelectSearchResult = false;
+
+         _domainObjectSelectorViewModelDependencies = domainObjectSelectorViewModelDependencies;
 
          ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).SingleTextFilterViewModel.PropertyChanged += SingleTextFilterViewModel_PropertyChanged;
 
@@ -70,7 +65,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Selection.PropertyChanged += Selection_PropertyChanged;
 
          _loadNestedStructureOnSelection = false;
-      }      
+      }
 
       #endregion
 
@@ -87,7 +82,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          if (HideOnValidate)
          {
-            _windowService.HideTopModal();
+            _domainObjectSelectorViewModelDependencies.WindowService.HideTopModal();
          }
       }
 
@@ -103,7 +98,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public async Task<DomainObject> GetSelectedSearchResultDomainObjectAsync()
       {
          var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-         var domainObject = await _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+         var domainObject = await _domainObjectSelectorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<TDomainObject>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
 
          return domainObject;
       }
@@ -115,20 +110,28 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual async Task DisplayDomainObjectBrowserAsync()
       {
+         var browserWorkspaceKey = _domainObjectSelectorViewModelDependencies.DomainObjectInteractionService.SelectorToWorkspaceKeyMappings[_domainObjectSelectorKey];
+         var workspace = _domainObjectSelectorViewModelDependencies.WorkspaceFactory.CreateWorkspace(browserWorkspaceKey);
+
          if (Selection.IsSelectionEmpty)
          {
-            await _domainObjectInteractionService.DisplayDomainObjectBrowserAsync(typeof(TDomainObject), DisplayType.SubWindow);
+            await workspace.InitializeAsync();
          }
          else
          {
             var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-            await _domainObjectInteractionService.DisplayDomainObjectAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId, typeof(TDomainObject), DisplayType.SubWindow);
+            // display specific item
          }
+
+         var session = _domainObjectSelectorViewModelDependencies.WindowService.DisplayView(browserWorkspaceKey, "", workspace, DisplayType.SubWindow);
+         await session.WhenClosed;
+         workspace.Dispose();
       }
 
       private async Task DisplaySelectorAsync()
       {
-         await _windowService.ShowDomainObjectSelectorViewAsync(this, DisplayType.Modal);
+         await InitializeAsync();
+         _domainObjectSelectorViewModelDependencies.WindowService.DisplayView(_domainObjectSelectorKey, "", this, DisplayType.Modal);
       }
 
       private async Task DisplaySelectorInContextAsync(DomainObjectViewModel domainObjectViewModel)

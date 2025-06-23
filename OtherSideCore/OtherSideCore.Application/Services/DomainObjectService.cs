@@ -72,14 +72,6 @@ namespace OtherSideCore.Application.Services
             indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
          }
 
-         if (domainObject is ICommentThreadContainer commentThreadContainer)
-         {
-            var commentThreadService = _domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
-            var commentThread = await commentThreadService.CreateAsync(domainObject);
-
-            commentThreadContainer.CommentThread = commentThread;
-         }
-
          await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
          await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(domainObject));
       }
@@ -93,28 +85,13 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task<bool> DeleteAsync(T domainObject)
       {
-         var deletedDomainObjectId = domainObject.Id;
-
-         int? commentThreadId = null;         
-
-
-         if (domainObject is ICommentThreadContainer commentThreadContainer)
-         {
-            var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
-            commentThreadId = await commentThreadService.GetCommentThreadIdAsync(commentThreadContainer);
-         }
+         var deletedDomainObjectId = domainObject.Id;      
 
          try
          {
             await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(domainObject));
 
             await _repository.DeleteAsync(domainObject);
-
-            if (commentThreadId.HasValue)
-            {
-               var commentThreadService = (ICommentThreadService)_domainObjectServiceFactory.CreateDomainObjectService<CommentThread>();
-               await commentThreadService.DeleteCommentThreadAsync(commentThreadId.Value);
-            }
 
             await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
 

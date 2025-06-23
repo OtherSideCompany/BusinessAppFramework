@@ -60,7 +60,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 
       public static void ConfigureTreeViewModel<TParent, TChild>(
         this DomainObjectTreeViewModel tree,
-        Action<TChild> createRootNode,
         Func<TParent, IEnumerable<TChild>> getChildren,
         Action<TParent, TChild> attachChild,
         Action<TParent, TChild> detachChild)

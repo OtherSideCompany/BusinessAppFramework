@@ -9,8 +9,10 @@ using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
 {
-    public interface IDomainObjectInteractionService
+   public interface IDomainObjectInteractionService
    {
+      Dictionary<StringKey, StringKey> SelectorToWorkspaceKeyMappings { get; }
+
       void RegisterDomainObjectBrowserViewModel(StringKey key, Func<IDomainObjectBrowserViewModel> factory);
       IDomainObjectBrowserViewModel CreateDomainObjectBrowserViewModel(StringKey key);
 
@@ -23,8 +25,9 @@ namespace OtherSideCore.Adapter
       Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, DomainObject domainObject);
       Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, Type domainObjectType, int domainObjectId);
 
+      void RegisterSelectorToWorkspaceKeyMapping(StringKey selectorKey, StringKey editorKey);
       void RegisterDomainObjectSelectorViewModel(StringKey key, Func<IDomainObjectSelectorViewModel> factory);
-      IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key, Type type);
+      IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key);
 
       void RegisterTreeViewModel(StringKey key, Func<DomainObjectTree, DomainObjectTreeViewModel> factory);
       DomainObjectTreeViewModel CreateTreeViewModel(StringKey key);
@@ -32,25 +35,22 @@ namespace OtherSideCore.Adapter
       void RegisterTree(StringKey key, Func<IDomainObjectTree> factory);
       IDomainObjectTree CreateTree(StringKey key, IDomainObjectServiceFactory domainObjectServiceFactory);
 
-
+      Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeViewNodeAsync(DomainObjectViewModel domainObjectViewModel, IUserDialogService userDialogService, IDomainObjectServiceFactory domainObjectServiceFactory);
 
 
       //OLD
       Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
       Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObject domainObject, DisplayType displayType);
       Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
-      Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
-      Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-      Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
-      IDomainObjectBrowserViewModel CreateDomainObjectBrowserViewModel<T>() where T : DomainObject, new();
+
+
       IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
       IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(Type type);
       Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
       Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
       Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
       List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);
-      Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeViewNodeAsync(DomainObjectViewModel domainObjectViewModel, IUserDialogService userDialogService, IDomainObjectServiceFactory domainObjectServiceFactory);
-      //DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
+
       Task DisplayDomainObjectAsync(DomainObject domainObject, DisplayType displayType);
       Task DisplayDomainObjectAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
       Task DisplayDomainObjectBrowserAsync(Type domainObjectType, DisplayType displayType);

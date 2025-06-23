@@ -29,7 +29,7 @@
          <Grid>
 
             <!-- content -->
-            <Border Grid.Column="1" Background="White">
+            <Border Background="White">
                <Grid>
                   <ContentPresenter Content="{Binding SubWindow_ViewContent, ElementName=SubWindowUserControl}" />
                </Grid>

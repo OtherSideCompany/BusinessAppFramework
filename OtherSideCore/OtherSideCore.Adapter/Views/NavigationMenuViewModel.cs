@@ -24,15 +24,7 @@ namespace OtherSideCore.Adapter.Views
       public NavigationItem? SelectedNavigationItem
       {
          get => _selectedNavigationItem;
-         set
-         {
-            if (_selectedNavigationItem != value)
-            {
-               _selectedNavigationItem = value;
-               OnPropertyChanged();
-               NavigationItemSelected?.Invoke(this, _selectedNavigationItem);
-            }
-         }
+         set => SetProperty(ref _selectedNavigationItem, value);
       }
 
       #endregion
@@ -73,12 +65,13 @@ namespace OtherSideCore.Adapter.Views
 
       private void SelectNavigationItem(NavigationItem? navigationItem)
       {
-         if (navigationItem != null && SelectedNavigationItem != navigationItem)
+         if (navigationItem != null)
          {
             UnselectAllNavigationItems();
 
             SelectedNavigationItem = navigationItem;
             SelectedNavigationItem.IsSelected = true;
+            NavigationItemSelected?.Invoke(this, _selectedNavigationItem);
          }
       }
 

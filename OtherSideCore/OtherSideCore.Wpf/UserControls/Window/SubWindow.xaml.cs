@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using OtherSideCore.Adapter.Views;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 
 using System.Windows.Media;
@@ -58,6 +60,17 @@ namespace OtherSideCore.Wpf.UserControls.Window
       public SubWindow()
       {
          InitializeComponent();
+
+         DataContextChanged += OnDataContextChanged;
+      }
+
+      private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+      {
+         if (DataContext is WindowViewModel vm)
+         {
+            SubWindow_ApplicationName = vm.ApplicationName;
+            SubWindow_ApplicationLogo = vm.ApplicationLogoImageSource;
+         }
       }
    }
 }

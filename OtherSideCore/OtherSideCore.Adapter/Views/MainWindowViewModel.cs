@@ -81,11 +81,7 @@ namespace OtherSideCore.Adapter.Views
       {
          get => _navigationMenuViewModel;
          set => SetProperty(ref _navigationMenuViewModel, value);
-      }
-
-      public IWindowService WindowService => _windowService;
-      public string UserContextFirstName => UserContext?.FirstName;
-      public string UserContextLastName => UserContext?.LastName;      
+      }  
 
       #endregion      
 
@@ -116,15 +112,13 @@ namespace OtherSideCore.Adapter.Views
 
          _appConfiguration.Load();
          LoadSettings();
-
-         WindowName = "";
       }
 
       #endregion
 
       #region Public Methods
 
-      public void Dispose()
+      public override void Dispose()
       {
          base.Dispose();
 

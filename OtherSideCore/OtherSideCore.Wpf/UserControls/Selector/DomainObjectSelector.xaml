@@ -32,7 +32,7 @@
                        Style="{StaticResource ViewHeader}" />
 
             <osc_customcontrols:SvgImageButton Grid.Column="1" HorizontalAlignment="Right" Width="32" Height="32"
-                                               Background="{StaticResource MMColor_Green}"
+                                               Background="{StaticResource Green}"
                                                SvgImageButton_ImageColor="White"
                                                SvgImageButton_IconGeometry="{StaticResource icon_navigation-variant-outline}"
                                                SvgImageButton_ImageSize="20"

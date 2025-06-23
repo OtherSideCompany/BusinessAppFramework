@@ -19,7 +19,7 @@ namespace OtherSideCore.Adapter
 
       #region Properties
 
-
+      public abstract Dictionary<StringKey, StringKey> SelectorToWorkspaceKeyMappings { get; }
 
       #endregion
 
@@ -44,8 +44,9 @@ namespace OtherSideCore.Adapter
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, DomainObjectViewModel domainObjectViewModel);
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, DomainObject domainObject);
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, Type domainObjectType, int domainObjectId);
+      public abstract void RegisterSelectorToWorkspaceKeyMapping(StringKey selectorKey, StringKey editorKey);
       public abstract void RegisterDomainObjectSelectorViewModel(StringKey key, Func<IDomainObjectSelectorViewModel> factory);
-      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key, Type type);
+      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key);
       public abstract void RegisterTree(StringKey key, Func<IDomainObjectTree> factory);
       public abstract IDomainObjectTree CreateTree(StringKey key, IDomainObjectServiceFactory domainObjectServiceFactory);
       public abstract void RegisterTreeViewModel(StringKey key, Func<DomainObjectTree, DomainObjectTreeViewModel> factory);
@@ -61,7 +62,6 @@ namespace OtherSideCore.Adapter
 
          return treeViewNode;
       }
-
 
       // OLD
       public abstract Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);

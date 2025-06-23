@@ -18,7 +18,6 @@ namespace OtherSideCore.Adapter.Views
       private string _applicationLogoImageSource;
       private string _companyLogoImageSource;
       private string _applicationName;
-      private string _windowName;
 
       #endregion
 
@@ -40,12 +39,6 @@ namespace OtherSideCore.Adapter.Views
       {
          get => _applicationName;
          set => SetProperty(ref _applicationName, value);
-      }
-
-      public string WindowName
-      {
-         get => _windowName;
-         set => SetProperty(ref _windowName, value);
       }
 
       public IUserContext UserContext
@@ -78,13 +71,12 @@ namespace OtherSideCore.Adapter.Views
          _windowService = windowService;
 
          ApplicationName = "Unnamed App";
-         WindowName = "Unnamed Window";
       }
 
       #endregion
 
       #region Public Methods      
-      public void Dispose()
+      public virtual void Dispose()
       {
          
       }
