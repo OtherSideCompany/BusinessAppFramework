@@ -32,6 +32,8 @@ namespace OtherSideCore.Infrastructure.Repositories
       protected IMapper _mapper;
       protected IParentChildRelationResolver _parentChildRelationResolver;
 
+      protected bool _canUseExecuteDelete = true;
+
       #endregion
 
       #region Contructor
@@ -93,7 +95,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             return _mapper.Map<List<TDomainObject>>(entities);
          }
-      }          
+      }      
 
       public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
@@ -133,7 +135,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (existingEntity != null)
             {
-               _mapper.Map(domainObject, existingEntity);
+               await SpecificMapDomainObjectToEntityAsync(domainObject, existingEntity, context);
 
                existingEntity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
                existingEntity.HistoryInfo.LastModifiedById = userId;
@@ -150,7 +152,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
             }
          }
-      }
+      }      
 
       public virtual async Task SaveIndexAsync(IIndexable domainObject, int userId, string userName)
       {
@@ -217,13 +219,30 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public async Task DeleteAsync(TDomainObject domainObject)
+      public virtual async Task DeleteAsync(TDomainObject domainObject)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteAsync), domainObject.Id);
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            int affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObject.Id).ExecuteDeleteAsync();
+            int affectedRows = 0;
+
+            if (_canUseExecuteDelete)
+            {
+               affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObject.Id).ExecuteDeleteAsync();
+            }
+            else
+            {
+               var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+
+               if (entity != null)
+               {
+                  context.Remove(entity);
+                  affectedRows = 1;
+               }
+               
+               await context.SaveChangesAsync();
+            }
 
             if (affectedRows != 0)
             {
@@ -310,7 +329,12 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #endregion
 
-      #region Private Methods         
+      #region Private Methods 
+
+      protected virtual async Task SpecificMapDomainObjectToEntityAsync(TDomainObject source, TEntity destination, DbContext dbContext)
+      {
+         await Task.FromResult(_mapper.Map(source, destination));
+      }
 
       protected Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
       {
@@ -342,7 +366,7 @@ namespace OtherSideCore.Infrastructure.Repositories
       {
          foreach (var navigation in context.Entry(entity).Navigations)
          {
-            if (!navigation.IsLoaded)
+            if (navigation.Metadata.PropertyInfo != null && !navigation.IsLoaded)
             {
                await navigation.LoadAsync();
             }

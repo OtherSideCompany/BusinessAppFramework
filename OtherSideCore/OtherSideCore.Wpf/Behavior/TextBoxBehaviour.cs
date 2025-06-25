@@ -96,5 +96,59 @@ namespace OtherSideCore.Wpf.Behavior
       }
 
       #endregion
+
+      #region IsNullableInteger Proprety
+
+      public static readonly DependencyProperty IsNullableIntegerProperty = DependencyProperty.RegisterAttached(
+            "IsNullableInteger",
+            typeof(bool),
+            typeof(TextBoxBehaviour),
+            new FrameworkPropertyMetadata(false, OnIsNullableIntegerChanged));
+
+      public static bool GetIsNullableInteger(DependencyObject obj)
+      {
+         return (bool)obj.GetValue(IsNullableIntegerProperty);
+      }
+
+      public static void SetIsNullableInteger(DependencyObject obj, bool value)
+      {
+         obj.SetValue(IsNullableIntegerProperty, value);
+      }
+
+      private static RoutedEventHandler OnNullableIntegerLostFocusHandler = new RoutedEventHandler(OnNullableIntegerTextBox_LostFocus);
+
+      private static void OnIsNullableIntegerChanged(DependencyObject owner, DependencyPropertyChangedEventArgs args)
+      {
+         Control textBox = owner as TextBox;
+         bool? isInteger = args.NewValue as bool?;
+
+         if (isInteger == null || textBox == null)
+            return;
+
+         if (isInteger ?? false)
+         {
+            textBox.LostFocus += OnNullableIntegerLostFocusHandler;
+         }
+         else
+         {
+            textBox.LostFocus -= OnNullableIntegerLostFocusHandler;
+         }
+      }
+
+      private static void OnNullableIntegerTextBox_LostFocus(object sender, RoutedEventArgs e)
+      {
+         var textBox = sender as TextBox;
+
+         string input = textBox.Text?.Trim();
+
+         if (string.IsNullOrEmpty(input))
+         {
+            return;
+         }
+
+         textBox.Text = Application.Utils.RemoveInvalidCharacterForInteger(textBox.Text);
+      }
+
+      #endregion
    }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Adapter;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace OtherSideCore.Infrastructure.Services
       #region Fields
 
       protected IDbContextFactory<DbContext> _dbContextFactory;
+      protected IModuleProviderService _moduleProviderService;
 
       #endregion
 
@@ -27,9 +29,12 @@ namespace OtherSideCore.Infrastructure.Services
 
       #region Constructor
 
-      public DbInitializerService(IDbContextFactory<DbContext> dbContextFactory)
+      public DbInitializerService(
+         IDbContextFactory<DbContext> dbContextFactory,
+         IModuleProviderService moduleProviderService)
       {
          _dbContextFactory = dbContextFactory;
+         _moduleProviderService = moduleProviderService;
       }
 
       #endregion
@@ -45,7 +50,12 @@ namespace OtherSideCore.Infrastructure.Services
 
             await context.Database.ExecuteSqlRawAsync(levenshteinScript);
             await context.Database.ExecuteSqlRawAsync(editDistanceScript);
-         }
+
+            foreach (var module in _moduleProviderService.GetModules())
+            {
+               await module.SeedDatabaseAsync(context);
+            }
+         }         
       }
 
       public string ReadSqlScript(string path, Assembly assembly)

@@ -110,7 +110,8 @@ namespace OtherSideCore.Infrastructure.Services
       {
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            return await GetSearchQuery(filters, extendedSearch, constraints, paginated, pageNumber, pageSize, context).ToListAsync(cancellationToken);
+            var result =  await GetSearchQuery(filters, extendedSearch, constraints, paginated, pageNumber, pageSize, context).ToListAsync(cancellationToken);
+            return result;
          }
       }
 

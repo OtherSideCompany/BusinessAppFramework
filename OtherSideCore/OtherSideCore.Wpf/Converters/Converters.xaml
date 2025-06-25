@@ -15,4 +15,5 @@
    <converters:IntEqualsConverter x:Key="IntEqualsConverter" />
    <converters:MonthNumberToNameConverter x:Key="MonthNumberToNameConverter" />
    <converters:GeometryResourceConverter x:Key="GeometryResourceConverter"/>
+   <converters:NullableIntConverter x:Key="NullableIntConverter" />
 </ResourceDictionary>

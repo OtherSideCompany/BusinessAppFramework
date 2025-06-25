@@ -812,6 +812,10 @@
       <Setter Property="behaviors:TextBoxBehaviour.IsInteger" Value="True" />
    </Style>
 
+   <Style x:Key="EditorNullableIntegerClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource EditorClickSelectTextBox}">
+      <Setter Property="behaviors:TextBoxBehaviour.IsNullableInteger" Value="True" />
+   </Style>
+
    <Style x:Key="DataGridClickSelectTextBox" TargetType="{x:Type customControls:ClickSelectTextBox}" BasedOn="{StaticResource {x:Type customControls:ClickSelectTextBox}}">
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="ClickSelectTextBox_TextMargin" Value="0" />

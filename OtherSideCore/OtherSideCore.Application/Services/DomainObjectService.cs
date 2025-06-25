@@ -60,7 +60,7 @@ namespace OtherSideCore.Application.Services
          return await _repository.ExistsAsync(domainObjectId, cancellationToken);
       }
 
-      public async Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken = default)
+      public async Task<List<T>> GetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default)
       {
          return await _repository.GetAllAsync(parent, cancellationToken);
       }

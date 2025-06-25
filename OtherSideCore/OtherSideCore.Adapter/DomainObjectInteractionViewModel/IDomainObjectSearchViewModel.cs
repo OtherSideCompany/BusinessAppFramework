@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -20,6 +21,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task<DomainObjectSearchResultViewModel> InsertSearchResultViewModelAsync(int domainObjectId, int index);
       void RemoveSearchResultViewModel(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       void RemoveSearchResultViewModel(int domainObjectId);
+      void ConstructConstraintViewModels();
       List<string> GetTextFilters();
    }
 }

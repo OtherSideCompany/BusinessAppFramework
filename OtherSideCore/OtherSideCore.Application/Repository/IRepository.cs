@@ -7,7 +7,7 @@ namespace OtherSideCore.Application.Repository
    {
       Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);    
+      Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
       Task CreateAsync(T domainObject, DomainObject? parent, int userId, string userName);
 

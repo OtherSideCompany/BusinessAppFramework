@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.Views;
@@ -44,7 +45,8 @@ namespace OtherSideCore.Bootstrapper
       public abstract void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
       public abstract void RegisterWorkspaces(WorkspaceFactory workspaceFactory, IServiceProvider serviceProvider);
       public abstract void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
-      public abstract List<NavigationItem> GetNavigationItems();      
+      public abstract List<NavigationItem> GetNavigationItems();
+      public abstract Task SeedDatabaseAsync(DbContext dbContext);
 
       #endregion
 

@@ -21,10 +21,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected DomainObjectViewModel _domainObjectViewModel;
       protected IDomainObjectService<T> _domainObjectService;
-      protected IDomainObjectServiceFactory _domainObjectServiceFactory;
-      protected IDomainObjectInteractionService _domainObjectInteractionService;
-      protected IUserDialogService _userDialogService;
-      protected IWindowService _windowService;
+
+      protected DomainObjectEditorViewModelDependencies _domainObjectEditorViewModelDependencies;
       private ObservableCollection<DomainObjectReferenceSelectorViewModel> _domainObjectReferenceSelectorViewModels;
 
       protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
@@ -72,7 +70,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          set => SetProperty(ref _isReadOnly, value);
       }
 
-      public IDomainObjectInteractionService DomainObjectInteractionService => _domainObjectInteractionService;
+      public IDomainObjectInteractionService DomainObjectInteractionService => _domainObjectEditorViewModelDependencies.DomainObjectInteractionService;
 
       #endregion
 
@@ -101,13 +99,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       {
          _domainObjectViewModel = domainObjectViewModel;
-         _domainObjectServiceFactory = domainObjectEditorViewModelDependencies.DomainObjectServiceFactory;
-         _domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
-         _domainObjectInteractionService = domainObjectEditorViewModelDependencies.DomainObjectInteractionService;
-         _userDialogService = domainObjectEditorViewModelDependencies.UserDialogService;
-         _windowService = domainObjectEditorViewModelDependencies.WindowService;
+         _domainObjectEditorViewModelDependencies = domainObjectEditorViewModelDependencies;
+         _domainObjectService = _domainObjectEditorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<T>();
 
-         DomainObjectReferenceSelectorViewModels = new ObservableCollection<DomainObjectReferenceSelectorViewModel>(_domainObjectInteractionService.GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel));
+         DomainObjectReferenceSelectorViewModels = new ObservableCollection<DomainObjectReferenceSelectorViewModel>(DomainObjectInteractionService.GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel));
 
          foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
          {
@@ -217,7 +212,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
             foreach (var domainObjectReference in domainObjectReferences)
             {
-               var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, _domainObjectInteractionService);
+               var domainObjectReferenceViewModel = new DomainObjectReferenceViewModel(domainObjectReference, DomainObjectInteractionService);
                DomainObjectReferenceViewModels.Add(domainObjectReferenceViewModel);
             }
          }
@@ -233,7 +228,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          DomainObjectViewModel.CopyPropertiesToDomainObject(dupplicatedDomainObject);
 
-         var domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService<T>();
+         var domainObjectService = _domainObjectEditorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<T>();
          await domainObjectService.CreateAsync(dupplicatedDomainObject, parent);
 
          if (dupplicatedDomainObject is IIndexable indexableDupplicatedDomainObject)
@@ -289,12 +284,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private void ShowDomainObjectReferenceSelectors()
       {
-         _windowService.ShowDomainObjectReferenceSelectors(DomainObjectReferenceSelectorViewModels.ToList(), DisplayType.Modal);
+         _domainObjectEditorViewModelDependencies.WindowService.ShowDomainObjectReferenceSelectors(DomainObjectReferenceSelectorViewModels.ToList(), DisplayType.Modal);
       }
 
       protected virtual async Task DeleteDomainObjectReferenceAsync(DomainObjectReferenceViewModel? domainObjectReferenceViewModel)
       {
-         if (_userDialogService.Confirm("Supprimer la référence ?"))
+         if (_domainObjectEditorViewModelDependencies.UserDialogService.Confirm("Supprimer la référence ?"))
          {
             await _domainObjectService.DeleteDomainObjectReferenceAsync(DomainObjectViewModel.DomainObject.Id, domainObjectReferenceViewModel.DomainObjectReference);
 
@@ -339,7 +334,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual async Task DeleteAsync()
       {
-         var confirmation = _userDialogService.Confirm("Confirmez-vous la suppression ?");
+         var confirmation = _domainObjectEditorViewModelDependencies.UserDialogService.Confirm("Confirmez-vous la suppression ?");
 
          if (confirmation)
          {

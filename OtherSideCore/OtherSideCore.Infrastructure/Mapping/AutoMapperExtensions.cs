@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using OtherSideCore.Adapter;
+using OtherSideCore.Domain.Attributes;
 using OtherSideCore.Domain.DomainObjects;
-using OtherSideCore.Infrastructure.Entities;
-using System.Collections;
 using System.Linq;
 using System.Reflection;
 
@@ -22,12 +21,12 @@ namespace OtherSideCore.Infrastructure.Mapping
          return mapping;
       }
 
-      public static IMappingExpression<TSource, TDestination> IgnoreAllCollections<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mapping)
+      public static IMappingExpression<TSource, TDestination> IgnoreCollectionsMapping<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mapping)
       {
-         var collectionProperties = typeof(TDestination).GetProperties().Where(p => p.PropertyType != typeof(string) &&
-                                                                               typeof(IEnumerable).IsAssignableFrom(p.PropertyType));
+         var taggedCollectionProperties = typeof(TDestination).GetProperties()
+                                                              .Where(p => p.GetCustomAttribute<IgnoreCollectionMapping>() != null);
 
-         foreach (var property in collectionProperties)
+         foreach (var property in taggedCollectionProperties)
          {
             mapping.ForMember(property.Name, opt => opt.Ignore());
          }

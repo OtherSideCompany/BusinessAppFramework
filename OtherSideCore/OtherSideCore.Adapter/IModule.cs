@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Factories;
@@ -15,5 +16,6 @@ namespace OtherSideCore.Adapter
       void RegisterWorkspaces(WorkspaceFactory workspaceFactory, IServiceProvider serviceProvider);
       void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
       List<NavigationItem> GetNavigationItems();
+      Task SeedDatabaseAsync(DbContext dbContext);
    }
 }

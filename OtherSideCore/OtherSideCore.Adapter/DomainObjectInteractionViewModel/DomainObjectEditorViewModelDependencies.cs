@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Application.Factories;
+﻿using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
@@ -17,6 +18,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IDomainObjectInteractionService DomainObjectInteractionService { get; }
       public IUserDialogService UserDialogService { get; }
       public IWindowService WindowService { get; }
+      public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
 
       #endregion
 
@@ -32,12 +34,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IDomainObjectServiceFactory domainObjectServiceFactory,
          IDomainObjectInteractionService domainObjectInteractionService,
          IUserDialogService userDialogService,
-         IWindowService windowService)
+         IWindowService windowService,
+         IDomainObjectViewModelFactory domainObjectViewModelFactory)
       {
          DomainObjectServiceFactory = domainObjectServiceFactory;
          DomainObjectInteractionService = domainObjectInteractionService;
          UserDialogService = userDialogService;
          WindowService = windowService;
+         DomainObjectViewModelFactory = domainObjectViewModelFactory;
       }
 
       #endregion

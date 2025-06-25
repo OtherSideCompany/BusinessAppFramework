@@ -105,7 +105,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();         
 
          ActivableConstraintViewModels = new ObservableCollection<ConstraintViewModel<TSearchResult>>();
-         ConstructConstraintViewModels();
 
          MultiTextFilterViewModel = new MultiTextFilterViewModel();
          SingleTextFilterViewModel = new SingleTextFilterViewModel();
@@ -233,6 +232,21 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
+      public void ConstructConstraintViewModels()
+      {
+         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
+         ActivableConstraintViewModels.Clear();
+
+         foreach (var constraint in _domainObjectSearch.GetActivableConstraints())
+         {
+            var constraintViewModel = new ConstraintViewModel<TSearchResult>(constraint);
+            constraintViewModel.IsSelected = _domainObjectSearch.ActivatedConstraint == null ? false : _domainObjectSearch.ActivatedConstraint.Equals(constraintViewModel.Constraint);
+            ActivableConstraintViewModels.Add(constraintViewModel);
+         }
+
+         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
+      }
+
       public void Dispose()
       {
          UnloadSearchResultViewModels();
@@ -275,22 +289,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          IsExecutingSearch = false;
-      }      
-
-      protected void ConstructConstraintViewModels()
-      {
-         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged -= ConstraintViewModel_PropertyChanged);
-         ActivableConstraintViewModels.Clear();
-
-         foreach (var constraint in _domainObjectSearch.GetActivableConstraints())
-         {
-            var constraintViewModel = new ConstraintViewModel<TSearchResult>(constraint);
-            constraintViewModel.IsSelected = _domainObjectSearch.ActivatedConstraint == null ? false : _domainObjectSearch.ActivatedConstraint.Equals(constraintViewModel.Constraint);
-            ActivableConstraintViewModels.Add(constraintViewModel);
-         }
-
-         ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
-      }
+      }   
 
       private async void ConstraintViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {

@@ -14,18 +14,16 @@ namespace OtherSideCore.Application.Browser
    {
       #region Fields
 
-      protected IUserContext _userContext;
-      protected ILoggerFactory _loggerFactory;
-      protected IUserDialogService _userDialogService;
+      protected DomainObjectBrowserDependencies _domainObjectBrowserDependencies;
 
       #endregion
 
       #region Properties
 
       public DomainObjectSearch<TSearchResult> DomainObjectSearch { get; private set; }      
-      public IDomainObjectServiceFactory DomainObjectServiceFactory { get; private set; }
-      public IGlobalDataService GlobalDataService { get; private set; }
-      public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; private set; }
+      public IDomainObjectServiceFactory DomainObjectServiceFactory => _domainObjectBrowserDependencies.DomainObjectServiceFactory;
+      public IGlobalDataService GlobalDataService => _domainObjectBrowserDependencies.GlobalDataService;
+      public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory => _domainObjectBrowserDependencies.DomainObjectQueryServiceFactory;
 
       #endregion
 
@@ -37,21 +35,11 @@ namespace OtherSideCore.Application.Browser
 
       #region Constructor
 
-      public DomainObjectBrowser(ILoggerFactory loggerFactory,
-                                 IUserContext userContext,
-                                 IUserDialogService userDialogService,
-                                 IGlobalDataService globalDataService,
-                                 IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory,
-                                 IDomainObjectServiceFactory domainObjectServiceFactory,
-                                 IDomainObjectSearchFactory domainObjectSearchFactory)
+      public DomainObjectBrowser(DomainObjectBrowserDependencies domainObjectBrowserDependencies)
       {
-         _userContext = userContext;
-         _loggerFactory = loggerFactory;
-         _userDialogService = userDialogService;
-         DomainObjectSearch = (DomainObjectSearch<TSearchResult>)domainObjectSearchFactory.CreateDomainObjectSearch<TSearchResult>(domainObjectQueryServiceFactory);
-         GlobalDataService = globalDataService;
-         DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
-         DomainObjectServiceFactory = domainObjectServiceFactory;
+         _domainObjectBrowserDependencies = domainObjectBrowserDependencies;
+
+         DomainObjectSearch = (DomainObjectSearch<TSearchResult>)domainObjectBrowserDependencies.DomainObjectSearchFactory.CreateDomainObjectSearch<TSearchResult>(DomainObjectQueryServiceFactory);
       }
 
       #endregion
