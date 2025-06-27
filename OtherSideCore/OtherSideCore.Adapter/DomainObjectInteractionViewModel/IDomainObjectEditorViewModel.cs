@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -7,6 +8,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    public interface IDomainObjectEditorViewModel : IDisposable, INotifyPropertyChanged
    {
       DomainObjectViewModel DomainObjectViewModel { get; }
+      DomainObjectEditorViewModelDependencies DomainObjectEditorViewModelDependencies { get; }
 
       ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels { get; }
 

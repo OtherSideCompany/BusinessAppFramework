@@ -13,22 +13,12 @@ namespace OtherSideCore.Infrastructure.Entities
 
       public HistoryInfo HistoryInfo { get; set; } = new HistoryInfo();
 
-      public bool IsActive { get; set; }
-
-      [Required]
-      [StringLength(50)]
-      public string FirstName { get; set; }
-
-      [Required]
-      [StringLength(50)]
-      public string LastName { get; set; }
-
       [Required]
       [StringLength(50)]
       public string UserName { get; set; }
 
       [Required]
       [StringLength(64, MinimumLength = 64)]
-      public string PasswordHash { get; set; }      
+      public string PasswordHash { get; set; }
    }
 }

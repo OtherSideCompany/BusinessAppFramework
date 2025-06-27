@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Attributes;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Workflows;
 using OtherSideCore.Application;
@@ -41,6 +42,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
 
       public DomainObjectViewModel DomainObjectViewModel => _domainObjectViewModel;
+      public DomainObjectEditorViewModelDependencies DomainObjectEditorViewModelDependencies => _domainObjectEditorViewModelDependencies;
 
       public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
 
@@ -352,7 +354,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          var property = sender.GetType().GetProperty(e.PropertyName);
 
-         if (property != null && property.GetCustomAttribute<MonitoredPropertyAttribute>() != null && !((DomainObjectViewModel)sender).IsInitializingProperties)
+         if (property != null && property.GetCustomAttribute<MonitoredProperty>() != null && !((DomainObjectViewModel)sender).IsInitializingProperties)
          {
             HasUnsavedChanges = true; 
             RefreshWorkflows();

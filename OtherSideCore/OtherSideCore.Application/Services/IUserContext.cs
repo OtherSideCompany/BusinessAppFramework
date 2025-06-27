@@ -9,5 +9,6 @@ namespace OtherSideCore.Application.Services
       string FirstName { get; set; }
       string LastName { get; set; }
       string UserName { get; set; }
+      string GetName();
    }
 }

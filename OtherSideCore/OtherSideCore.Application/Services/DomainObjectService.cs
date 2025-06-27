@@ -72,7 +72,7 @@ namespace OtherSideCore.Application.Services
             indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
          }
 
-         await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
+         await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.GetName());
          await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(domainObject));
       }
 
@@ -120,13 +120,13 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task SaveAsync(T domainObject)
       {
-         await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
+         await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.GetName());
          await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(domainObject));
       }
 
       public async Task SaveIndexAsync(IIndexable domainObject)
       {
-         await _repository.SaveIndexAsync(domainObject, _userContext.Id, _userContext.FirstName + " " + _userContext.LastName);
+         await _repository.SaveIndexAsync(domainObject, _userContext.Id, _userContext.GetName());
          await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent((DomainObject)domainObject));
       }
 

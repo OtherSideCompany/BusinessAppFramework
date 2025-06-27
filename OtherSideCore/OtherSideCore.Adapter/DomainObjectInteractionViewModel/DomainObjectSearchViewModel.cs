@@ -245,6 +245,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          ActivableConstraintViewModels.ToList().ForEach(vm => vm.PropertyChanged += ConstraintViewModel_PropertyChanged);
+
+         OnPropertyChanged(nameof(ActivatedConstraintViewModel));
+         OnPropertyChanged(nameof(IsAnyConstraintActivated));
       }
 
       public void Dispose()

@@ -60,8 +60,7 @@ namespace OtherSideCore.Adapter.Views
          set
          {
             SetProperty(ref _isUserContextInitialized, value);
-            OnPropertyChanged(nameof(UserContextFirstName));
-            OnPropertyChanged(nameof(UserContextLastName));
+            OnPropertyChanged(nameof(UserContextName));
          }
       }
 

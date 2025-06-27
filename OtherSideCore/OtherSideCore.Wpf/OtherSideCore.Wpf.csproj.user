@@ -11,6 +11,18 @@
     <Compile Update="UserControls\Buttons\DomainObjectLink.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\Editor\DomainObjectEditorPropertiesEdition.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\BooleanEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\NullableIntegerEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\StringEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\Files\DomainObjectDirectoryView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -100,6 +112,9 @@
     <Page Update="UserControls\Buttons\DomainObjectLink.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="UserControls\Editor\DomainObjectEditorPropertiesEdition.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UserControls\Editor\DomainObjectReferenceSelectorsView.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -107,6 +122,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\Editor\DomainObjectReferenceView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\BooleanEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\NullableIntegerEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\StringEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\SelectorPropertyEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\Files\DomainObjectDirectoryView.xaml">

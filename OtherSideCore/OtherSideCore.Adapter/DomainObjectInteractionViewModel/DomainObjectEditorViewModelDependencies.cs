@@ -19,6 +19,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IUserDialogService UserDialogService { get; }
       public IWindowService WindowService { get; }
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
+      public IPropertyEditorFactory PropertyEditorFactory { get; }
 
       #endregion
 
@@ -35,13 +36,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IDomainObjectInteractionService domainObjectInteractionService,
          IUserDialogService userDialogService,
          IWindowService windowService,
-         IDomainObjectViewModelFactory domainObjectViewModelFactory)
+         IDomainObjectViewModelFactory domainObjectViewModelFactory,
+         IPropertyEditorFactory propertyEditorFactory)
       {
          DomainObjectServiceFactory = domainObjectServiceFactory;
          DomainObjectInteractionService = domainObjectInteractionService;
          UserDialogService = userDialogService;
          WindowService = windowService;
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
+         PropertyEditorFactory = propertyEditorFactory;
       }
 
       #endregion

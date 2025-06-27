@@ -127,8 +127,7 @@
          </Grid.ColumnDefinitions>
 
          <TextBlock Grid.Column="0" Foreground="{StaticResource TextForeGroundColor}" Margin="0,0,10,0">
-            <Run Text="{Binding UserContextFirstName, Mode=OneWay}" />
-            <Run Text="{Binding UserContextLastName, Mode=OneWay}" />
+            <Run Text="{Binding UserContextName, Mode=OneWay}" />
          </TextBlock>
          <customcontrols:SvgImageButton Grid.Column="1" Width="44" Height="32"
                                         SvgImageButton_IconGeometry="{StaticResource icon_log-out}"

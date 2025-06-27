@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Application.Search;
+﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
    public interface IDomainObjectSelectorViewModel : IDisposable, IDomainObjectBrowserViewModel
    {
       event EventHandler SelectionValidated;
+      AsyncRelayCommand DisplaySelectorAsyncCommand { get; }
       Selection Selection { get; }
       bool DynamicSearch { get; set; }
       Task InitializeAsync();

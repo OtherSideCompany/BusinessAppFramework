@@ -1,6 +1,4 @@
-﻿using OtherSideCore.Domain.DomainObjects;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OtherSideCore.Domain.DomainObjects
 {
@@ -12,14 +10,6 @@ namespace OtherSideCore.Domain.DomainObjects
       #endregion
 
       #region Properties
-
-      public bool IsActive { get; set; }
-
-      [MaxLength(50)]
-      public string FirstName { get; set; } = GlobalVariables.DefaultString;
-
-      [MaxLength(50)]
-      public string LastName { get; set; } = GlobalVariables.DefaultString;
 
       [MaxLength(50)]
       public string UserName { get; set; } = GlobalVariables.DefaultString;
@@ -39,19 +29,17 @@ namespace OtherSideCore.Domain.DomainObjects
 
       public User() : base()
       {
-         IsActive = true;
-      }
-
-      public override string ToString()
-      {
-         return FirstName + " " + LastName;
+         
       }
 
       #endregion
 
       #region Public Methods
 
-
+      public override string ToString()
+      {
+         return UserName;
+      }
 
       #endregion
    }

@@ -32,7 +32,7 @@
 
       #region Public Methods
 
-      public object CreateFromType<T>(params object[] args) where T : class
+      public object CreateFromType<T>(params object[] args)
       {
          return CreateFromType(typeof(T), args);
       }
@@ -52,7 +52,7 @@
          throw new InvalidOperationException($"No factory registered for type {type.Name}");
       }
 
-      public void Register<T>(Func<object> factory) where T : class
+      public void Register<T>(Func<object> factory)
       {
          Register(typeof(T), args => factory());
       }
@@ -62,7 +62,7 @@
          Register(type, args => factory());
       }
 
-      public void Register<T>(Func<object[], object> factory) where T : class
+      public void Register<T>(Func<object[], object> factory)
       {
          Register(typeof(T), factory);
       }

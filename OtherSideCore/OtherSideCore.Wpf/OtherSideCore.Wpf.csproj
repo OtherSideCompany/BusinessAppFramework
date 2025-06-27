@@ -29,6 +29,9 @@
     <Compile Update="UserControls\Editor\DomainObjectReferenceView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\SelectorPropertyEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\Inputs\HoursMinutesEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

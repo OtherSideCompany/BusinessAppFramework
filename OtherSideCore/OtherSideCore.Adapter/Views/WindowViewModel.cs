@@ -48,8 +48,7 @@ namespace OtherSideCore.Adapter.Views
       }      
 
       public IWindowService WindowService => _windowService;
-      public string UserContextFirstName => UserContext?.FirstName;
-      public string UserContextLastName => UserContext?.LastName;
+      public string? UserContextName => UserContext?.GetName();
 
       #endregion
 

@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="OtherSideCore.Wpf.UserControls.Editor.PropertyEditor.NullableIntegerEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Editor.PropertyEditor"
+             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="NullableIntegerEditorUserControl">
+   <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="*" />
+         <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      
+      <osc_customcontrols:ClickSelectTextBox Grid.Column="0" 
+                                          Text="{Binding NullableIntegerEditor_Value, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableIntConverter}, ElementName=NullableIntegerEditorUserControl}" 
+                                          Style="{StaticResource EditorNullableIntegerClickSelectTextBox}" />
+
+      <osc_customcontrols:SvgImageButton Grid.Column="1"
+                                         Width="32"
+                                         Height="32"
+                                         Margin="4,0,0,0"
+                                         SvgImageButton_IconGeometry="{Binding CustomSetCommandIconResource, ElementName=NullableIntegerEditorUserControl, Converter={StaticResource GeometryResourceConverter}}"
+                                         Command="{Binding CustomSetCommand, ElementName=NullableIntegerEditorUserControl}"
+                                         Visibility="{Binding CustomSetCommand, ElementName=NullableIntegerEditorUserControl, Converter={StaticResource NullToVisibilityConverter}}" />
+
+   </Grid>
+</UserControl>
