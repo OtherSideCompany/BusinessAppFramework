@@ -17,6 +17,9 @@ namespace OtherSideCore.Domain.DomainObjects
       [MaxLength(64), MinLength(64)]
       public string PasswordHash { get; set; }
 
+      [MaxLength(300)]
+      public string Mail { get; set; } = GlobalVariables.DefaultString;
+
       #endregion
 
       #region Commands

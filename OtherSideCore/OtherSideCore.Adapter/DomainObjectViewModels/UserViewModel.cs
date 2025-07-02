@@ -14,6 +14,7 @@ namespace OtherSideCore.Adapter.DomainObjectViewModels
       #region Fields
 
       private string _userName;
+      private string _mail;
 
       #endregion
 
@@ -24,6 +25,13 @@ namespace OtherSideCore.Adapter.DomainObjectViewModels
       {
          get => _userName;
          set => SetProperty(ref _userName, value);
+      }
+
+      [MonitoredProperty, StringLength(300), EditorLabel("Mail"), EditorIndex(1)]
+      public string Mail
+      {
+         get => _mail;
+         set => SetProperty(ref _mail, value);
       }
 
       #endregion
