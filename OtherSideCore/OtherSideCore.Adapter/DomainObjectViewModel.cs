@@ -134,6 +134,9 @@ namespace OtherSideCore.Adapter
 
       public override bool Equals(object? obj)
       {
+         if (obj == null || obj.GetType() != GetType())
+            return false;
+
          var item = obj as DomainObjectViewModel;
 
          if (item == null)

@@ -31,11 +31,11 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
       }
 
       public static readonly DependencyProperty DomainObjectLink_IdProperty =
-         DependencyProperty.Register("DomainObjectLink_Id", typeof(int), typeof(DomainObjectLink), new UIPropertyMetadata(0));
+         DependencyProperty.Register("DomainObjectLink_Id", typeof(int?), typeof(DomainObjectLink), new UIPropertyMetadata(0));
 
-      public int DomainObjectLink_Id
+      public int? DomainObjectLink_Id
       {
-         get { return (int)GetValue(DomainObjectLink_IdProperty); }
+         get { return (int?)GetValue(DomainObjectLink_IdProperty); }
          set { SetValue(DomainObjectLink_IdProperty, value); }
       }
 
@@ -67,19 +67,19 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
          var source = sender as DependencyObject;
          var domainObjectInteractionHost = FindDomainObjectInteractionHost(source);
 
-         if (domainObjectInteractionHost != null)
+         if (domainObjectInteractionHost != null && DomainObjectLink_Id != null)
          {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
-               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
             }
             else if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
             {
-               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
             }
             else
             {
-               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
             }
          }
       }
@@ -116,9 +116,9 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
          var source = sender as DependencyObject;
          var domainObjectInteractionHost = FindDomainObjectInteractionHost(source);
 
-         if (domainObjectInteractionHost != null)
+         if (domainObjectInteractionHost != null && DomainObjectLink_Id != null)
          {
-            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
          }
       }
 
@@ -127,9 +127,9 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
          var source = sender as DependencyObject;
          var domainObjectInteractionHost = FindDomainObjectInteractionHost(source);
 
-         if (domainObjectInteractionHost != null)
+         if (domainObjectInteractionHost != null && DomainObjectLink_Id != null)
          {
-            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
          }
       }
 
@@ -138,9 +138,9 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
          var source = sender as DependencyObject;
          var domainObjectInteractionHost = FindDomainObjectInteractionHost(source);
 
-         if (domainObjectInteractionHost != null)
+         if (domainObjectInteractionHost != null && DomainObjectLink_Id != null)
          {
-            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
          }
       }
    }

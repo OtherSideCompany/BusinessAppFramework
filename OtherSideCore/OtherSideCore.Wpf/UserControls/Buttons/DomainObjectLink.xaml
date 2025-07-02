@@ -29,7 +29,8 @@
                                                SvgImageToggleButton_IconGeometry="{StaticResource icon_dots-vertical}" 
                                                SvgImageToggleButton_ImageSize="16"
                                                SvgImageToggleButton_ImageColor="{StaticResource OtherSide_DarkGray}" 
-                                               x:Name="LinkActionsToggleButton"/>
+                                               x:Name="LinkActionsToggleButton"
+                                               Visibility="{Binding DomainObjectLink_Id, ElementName=DomainObjectLinkUserControl, Converter={StaticResource NullToVisibilityConverter}}"/>
 
       <Popup Style="{StaticResource UiPopup}" 
              IsOpen="{Binding IsChecked, ElementName=LinkActionsToggleButton}" 
