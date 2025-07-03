@@ -218,7 +218,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          if (domainObjectSearchResultViewModel != null)
          {
-            await ShowDomainObjectDetailsEditorAsync(typeof(TDomainObject), domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
+            await ShowDomainObjectDetailsEditorAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult);
          }
       }
 
@@ -259,9 +259,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
-      protected async Task ShowDomainObjectDetailsEditorAsync(Type type, int domainObjectId)
+      protected async Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResult domainObjectSearchResult)
       {
-         SelectedDomainObjectDetailsEditorViewModel = await _domainObjectBrowserViewModelDependencies.DomainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(domainObjectId, type, DisplayType.Modal);
+         SelectedDomainObjectDetailsEditorViewModel = await _domainObjectBrowserViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectDetailsEditorViewModelAsync(domainObjectSearchResult);
 
          if (SelectedDomainObjectDetailsEditorViewModel != null)
          {
@@ -272,7 +272,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             {
                nestedTreeViewModel.TreeModified += DomainObjectDetailsEditorViewModel_NestedTreeViewModelTreeModifiedAsync;
             }
-         }
+
+            _domainObjectBrowserViewModelDependencies.WindowService.DisplayView(SelectedDomainObjectDetailsEditorViewModel.DomainObjectEditorKey, "", SelectedDomainObjectDetailsEditorViewModel, DisplayType.Modal);
+         }         
       }  
 
       private async Task CreateEditorViewModelsAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)

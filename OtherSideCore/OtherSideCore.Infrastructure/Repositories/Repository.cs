@@ -322,6 +322,24 @@ namespace OtherSideCore.Infrastructure.Repositories
          return await Task.FromResult<int?>(null);
       }
 
+      public async Task<TDomainObject> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
+      {
+         _logger.LogInformation($"{GetType()}, {nameof(GetFromSystemCodeAsync)}, system code : {systemCode}");
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            if (typeof(TEntity) == typeof(ISystemObject))
+            {
+               var entity = await context.Set<TEntity>().FirstAsync(so => ((ISystemObject)so).SystemCode != null && ((ISystemObject)so).SystemCode.Equals(systemCode));
+               return _mapper.Map<TDomainObject>(entity);
+            }
+            else
+            {
+               throw new Exception($"Cannot get system code from type {typeof(TEntity)} as it does not implement ISystemObject interface.");
+            }
+         }
+      }
+
       public void Dispose()
       {
 

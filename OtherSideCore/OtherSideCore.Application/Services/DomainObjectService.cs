@@ -13,6 +13,7 @@ namespace OtherSideCore.Application.Services
    {
       #region Fields
 
+      protected DomainObjectServiceDependencies _domainObjectServiceDependencies;
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
       protected readonly IDomainObjectServiceFactory _domainObjectServiceFactory;
@@ -85,7 +86,13 @@ namespace OtherSideCore.Application.Services
 
       public virtual async Task<bool> DeleteAsync(T domainObject)
       {
-         var deletedDomainObjectId = domainObject.Id;      
+         var deletedDomainObjectId = domainObject.Id;
+
+         if (domainObject is ISystemObject systemObject && !String.IsNullOrEmpty(systemObject.SystemCode))
+         {
+            _userDialogService.Error("Impossible de supprimer l'objet sélectionné car il est nécéssaire au fonctionnement du système.");
+            return false;
+         }
 
          try
          {
@@ -110,7 +117,7 @@ namespace OtherSideCore.Application.Services
          {
             _userDialogService.Error("Suppression impossible car des données sont associées");
             return false;
-         }         
+         }
       }
 
       public async Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
@@ -118,8 +125,19 @@ namespace OtherSideCore.Application.Services
          return await _repository.GetAsync(domainObjectId, cancellationToken);
       }
 
+      public async Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
+      {
+         return await _repository.GetFromSystemCodeAsync(systemCode, cancellationToken);
+      }
+
       public virtual async Task SaveAsync(T domainObject)
       {
+         if (domainObject is ISystemObject systemObject && !String.IsNullOrEmpty(systemObject.SystemCode))
+         {
+            _userDialogService.Error("Impossible de modifier l'utilisateur car il est nécéssaire au fonctionnement du système.");
+            return;
+         }
+
          await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.GetName());
          await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(domainObject));
       }

@@ -23,6 +23,7 @@ namespace OtherSideCore.Application.Services
       public IMailService MailService { get; }
       public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
       public IDomainObjectEventBus DomainObjectEventBus { get; }
+      public IUserPermissionService UserPermissionService { get; }
 
       #endregion
 

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Application;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Search;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.ComponentModel;
 

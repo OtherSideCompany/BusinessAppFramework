@@ -4,15 +4,12 @@ using OtherSideCore.Adapter.Attributes;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Workflows;
 using OtherSideCore.Application;
-using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
@@ -35,6 +32,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isReadOnly;
 
       private readonly SemaphoreSlim _loadDomainObjectReferencesLock = new(1, 1);
+
+      protected StringKey _domainObjectEditorKey;
 
       #endregion
 
@@ -73,6 +72,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       }
 
       public IDomainObjectInteractionService DomainObjectInteractionService => _domainObjectEditorViewModelDependencies.DomainObjectInteractionService;
+
+      public StringKey DomainObjectEditorKey => _domainObjectEditorKey;
 
       #endregion
 

@@ -1,6 +1,7 @@
 ﻿using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Factories
 {

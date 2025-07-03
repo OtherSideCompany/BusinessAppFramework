@@ -215,7 +215,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectRootTreeViewNode = await _domainObjectTreeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectTreeViewNodeAsync(domainObjectViewModel, _domainObjectTreeViewModelDependencies.UserDialogService, _domainObjectTreeViewModelDependencies.DomainObjectServiceFactory);
+         var domainObjectRootTreeViewNode = await _domainObjectTreeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectTreeNodeViewModelAsync(domainObjectViewModel);
 
          DomainObjectTreeViewModelExtensions.InsertNodeInList(domainObjectRootTreeViewNode, Roots);
 
@@ -232,7 +232,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
-         var domainObjectTreeViewNode = await _domainObjectTreeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectTreeViewNodeAsync(domainObjectViewModel, _domainObjectTreeViewModelDependencies.UserDialogService, _domainObjectTreeViewModelDependencies.DomainObjectServiceFactory);
+         var domainObjectTreeViewNode = await _domainObjectTreeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectTreeNodeViewModelAsync(domainObjectViewModel);
          var parentNode = GetNode(parentViewModel);
          parentNode.AddChild(domainObjectTreeViewNode, _isInitializingTree);
          RegisterNode(domainObjectTreeViewNode);

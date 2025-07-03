@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Application;
+using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Views
 {

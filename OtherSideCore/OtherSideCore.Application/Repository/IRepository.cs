@@ -17,6 +17,8 @@ namespace OtherSideCore.Application.Repository
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken);
 
+      Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken);
+
       Task DeleteAsync(T domainObject);
 
       Task<DateTime> GetLastModificatonTimeAsync(T domainObject, CancellationToken cancellationToken);      

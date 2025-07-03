@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application;
+using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;
 using System.Windows;

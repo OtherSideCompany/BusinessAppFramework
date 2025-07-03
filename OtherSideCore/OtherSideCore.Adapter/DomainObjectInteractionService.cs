@@ -5,6 +5,7 @@ using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Tree;
 using OtherSideCore.Appplication.Services;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Adapter
@@ -44,6 +45,13 @@ namespace OtherSideCore.Adapter
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, DomainObjectViewModel domainObjectViewModel);
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, DomainObject domainObject);
       public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(StringKey key, Type domainObjectType, int domainObjectId);
+      public abstract void RegisterDomainObjectDetailsEditorViewModel(StringKey key, Func<DomainObjectViewModel, IDomainObjectEditorViewModel> factory);
+      public abstract void RegisterSearchResultDetailsEditorMapping<TSearchResult>(Type domainObjectType, StringKey editorKey) where TSearchResult : DomainObjectSearchResult;
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectDetailsEditorViewModelAsync(IDomainObjectTreeNodeViewModel domainObjectTreeNodeViewModel);
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectDetailsEditorViewModelAsync(DomainObjectSearchResult domainObjectSearchResult);
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectDetailsEditorViewModelAsync(StringKey key, DomainObjectViewModel domainObjectViewModel);
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectDetailsEditorViewModelAsync(StringKey key, DomainObject domainObject);
+      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectDetailsEditorViewModelAsync(StringKey key, Type domainObjectType, int domainObjectId);
       public abstract void RegisterSelectorToWorkspaceKeyMapping(StringKey selectorKey, StringKey editorKey);
       public abstract void RegisterDomainObjectSelectorViewModel(StringKey key, Func<IDomainObjectSelectorViewModel> factory);
       public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key);
@@ -52,47 +60,16 @@ namespace OtherSideCore.Adapter
       public abstract void RegisterTreeViewModel(StringKey key, Func<DomainObjectTree, DomainObjectTreeViewModel> factory);
       public abstract DomainObjectTreeViewModel CreateTreeViewModel(StringKey key);
 
-      public virtual async Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeViewNodeAsync(DomainObjectViewModel domainObjectViewModel, IUserDialogService userDialogService, IDomainObjectServiceFactory domainObjectServiceFactory)
-      {
-         var domainObjectType = domainObjectViewModel.DomainObject.GetType();
-         var genericType = typeof(DomainObjectTreeNodeViewModel<>).MakeGenericType(domainObjectType);
-
-         var treeViewNode = (IDomainObjectTreeNodeViewModel)Activator.CreateInstance(genericType, domainObjectViewModel, userDialogService, this, domainObjectServiceFactory);
-         await treeViewNode.InitializeAsync();
-
-         return treeViewNode;
-      }
+      public abstract void RegisterTreeNodeViewModel(Type type, Func<DomainObjectViewModel, IDomainObjectTreeNodeViewModel> factory);
+      public abstract Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeNodeViewModelAsync(DomainObjectViewModel domainObjectViewModel);
 
       // OLD
       public abstract Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
-      public abstract Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObject domainObject, DisplayType displayType);
-      public abstract Task<IDomainObjectEditorViewModel?> DisplayDomainObjectDetailsEditorViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
-      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
-      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-      public abstract Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
-
-      //public abstract DomainObjectTreeViewModel CreateTreeViewModel<T>() where T : DomainObject, new();
-      public abstract IDomainObjectBrowserViewModel CreateDomainObjectBrowserViewModel<T>() where T : DomainObject, new();
-
-      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel<T>() where T : DomainObject, new();
-
-      public abstract IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(Type type);
-
       public abstract List<DomainObjectReferenceSelectorViewModel> GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel domainObjectViewModel);     
-
-      
-
-      public abstract Task DisplayDomainObjectAsync(DomainObject domainObject, DisplayType displayType);
-      public abstract Task DisplayDomainObjectAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
-      public abstract Task DisplayDomainObjectBrowserAsync(Type domainObjectType, DisplayType displayType);
       public abstract Task DisplayDomainObjectAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
       public abstract Task DisplayDomainObjectTreeViewAsync(DomainObject domainObject, DisplayType displayType);
       public abstract Task DisplayDomainObjectTreeViewAsync(DomainObjectViewModel domainObjectViewModel, DisplayType displayType);
       public abstract Task DisplayDomainObjectTreeViewAsync(int domainObjectId, Type domainObjectType, DisplayType displayType);
-
-      public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(DomainObjectViewModel domainObjectViewModel) where T : DomainObject, new();
-      public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync(Type domainObjectType, DomainObjectViewModel domainObjectViewModel);
-      public abstract Task<IDomainObjectEditorViewModel?> CreateDomainObjectDetailsEditorViewModelAsync<T>(int domainObjectId) where T : DomainObject, new();
 
       #endregion
 

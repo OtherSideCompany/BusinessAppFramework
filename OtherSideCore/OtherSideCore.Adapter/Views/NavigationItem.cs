@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using OtherSideCore.Application;
+using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Views
 {

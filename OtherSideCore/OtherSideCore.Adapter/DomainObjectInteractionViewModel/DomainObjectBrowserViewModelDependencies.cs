@@ -22,6 +22,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IDomainObjectSearchResultViewModelFactory DomainObjectSearchResultViewModelFactory { get; }
       public IDomainObjectInteractionService DomainObjectInteractionService { get; }
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; }
+      public IWindowService WindowService { get; }
 
       #endregion
 
@@ -37,12 +38,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IDomainObjectsSearchViewModelFactory domainObjectsSearchViewModelFactory,
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
          IDomainObjectInteractionService domainObjectInteractionFactory,
-         IDomainObjectServiceFactory domainObjectServiceFactory)
+         IDomainObjectServiceFactory domainObjectServiceFactory,
+         IWindowService windowService)
       {
          DomainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
          DomainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
          DomainObjectInteractionService = domainObjectInteractionFactory;
          DomainObjectServiceFactory = domainObjectServiceFactory;
+         WindowService = windowService;
       }
 
       #endregion

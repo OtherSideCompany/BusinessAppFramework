@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Application.Factories;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
@@ -14,12 +12,10 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Fields
 
+      private DomainObjectTreeNodeViewModelDependencies _domainObjectTreeNodeViewModelDependencies;
+
       private bool _isExpanded;
       private bool _isSelected;
-
-      protected IDomainObjectInteractionService _domainObjectInteractionService;
-      protected IDomainObjectServiceFactory _domainObjectServiceFactory;
-      protected IUserDialogService _userDialogService;
 
       private DomainObjectViewModel _domainObjectViewModel;
       private IDomainObjectEditorViewModel _domainObjectEditorViewModel;
@@ -96,14 +92,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectTreeNodeViewModel(DomainObjectViewModel domainObjectViewModel,
-                                      IUserDialogService userDialogService,
-                                      IDomainObjectInteractionService domainObjectInteractionService,
-                                      IDomainObjectServiceFactory domainObjectServiceFactory)
+      public DomainObjectTreeNodeViewModel(
+         DomainObjectViewModel domainObjectViewModel,
+         DomainObjectTreeNodeViewModelDependencies domainObjectTreeNodeViewModelDependencies)
       {
-         _domainObjectInteractionService = domainObjectInteractionService;
-         _domainObjectServiceFactory = domainObjectServiceFactory;
-         _userDialogService = userDialogService;
+         _domainObjectTreeNodeViewModelDependencies = domainObjectTreeNodeViewModelDependencies;
 
          DomainObjectViewModel = domainObjectViewModel;         
 
@@ -119,7 +112,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task InitializeAsync()
       {
-         DomainObjectEditorViewModel = await _domainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(this);
+         DomainObjectEditorViewModel = await _domainObjectTreeNodeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(this);
          DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
          DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
       }
@@ -242,7 +235,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          foreach (var indexableDomainObject in indexableCollection)
          {
-            var domainObjectService = (dynamic)_domainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
+            var domainObjectService = (dynamic)_domainObjectTreeNodeViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService(indexableDomainObject.GetType());
             await domainObjectService.SaveIndexAsync(indexableDomainObject);
          }
       }
@@ -254,7 +247,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task ShowDomainObjectDetailsEditorAsync()
       {
-         await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectViewModel, DisplayType.Modal);
+         var editorViewModel = await _domainObjectTreeNodeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectDetailsEditorViewModelAsync(this);
+         _domainObjectTreeNodeViewModelDependencies.WindowService.DisplayView(editorViewModel.DomainObjectEditorKey, "", editorViewModel, DisplayType.Modal);
       }
 
       #endregion

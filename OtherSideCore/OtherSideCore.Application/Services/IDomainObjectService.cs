@@ -11,6 +11,8 @@ namespace OtherSideCore.Application.Services
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
+      Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
+
       Task CreateAsync(T domainObject, DomainObject? parent);
 
       Task<T> CreateAsync(DomainObject? parent);

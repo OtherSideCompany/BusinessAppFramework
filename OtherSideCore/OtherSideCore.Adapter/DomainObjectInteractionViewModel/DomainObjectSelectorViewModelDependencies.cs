@@ -20,7 +20,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       #region Properties
 
       public IUserDialogService UserDialogService { get; }
-      public IWindowService WindowService { get; }
       public WorkspaceFactory WorkspaceFactory { get; }
 
       #endregion
@@ -36,16 +35,15 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public DomainObjectSelectorViewModelDependencies(
          DomainObjectBrowserViewModelDependencies domainObjectBrowserViewModelDependencies,
          IUserDialogService userDialogService,
-         IWindowService windowService,
          WorkspaceFactory workspaceFactory) :
          base(
             domainObjectBrowserViewModelDependencies.DomainObjectsSearchViewModelFactory,
             domainObjectBrowserViewModelDependencies.DomainObjectSearchResultViewModelFactory,
             domainObjectBrowserViewModelDependencies.DomainObjectInteractionService,
-            domainObjectBrowserViewModelDependencies.DomainObjectServiceFactory)
+            domainObjectBrowserViewModelDependencies.DomainObjectServiceFactory,
+            domainObjectBrowserViewModelDependencies.WindowService)
       {
          UserDialogService = userDialogService;
-         WindowService = windowService;
          WorkspaceFactory = workspaceFactory;
       }
 

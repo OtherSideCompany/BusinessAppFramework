@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Application;
+using OtherSideCore.Domain;
 using System.Windows;
 
 namespace OtherSideCore.Adapter.Services

@@ -40,9 +40,7 @@ namespace OtherSideCore.Wpf.Factories
       {
          RegisterEditor<string, StringEditor>(StringEditor.StringEditor_TextProperty, UpdateSourceTrigger.PropertyChanged);
          RegisterEditor<int?, NullableIntegerEditor>(NullableIntegerEditor.NullableIntegerEditor_ValueProperty, UpdateSourceTrigger.LostFocus);
-         RegisterEditor<bool, BooleanEditor>(BooleanEditor.BooleanEditor_IsCheckedProperty, UpdateSourceTrigger.PropertyChanged);
-
-         RegisterSelectorPropertyEditor<User>();
+         RegisterEditor<bool, BooleanEditor>(BooleanEditor.BooleanEditor_IsCheckedProperty, UpdateSourceTrigger.PropertyChanged);         
       }
 
       public object CreateEditor(PropertyInfo propInfo, DomainObjectViewModel viewModel, IDomainObjectEditorViewModel domainObjectEditorViewModel)
