@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Domain.Services;
 
@@ -48,6 +49,8 @@ namespace OtherSideCore.Adapter
       public string CreationDescription => GetHistoryDescription(DomainObject.CreationDate, DomainObject.CreatedByName);
 
       public string ModificationDescription => GetHistoryDescription(DomainObject.LastModifiedDateTime, DomainObject.LastModifiedByName);
+
+      public ILocalizationService LocalizationService => _domainObjectViewModelDependencies.LocalizationService;  
 
       #endregion
 

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
@@ -8,7 +9,7 @@ using System.ComponentModel;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-   public class DomainObjectBrowserViewModel<TDomainObject, TSearchResult> : ObservableObject, IDomainObjectBrowserViewModel, ISavable, IDomainObjectInteractionHost 
+    public class DomainObjectBrowserViewModel<TDomainObject, TSearchResult> : ObservableObject, IDomainObjectBrowserViewModel, ISavable, IDomainObjectInteractionHost 
       where TDomainObject : DomainObject, new()
       where TSearchResult : DomainObjectSearchResult, new()
    {
@@ -182,7 +183,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                   {
                      await CreateEditorViewModelsAsync(domainObjectSearchResultViewModel);
 
-                     if (_loadNestedStructureOnSelection)
+                     if (_loadNestedStructureOnSelection && SelectedDomainObjectEditorViewModel != null)
                      {
                         await SelectedDomainObjectEditorViewModel.LoadNestedStructuresAsync();
                      }
@@ -266,7 +267,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          if (SelectedDomainObjectDetailsEditorViewModel != null)
          {
             SelectedDomainObjectDetailsEditorViewModel.DomainObjectSavedEvent += DomainObjectDetailsEditorViewModel_DomainObjectSavedEvent;
-            SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
+
+            if (SelectedDomainObjectEditorViewModel != null)
+            {
+               SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
+            }
 
             foreach (var nestedTreeViewModel in SelectedDomainObjectDetailsEditorViewModel.NestedDomainObjectTreeViewModels)
             {
@@ -282,12 +287,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsLoadingDomainObjectEditor = true;
 
          var editorViewModel = await CreateDomainObjectEditorViewModelAsync(domainObjectSearchResultViewModel);
-         await editorViewModel.LoadDomainObjetReferencesAsync();
 
-         editorViewModel.PropertyChanged += SelectedDomainObjectEditorViewModel_PropertyChanged;
-         editorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
-         editorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
-         editorViewModel.DomainObjectReferencesModified += SelectedEditorViewModel_DomainObjectReferencesModified;
+         if (editorViewModel != null)
+         {
+            await editorViewModel.LoadDomainObjetReferencesAsync();
+
+            editorViewModel.PropertyChanged += SelectedDomainObjectEditorViewModel_PropertyChanged;
+            editorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
+            editorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
+            editorViewModel.DomainObjectReferencesModified += SelectedEditorViewModel_DomainObjectReferencesModified;
+         }
 
          SelectedDomainObjectEditorViewModel = editorViewModel;
 
@@ -347,12 +356,20 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return true;
       }
 
-      protected virtual async Task<TDomainObject> CreateAsync(DomainObjectViewModel? parentViewModel)
+      protected virtual async Task<TDomainObject?> CreateAsync(DomainObjectViewModel? parentViewModel)
       {
-         var domainObject = await _domainObjectBrowser.CreateAsync(parentViewModel?.DomainObject);
-         var searchResultViewModel = await DomainObjectSearchViewModel.InsertSearchResultViewModelAsync(domainObject.Id, 0);
+         var (_, domainObject) = await DomainObjectServiceHelper.TryCreateAsync<TDomainObject>(
+            parentViewModel?.DomainObject,
+            _domainObjectBrowserViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<TDomainObject>(),
+            _domainObjectBrowserViewModelDependencies.UserDialogService,
+            _domainObjectBrowserViewModelDependencies.LocalizationService);
 
-         await SelectSearchResultViewModelAsync(searchResultViewModel);
+         if (domainObject != null)
+         {
+            var searchResultViewModel = await DomainObjectSearchViewModel.InsertSearchResultViewModelAsync(domainObject.Id, 0);
+
+            await SelectSearchResultViewModelAsync(searchResultViewModel);
+         }
 
          return domainObject;
       }
@@ -375,7 +392,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DeleteSelectedEditorsViewModel();
       }
 
-      protected async Task<IDomainObjectEditorViewModel> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
+      protected async Task<IDomainObjectEditorViewModel?> CreateDomainObjectEditorViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
       {
          return await _domainObjectBrowserViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult);
       }

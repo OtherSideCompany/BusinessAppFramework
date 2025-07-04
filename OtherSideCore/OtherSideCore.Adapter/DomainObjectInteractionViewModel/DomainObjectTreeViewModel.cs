@@ -278,18 +278,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          TreeModified?.Invoke(this, EventArgs.Empty);
       }
 
-      public virtual async Task<DomainObject> CreateRootNodeDomainObjectCopyAsync(IDomainObjectTreeNodeViewModel node)
+      public virtual async Task<DomainObject?> CreateRootNodeDomainObjectCopyAsync(IDomainObjectTreeNodeViewModel? node)
       {
+         if (node == null)
+         {
+            return null;
+         }
+
          var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(ContextViewModel?.DomainObject);
 
-         var dupplicatedDomainObjectViewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(dupplicatedDomainObject);
-         AddRootNodeAsync(dupplicatedDomainObjectViewModel);
-
-         var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObjectViewModel);
-
-         foreach (var childNode in node.Children)
+         if (dupplicatedDomainObject != null)
          {
-            await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+            var dupplicatedDomainObjectViewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(dupplicatedDomainObject);
+            await AddRootNodeAsync(dupplicatedDomainObjectViewModel);
+
+            var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObjectViewModel);
+
+
+            foreach (var childNode in node.Children)
+            {
+               await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+            }
          }
 
          return dupplicatedDomainObject;

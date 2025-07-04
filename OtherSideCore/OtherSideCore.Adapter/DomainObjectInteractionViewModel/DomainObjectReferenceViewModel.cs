@@ -1,11 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application;
 using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
-   public class DomainObjectReferenceViewModel : ObservableObject, IDisposable
+    public class DomainObjectReferenceViewModel : ObservableObject, IDisposable
    {
       #region Fields
 

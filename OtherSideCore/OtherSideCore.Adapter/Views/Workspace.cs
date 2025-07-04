@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Attributes;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
@@ -86,6 +88,15 @@ namespace OtherSideCore.Adapter.Views
       public virtual Task InitializeAsync()
       {
          return Task.CompletedTask;
+      }
+
+      public async Task FilterNavigationItemsForUser(int userId, IUserPermissionResolverService userPermissionResolverService)
+      {
+         foreach (var navigationItem in NavigationItems)
+         {
+            var permissionKeys = WorkspacePermissionKeysHelper.GetPermissionKeys(navigationItem.ViewModelType);
+            navigationItem.IsVisible = await userPermissionResolverService.CanAccessAllAsync(permissionKeys, userId);
+         }
       }
 
       public virtual void Dispose()

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using OtherSideCore.Domain.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Domain.DomainObjects
@@ -70,7 +72,7 @@ namespace OtherSideCore.Domain.DomainObjects
          domainObject.LastModifiedDateTime = DateTime.Now;
 
          return domainObject;
-      }
+      }      
 
       public virtual void Dispose()
       {

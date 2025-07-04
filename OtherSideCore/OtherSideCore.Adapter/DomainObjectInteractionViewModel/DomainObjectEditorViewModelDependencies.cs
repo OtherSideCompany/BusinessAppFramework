@@ -1,10 +1,11 @@
 ﻿using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
-   public class DomainObjectEditorViewModelDependencies
+    public class DomainObjectEditorViewModelDependencies
    {
       #region Fields
 
@@ -20,6 +21,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IWindowService WindowService { get; }
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
       public IPropertyEditorFactory PropertyEditorFactory { get; }
+      public ILocalizationService LocalizationService { get; }
 
       #endregion
 
@@ -37,7 +39,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IUserDialogService userDialogService,
          IWindowService windowService,
          IDomainObjectViewModelFactory domainObjectViewModelFactory,
-         IPropertyEditorFactory propertyEditorFactory)
+         IPropertyEditorFactory propertyEditorFactory,
+         ILocalizationService localizationService)
       {
          DomainObjectServiceFactory = domainObjectServiceFactory;
          DomainObjectInteractionService = domainObjectInteractionService;
@@ -45,6 +48,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          WindowService = windowService;
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
          PropertyEditorFactory = propertyEditorFactory;
+         LocalizationService = localizationService;
       }
 
       #endregion

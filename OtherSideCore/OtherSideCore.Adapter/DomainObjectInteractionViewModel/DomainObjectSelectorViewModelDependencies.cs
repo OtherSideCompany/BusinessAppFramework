@@ -41,7 +41,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
             domainObjectBrowserViewModelDependencies.DomainObjectSearchResultViewModelFactory,
             domainObjectBrowserViewModelDependencies.DomainObjectInteractionService,
             domainObjectBrowserViewModelDependencies.DomainObjectServiceFactory,
-            domainObjectBrowserViewModelDependencies.WindowService)
+            domainObjectBrowserViewModelDependencies.WindowService,
+            domainObjectBrowserViewModelDependencies.UserDialogService,
+            domainObjectBrowserViewModelDependencies.LocalizationService)
       {
          UserDialogService = userDialogService;
          WorkspaceFactory = workspaceFactory;

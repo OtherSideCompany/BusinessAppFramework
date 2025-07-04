@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter
@@ -17,6 +18,7 @@ namespace OtherSideCore.Adapter
       public IGlobalDataService GlobalDataService { get; }
       public IMapper Mapper { get; }
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
+      public ILocalizationService LocalizationService { get; }
 
       #endregion
 
@@ -31,11 +33,13 @@ namespace OtherSideCore.Adapter
       public DomainObjectViewModelDependencies(
          IGlobalDataService globalDataService,
          IMapper mapper,
-         IDomainObjectViewModelFactory domainObjectViewModelFactory)
+         IDomainObjectViewModelFactory domainObjectViewModelFactory,
+         ILocalizationService localizationService)
       {
          GlobalDataService = globalDataService;
          Mapper = mapper;
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
+         LocalizationService = localizationService;
       }
 
       #endregion

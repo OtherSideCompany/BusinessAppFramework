@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Attributes;
+using OtherSideCore.Application.Services;
 using System.Collections.ObjectModel;
 
 namespace OtherSideCore.Adapter.Views
@@ -7,6 +9,8 @@ namespace OtherSideCore.Adapter.Views
    public class NavigationMenuViewModel : ObservableObject, IDisposable
    {
       #region Fields
+
+      private IUserPermissionResolverService _userPermissionResolverService;
 
       private ObservableCollection<NavigationItem> _navigationItems;
       private NavigationItem? _selectedNavigationItem;
@@ -43,8 +47,12 @@ namespace OtherSideCore.Adapter.Views
 
       #region Constructor
 
-      public NavigationMenuViewModel(List<NavigationItem> navigationItems)
+      public NavigationMenuViewModel(
+         List<NavigationItem> navigationItems,
+         IUserPermissionResolverService userPermissionResolverService)
       {
+         _userPermissionResolverService = userPermissionResolverService;
+
          NavigationItems = new ObservableCollection<NavigationItem>(navigationItems);
 
          SelectNavigationItemCommand = new RelayCommand<NavigationItem?>(SelectNavigationItem);
@@ -53,6 +61,20 @@ namespace OtherSideCore.Adapter.Views
       #endregion
 
       #region Public Methods
+
+      public void UnselectAllNavigationItems()
+      {
+         NavigationItems.ToList().ForEach(m => m.IsSelected = false);
+      }
+
+      public async Task FilterNavigationItemsForUser(int userId)
+      {
+         foreach (var navigationItem in NavigationItems)
+         {
+            var permissionKeys = WorkspacePermissionKeysHelper.GetPermissionKeys(navigationItem.ViewModelType);
+            navigationItem.IsVisible = await _userPermissionResolverService.CanAccessAnyAsync(permissionKeys, userId);
+         }
+      }
 
       public void Dispose()
       {
@@ -73,11 +95,6 @@ namespace OtherSideCore.Adapter.Views
             SelectedNavigationItem.IsSelected = true;
             NavigationItemSelected?.Invoke(this, _selectedNavigationItem);
          }
-      }
-
-      private void UnselectAllNavigationItems()
-      {
-         NavigationItems.ToList().ForEach(m => m.IsSelected = false);
       }
 
       #endregion

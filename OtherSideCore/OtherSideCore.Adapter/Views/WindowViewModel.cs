@@ -1,11 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class WindowViewModel : ObservableObject, IDisposable
+    public class WindowViewModel : ObservableObject, IDisposable
    {
       #region Fields
 

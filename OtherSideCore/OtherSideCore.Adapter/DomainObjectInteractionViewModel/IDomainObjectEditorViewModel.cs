@@ -30,6 +30,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task InitializeAsync();
       Task LoadNestedStructuresAsync();
       Task LoadDomainObjetReferencesAsync();
-      Task<DomainObject> DupplicateAsync(DomainObject? parent);
+      Task<DomainObject?> DupplicateAsync(DomainObject? parent);
    }
 }

@@ -1,9 +1,10 @@
-﻿using OtherSideCore.Application.Factories;
+﻿using OtherSideCore.Adapter.Services;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
-   public class DomainObjectTreeNodeViewModelDependencies
+    public class DomainObjectTreeNodeViewModelDependencies
    {
       #region Fields
 

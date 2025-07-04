@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Bootstrapper
 {
@@ -11,13 +13,13 @@ namespace OtherSideCore.Bootstrapper
    {
       #region Fields
 
-      
+
 
       #endregion
 
       #region Properties
 
-      
+
 
       #endregion
 
@@ -31,8 +33,8 @@ namespace OtherSideCore.Bootstrapper
 
       public Module()
       {
-         
-      }      
+
+      }
 
       #endregion
 
@@ -45,6 +47,7 @@ namespace OtherSideCore.Bootstrapper
       public abstract void RegisterDomainObjectReferences(IDomainObjectReferenceFactory domainObjectReferenceFactory);
       public abstract void RegisterWorkspaces(WorkspaceFactory workspaceFactory, IServiceProvider serviceProvider);
       public abstract void RegisterDomainObjectInteractions(IDomainObjectInteractionService domainObjectInteractionService, IServiceProvider serviceProvider);
+      public abstract void RegisterResourceManagers(ILocalizationService localizationService);
       public abstract List<NavigationItem> GetNavigationItems();
       public abstract Task SeedDatabaseAsync(DbContext dbContext);
 

@@ -25,7 +25,7 @@
          <Setter Property="Background" Value="{StaticResource ButtonBackgroundColor}" />
          <Setter Property="osc_extensions:ButtonExtension.OverColor" Value="{StaticResource ButtonOverColor}" />
          <Setter Property="osc_extensions:ButtonExtension.PressedColor" Value="{StaticResource ButtonIsPressedColor}" />
-         <Setter Property="Visibility" Value="Visible" />
+         <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibleOrCollapsed}}" />         
          <Setter Property="Template">
             <Setter.Value>
                <ControlTemplate TargetType="{x:Type Button}">

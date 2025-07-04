@@ -116,7 +116,11 @@ namespace OtherSideCore.Wpf.UserControls.Window
             var mainWindowViewModel = (MainWindowViewModel)DataContext;
 
             MainWindow_ViewContent = mainWindowViewModel.CurrentView as UserControl;
-            MainWindow_ViewContent.DataContext = MainWindow_ViewContent != null ? mainWindowViewModel.CurrentViewModel : null;
+
+            if (MainWindow_ViewContent != null)
+            {
+               MainWindow_ViewContent.DataContext = mainWindowViewModel.CurrentViewModel;
+            }          
          }
       }
 

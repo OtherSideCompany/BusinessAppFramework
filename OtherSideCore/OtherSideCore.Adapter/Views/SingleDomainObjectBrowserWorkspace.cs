@@ -1,10 +1,12 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application;
+using OtherSideCore.Application.Services;
 using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public class SingleDomainObjectBrowserWorkspace : Workspace
+    public class SingleDomainObjectBrowserWorkspace : Workspace
    {
       #region Fields
 

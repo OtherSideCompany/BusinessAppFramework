@@ -18,7 +18,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private bool _isSelected;
 
       private DomainObjectViewModel _domainObjectViewModel;
-      private IDomainObjectEditorViewModel _domainObjectEditorViewModel;
+      private IDomainObjectEditorViewModel? _domainObjectEditorViewModel;
       private ObservableCollection<IDomainObjectTreeNodeViewModel> _children;
 
       private IEnumerable<IDomainObjectTreeNodeViewModel> _inlineNodes
@@ -61,7 +61,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          private set => SetProperty(ref _domainObjectViewModel, value);
       }
 
-      public IDomainObjectEditorViewModel DomainObjectEditorViewModel
+      public IDomainObjectEditorViewModel? DomainObjectEditorViewModel
       {
          get => _domainObjectEditorViewModel;
          private set => SetProperty(ref _domainObjectEditorViewModel, value);
@@ -113,8 +113,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public virtual async Task InitializeAsync()
       {
          DomainObjectEditorViewModel = await _domainObjectTreeNodeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectEditorViewModelAsync(this);
-         DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
-         DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
+
+         if (DomainObjectEditorViewModel != null)
+         {
+            DomainObjectEditorViewModel.PropertyChanged += DomainObjectEditorViewModel_PropertyChanged;
+            DomainObjectEditorViewModel.DomainObjectDeletedEvent += DomainObjectEditorViewModel_DomainObjectDeleted;
+         }
       }
 
       public virtual void AddChild(IDomainObjectTreeNodeViewModel childNode, bool isInitializing)
@@ -154,17 +158,28 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsExpanded = false;
       }
 
-      public async Task<DomainObject> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeNodeViewModel node)
+      public async Task<DomainObject?> CreateChildNodeDomainObjectCopyAsync(IDomainObjectTreeNodeViewModel? node)
       {
+         if (node == null || DomainObjectEditorViewModel == null)
+         {
+            return null;
+         }
+
          var dupplicatedDomainObject = await node.DomainObjectEditorViewModel.DupplicateAsync(DomainObjectEditorViewModel.DomainObjectViewModel.DomainObject);
 
-         NotifyChildCreated(dupplicatedDomainObject);
-
-         var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObject);
-
-         foreach (var childNode in node.Children)
+         if (dupplicatedDomainObject != null)
          {
-            await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+            NotifyChildCreated(dupplicatedDomainObject);
+
+            var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObject);
+
+            if (dupplicatedDomainObjectNode != null)
+            {
+               foreach (var childNode in node.Children)
+               {
+                  await dupplicatedDomainObjectNode.CreateChildNodeDomainObjectCopyAsync(childNode);
+               }
+            }
          }
 
          return dupplicatedDomainObject;
@@ -172,9 +187,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual void Dispose()
       {
-         DomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
-         DomainObjectEditorViewModel.DomainObjectDeletedEvent -= DomainObjectEditorViewModel_DomainObjectDeleted;
-         DomainObjectEditorViewModel.Dispose();
+         if (DomainObjectEditorViewModel != null)
+         {
+            DomainObjectEditorViewModel.PropertyChanged -= DomainObjectEditorViewModel_PropertyChanged;
+            DomainObjectEditorViewModel.DomainObjectDeletedEvent -= DomainObjectEditorViewModel_DomainObjectDeleted;
+            DomainObjectEditorViewModel.Dispose();
+         }
       }
 
       public void NotifyChildCreated(DomainObject domainObject)
@@ -186,7 +204,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Private Methods
 
-      protected IDomainObjectTreeNodeViewModel GetNode(DomainObject domainObject)
+      protected IDomainObjectTreeNodeViewModel? GetNode(DomainObject domainObject)
       {
          return _inlineNodes.FirstOrDefault(node => node.DomainObjectViewModel.DomainObject.Equals(domainObject));
       }
@@ -214,8 +232,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          return node != null && _inlineNodes.Contains(node);
       }
 
-      protected virtual async Task<DomainObject> DupplicateChildNodeAsync(IDomainObjectTreeNodeViewModel? node)
+      protected virtual async Task<DomainObject?> DupplicateChildNodeAsync(IDomainObjectTreeNodeViewModel? node)
       {
+         if (node == null)
+         {
+            return null;
+         }
+
          var domainObject = await CreateChildNodeDomainObjectCopyAsync(node);
 
          await IndexChildren(node.DomainObjectViewModel.DomainObject.GetType());
@@ -242,13 +265,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public bool CanShowDomainObjectDetailsEditor()
       {
-         return !DomainObjectEditorViewModel.HasUnsavedChanges;
+         return DomainObjectEditorViewModel != null ? !DomainObjectEditorViewModel.HasUnsavedChanges : false;
       }
 
       public virtual async Task ShowDomainObjectDetailsEditorAsync()
       {
          var editorViewModel = await _domainObjectTreeNodeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectDetailsEditorViewModelAsync(this);
-         _domainObjectTreeNodeViewModelDependencies.WindowService.DisplayView(editorViewModel.DomainObjectEditorKey, "", editorViewModel, DisplayType.Modal);
+
+         if (editorViewModel != null)
+         {
+            _domainObjectTreeNodeViewModelDependencies.WindowService.DisplayView(editorViewModel.DomainObjectEditorKey, "", editorViewModel, DisplayType.Modal);
+         }
       }
 
       #endregion

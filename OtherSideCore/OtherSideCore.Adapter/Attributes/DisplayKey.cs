@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace OtherSideCore.Adapter.Attributes
 {
    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-   public class EditorIndex : Attribute
+   public class DisplayKey : Attribute
    {
-      public int Index { get; }
+      public string Key { get; }
 
-      public EditorIndex(int index)
+      public DisplayKey(string key)
       {
-         Index = index;
+         Key = key;
       }
    }
 }

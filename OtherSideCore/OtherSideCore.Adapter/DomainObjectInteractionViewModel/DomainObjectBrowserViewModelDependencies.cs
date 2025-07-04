@@ -1,5 +1,7 @@
 ﻿using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Appplication.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
-   public class DomainObjectBrowserViewModelDependencies
+    public class DomainObjectBrowserViewModelDependencies
    {
       #region Fields
 
@@ -23,6 +25,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IDomainObjectInteractionService DomainObjectInteractionService { get; }
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; }
       public IWindowService WindowService { get; }
+      public IUserDialogService UserDialogService { get; }
+      public ILocalizationService LocalizationService { get; }
 
       #endregion
 
@@ -39,13 +43,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IDomainObjectSearchResultViewModelFactory domainObjectSearchResultViewModelFactory,
          IDomainObjectInteractionService domainObjectInteractionFactory,
          IDomainObjectServiceFactory domainObjectServiceFactory,
-         IWindowService windowService)
+         IWindowService windowService,
+         IUserDialogService userDialogService,
+         ILocalizationService localizationService)
       {
          DomainObjectsSearchViewModelFactory = domainObjectsSearchViewModelFactory;
          DomainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
          DomainObjectInteractionService = domainObjectInteractionFactory;
          DomainObjectServiceFactory = domainObjectServiceFactory;
          WindowService = windowService;
+         UserDialogService = userDialogService;
+         LocalizationService = localizationService;
       }
 
       #endregion

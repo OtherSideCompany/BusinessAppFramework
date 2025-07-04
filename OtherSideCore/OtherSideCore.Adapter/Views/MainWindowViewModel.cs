@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.AppConfiguration;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -6,7 +7,7 @@ using OtherSideCore.Domain.Services;
 
 namespace OtherSideCore.Adapter.Views
 {
-   public abstract class MainWindowViewModel : WindowViewModel
+    public abstract class MainWindowViewModel : WindowViewModel
    {
       #region Fields
 
@@ -183,6 +184,8 @@ namespace OtherSideCore.Adapter.Views
 
                await _globalDataService.LoadGlobalDataAsync();
                await DisplayDefaultViewAsync();
+
+               await NavigationMenuViewModel.FilterNavigationItemsForUser(_userContext.Id);
             }
 
             ResetConnexionInfos();
@@ -195,7 +198,7 @@ namespace OtherSideCore.Adapter.Views
 
       protected abstract Task DisplayDefaultViewAsync();
 
-      private async Task LogOutAsync()
+      protected virtual async Task LogOutAsync()
       {
          await ShutdownUserContextAsync();
 

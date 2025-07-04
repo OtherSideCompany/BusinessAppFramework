@@ -2,8 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.Attributes;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Adapter.Workflows;
-using OtherSideCore.Application;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
@@ -149,13 +149,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             _domainObjectViewModel.SetPropertiesToDomainObject();
 
-            await _domainObjectService.SaveAsync((T)_domainObjectViewModel.DomainObject);
-
-            _domainObjectViewModel.RefreshTrackingInfos();
-
-            foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+            if (await DomainObjectServiceHelper.TrySaveAsync((T)_domainObjectViewModel.DomainObject, _domainObjectService, _domainObjectEditorViewModelDependencies.UserDialogService, _domainObjectEditorViewModelDependencies.LocalizationService))
             {
-               await nestedTreeViewModel.SaveChangesAsync();
+               _domainObjectViewModel.RefreshTrackingInfos();
+
+               foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+               {
+                  await nestedTreeViewModel.SaveChangesAsync();
+               }
             }
 
             _domainObjectViewModel.ResetState();            
@@ -225,22 +226,28 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
       }
 
-      public virtual async Task<DomainObject> DupplicateAsync(DomainObject? parent)
+      public virtual async Task<DomainObject?> DupplicateAsync(DomainObject? parent)
       {
          var dupplicatedDomainObject = (T)DomainObjectViewModel.DomainObject.Clone();
 
          DomainObjectViewModel.CopyPropertiesToDomainObject(dupplicatedDomainObject);
 
          var domainObjectService = _domainObjectEditorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<T>();
-         await domainObjectService.CreateAsync(dupplicatedDomainObject, parent);
 
-         if (dupplicatedDomainObject is IIndexable indexableDupplicatedDomainObject)
+         if (await DomainObjectServiceHelper.TryCreateAsync(dupplicatedDomainObject, parent, domainObjectService, _domainObjectEditorViewModelDependencies.UserDialogService, _domainObjectEditorViewModelDependencies.LocalizationService))
          {
-            indexableDupplicatedDomainObject.Index = ((IIndexable)DomainObjectViewModel.DomainObject).Index;
-            await domainObjectService.SaveAsync(dupplicatedDomainObject);
-         }
+            if (dupplicatedDomainObject is IIndexable indexableDupplicatedDomainObject)
+            {
+               indexableDupplicatedDomainObject.Index = ((IIndexable)DomainObjectViewModel.DomainObject).Index;
+               await DomainObjectServiceHelper.TrySaveAsync(dupplicatedDomainObject, domainObjectService, _domainObjectEditorViewModelDependencies.UserDialogService, _domainObjectEditorViewModelDependencies.LocalizationService);
+            }
 
-         return dupplicatedDomainObject;
+            return dupplicatedDomainObject;
+         }
+         else
+         {
+            return null;
+         }
       }
 
       public virtual void Dispose()
@@ -343,7 +350,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             var domainObjectId = DomainObjectViewModel.DomainObject.Id;
 
-            if (await _domainObjectService.DeleteAsync((T)DomainObjectViewModel.DomainObject))
+            if (await DomainObjectServiceHelper.TryDeleteAsync((T)DomainObjectViewModel.DomainObject, _domainObjectService, _domainObjectEditorViewModelDependencies.UserDialogService, _domainObjectEditorViewModelDependencies.LocalizationService))
             {
                DomainObjectDeletedEvent?.Invoke(this, domainObjectId);
                RefreshWorkflows();

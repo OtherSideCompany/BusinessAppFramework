@@ -4,9 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using OtherSideCore.Adapter.DomainObjectInteraction;
 using System.Linq;
-using System.Windows.Data;
 using OtherSideCore.Adapter.Attributes;
-using OtherSideCore.Wpf.UserControls.Editor.PropertyEditor;
+using OtherSideCore.Adapter.Services;
 
 namespace OtherSideCore.Wpf.UserControls.Editor
 {
@@ -38,7 +37,7 @@ namespace OtherSideCore.Wpf.UserControls.Editor
                                                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                                     .Where(p => Attribute.IsDefined(p, typeof(MonitoredProperty)) &&
                                                                 !Attribute.IsDefined(p, typeof(EditorIgnore)))
-                                                    .OrderBy(p => p.GetCustomAttribute<EditorIndex>()?.Index ?? int.MaxValue)
+                                                    .OrderBy(p => p.GetCustomAttribute<DisplayIndex>()?.Index ?? int.MaxValue)
                                                     .ToList();
 
 
@@ -53,7 +52,7 @@ namespace OtherSideCore.Wpf.UserControls.Editor
             {
                EditorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-               string displayName = GetDisplayName(propInfo);
+               string displayName = GetDisplayName(propInfo, domainObjectEditorViewModel.DomainObjectViewModel.LocalizationService);
 
                var label = new TextBlock
                {
@@ -76,11 +75,11 @@ namespace OtherSideCore.Wpf.UserControls.Editor
          }
       }
 
-      private string GetDisplayName(PropertyInfo propertyInfo)
+      private string GetDisplayName(PropertyInfo propertyInfo, ILocalizationService localizationService)
       {
-         var editorLabelAttrbute = propertyInfo.GetCustomAttribute<EditorLabel>();
+         var editorLabelAttrbute = propertyInfo.GetCustomAttribute<DisplayKey>();
 
-         return !string.IsNullOrWhiteSpace(editorLabelAttrbute?.Label) ? editorLabelAttrbute.Label : propertyInfo.Name;
+         return localizationService.GetString(editorLabelAttrbute?.Key);
       }
 
       #endregion

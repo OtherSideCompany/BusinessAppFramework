@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace OtherSideCore.Wpf.Services
 {
-   public class WindowService : IWindowService
+    public class WindowService : IWindowService
    {
       #region Fields
 

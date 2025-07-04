@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using OtherSideCore.Application;
 using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Views
@@ -9,6 +8,7 @@ namespace OtherSideCore.Adapter.Views
       #region Fields
 
       private bool _isSelected;
+      private bool _isVisible;
 
       #endregion
 
@@ -23,6 +23,12 @@ namespace OtherSideCore.Adapter.Views
       {
          get => _isSelected;
          set => SetProperty(ref _isSelected, value);
+      }
+
+      public bool IsVisible
+      {
+         get => _isVisible;
+         set => SetProperty(ref _isVisible, value);
       }
 
       #endregion

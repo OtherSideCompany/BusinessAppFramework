@@ -60,7 +60,8 @@
 
                      <Button Cursor="Hand"
                              Command="{Binding DataContext.SelectNavigationItemCommand, ElementName=NavigationMenuUserControl}"
-                             CommandParameter="{Binding}">
+                             CommandParameter="{Binding}"
+                             Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                         <Button.Style>
                            <Style TargetType="{x:Type Button}">
                               <Setter Property="Background" Value="Transparent" />

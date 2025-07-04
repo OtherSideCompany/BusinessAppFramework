@@ -23,7 +23,7 @@ namespace OtherSideCore.Application.Services
       public IMailService MailService { get; }
       public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
       public IDomainObjectEventBus DomainObjectEventBus { get; }
-      public IUserPermissionService UserPermissionService { get; }
+      public IUserPermissionResolverService UserPermissionResolverService { get; set; }
 
       #endregion
 
@@ -42,7 +42,8 @@ namespace OtherSideCore.Application.Services
          IPasswordService passwordService,
          IMailService mailService,
          IDomainObjectSearchFactory domainObjectSearchFactory,
-         IDomainObjectEventBus domainObjectEventBus)
+         IDomainObjectEventBus domainObjectEventBus,
+         IUserPermissionResolverService userPermissionResolverService)
       {
          UserContext = userContext;
          UserDialogService = userDialogService;
@@ -51,6 +52,7 @@ namespace OtherSideCore.Application.Services
          MailService = mailService;
          DomainObjectSearchFactory = domainObjectSearchFactory;
          DomainObjectEventBus = domainObjectEventBus;
+         UserPermissionResolverService = userPermissionResolverService;
       }
 
       #endregion

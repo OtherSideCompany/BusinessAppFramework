@@ -95,14 +95,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Selection.PropertyChanged -= Selection_PropertyChanged;
       }
 
-      public async Task<DomainObject> GetSelectedSearchResultDomainObjectAsync()
-      {
-         var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-         var domainObject = await _domainObjectSelectorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<TDomainObject>().GetAsync(domainObjectSearchResultViewModel.DomainObjectSearchResult.DomainObjectId);
-
-         return domainObject;
-      }
-
 
       #endregion
 

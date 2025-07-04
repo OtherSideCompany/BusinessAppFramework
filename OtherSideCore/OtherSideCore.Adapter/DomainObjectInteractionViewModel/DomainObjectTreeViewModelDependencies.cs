@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Appplication.Services;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
-   public class DomainObjectTreeViewModelDependencies
+    public class DomainObjectTreeViewModelDependencies
    {
       #region Fields
 

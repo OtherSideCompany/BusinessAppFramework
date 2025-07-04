@@ -19,6 +19,5 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task InitializeAsync();
       bool CanValidateSelection();
       void ValidateSelection();
-      Task<DomainObject> GetSelectedSearchResultDomainObjectAsync();
    }
 }

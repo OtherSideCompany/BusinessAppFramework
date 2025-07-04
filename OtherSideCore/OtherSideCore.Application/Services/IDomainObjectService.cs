@@ -7,9 +7,11 @@ namespace OtherSideCore.Application.Services
    {
       Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
+      Task<(bool Success, List<T> Items)> TryGetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default);
+
       Task<List<T>> GetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default);
 
-      Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+      Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
       Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
 

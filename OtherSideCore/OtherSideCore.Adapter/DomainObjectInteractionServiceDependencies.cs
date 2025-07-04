@@ -1,5 +1,7 @@
 ﻿using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter
 {
@@ -17,6 +19,8 @@ namespace OtherSideCore.Adapter
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
       public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
       public IServiceProvider ServiceProvider { get; }
+      public IUserDialogService UserDialogService { get; }
+      public ILocalizationService LocalizationService { get; }
 
       #endregion
 
@@ -32,12 +36,16 @@ namespace OtherSideCore.Adapter
          IDomainObjectServiceFactory domainObjectServiceFactory,
          IDomainObjectViewModelFactory domainObjectViewModelFactory,
          IDomainObjectSearchFactory domainObjectSearchFactory,
-         IServiceProvider serviceProvider)
+         IServiceProvider serviceProvider,
+         IUserDialogService userDialogService,
+         ILocalizationService localizationService)
       {
          DomainObjectServiceFactory = domainObjectServiceFactory;
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
          DomainObjectSearchFactory = domainObjectSearchFactory;
          ServiceProvider = serviceProvider;
+         UserDialogService = userDialogService;
+         LocalizationService = localizationService;
       }
 
       #endregion
