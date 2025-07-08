@@ -17,6 +17,12 @@
     <Compile Update="UserControls\Editor\PropertyEditor\BooleanEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\IntegerEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\Editor\PropertyEditor\NullableDateTimeEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\Editor\PropertyEditor\NullableIntegerEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -125,6 +131,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\Editor\PropertyEditor\BooleanEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\IntegerEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControls\Editor\PropertyEditor\NullableDateTimeEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UserControls\Editor\PropertyEditor\NullableIntegerEditor.xaml">

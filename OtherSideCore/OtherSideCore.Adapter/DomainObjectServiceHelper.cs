@@ -91,8 +91,7 @@ namespace OtherSideCore.Adapter
       {
          try
          {
-            await service.DeleteAsync(domainObject);
-            return true;
+            return await service.DeleteAsync(domainObject);
          }
          catch (UserPermissionException e)
          {

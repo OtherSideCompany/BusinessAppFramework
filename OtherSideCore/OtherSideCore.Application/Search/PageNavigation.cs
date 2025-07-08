@@ -24,7 +24,7 @@ namespace OtherSideCore.Application.Search
 
         public int CurrentPageNumber { get; private set; }
 
-        public int MinResultIndex => (CurrentPageNumber - 1) * ResultsPerPage + 1;
+        public int MinResultIndex => CurrentPageNumber == 0 ? 0 : (CurrentPageNumber - 1) * ResultsPerPage + 1;
 
         public int MaxResultIndex => CurrentPageNumber * ResultsPerPage > TotalResults ? TotalResults : CurrentPageNumber * ResultsPerPage;
 

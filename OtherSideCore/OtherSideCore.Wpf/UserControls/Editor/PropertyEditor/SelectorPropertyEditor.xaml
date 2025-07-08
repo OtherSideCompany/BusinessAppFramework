@@ -17,8 +17,9 @@
       </Grid.ColumnDefinitions>
 
       <osc_customcontrols:ClickSelectTextBox Grid.Column="0" 
-                                             Text="{Binding SelectorPropertyEditor_DomainObject, ElementName=UserPropertyEditorUserControl, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ToStringConverter}}" 
-                                             Style="{StaticResource EditorClickSelectTextBox}" IsReadOnly="True" />
+                                             Text="{Binding SelectorPropertyEditor_Value, ElementName=UserPropertyEditorUserControl, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ToStringConverter}}" 
+                                             Style="{StaticResource EditorClickSelectTextBox}" 
+                                             IsReadOnly="True" />
 
       <osc_customcontrols:SvgImageButton Grid.Column="1" Width="32" Height="32" Margin="4,0,0,0"
                                          SvgImageButton_IconGeometry="{StaticResource icon_magnify}" 

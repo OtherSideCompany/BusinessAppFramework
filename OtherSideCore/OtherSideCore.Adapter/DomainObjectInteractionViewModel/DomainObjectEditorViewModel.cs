@@ -179,6 +179,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsEnabled = false;
 
          _domainObjectViewModel.InitializeProperties();
+         await _domainObjectViewModel.InitializeSearchResultsAsync();
 
          foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
          {

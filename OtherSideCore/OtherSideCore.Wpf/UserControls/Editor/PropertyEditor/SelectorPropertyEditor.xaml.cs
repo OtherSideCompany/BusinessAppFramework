@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Application.Search;
+using OtherSideCore.Domain.DomainObjects;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,13 +11,13 @@ namespace SystemAdministration.Desktop.PropertyEditors
    /// </summary>
    public partial class SelectorPropertyEditor : UserControl
    {
-      public static readonly DependencyProperty SelectorPropertyEditor_DomainObjectProperty =
-        DependencyProperty.Register(nameof(SelectorPropertyEditor_DomainObject), typeof(DomainObject), typeof(SelectorPropertyEditor), new PropertyMetadata(null));
+      public static readonly DependencyProperty SelectorPropertyEditor_ValueProperty =
+        DependencyProperty.Register(nameof(SelectorPropertyEditor_Value), typeof(object), typeof(SelectorPropertyEditor), new PropertyMetadata(null));
 
-      public DomainObject SelectorPropertyEditor_DomainObject
+      public object SelectorPropertyEditor_Value
       {
-         get => (DomainObject)GetValue(SelectorPropertyEditor_DomainObjectProperty);
-         set => SetValue(SelectorPropertyEditor_DomainObjectProperty, value);
+         get => GetValue(SelectorPropertyEditor_ValueProperty);
+         set => SetValue(SelectorPropertyEditor_ValueProperty, value);
       }
 
       public static readonly DependencyProperty UserPropertyEditor_DisplaySelectorCommandProperty =

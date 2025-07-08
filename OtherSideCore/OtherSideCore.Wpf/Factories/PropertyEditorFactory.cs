@@ -1,10 +1,14 @@
-﻿using OtherSideCore.Adapter;
+﻿using Microsoft.VisualBasic;
+using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Attributes;
 using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Wpf.UserControls.Editor.PropertyEditor;
+using System;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -40,7 +44,9 @@ namespace OtherSideCore.Wpf.Factories
       {
          RegisterEditor<string, StringEditor>(StringEditor.StringEditor_TextProperty, UpdateSourceTrigger.PropertyChanged);
          RegisterEditor<int?, NullableIntegerEditor>(NullableIntegerEditor.NullableIntegerEditor_ValueProperty, UpdateSourceTrigger.LostFocus);
-         RegisterEditor<bool, BooleanEditor>(BooleanEditor.BooleanEditor_IsCheckedProperty, UpdateSourceTrigger.PropertyChanged);         
+         RegisterEditor<int, IntegerEditor>(IntegerEditor.IntegerEditor_ValueProperty, UpdateSourceTrigger.LostFocus);
+         RegisterEditor<bool, BooleanEditor>(BooleanEditor.BooleanEditor_IsCheckedProperty, UpdateSourceTrigger.PropertyChanged);
+         RegisterEditor<DateTime?, NullableDateTimeEditor>(NullableDateTimeEditor.NullableDateTimeEditor_SelectedDateProperty, UpdateSourceTrigger.PropertyChanged);
       }
 
       public object CreateEditor(PropertyInfo propInfo, DomainObjectViewModel viewModel, IDomainObjectEditorViewModel domainObjectEditorViewModel)
@@ -109,7 +115,7 @@ namespace OtherSideCore.Wpf.Factories
          return selector?.GetValue(editorViewModel) as IDomainObjectSelectorViewModel;
       }
 
-      protected void RegisterSelectorPropertyEditor<T>() where T : DomainObject
+      protected void RegisterSelectorPropertyEditor<T>() where T : class
       {
          Register(typeof(T), args =>
          {
@@ -119,12 +125,12 @@ namespace OtherSideCore.Wpf.Factories
 
             var editor = new SelectorPropertyEditor();
 
-            editor.SetBinding(SelectorPropertyEditor.SelectorPropertyEditor_DomainObjectProperty, new Binding(propInfo.Name)
+            editor.SetBinding(SelectorPropertyEditor.SelectorPropertyEditor_ValueProperty, new Binding(propInfo.Name)
             {
                Source = viewModel,
-               Mode = BindingMode.TwoWay,
+               Mode = BindingMode.OneWay,
                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
+            });           
 
             var selector = FindSelectorForProperty(propInfo.Name, editorViewModel);
 
@@ -134,7 +140,7 @@ namespace OtherSideCore.Wpf.Factories
             }
             else
             {
-               throw new System.Exception($"No selector found for property '{propInfo.Name}' in view model '{viewModel.GetType().Name}'.");
+               throw new System.Exception($"No selector found for property '{propInfo.Name}' in editor view model '{editorViewModel.GetType().Name}'.");
             }
 
             return editor;

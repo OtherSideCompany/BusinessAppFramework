@@ -40,10 +40,11 @@ namespace OtherSideCore.Adapter.Factories
          });
       }
 
-      public DomainObjectViewModel CreateViewModel(DomainObject domainObject)
+      public async Task<DomainObjectViewModel> CreateViewModelAsync(DomainObject domainObject)
       {
          var viewModel = (DomainObjectViewModel)CreateFromType(domainObject.GetType(), domainObject);
          viewModel.InitializeProperties();
+         await viewModel.InitializeSearchResultsAsync();
          return viewModel;
       }
 

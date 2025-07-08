@@ -103,6 +103,11 @@ namespace OtherSideCore.Adapter
          IsInitializingProperties = false;
       }
 
+      public virtual Task InitializeSearchResultsAsync()
+      {
+         return Task.CompletedTask;
+      }
+
       public virtual void SetPropertiesToDomainObject()
       {
          _domainObjectViewModelDependencies.Mapper.Map(this, DomainObject);

@@ -328,7 +328,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            if (typeof(TEntity) == typeof(ISystemObject))
+            if (typeof(ISystemObject).IsAssignableFrom(typeof(TEntity)))
             {
                var entity = await context.Set<TEntity>().FirstAsync(so => ((ISystemObject)so).SystemCode != null && ((ISystemObject)so).SystemCode.Equals(systemCode));
                return _mapper.Map<TDomainObject>(entity);
