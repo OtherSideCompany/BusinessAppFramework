@@ -13,7 +13,7 @@ using System.Reflection;
 
 namespace OtherSideCore.Adapter.DomainObjectInteraction
 {
-    public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel, ISavable, IDomainObjectInteractionHost where T : DomainObject, new()
+   public class DomainObjectEditorViewModel<T> : ObservableObject, IDomainObjectEditorViewModel, ISavable, IDomainObjectInteractionHost where T : DomainObject, new()
    {
       #region Fields
 
@@ -125,7 +125,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
          _domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
          _processWorkflowViewModels = new ObservableCollection<ProcessWorkflowViewModel>();
-      }      
+      }
 
       #endregion
 
@@ -159,7 +159,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
                }
             }
 
-            _domainObjectViewModel.ResetState();            
+            _domainObjectViewModel.ResetState();
          }
 
          HasUnsavedChanges = false;
@@ -327,7 +327,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             nestedDomainObjectTreeViewModel.PropertyChanged += NestedDomainObjectTreeViewModel_PropertyChanged;
             nestedDomainObjectTreeViewModel.TreeModified += NestedDomainObjectTreeViewModel_TreeModified;
          }
-      }      
+      }
 
       private void UnRegisterNestedStructures()
       {
@@ -365,7 +365,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          if (property != null && property.GetCustomAttribute<MonitoredProperty>() != null && !((DomainObjectViewModel)sender).IsInitializingProperties)
          {
-            HasUnsavedChanges = true; 
+            HasUnsavedChanges = true;
             RefreshWorkflows();
          }
 
@@ -376,7 +376,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          if (e.PropertyName.Equals(nameof(DomainObjectTreeViewModel.HasUnsavedChanges)) && !HasUnsavedChanges)
          {
-            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);            
+            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);
          }
 
          NotifyCommandsCanExecuteChanged();

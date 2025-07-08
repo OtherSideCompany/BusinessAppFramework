@@ -30,7 +30,7 @@ namespace OtherSideCore.Infrastructure.Repositories
       protected ILoggerFactory _loggerFactory;
       protected ILogger<Repository<TDomainObject, TEntity>> _logger;
       protected IMapper _mapper;
-      protected IParentChildRelationResolver _parentChildRelationResolver;
+      protected IRelationResolver _relationResolver;
 
       protected bool _canUseExecuteDelete = true;
 
@@ -47,7 +47,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          _mapper = repositoryDependencies.Mapper;
          _domainObjectReferenceFactory = repositoryDependencies.DomainObjectReferenceFactory;
          _referenceMapFactory = repositoryDependencies.ReferenceMapFactory;
-         _parentChildRelationResolver = repositoryDependencies.ParentChildRelationResolver;
+         _relationResolver = repositoryDependencies.ParentChildRelationResolver;
       }
 
       #endregion
@@ -74,9 +74,9 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (parent != null)
             {
-               if (_parentChildRelationResolver.Contains(typeof(TEntity), parent.GetType()))
+               if (_relationResolver.Contains(typeof(TEntity), parent.GetType(), RelationType.ParentChild))
                {
-                  query = query.Where(GetParentRelationPredicate(parent));
+                  query = query.Where(_relationResolver.GetRelationPredicate<TEntity>(parent));
                }
                else
                {
@@ -286,6 +286,22 @@ namespace OtherSideCore.Infrastructure.Repositories
       public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
+
+         var relationEntries = _relationResolver.GetEntriesFor<TEntity>();
+
+         using var context = _dbContextFactory.CreateDbContext();
+
+         foreach (var relationEntry in relationEntries)
+         {
+            var query = context.Set<TEntity>().AsNoTracking();
+
+            query = query.Where(_relationResolver.GetRelationPredicate<TEntity>(parent));
+
+            query = query.OrderByDescending(e => e.Id);
+
+            var entities = await query.ToListAsync(cancellationToken);
+         }
+
          return new List<DomainObjectReference>();
       }
 
@@ -354,14 +370,9 @@ namespace OtherSideCore.Infrastructure.Repositories
          await Task.FromResult(_mapper.Map(source, destination));
       }
 
-      protected Expression<Func<TEntity, bool>> GetParentRelationPredicate(DomainObject parent)
-      {
-         return _parentChildRelationResolver.GetParentRelationPredicate<TEntity>(parent);
-      }
-
       protected void SetParent(TEntity entity, DomainObject parent)
       {
-         _parentChildRelationResolver.SetParent(entity, parent);
+         _relationResolver.SetRelation(entity, parent);
       }
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)

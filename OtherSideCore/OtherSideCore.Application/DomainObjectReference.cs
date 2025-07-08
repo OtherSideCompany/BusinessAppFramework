@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OtherSideCore.Domain;
 
 namespace OtherSideCore.Application
 {
@@ -15,7 +15,7 @@ namespace OtherSideCore.Application
       public int DomainObjectId { get; set; }
       public string ReferenceNumber { get; set; }
       public string Name { get; set; }
-      public Type ReferenceType { get; set; }
+      public StringKey ReferenceKey { get; set; }
 
       #endregion
 
@@ -27,12 +27,12 @@ namespace OtherSideCore.Application
 
       #region Constructor
 
-      public DomainObjectReference(int domainObjectId, string referenceNumber, string name, Type referenceType)
+      public DomainObjectReference(int domainObjectId, string referenceNumber, string name, StringKey referenceKey)
       {
          DomainObjectId = domainObjectId;
          ReferenceNumber = referenceNumber;
          Name = name;
-         ReferenceType = referenceType;
+         ReferenceKey = referenceKey;
       }
 
       #endregion

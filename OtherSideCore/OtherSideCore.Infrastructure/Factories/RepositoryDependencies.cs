@@ -22,7 +22,7 @@ namespace OtherSideCore.Infrastructure.Factories
       public ILoggerFactory LoggerFactory { get; }
       public IDomainObjectReferenceFactory DomainObjectReferenceFactory { get; }
       public IDomainObjectReferenceMapFactory ReferenceMapFactory { get; }
-      public IParentChildRelationResolver ParentChildRelationResolver { get; }
+      public IRelationResolver ParentChildRelationResolver { get; }
 
       #endregion
 
@@ -40,7 +40,7 @@ namespace OtherSideCore.Infrastructure.Factories
          ILoggerFactory loggerFactory,
          IDomainObjectReferenceFactory domainObjectReferenceFactory,
          IDomainObjectReferenceMapFactory referenceMapFactory,
-         IParentChildRelationResolver parentChildRelationResolver)
+         IRelationResolver parentChildRelationResolver)
       {
          DbContextFactory = dbContextFactory;
          Mapper = mapper;

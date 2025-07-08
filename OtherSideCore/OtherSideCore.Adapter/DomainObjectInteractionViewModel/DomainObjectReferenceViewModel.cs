@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application;
-using OtherSideCore.Appplication.Services;
 
 namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 {
@@ -49,17 +47,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
 
       public async Task DisplayReferenceAsync()
       {
-         await _domainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
+         //await _domainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
       }
 
       public async Task DisplayReferenceTreeViewAsync()
       {
-         await _domainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
+         //await _domainObjectInteractionService.DisplayDomainObjectTreeViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.SubWindow);
       }
 
       public async Task DisplayReferenceDetailsAsync()
       {
-         await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.Modal);
+         //await _domainObjectInteractionService.DisplayDomainObjectDetailsEditorViewAsync(DomainObjectReference.DomainObjectId, DomainObjectReference.ReferenceType, DisplayType.Modal);
       }
 
       public void Dispose()
