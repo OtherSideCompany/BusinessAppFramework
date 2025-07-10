@@ -20,8 +20,6 @@ namespace OtherSideCore.Adapter
       public IMapper Mapper { get; }
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
       public ILocalizationService LocalizationService { get; }
-      public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
-      public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; }
 
       #endregion
 
@@ -37,16 +35,12 @@ namespace OtherSideCore.Adapter
          IGlobalDataService globalDataService,
          IMapper mapper,
          IDomainObjectViewModelFactory domainObjectViewModelFactory,
-         ILocalizationService localizationService,
-         IDomainObjectSearchFactory domainObjectSearchFactory,
-         IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
+         ILocalizationService localizationService)
       {
          GlobalDataService = globalDataService;
          Mapper = mapper;
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
          LocalizationService = localizationService;
-         DomainObjectSearchFactory = domainObjectSearchFactory;
-         DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
       }
 
       #endregion

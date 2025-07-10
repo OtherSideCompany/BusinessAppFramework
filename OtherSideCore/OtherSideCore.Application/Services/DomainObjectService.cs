@@ -215,7 +215,7 @@ namespace OtherSideCore.Application.Services
          }
       }
 
-      public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
+      public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default)
       {
          if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _userContext.Id, UserRolePermissionType.Read))
          {
@@ -223,11 +223,11 @@ namespace OtherSideCore.Application.Services
          }
          else
          {
-            return await _repository.GetDomainObjectReferencesAsync(domainObjectId, cancellationToken);
+            return await _repository.GetDomainObjectReferencesAsync(relationKey, domainObjectId, cancellationToken);
          }
       }
 
-      public async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default)
+      public async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default)
       {
          if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _userContext.Id, UserRolePermissionType.Update))
          {
@@ -235,11 +235,11 @@ namespace OtherSideCore.Application.Services
          }
          else
          {
-            return await _repository.CreateDomainObjectReferenceAsync(domainObjectId, domainObjectReferenceId, referenceType, cancellationToken);
+            return await _repository.CreateDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReferenceId, referenceType, cancellationToken);
          }
       }
 
-      public async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
+      public async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
       {
          if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _userContext.Id, UserRolePermissionType.Delete))
          {
@@ -247,7 +247,7 @@ namespace OtherSideCore.Application.Services
          }
          else
          {
-            await _repository.DeleteDomainObjectReferenceAsync(domainObjectId, domainObjectReference, cancellationToken);
+            await _repository.DeleteDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReference, cancellationToken);
          }
       }
 

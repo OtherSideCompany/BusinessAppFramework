@@ -28,28 +28,24 @@
             <RowDefinition Height="Auto" />
          </Grid.RowDefinitions>
 
-         <Border Style="{StaticResource ListBorderStyle}" 
-                 Background="{StaticResource OtherSide_LightLightGray}"
-                 Padding="8">
+         <ItemsControl Grid.Row="0" ItemsSource="{Binding DomainObjectReferenceViewModels}">
+            <ItemsControl.ItemsPanel>
+               <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" />
+               </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+               <DataTemplate>
 
-            <ItemsControl Grid.Row="0" ItemsSource="{Binding DomainObjectReferenceViewModels}">
-               <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                     <WrapPanel Orientation="Horizontal" />
-                  </ItemsPanelTemplate>
-               </ItemsControl.ItemsPanel>
-               <ItemsControl.ItemTemplate>
-                  <DataTemplate>
+                  <local:DomainObjectReferenceView DomainObjectReferenceView_DeleteReferenceCommand="{Binding DataContext.DeleteDomainObjectReferenceAsyncCommand, ElementName=DomainObjectReferencesListViewUserControl}" 
+                                                   DomainObjectReferenceView_DataTemplateSelector="{Binding DomainObjectReferencesListView_DataTemplateSelector, ElementName=DomainObjectReferencesListViewUserControl}" 
+                                                   Visibility="{Binding DomainObjectReference.IsSystemManaged, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}" />
 
-                     <!-- need reference selector -->
-                     <local:DomainObjectReferenceView DomainObjectReferenceView_DeleteReferenceCommand="{Binding DataContext.DeleteDomainObjectReferenceAsyncCommand, ElementName=DomainObjectReferencesListViewUserControl}" 
-                                                      DomainObjectReferenceView_DataTemplateSelector="{Binding DomainObjectReferencesListView_DataTemplateSelector, ElementName=DomainObjectReferencesListViewUserControl}"/>
-
-                  </DataTemplate>
-               </ItemsControl.ItemTemplate>
-            </ItemsControl>
+               </DataTemplate>
+            </ItemsControl.ItemTemplate>
+         </ItemsControl>
             
-         </Border>      
+    
 
       </Grid>
 

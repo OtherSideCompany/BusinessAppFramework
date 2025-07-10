@@ -21,11 +21,13 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected IDomainObjectService<T> _domainObjectService;
 
       protected DomainObjectEditorViewModelDependencies _domainObjectEditorViewModelDependencies;
-      private ObservableCollection<DomainObjectReferenceSelectorViewModel> _domainObjectReferenceSelectorViewModels;
+      //private ObservableCollection<DomainObjectReferenceSelectorViewModel> _domainObjectReferenceSelectorViewModels;
 
-      protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;
-      protected ObservableCollection<DomainObjectReferenceViewModel> _domainObjectReferenceViewModels;
+      protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;      
       protected ObservableCollection<ProcessWorkflowViewModel> _processWorkflowViewModels;
+
+      //protected ObservableCollection<DomainObjectReferenceViewModel> _domainObjectReferenceViewModels;
+      protected IDomainObjectReferencesEditorViewModel _domainObjectReferencesEditorViewModel;
 
       private bool _isEnabled;
       private bool _hasUnsavedChanges;
@@ -43,20 +45,26 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public DomainObjectViewModel DomainObjectViewModel => _domainObjectViewModel;
       public DomainObjectEditorViewModelDependencies DomainObjectEditorViewModelDependencies => _domainObjectEditorViewModelDependencies;
 
-      public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
+      //public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
 
       public ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels => _nestedDomainObjectTreeViewModels;
 
-      public ObservableCollection<DomainObjectReferenceSelectorViewModel> DomainObjectReferenceSelectorViewModels
+      /*public ObservableCollection<DomainObjectReferenceSelectorViewModel> DomainObjectReferenceSelectorViewModels
       {
          get => _domainObjectReferenceSelectorViewModels;
          private set => SetProperty(ref _domainObjectReferenceSelectorViewModels, value);
-      }
+      }*/
 
       public bool IsEnabled
       {
          get => _isEnabled;
          set => SetProperty(ref _isEnabled, value);
+      }
+
+      public IDomainObjectReferencesEditorViewModel DomainObjectReferencesEditorViewModel
+      {
+         get => _domainObjectReferencesEditorViewModel;
+         set => SetProperty(ref _domainObjectReferencesEditorViewModel, value);
       }
 
       public bool HasUnsavedChanges
@@ -90,8 +98,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       public AsyncRelayCommand DeleteAsyncCommand { get; private set; }
       public AsyncRelayCommand SaveChangesAsyncCommand { get; private set; }
       public AsyncRelayCommand CancelChangesAsyncCommand { get; private set; }
-      public RelayCommand ShowDomainObjectReferenceSelectorsCommand { get; private set; }
-      public AsyncRelayCommand<DomainObjectReferenceViewModel> DeleteDomainObjectReferenceAsyncCommand { get; private set; }
+      //public RelayCommand ShowDomainObjectReferenceSelectorsCommand { get; private set; }
 
       #endregion
 
@@ -105,25 +112,27 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectEditorViewModelDependencies = domainObjectEditorViewModelDependencies;
          _domainObjectService = _domainObjectEditorViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<T>();
 
-         DomainObjectReferenceSelectorViewModels = new ObservableCollection<DomainObjectReferenceSelectorViewModel>(DomainObjectInteractionService.GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel));
+         //DomainObjectReferenceSelectorViewModels = new ObservableCollection<DomainObjectReferenceSelectorViewModel>(DomainObjectInteractionService.GetDomainObjectReferenceSelectorViewModels(DomainObjectViewModel));
 
-         foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
+         /*foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
          {
             domainObjectReferenceSelectorViewModel.ReferenceSelected += DomainObjectReferenceSelectorViewModel_ReferenceSelected;
-         }
+         }*/
+
+         DomainObjectReferencesEditorViewModel = new DomainObjectReferencesEditorViewModel<T>(DomainObjectViewModel, domainObjectEditorViewModelDependencies);
 
          DeleteAsyncCommand = new AsyncRelayCommand(DeleteAsync, CanDelete);
          SaveChangesAsyncCommand = new AsyncRelayCommand(SaveChangesAsync, CanSaveChanges);
          CancelChangesAsyncCommand = new AsyncRelayCommand(CancelChangesAsync, CanCancelChanges);
-         ShowDomainObjectReferenceSelectorsCommand = new RelayCommand(ShowDomainObjectReferenceSelectors);
-         DeleteDomainObjectReferenceAsyncCommand = new AsyncRelayCommand<DomainObjectReferenceViewModel>(DeleteDomainObjectReferenceAsync);
+         //ShowDomainObjectReferenceSelectorsCommand = new RelayCommand(ShowDomainObjectReferenceSelectors);
+         
 
          _domainObjectViewModel.PropertyChanged += DomainObjectViewModel_PropertyChanged;
 
          IsEnabled = true;
 
          _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
-         _domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
+         //_domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
          _processWorkflowViewModels = new ObservableCollection<ProcessWorkflowViewModel>();
       }
 
@@ -179,7 +188,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          IsEnabled = false;
 
          _domainObjectViewModel.InitializeProperties();
-         await _domainObjectViewModel.InitializeSearchResultsAsync();
 
          foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
          {
@@ -199,15 +207,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          RefreshWorkflows();
 
-         foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
+         /*foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
          {
             await domainObjectReferenceSelectorViewModel.DomainObjectSelectorViewModel.InitializeAsync();
-         }
+         }*/
       }
 
       public async Task LoadDomainObjetReferencesAsync()
       {
-         await _loadDomainObjectReferencesLock.WaitAsync();
+         await DomainObjectReferencesEditorViewModel.InitializeAsync();
+
+         /*await _loadDomainObjectReferencesLock.WaitAsync();
 
          try
          {
@@ -224,7 +234,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          finally
          {
             _loadDomainObjectReferencesLock.Release();
-         }
+         }*/
       }
 
       public virtual async Task<DomainObject?> DupplicateAsync(DomainObject? parent)
@@ -255,17 +265,17 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          UnRegisterNestedStructures();
 
-         DomainObjectReferenceViewModels.ToList().ForEach(vm => vm.Dispose());
+         /*DomainObjectReferenceViewModels.ToList().ForEach(vm => vm.Dispose());
          DomainObjectReferenceViewModels.Clear();
 
          _domainObjectViewModel.PropertyChanged -= DomainObjectViewModel_PropertyChanged;
 
-         foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
+         /*foreach (var domainObjectReferenceSelectorViewModel in DomainObjectReferenceSelectorViewModels)
          {
             domainObjectReferenceSelectorViewModel.ReferenceSelected -= DomainObjectReferenceSelectorViewModel_ReferenceSelected;
          }
 
-         DomainObjectReferenceSelectorViewModels.ToList().ForEach(vm => vm.Dispose());
+         DomainObjectReferenceSelectorViewModels.ToList().ForEach(vm => vm.Dispose());*/
       }
 
       #endregion
@@ -284,31 +294,19 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DomainObjectSavedEvent?.Invoke(this, _domainObjectViewModel.DomainObject.Id);
       }
 
-      private async void DomainObjectReferenceSelectorViewModel_ReferenceSelected(object? sender, ReferenceSelectedEventArgs e)
+      /*private async void DomainObjectReferenceSelectorViewModel_ReferenceSelected(object? sender, ReferenceSelectedEventArgs e)
       {
          var domainObjectReference = await _domainObjectService.CreateDomainObjectReferenceAsync(DomainObjectViewModel.DomainObject.Id, e.DomainObjectId, e.ReferenceType);
 
          await LoadDomainObjetReferencesAsync();
 
          DomainObjectReferencesModified?.Invoke(this, EventArgs.Empty);
-      }
+      }*/
 
-      private void ShowDomainObjectReferenceSelectors()
+      /*private void ShowDomainObjectReferenceSelectors()
       {
          _domainObjectEditorViewModelDependencies.WindowService.ShowDomainObjectReferenceSelectors(DomainObjectReferenceSelectorViewModels.ToList(), DisplayType.Modal);
-      }
-
-      protected virtual async Task DeleteDomainObjectReferenceAsync(DomainObjectReferenceViewModel? domainObjectReferenceViewModel)
-      {
-         if (_domainObjectEditorViewModelDependencies.UserDialogService.Confirm("Supprimer la référence ?"))
-         {
-            await _domainObjectService.DeleteDomainObjectReferenceAsync(DomainObjectViewModel.DomainObject.Id, domainObjectReferenceViewModel.DomainObjectReference);
-
-            DomainObjectReferenceViewModels.Remove(domainObjectReferenceViewModel);
-         }
-
-         DomainObjectReferencesModified?.Invoke(this, EventArgs.Empty);
-      }
+      }*/      
 
       protected void RefreshWorkflows()
       {

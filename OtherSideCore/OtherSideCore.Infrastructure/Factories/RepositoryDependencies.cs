@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Relations;
 using OtherSideCore.Application.Factories;
-using OtherSideCore.Infrastructure.Entities;
 
 namespace OtherSideCore.Infrastructure.Factories
 {
@@ -23,6 +23,7 @@ namespace OtherSideCore.Infrastructure.Factories
       public IDomainObjectReferenceFactory DomainObjectReferenceFactory { get; }
       public IDomainObjectReferenceMapFactory ReferenceMapFactory { get; }
       public IRelationResolver ParentChildRelationResolver { get; }
+      public IDomainObjectEntityTypeMap DomainObjectEntityTypeMap { get; }
 
       #endregion
 
@@ -40,7 +41,8 @@ namespace OtherSideCore.Infrastructure.Factories
          ILoggerFactory loggerFactory,
          IDomainObjectReferenceFactory domainObjectReferenceFactory,
          IDomainObjectReferenceMapFactory referenceMapFactory,
-         IRelationResolver parentChildRelationResolver)
+         IRelationResolver parentChildRelationResolver,
+         IDomainObjectEntityTypeMap domainObjectEntityTypeMap)
       {
          DbContextFactory = dbContextFactory;
          Mapper = mapper;
@@ -48,6 +50,7 @@ namespace OtherSideCore.Infrastructure.Factories
          DomainObjectReferenceFactory = domainObjectReferenceFactory;
          ReferenceMapFactory = referenceMapFactory;
          ParentChildRelationResolver = parentChildRelationResolver;
+         DomainObjectEntityTypeMap = domainObjectEntityTypeMap;
       }
 
       #endregion

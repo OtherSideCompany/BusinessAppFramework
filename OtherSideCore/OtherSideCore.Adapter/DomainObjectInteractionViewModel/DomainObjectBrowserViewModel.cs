@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Services;
+using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Browser;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Domain.DomainObjects;
@@ -155,14 +156,23 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          DomainObjectSearchViewModel.CancelSearch();
       }
 
-      public virtual async Task InitializeAsync()
+      public virtual async Task InitializeAsync(int? domainObjectId = null)
       {
          await _domainObjectBrowser.InitializeAsync(DomainObjectSearchViewModel.GetTextFilters());
          DomainObjectSearchViewModel.ConstructConstraintViewModels();
 
          DomainObjectSearchViewModel.UnloadSearchResultViewModels();
-         DomainObjectSearchViewModel.LoadSearchResultViewModels();
-         ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PageNavigationViewModel.Refresh();
+
+         if (domainObjectId == null)
+         {
+            DomainObjectSearchViewModel.LoadSearchResultViewModels();
+            ((DomainObjectSearchViewModel<TSearchResult>)DomainObjectSearchViewModel).PageNavigationViewModel.Refresh();
+         }
+         else
+         {
+            var viewModel = await DomainObjectSearchViewModel.AddSearchResultViewModelAsync(domainObjectId.Value);
+            await SelectSearchResultViewModelAsync(viewModel);
+         }
       }
 
       public async Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel)
@@ -295,7 +305,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             editorViewModel.PropertyChanged += SelectedDomainObjectEditorViewModel_PropertyChanged;
             editorViewModel.DomainObjectDeletedEvent += SelectedEditorViewModel_DomainObjectDeletedEvent;
             editorViewModel.DomainObjectSavedEvent += DomainObjectEditorViewModel_DomainObjectSavedEvent;
-            editorViewModel.DomainObjectReferencesModified += SelectedEditorViewModel_DomainObjectReferencesModified;
+            editorViewModel.DomainObjectReferencesEditorViewModel.DomainObjectReferencesModified += SelectedEditorViewModel_DomainObjectReferencesModified;
          }
 
          SelectedDomainObjectEditorViewModel = editorViewModel;
@@ -318,7 +328,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             SelectedDomainObjectEditorViewModel.PropertyChanged -= SelectedDomainObjectEditorViewModel_PropertyChanged;
             SelectedDomainObjectEditorViewModel.DomainObjectSavedEvent -= DomainObjectEditorViewModel_DomainObjectSavedEvent;
             SelectedDomainObjectEditorViewModel.DomainObjectDeletedEvent -= SelectedEditorViewModel_DomainObjectDeletedEvent;
-            SelectedDomainObjectEditorViewModel.DomainObjectReferencesModified -= SelectedEditorViewModel_DomainObjectReferencesModified;
+            SelectedDomainObjectEditorViewModel.DomainObjectReferencesEditorViewModel.DomainObjectReferencesModified -= SelectedEditorViewModel_DomainObjectReferencesModified;
 
             SelectedDomainObjectEditorViewModel = null;
          }         

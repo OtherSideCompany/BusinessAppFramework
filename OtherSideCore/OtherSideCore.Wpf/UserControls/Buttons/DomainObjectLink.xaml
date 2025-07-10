@@ -19,13 +19,11 @@
       <Button HorizontalAlignment="Left"
               Style="{StaticResource LinkButton}" 
               Content="{Binding DomainObjectLink_Name, ElementName=DomainObjectLinkUserControl}" 
-              Command="{Binding DomainObjectLink_LinkClickedCommand, ElementName=DomainObjectLinkUserControl}"
-              CommandParameter="{Binding DomainObjectLink_Id, ElementName=DomainObjectLinkUserControl}"
               Click="Button_Click"/>
 
       <osc_customcontrols:SvgImageToggleButton Grid.Column="1" Margin="4,0,0,0" Width="24" Height="24"
                                                BorderThickness="0"
-                                               HorizontalAlignment="Left"
+                                               HorizontalAlignment="Right"
                                                SvgImageToggleButton_IconGeometry="{StaticResource icon_dots-vertical}" 
                                                SvgImageToggleButton_ImageSize="16"
                                                SvgImageToggleButton_ImageColor="{StaticResource OtherSide_DarkGray}" 

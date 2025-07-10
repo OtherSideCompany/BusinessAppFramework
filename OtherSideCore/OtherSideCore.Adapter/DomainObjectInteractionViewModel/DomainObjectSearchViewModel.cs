@@ -87,7 +87,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Commands
 
-      
+
 
       #endregion
 
@@ -102,7 +102,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _domainObjectSearchResultViewModelFactory = domainObjectSearchResultViewModelFactory;
          _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
 
-         SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();         
+         SearchResultViewModels = new ObservableCollection<DomainObjectSearchResultViewModel>();
 
          ActivableConstraintViewModels = new ObservableCollection<ConstraintViewModel<TSearchResult>>();
 
@@ -292,7 +292,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          }
 
          IsExecutingSearch = false;
-      }   
+      }
 
       private async void ConstraintViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
@@ -315,7 +315,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       private async void PageNavigationViewModel_SelectPageRequested(object? sender, EventArgs e)
       {
          await PaginatedSearchAsync(new PaginatedSearchParameters());
-      }      
+      }
 
       #endregion
    }

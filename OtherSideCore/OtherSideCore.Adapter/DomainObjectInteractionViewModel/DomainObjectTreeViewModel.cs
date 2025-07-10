@@ -289,7 +289,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          if (dupplicatedDomainObject != null)
          {
-            var dupplicatedDomainObjectViewModel = await _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModelAsync(dupplicatedDomainObject);
+            var dupplicatedDomainObjectViewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(dupplicatedDomainObject);
             await AddRootNodeAsync(dupplicatedDomainObjectViewModel);
 
             var dupplicatedDomainObjectNode = GetNode(dupplicatedDomainObjectViewModel);
@@ -306,7 +306,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public void InitializeTreeDomainObjectViewModelsProperties()
       {
-         _inlineNodes.Select(r => r.DomainObjectViewModel).ToList().ForEach(async vm => { vm.InitializeProperties(); await vm.InitializeSearchResultsAsync(); }); 
+         _inlineNodes.Select(r => r.DomainObjectViewModel).ToList().ForEach(vm =>  vm.InitializeProperties()); 
       }
 
       public IDomainObjectTreeNodeViewModel? GetNode(DomainObjectViewModel domainObjectViewModel)
@@ -358,7 +358,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual async void DomainObjectTreeViewNode_ChildCreated(object? sender, Domain.DomainObjects.DomainObject e)
       {
-         var viewModel = await _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModelAsync(e);
+         var viewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(e);
          await AddChildNodeAsync(viewModel, ((IDomainObjectTreeNodeViewModel)sender).DomainObjectViewModel);
       }
 
@@ -418,7 +418,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          foreach (var domainObject in ResolveRootNodes(context))
          {
-            var viewModel = await _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModelAsync(domainObject);
+            var viewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(domainObject);
             await AddRootNodeAsync(viewModel);
          }
       }
@@ -478,7 +478,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          var domainObject = await CreateDefaultRootRootDomainObjectAsync();
 
-         var viewModel = await _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModelAsync(domainObject);
+         var viewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(domainObject);
          return await AddRootNodeAsync(viewModel);
       }
 

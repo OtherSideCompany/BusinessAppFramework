@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Relations;
 using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Appplication.Services;
@@ -22,6 +23,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public IDomainObjectViewModelFactory DomainObjectViewModelFactory { get; }
       public IPropertyEditorFactory PropertyEditorFactory { get; }
       public ILocalizationService LocalizationService { get; }
+      public IDomainObjectEntityTypeMap DomainObjectEntityTypeMap { get; }
+      public IRelationResolver RelationResolver { get; }
 
       #endregion
 
@@ -40,7 +43,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          IWindowService windowService,
          IDomainObjectViewModelFactory domainObjectViewModelFactory,
          IPropertyEditorFactory propertyEditorFactory,
-         ILocalizationService localizationService)
+         ILocalizationService localizationService,
+         IDomainObjectEntityTypeMap domainObjectEntityTypeMap,
+         IRelationResolver relationResolver)
       {
          DomainObjectServiceFactory = domainObjectServiceFactory;
          DomainObjectInteractionService = domainObjectInteractionService;
@@ -49,6 +54,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
          DomainObjectViewModelFactory = domainObjectViewModelFactory;
          PropertyEditorFactory = propertyEditorFactory;
          LocalizationService = localizationService;
+         DomainObjectEntityTypeMap = domainObjectEntityTypeMap;
+         RelationResolver = relationResolver;
       }
 
       #endregion

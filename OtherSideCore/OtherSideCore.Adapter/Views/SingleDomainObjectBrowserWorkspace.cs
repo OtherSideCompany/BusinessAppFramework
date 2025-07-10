@@ -1,7 +1,5 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.Services;
-using OtherSideCore.Application;
-using OtherSideCore.Application.Services;
 using OtherSideCore.Domain;
 
 namespace OtherSideCore.Adapter.Views
@@ -55,9 +53,9 @@ namespace OtherSideCore.Adapter.Views
 
       #region Public Methods
 
-      public override async Task InitializeAsync()
+      public override async Task InitializeAsync(int? domainObjectId = null)
       {
-         await BrowserViewModel.InitializeAsync();
+         await BrowserViewModel.InitializeAsync(domainObjectId);
       }
 
       public override bool CanCancelChanges()

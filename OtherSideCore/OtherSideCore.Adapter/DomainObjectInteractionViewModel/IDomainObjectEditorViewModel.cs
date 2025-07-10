@@ -11,14 +11,14 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       StringKey DomainObjectEditorKey { get; }
       DomainObjectViewModel DomainObjectViewModel { get; }
       DomainObjectEditorViewModelDependencies DomainObjectEditorViewModelDependencies { get; }
+      IDomainObjectReferencesEditorViewModel DomainObjectReferencesEditorViewModel { get; }
+      //ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels { get; }
 
       ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels { get; }
 
       event EventHandler<int> DomainObjectSavedEvent;
 
       event EventHandler<int> DomainObjectDeletedEvent;
-
-      event EventHandler DomainObjectReferencesModified;
 
       bool HasUnsavedChanges { get; }
       bool IsEnabled { get; }

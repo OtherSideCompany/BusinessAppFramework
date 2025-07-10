@@ -1,5 +1,7 @@
-﻿using OtherSideCore.Adapter;
-using OtherSideCore.Domain.DomainObjects;
+﻿using ImageMagick;
+using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.Relations;
+using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace OtherSideCore.Infrastructure.Entities
    {
       #region Fields
 
-      private readonly Dictionary<(Type EntityType, Type DomainObjectType), IRelationEntry> _entries = new();
+      private readonly List<IRelationEntry> _entries = new();
 
 
       #endregion
@@ -36,84 +38,82 @@ namespace OtherSideCore.Infrastructure.Entities
 
       #region Public Methods
 
-      public bool Contains(Type entityType, Type domainObjectType, RelationType relationType)
+      public bool Contains(StringKey key)
       {
-        return _entries.ContainsKey((entityType, domainObjectType)) && _entries[(entityType, domainObjectType)].RelationType == relationType;
+         return _entries.Any(r => r.RelationKey.Equals(key));
       }
 
-      public Expression<Func<TEntity, bool>> GetRelationPredicate<TEntity>(int relatedId, RelationType relationType) where TEntity : IEntity
+      public bool ContainsParentChildRelation(Type sourceType, Type relatedType)
       {
-         var keyMatches = _entries.Where(e => e.Key.EntityType == typeof(TEntity) && e.Value.RelationType == relationType)
-                                  .Select(e => e.Value)
-                                  .FirstOrDefault();
-
-         if (keyMatches == null)
-            throw new InvalidOperationException($"No relation entry found for entity type {typeof(TEntity).Name} and relation type {relationType}");
-
-         // Obtenir l'expression sur IEntity
-         var untypedPredicate = keyMatches.GetRelationPredicate(relatedId);
-
-         // Adapter à TEntity
-         var parameter = Expression.Parameter(typeof(TEntity), "e");
-         var body = Expression.Invoke(untypedPredicate, Expression.Convert(parameter, typeof(IEntity)));
-         return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
+         return _entries.Any(r => r.SourceType == sourceType && r.RelatedType == relatedType && r.RelationType == RelationType.ParentChild);
       }
 
-      public Expression<Func<TEntity, bool>> GetRelationPredicate<TEntity>(DomainObject domainObject) where TEntity : IEntity
+      public Expression<Func<TEntity, bool>> GetParentChildRelationPredicate<TEntity>(int relatedId, Type relatedType) where TEntity : IEntity
       {
-         var key = (typeof(TEntity), domainObject.GetType());
+         var relationEntry = _entries.Where(r => r.SourceType == typeof(TEntity) && r.RelatedType == relatedType && r.RelationType == RelationType.ParentChild).FirstOrDefault();
 
-         if (!_entries.TryGetValue(key, out var entry))
-            throw new InvalidOperationException($"No registered relation for ({typeof(TEntity).Name}, {domainObject.GetType().Name})");
+         if (relationEntry == null)
+            throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
 
-         var untypedPredicate = entry.GetRelationPredicate(domainObject);
+         var untypedPredicate = relationEntry.GetRelationPredicate(relatedId);
 
          var parameter = Expression.Parameter(typeof(TEntity), "e");
          var body = Expression.Invoke(untypedPredicate, Expression.Convert(parameter, typeof(IEntity)));
          return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
       }
 
-      public void SetRelation<TEntity>(TEntity entity, DomainObject domainObject) where TEntity : IEntity
+      public void SetRelation<TEntity>(TEntity entity, Type relatedType, int relatedId, RelationType relationType) where TEntity : IEntity
       {
-         var key = (typeof(TEntity), domainObject.GetType());
-
-         if (!_entries.TryGetValue(key, out var entry))
-            throw new InvalidOperationException($"No registered setter for ({typeof(TEntity).Name}, {domainObject.GetType().Name})");
-
-         entry.SetRelation(entity, domainObject);
+         /*var relationEntry = GetRelationEntry<TEntity>(relatedType, relationType);
+         relationEntry.SetRelation(entity, relatedId);*/
       }
 
-      public void DeleteRelation<TEntity>(TEntity entity, DomainObject domainObject) where TEntity : IEntity
+      public void DeleteRelation<TEntity, U>(TEntity entity, int relatedId, RelationType relationType) where TEntity : IEntity where U : class
       {
-         var key = (typeof(TEntity), domainObject.GetType());
-
-         if (!_entries.TryGetValue(key, out var entry))
-            throw new InvalidOperationException($"No registered delete for ({typeof(TEntity).Name}, {domainObject.GetType().Name})");
-
-         entry.DeleteRelation(entity, domainObject);
+         /*var relationEntry = GetRelationEntry<TEntity>(typeof(U), relationType);
+         relationEntry.DeleteRelation(entity, relatedId);*/
       }
 
-      public IEnumerable<IRelationEntry> GetEntriesFor<TEntity>() where TEntity : IEntity
+      public bool TryGetEntry(StringKey key, out IRelationEntry relationEntry)
       {
-         var entityType = typeof(TEntity);
-         return _entries.Where(e => e.Key.EntityType == entityType).Select(e => e.Value);
+         relationEntry = _entries.FirstOrDefault(r => r.RelationKey.Equals(key));
+         return relationEntry != null;
+      }
+
+      public IEnumerable<IRelationEntry> GetEntriesBySourceType(Type sourceType)
+      { 
+         return _entries.Where(r => r.SourceType == sourceType);
       }
 
       #endregion
 
       #region Private Methods
 
-      protected void Register<TEntity, TDomainObject>(
-        Func<TDomainObject, Expression<Func<TEntity, bool>>> predicateBuilder,
-        Action<TEntity, TDomainObject> relationSetter,
-        Action<TEntity, TDomainObject> relationDelete,
-        RelationType relationType)
-        where TEntity : IEntity
-        where TDomainObject : DomainObject
+      protected void Register<T, U>(
+         StringKey relationKey,
+         Func<int, Expression<Func<T, bool>>> predicateBuilder,
+         Action<T, int> relationSetter,
+         Action<T, int> relationDelete,
+         Func<T, int?> relatedIdGetter,
+         Func<T, U?>? _relatedEntityGetter,
+         RelationType relationType,
+         bool isSystemManaged,
+         bool isReadOnly)
+        where T : IEntity
+        where U : class, IEntity
       {
-         var key = (typeof(TEntity), typeof(TDomainObject));
-         var entry = new RelationEntry<TEntity, TDomainObject>(predicateBuilder, relationSetter, relationDelete, relationType);
-         _entries[key] = entry;
+         var entry = new RelationEntry<T, U>(relationKey, predicateBuilder, relationSetter, relationDelete, relatedIdGetter, _relatedEntityGetter, relationType, isSystemManaged, isReadOnly);
+
+         if (_entries.Any(r => r.RelationKey.Equals(relationKey)))
+         {
+            throw new ArgumentException($"Cannot add several relation entries with key {relationKey}");
+         }
+         else if (relationType == RelationType.ParentChild && ContainsParentChildRelation(typeof(T), typeof(U)))
+         {
+            throw new ArgumentException($"Cannot add several parent child relations entries for types <{typeof(T)},{typeof(U)}>");
+         }
+
+         _entries.Add(entry);
       }
 
       #endregion

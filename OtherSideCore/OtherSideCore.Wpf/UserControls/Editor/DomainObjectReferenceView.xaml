@@ -20,7 +20,7 @@
       <Grid>
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
 
          </Grid.ColumnDefinitions>
@@ -28,10 +28,10 @@
          <ContentPresenter Content="{Binding DomainObjectReference.ReferenceType}" 
                            ContentTemplateSelector="{Binding DomainObjectReferenceView_DataTemplateSelector, ElementName=DomainObjectReferenceViewUserControl}"/>
 
-         <buttons:DomainObjectLink Grid.Column="1" Margin="8,0,0,0" 
+         <buttons:DomainObjectLink Grid.Column="1" Margin="12,0,0,0"
                                    DomainObjectLink_Id="{Binding DomainObjectReference.DomainObjectId}"
                                    DomainObjectLink_DomainObjectType="{Binding DomainObjectReference.ReferenceType}"
-                                   DomainObjectLink_Name="{Binding DomainObjectReference.ReferenceNumber}" />
+                                   DomainObjectLink_Name="{Binding DomainObjectReference.Name}" />
 
          <osc_customcontrols:SvgImageButton Grid.Column="2"
                                             BorderThickness="0"

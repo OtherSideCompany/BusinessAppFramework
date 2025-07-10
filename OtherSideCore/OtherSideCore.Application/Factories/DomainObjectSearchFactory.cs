@@ -52,8 +52,6 @@ namespace OtherSideCore.Application.Factories
          return (IDomainObjectSearch<T>)_domainObjectSearchFactory.CreateFromType<T>();
       }
 
-      
-
       #endregion
 
       #region Private Methods

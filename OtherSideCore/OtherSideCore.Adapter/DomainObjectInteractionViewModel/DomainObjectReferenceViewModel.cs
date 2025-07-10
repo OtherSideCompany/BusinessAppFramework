@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.Services;
 using OtherSideCore.Application;
 
@@ -18,16 +19,16 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       public DomainObjectReference DomainObjectReference
       {
          get => _domainObjectReference;
-         private set { SetProperty(ref _domainObjectReference, value); OnPropertyChanged(nameof(IsNameDefault)); }
+         private set => SetProperty(ref _domainObjectReference, value);
       }
-
-      public bool IsNameDefault => String.IsNullOrEmpty(DomainObjectReference.Name) || DomainObjectReference.Name.Equals("-NA-");
 
       #endregion
 
+      
+
       #region Commands
 
-      
+      public AsyncRelayCommand<DomainObjectReferenceViewModel> DeleteDomainObjectReferenceAsyncCommand { get; private set; }
 
       #endregion
 
@@ -39,6 +40,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       {
          DomainObjectReference = domainObjectReference;
          _domainObjectInteractionService = domainObjectInteractionService;
+
+
       }
 
       #endregion

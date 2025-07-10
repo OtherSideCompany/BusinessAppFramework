@@ -12,6 +12,6 @@ namespace OtherSideCore.Adapter.Factories
    public interface IDomainObjectViewModelFactory
    {
       void RegisterViewModel<T>(Func<DomainObject, DomainObjectViewModel> factory) where T : DomainObject, new();
-      Task<DomainObjectViewModel> CreateViewModelAsync(DomainObject domainObject);
+      DomainObjectViewModel CreateViewModel(DomainObject domainObject);
    }
 }

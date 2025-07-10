@@ -25,11 +25,11 @@ namespace OtherSideCore.Application.Repository
 
       Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken);
 
-      Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken);
+      Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken);
 
-      Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken);
+      Task<DomainObjectReference> CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken);
 
-      Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken);
+      Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken);
 
       Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken);
 

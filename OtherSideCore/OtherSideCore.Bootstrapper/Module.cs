@@ -2,10 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Factories;
+using OtherSideCore.Adapter.Relations;
 using OtherSideCore.Adapter.Services;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Factories;
-using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Bootstrapper
 {
@@ -40,6 +40,7 @@ namespace OtherSideCore.Bootstrapper
 
       #region Public Methods
 
+      public abstract void RegisterDomainObjectEntityMapping(IDomainObjectEntityTypeMap domainObjectEntityTypeMap);
       public abstract void RegisterServices(IServiceCollection services);
       public abstract void RegisterRepositories(IRepositoryFactory repositoryFactory);
       public abstract void RegisterDomainObjectServices(IDomainObjectServiceFactory domainObjectServiceFactory, IServiceProvider serviceProvider);

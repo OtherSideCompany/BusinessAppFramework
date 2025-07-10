@@ -85,7 +85,7 @@ namespace OtherSideCore.Adapter.Views
          return Task.CompletedTask;
       }
 
-      public virtual Task InitializeAsync()
+      public virtual Task InitializeAsync(int? domainObjectId = null)
       {
          return Task.CompletedTask;
       }

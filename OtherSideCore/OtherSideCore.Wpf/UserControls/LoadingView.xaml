@@ -39,13 +39,13 @@
       </Grid.RowDefinitions>
 
       <customcontrols:SvgViewer Grid.Row="0"
-                                   SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
-                                   SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
-                                   SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                   SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
-                                   BorderThickness="0"
-                                   RenderTransformOrigin="0.5 0.5"
-                                   x:Name="OuterRing">
+                                SvgViewer_ImageGeometry="{StaticResource icon_loading}" 
+                                SvgViewer_ImageColor="{Binding LoadingView_IconColor, ElementName=LoadingViewUserControl}"
+                                SvgViewer_ImageHeight="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                SvgViewer_ImageWidth="{Binding LoadingView_IconSize, ElementName=LoadingViewUserControl}"
+                                BorderThickness="0"
+                                RenderTransformOrigin="0.5 0.5"
+                                x:Name="OuterRing">
          <customcontrols:SvgViewer.RenderTransform>
             <RotateTransform />
          </customcontrols:SvgViewer.RenderTransform>

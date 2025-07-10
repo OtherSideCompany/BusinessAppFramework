@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
+using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -19,6 +20,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       Task SelectSearchResultViewModelAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
       bool CanShowDomainObjectDetailsEditor(DomainObjectSearchResultViewModel? obj);
       Task ShowDomainObjectDetailsEditorAsync(DomainObjectSearchResultViewModel domainObjectSearchResultViewModel);
-      Task InitializeAsync();
+      Task InitializeAsync(int? domainObjectId = null);
    }
 }

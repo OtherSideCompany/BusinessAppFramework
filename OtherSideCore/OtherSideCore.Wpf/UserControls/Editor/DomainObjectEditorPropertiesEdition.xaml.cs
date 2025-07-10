@@ -50,25 +50,11 @@ namespace OtherSideCore.Wpf.UserControls.Editor
 
             foreach (var propInfo in monitoredPropertiesInfos)
             {
-               EditorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
                string displayName = GetDisplayName(propInfo, domainObjectEditorViewModel.DomainObjectViewModel.LocalizationService);
-
-               var label = new TextBlock
-               {
-                  Text = displayName,
-                  Style = TryFindResource("PropertyLabelTextBlock") as Style
-               };
-
-               Grid.SetRow(label, row);
-               Grid.SetColumn(label, 0);
-               EditorGrid.Children.Add(label);
+               AddLabelToEditorGrid(displayName, row);
 
                var editorView = (UIElement)factory.CreateEditor(propInfo, viewModel, domainObjectEditorViewModel);
-
-               Grid.SetRow(editorView, row);
-               Grid.SetColumn(editorView, 1);
-               EditorGrid.Children.Add(editorView);
+               AddViewToEditorGrid(editorView, row);
 
                row++;
             }
@@ -80,6 +66,28 @@ namespace OtherSideCore.Wpf.UserControls.Editor
          var editorLabelAttrbute = propertyInfo.GetCustomAttribute<DisplayKey>();
 
          return localizationService.GetString(editorLabelAttrbute?.Key);
+      }
+
+      private void AddLabelToEditorGrid(string propertyLabel, int rowIndex)
+      {
+         EditorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+         var label = new TextBlock
+         {
+            Text = propertyLabel,
+            Style = TryFindResource("PropertyLabelTextBlock") as Style
+         };
+
+         Grid.SetRow(label, rowIndex);
+         Grid.SetColumn(label, 0);
+         EditorGrid.Children.Add(label);
+      }
+
+      private void AddViewToEditorGrid(UIElement editorView, int rowIndex)
+      {
+         Grid.SetRow(editorView, rowIndex);
+         Grid.SetColumn(editorView, 1);
+         EditorGrid.Children.Add(editorView);
       }
 
       #endregion

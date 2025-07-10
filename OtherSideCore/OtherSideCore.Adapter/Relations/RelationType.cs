@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Infrastructure.Entities
+namespace OtherSideCore.Adapter.Relations
 {
    public enum RelationType
    {

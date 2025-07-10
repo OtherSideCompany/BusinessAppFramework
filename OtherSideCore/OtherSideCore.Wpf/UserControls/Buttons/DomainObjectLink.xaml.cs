@@ -1,18 +1,9 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OtherSideCore.Wpf.UserControls.Buttons
 {
@@ -21,15 +12,6 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
    /// </summary>
    public partial class DomainObjectLink : UserControl
    {
-      public static readonly DependencyProperty DomainObjectLink_LinkClickedCommandProperty =
-         DependencyProperty.Register("DomainObjectLink_LinkClickedCommand", typeof(ICommand), typeof(DomainObjectLink), new UIPropertyMetadata(null));
-
-      public ICommand DomainObjectLink_LinkClickedCommand
-      {
-         get { return (ICommand)GetValue(DomainObjectLink_LinkClickedCommandProperty); }
-         set { SetValue(DomainObjectLink_LinkClickedCommandProperty, value); }
-      }
-
       public static readonly DependencyProperty DomainObjectLink_IdProperty =
          DependencyProperty.Register("DomainObjectLink_Id", typeof(int?), typeof(DomainObjectLink), new UIPropertyMetadata(0));
 
@@ -79,7 +61,8 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
             }
             else
             {
-               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+               //await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+               await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectWorkspaceAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType);
             }
          }
       }
@@ -116,9 +99,9 @@ namespace OtherSideCore.Wpf.UserControls.Buttons
          var source = sender as DependencyObject;
          var domainObjectInteractionHost = FindDomainObjectInteractionHost(source);
 
-         if (domainObjectInteractionHost != null && DomainObjectLink_Id != null)
+         if (domainObjectInteractionHost != null)
          {
-            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectAsync(DomainObjectLink_Id.Value, DomainObjectLink_DomainObjectType, Adapter.DisplayType.SubWindow);
+            await domainObjectInteractionHost.DomainObjectInteractionService.DisplayDomainObjectWorkspaceAsync(DomainObjectLink_Id, DomainObjectLink_DomainObjectType);
          }
       }
 

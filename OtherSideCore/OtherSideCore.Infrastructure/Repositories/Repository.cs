@@ -16,6 +16,8 @@ using OtherSideCore.Infrastructure.Factories;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter;
+using OtherSideCore.Adapter.Relations;
+using System.Net.Mime;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -23,6 +25,8 @@ namespace OtherSideCore.Infrastructure.Repositories
                                                                                              where TEntity : class, IEntity, new()
    {
       #region Fields
+
+      protected RepositoryDependencies _repositoryDependencies;
 
       protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
       protected IDomainObjectReferenceMapFactory _referenceMapFactory;
@@ -41,6 +45,7 @@ namespace OtherSideCore.Infrastructure.Repositories
       public Repository(
          RepositoryDependencies repositoryDependencies)
       {
+         _repositoryDependencies = repositoryDependencies;
          _dbContextFactory = repositoryDependencies.DbContextFactory;
          _loggerFactory = repositoryDependencies.LoggerFactory;
          _logger = repositoryDependencies.LoggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
@@ -74,13 +79,15 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (parent != null)
             {
-               if (_relationResolver.Contains(typeof(TEntity), parent.GetType(), RelationType.ParentChild))
-               {
-                  query = query.Where(_relationResolver.GetRelationPredicate<TEntity>(parent));
+               var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
+
+               if (_relationResolver.ContainsParentChildRelation(typeof(TEntity), parentType))
+               {                  
+                  query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
                }
                else
                {
-                  throw new ArgumentException($"Cannot handle parent type {parent.GetType()} for {GetType()}");
+                  throw new ArgumentException($"Cannot handle parent type {parentType} for {GetType()}");
                }
             }
 
@@ -95,7 +102,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             return _mapper.Map<List<TDomainObject>>(entities);
          }
-      }      
+      }
 
       public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
       {
@@ -152,7 +159,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
             }
          }
-      }      
+      }
 
       public virtual async Task SaveIndexAsync(IIndexable domainObject, int userId, string userName)
       {
@@ -214,7 +221,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
             await LoadNavigationPropertiesAsync(context, entity);
-            
+
             return _mapper.Map<TDomainObject>(entity);
          }
       }
@@ -240,7 +247,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                   context.Remove(entity);
                   affectedRows = 1;
                }
-               
+
                await context.SaveChangesAsync();
             }
 
@@ -283,36 +290,53 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
       }
 
-      public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken)
+      public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
 
-         var relationEntries = _relationResolver.GetEntriesFor<TEntity>();
+         var domainObjectReferences = new List<DomainObjectReference>();
 
-         using var context = _dbContextFactory.CreateDbContext();
-
-         foreach (var relationEntry in relationEntries)
+         if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
          {
-            var query = context.Set<TEntity>().AsNoTracking();
+            using var context = _dbContextFactory.CreateDbContext();
 
-            query = query.Where(_relationResolver.GetRelationPredicate<TEntity>(parent));
+            var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
-            query = query.OrderByDescending(e => e.Id);
+            var relatedId = relationEntry.GetRelatedId(entity);
 
-            var entities = await query.ToListAsync(cancellationToken);
+            if (relatedId != null)
+            {
+               var related = await context.FindAsync(relationEntry.RelatedType, relatedId.Value);
+
+               if (related is IEntity relatedEntity)
+               {
+                  domainObjectReferences.Add(_domainObjectReferenceFactory.CreateDomainObjectReference(relatedEntity));
+               }
+            }
          }
 
-         return new List<DomainObjectReference>();
+         return domainObjectReferences;
       }
 
-      public virtual async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken)
+      public virtual async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken)
       {
          throw new NotImplementedException($"Cannot assing reference to type {GetType()}");
       }
 
-      public virtual async Task DeleteDomainObjectReferenceAsync(int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)
+      public virtual async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)
       {
-         throw new NotImplementedException($"Cannot delete reference from type {GetType()}");
+         _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteDomainObjectReferenceAsync), domainObjectId);
+
+         if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
+         {
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
+
+            relationEntry.DeleteRelation(entity, domainObjectReference.DomainObjectId);
+
+            await context.SaveChangesAsync();
+         }
       }
 
       public async Task SetParentAsync(TDomainObject domainObject, DomainObject parent, CancellationToken cancellationToken = default)
@@ -372,7 +396,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       protected void SetParent(TEntity entity, DomainObject parent)
       {
-         _relationResolver.SetRelation(entity, parent);
+         var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
+         _relationResolver.SetRelation(entity, parentType, parent.Id, RelationType.ParentChild);
       }
 
       protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)
@@ -414,7 +439,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          }
 
          return destination;
-      }      
+      }
 
       #endregion
    }

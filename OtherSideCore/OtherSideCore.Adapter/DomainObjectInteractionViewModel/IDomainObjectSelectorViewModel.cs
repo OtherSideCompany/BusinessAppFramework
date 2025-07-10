@@ -16,7 +16,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       AsyncRelayCommand DisplaySelectorAsyncCommand { get; }
       Selection Selection { get; }
       bool DynamicSearch { get; set; }
-      Task InitializeAsync();
       bool CanValidateSelection();
       void ValidateSelection();
    }

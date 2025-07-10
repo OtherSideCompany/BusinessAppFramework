@@ -102,22 +102,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       protected virtual async Task DisplayDomainObjectBrowserAsync()
       {
-         var browserWorkspaceKey = _domainObjectSelectorViewModelDependencies.DomainObjectInteractionService.SelectorToWorkspaceKeyMappings[_domainObjectSelectorKey];
-         var workspace = _domainObjectSelectorViewModelDependencies.WorkspaceFactory.CreateWorkspace(browserWorkspaceKey);
-
-         if (Selection.IsSelectionEmpty)
-         {
-            await workspace.InitializeAsync();
-         }
-         else
-         {
-            var domainObjectSearchResultViewModel = (DomainObjectSearchResultViewModel)Selection.SelectedItem;
-            // display specific item
-         }
-
-         var session = _domainObjectSelectorViewModelDependencies.WindowService.DisplayView(browserWorkspaceKey, "", workspace, DisplayType.SubWindow);
-         await session.WhenClosed;
-         workspace.Dispose();
+         var selectedDomainObjectSearchResult = Selection.SelectedItem as DomainObjectSearchResultViewModel;
+         var domainObjectId = selectedDomainObjectSearchResult?.DomainObjectSearchResult.DomainObjectId ?? 0;
+         await _domainObjectSelectorViewModelDependencies.DomainObjectInteractionService.DisplayDomainObjectWorkspaceAsync(domainObjectId, typeof(TDomainObject));
       }
 
       private async Task DisplaySelectorAsync()
