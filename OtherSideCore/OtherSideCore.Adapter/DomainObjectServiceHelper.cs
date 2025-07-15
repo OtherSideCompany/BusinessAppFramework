@@ -5,6 +5,7 @@ using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.Attributes;
 using OtherSideCore.Domain.DomainObjects;
+using System.Runtime.ConstrainedExecution;
 
 namespace OtherSideCore.Adapter
 {
@@ -127,6 +128,11 @@ namespace OtherSideCore.Adapter
          {
             await service.SaveAsync(domainObject);
             return true;
+         }
+         catch(SystemObjectModificationException e)
+         {
+            dialogService.Error("Impossible de modifier cet objet système.");
+            return false;
          }
          catch (UserPermissionException e)
          {

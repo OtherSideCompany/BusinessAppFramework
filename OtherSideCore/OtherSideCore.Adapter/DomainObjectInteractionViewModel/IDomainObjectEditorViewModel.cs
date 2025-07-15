@@ -14,7 +14,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       IDomainObjectReferencesEditorViewModel DomainObjectReferencesEditorViewModel { get; }
       //ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels { get; }
 
-      ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels { get; }
+      IEnumerable<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels { get; }
 
       event EventHandler<int> DomainObjectSavedEvent;
 

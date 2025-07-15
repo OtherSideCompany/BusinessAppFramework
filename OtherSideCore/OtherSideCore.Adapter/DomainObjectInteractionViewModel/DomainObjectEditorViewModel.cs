@@ -23,7 +23,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       protected DomainObjectEditorViewModelDependencies _domainObjectEditorViewModelDependencies;
       //private ObservableCollection<DomainObjectReferenceSelectorViewModel> _domainObjectReferenceSelectorViewModels;
 
-      protected ObservableCollection<DomainObjectTreeViewModel> _nestedDomainObjectTreeViewModels;      
+      protected List<ISavable> _nestedSavableViewModels;      
       protected ObservableCollection<ProcessWorkflowViewModel> _processWorkflowViewModels;
 
       //protected ObservableCollection<DomainObjectReferenceViewModel> _domainObjectReferenceViewModels;
@@ -47,7 +47,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       //public ObservableCollection<DomainObjectReferenceViewModel> DomainObjectReferenceViewModels => _domainObjectReferenceViewModels;
 
-      public ObservableCollection<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels => _nestedDomainObjectTreeViewModels;
+      public IEnumerable<DomainObjectTreeViewModel> NestedDomainObjectTreeViewModels => _nestedSavableViewModels.OfType<DomainObjectTreeViewModel>();
 
       /*public ObservableCollection<DomainObjectReferenceSelectorViewModel> DomainObjectReferenceSelectorViewModels
       {
@@ -131,7 +131,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          IsEnabled = true;
 
-         _nestedDomainObjectTreeViewModels = new ObservableCollection<DomainObjectTreeViewModel>();
+         _nestedSavableViewModels = new List<ISavable>();
          //_domainObjectReferenceViewModels = new ObservableCollection<DomainObjectReferenceViewModel>();
          _processWorkflowViewModels = new ObservableCollection<ProcessWorkflowViewModel>();
       }
@@ -162,9 +162,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
             {
                _domainObjectViewModel.RefreshTrackingInfos();
 
-               foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+               foreach (var nestedSavableViewModel in _nestedSavableViewModels)
                {
-                  await nestedTreeViewModel.SaveChangesAsync();
+                  await nestedSavableViewModel.SaveChangesAsync();
                }
             }
 
@@ -189,9 +189,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
          _domainObjectViewModel.InitializeProperties();
 
-         foreach (var nestedTreeViewModel in _nestedDomainObjectTreeViewModels)
+         foreach (var nestedSavableViewModel in _nestedSavableViewModels)
          {
-            await nestedTreeViewModel.CancelChangesAsync();
+            await nestedSavableViewModel.CancelChangesAsync();
          }
 
          _domainObjectViewModel.ResetState();
@@ -320,18 +320,26 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          UnRegisterNestedStructures();
 
-         foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
+         foreach (var nestedSavableViewModel in _nestedSavableViewModels)
          {
-            nestedDomainObjectTreeViewModel.PropertyChanged += NestedDomainObjectTreeViewModel_PropertyChanged;
+            nestedSavableViewModel.PropertyChanged += NestedSavableViewModel_PropertyChanged;
+         }
+
+         foreach (var nestedDomainObjectTreeViewModel in NestedDomainObjectTreeViewModels)
+         {            
             nestedDomainObjectTreeViewModel.TreeModified += NestedDomainObjectTreeViewModel_TreeModified;
          }
       }
 
       private void UnRegisterNestedStructures()
       {
-         foreach (var nestedDomainObjectTreeViewModel in _nestedDomainObjectTreeViewModels)
+         foreach (var nestedSavableViewModel in _nestedSavableViewModels)
          {
-            nestedDomainObjectTreeViewModel.PropertyChanged -= NestedDomainObjectTreeViewModel_PropertyChanged;
+            nestedSavableViewModel.PropertyChanged -= NestedSavableViewModel_PropertyChanged;
+         }
+
+         foreach (var nestedDomainObjectTreeViewModel in NestedDomainObjectTreeViewModels)
+         {
             nestedDomainObjectTreeViewModel.TreeModified -= NestedDomainObjectTreeViewModel_TreeModified;
          }
       }
@@ -370,11 +378,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          NotifyCommandsCanExecuteChanged();
       }
 
-      private void NestedDomainObjectTreeViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+      private void NestedSavableViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
       {
-         if (e.PropertyName.Equals(nameof(DomainObjectTreeViewModel.HasUnsavedChanges)) && !HasUnsavedChanges)
+         if (e.PropertyName.Equals(nameof(ISavable.HasUnsavedChanges)) && !HasUnsavedChanges)
          {
-            HasUnsavedChanges = _nestedDomainObjectTreeViewModels.Any(vm => vm.HasUnsavedChanges);
+            HasUnsavedChanges = _nestedSavableViewModels.Any(vm => vm.HasUnsavedChanges);
          }
 
          NotifyCommandsCanExecuteChanged();

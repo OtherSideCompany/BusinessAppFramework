@@ -366,7 +366,6 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       private async Task CopyEditablePropertiesAsync(TDomainObject domainObject, TEntity entity, DbContext context)
       {
-
          MapHistoryInfo(domainObject, entity);
 
          var ignored = GetIgnoredDomainObjectMappingProperties();
@@ -380,7 +379,8 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (IsCollectionButNotString(domainObjectProperty.PropertyType))
             {
-               await MapCollectionAsync(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps, context);
+               throw new ArgumentException($"Cannot map collection property '{domainObjectProperty.Name}' of type {domainObjectProperty.PropertyType} in {typeof(TDomainObject).Name}. " +
+                                            "Collections are not supported in this repository. Please use a different mapping strategy.");
             }
             else if (!IsValueTypeOrString(domainObjectProperty.PropertyType))
             {
@@ -390,54 +390,6 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                MapProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
             }
-         }
-      }
-
-      private async Task MapCollectionAsync(
-         string domainObjectPropertyName,
-         object domainObjectPropertyValue,
-         TEntity entity,
-         Dictionary<string, PropertyInfo> entityProperties,
-         DbContext context)
-      {
-         if (!entityProperties.TryGetValue(domainObjectPropertyName, out var entityCollectionProperty))
-            throw new ArgumentException($"Collection property '{domainObjectPropertyName}' not found in target type {typeof(TEntity).Name}");
-
-         var entityCollectionType = entityCollectionProperty.PropertyType.GetGenericArguments().First();
-
-         if (domainObjectPropertyValue is IEnumerable domainCollection)
-         {
-            var domainList = domainCollection.Cast<object>().ToList();
-            var idProperty = domainList.FirstOrDefault()?.GetType().GetProperty(nameof(DomainObject.Id));
-            var ids = domainList.Select(item => (int)idProperty.GetValue(item)).Distinct().ToList();
-
-            var setMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set), Array.Empty<Type>())!.MakeGenericMethod(entityCollectionType);
-            var dbSet = (IQueryable<object>)setMethod.Invoke(context, null)!;
-
-            var parameter = Expression.Parameter(entityCollectionType, "e");
-            var idProp = Expression.Property(parameter, nameof(DomainObject.Id));
-            var containsMethod = typeof(List<int>).GetMethod("Contains", new[] { typeof(int) })!;
-            var idsConst = Expression.Constant(ids);
-            var body = Expression.Call(idsConst, containsMethod, idProp);
-            var lambda = Expression.Lambda(body, parameter);
-
-            var whereMethod = typeof(Queryable).GetMethods()
-                                               .First(m => m.Name == "Where" && m.GetParameters().Length == 2)
-                                               .MakeGenericMethod(entityCollectionType);
-
-            var filteredQuery = (IQueryable<object>)whereMethod.Invoke(null, new object[] { dbSet, lambda })!;
-
-            var toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions).GetMethods()
-                                                                              .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.ToListAsync) && m.IsGenericMethod && m.GetParameters().Length == 2)
-                                                                              .MakeGenericMethod(entityCollectionType);
-
-            var toListTask = (Task)toListAsyncMethod.Invoke(null, new object[] { filteredQuery, CancellationToken.None })!;
-            await toListTask.ConfigureAwait(false);
-
-            var resultProperty = toListTask.GetType().GetProperty("Result")!;
-            var typedList = resultProperty.GetValue(toListTask);
-
-            entityCollectionProperty.SetValue(entity, typedList);
          }
       }
 

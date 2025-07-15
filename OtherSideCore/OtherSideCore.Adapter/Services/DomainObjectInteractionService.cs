@@ -21,6 +21,7 @@ namespace OtherSideCore.Adapter.Services
       private StringKeyBasedFactory _domainObjectSelectorViewModelFactory;
       private TypeBasedFactory _treeNodeFactory;
       private StringKeyBasedFactory _treeViewModelFactory;
+      private StringKeyBasedFactory _multiSelectListViewModelFactory;
 
       #endregion
 
@@ -48,6 +49,7 @@ namespace OtherSideCore.Adapter.Services
          _domainObjectSelectorViewModelFactory = new StringKeyBasedFactory();
          _treeNodeFactory = new TypeBasedFactory();
          _treeViewModelFactory = new StringKeyBasedFactory();
+         _multiSelectListViewModelFactory = new StringKeyBasedFactory();
 
          DefaultDomainObjectInteractionMappingRegistry = new DomainObjectInteractionMappingRegistry();
       }
@@ -213,6 +215,16 @@ namespace OtherSideCore.Adapter.Services
       public DomainObjectTreeViewModel CreateTreeViewModel(StringKey key)
       {
          return (DomainObjectTreeViewModel)_treeViewModelFactory.Create(key);
+      }
+
+      public void RegisterMultiSelectListViewModel(StringKey key, Func<IMultiSelectListViewModel> factory)
+      {
+         _multiSelectListViewModelFactory.Register(key, factory);
+      }
+
+      public IMultiSelectListViewModel CreateMultiSelectListViewModel(StringKey key)
+      {
+         return (IMultiSelectListViewModel)_multiSelectListViewModelFactory.Create(key);
       }
 
       public void RegisterTreeNodeViewModel(Type type, Func<DomainObjectViewModel, IDomainObjectTreeNodeViewModel> factory)

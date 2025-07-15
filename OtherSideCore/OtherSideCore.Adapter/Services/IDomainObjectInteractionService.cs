@@ -33,6 +33,9 @@ namespace OtherSideCore.Adapter.Services
       void RegisterTreeViewModel(StringKey key, Func<DomainObjectTreeViewModel> factory);
       DomainObjectTreeViewModel CreateTreeViewModel(StringKey key);
 
+      void RegisterMultiSelectListViewModel(StringKey key, Func<IMultiSelectListViewModel> factory);
+      IMultiSelectListViewModel CreateMultiSelectListViewModel(StringKey key);
+
       void RegisterTreeNodeViewModel(Type type, Func<DomainObjectViewModel, IDomainObjectTreeNodeViewModel> factory);
       Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeNodeViewModelAsync(DomainObjectViewModel domainObjectViewModel);
 
