@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OtherSideCore.Adapter.DomainObjectInteraction;
+﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
 using OtherSideCore.Adapter.Views;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
-using OtherSideCore.Application.Tree;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Reflection;
@@ -21,7 +19,6 @@ namespace OtherSideCore.Adapter.Services
       private StringKeyBasedFactory _domainObjectDetailsEditorViewModelFactory;
       private StringKeyBasedFactory _domainObjectEditorViewModelFactory;
       private StringKeyBasedFactory _domainObjectSelectorViewModelFactory;
-      private StringKeyBasedFactory _treeFactory;
       private TypeBasedFactory _treeNodeFactory;
       private StringKeyBasedFactory _treeViewModelFactory;
 
@@ -49,7 +46,6 @@ namespace OtherSideCore.Adapter.Services
          _domainObjectDetailsEditorViewModelFactory = new StringKeyBasedFactory();
          _domainObjectEditorViewModelFactory = new StringKeyBasedFactory();
          _domainObjectSelectorViewModelFactory = new StringKeyBasedFactory();
-         _treeFactory = new StringKeyBasedFactory();
          _treeNodeFactory = new TypeBasedFactory();
          _treeViewModelFactory = new StringKeyBasedFactory();
 
@@ -209,29 +205,14 @@ namespace OtherSideCore.Adapter.Services
          return (IDomainObjectSelectorViewModel)_domainObjectSelectorViewModelFactory.Create(key);
       }
 
-      public void RegisterTree(StringKey key, Func<IDomainObjectTree> factory)
+      public void RegisterTreeViewModel(StringKey key, Func<DomainObjectTreeViewModel> factory)
       {
-         _treeFactory.Register(key, () => factory());
-      }
-
-      public IDomainObjectTree CreateTree(StringKey key, IDomainObjectServiceFactory domainObjectServiceFactory)
-      {
-         return (IDomainObjectTree)_treeFactory.Create(key);
-      }
-
-      public void RegisterTreeViewModel(StringKey key, Func<DomainObjectTree, DomainObjectTreeViewModel> factory)
-      {
-         _treeViewModelFactory.Register(key, args =>
-         {
-            var search = (DomainObjectTree)args[0]!;
-            return factory(search);
-         });
+         _treeViewModelFactory.Register(key, factory);
       }
 
       public DomainObjectTreeViewModel CreateTreeViewModel(StringKey key)
       {
-         var tree = CreateTree(key, _domainObjectInteractionServiceDependencies.ServiceProvider.GetRequiredService<IDomainObjectServiceFactory>());
-         return (DomainObjectTreeViewModel)_treeViewModelFactory.Create(key, tree);
+         return (DomainObjectTreeViewModel)_treeViewModelFactory.Create(key);
       }
 
       public void RegisterTreeNodeViewModel(Type type, Func<DomainObjectViewModel, IDomainObjectTreeNodeViewModel> factory)

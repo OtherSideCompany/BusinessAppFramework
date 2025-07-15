@@ -1,8 +1,6 @@
 ﻿using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
-using OtherSideCore.Application.Tree;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 
@@ -32,11 +30,8 @@ namespace OtherSideCore.Adapter.Services
       void RegisterDomainObjectSelectorViewModel(StringKey key, Func<IDomainObjectSelectorViewModel> factory);
       IDomainObjectSelectorViewModel CreateDomainObjectSelectorViewModel(StringKey key);
 
-      void RegisterTreeViewModel(StringKey key, Func<DomainObjectTree, DomainObjectTreeViewModel> factory);
+      void RegisterTreeViewModel(StringKey key, Func<DomainObjectTreeViewModel> factory);
       DomainObjectTreeViewModel CreateTreeViewModel(StringKey key);
-
-      void RegisterTree(StringKey key, Func<IDomainObjectTree> factory);
-      IDomainObjectTree CreateTree(StringKey key, IDomainObjectServiceFactory domainObjectServiceFactory);
 
       void RegisterTreeNodeViewModel(Type type, Func<DomainObjectViewModel, IDomainObjectTreeNodeViewModel> factory);
       Task<IDomainObjectTreeNodeViewModel> CreateDomainObjectTreeNodeViewModelAsync(DomainObjectViewModel domainObjectViewModel);

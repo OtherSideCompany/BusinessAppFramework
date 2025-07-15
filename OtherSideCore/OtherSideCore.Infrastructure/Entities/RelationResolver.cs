@@ -62,10 +62,14 @@ namespace OtherSideCore.Infrastructure.Entities
          return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
       }
 
-      public void SetRelation<TEntity>(TEntity entity, Type relatedType, int relatedId, RelationType relationType) where TEntity : IEntity
+      public void SetParentChildRelation<TEntity>(TEntity entity, Type relatedType, int relatedId, RelationType relationType) where TEntity : IEntity
       {
-         /*var relationEntry = GetRelationEntry<TEntity>(relatedType, relationType);
-         relationEntry.SetRelation(entity, relatedId);*/
+         var relationEntry = _entries.Where(r => r.SourceType == typeof(TEntity) && r.RelatedType == relatedType && r.RelationType == RelationType.ParentChild).FirstOrDefault();
+
+         if (relationEntry == null)
+            throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
+
+         relationEntry.SetRelation(entity, relatedId);
       }
 
       public void DeleteRelation<TEntity, U>(TEntity entity, int relatedId, RelationType relationType) where TEntity : IEntity where U : class

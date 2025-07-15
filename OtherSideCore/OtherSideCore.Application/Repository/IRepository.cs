@@ -9,11 +9,11 @@ namespace OtherSideCore.Application.Repository
 
       Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
-      Task CreateAsync(T domainObject, DomainObject? parent, int userId, string userName);
+      Task CreateAsync(T domainObject, DomainObject? parent);
 
-      Task SaveAsync(T domainObject, int userId, string userName);
+      Task SaveAsync(T domainObject);
 
-      Task SaveIndexAsync(IIndexable domainObject, int userId, string userName);
+      Task SaveIndexAsync(IIndexable domainObject);
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken);
 

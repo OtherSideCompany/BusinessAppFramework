@@ -9,31 +9,6 @@ namespace OtherSideCore.Infrastructure.Mapping
 {
    public static class AutoMapperExtensions
    {
-      public static IMappingExpression<TSource, TDestination> IgnoreAllVirtual<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mapping)
-      {
-         var virtualProperties = typeof(TDestination).GetProperties().Where(p => p.GetMethod != null && p.GetMethod.IsVirtual);
-
-         foreach (var property in virtualProperties)
-         {
-            mapping.ForMember(property.Name, opt => opt.Ignore());
-         }
-
-         return mapping;
-      }
-
-      public static IMappingExpression<TSource, TDestination> IgnoreCollectionsMapping<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mapping)
-      {
-         var taggedCollectionProperties = typeof(TDestination).GetProperties()
-                                                              .Where(p => p.GetCustomAttribute<IgnoreCollectionMapping>() != null);
-
-         foreach (var property in taggedCollectionProperties)
-         {
-            mapping.ForMember(property.Name, opt => opt.Ignore());
-         }
-
-         return mapping;
-      }
-
       public static IMappingExpression<TSource, TDestination> MapHisytoryInfo<TSource, TDestination>(this IMappingExpression<TSource, TDestination> mapping) where TSource : IEntity 
                                                                                                                                                              where TDestination : DomainObject
       {

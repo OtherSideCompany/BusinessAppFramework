@@ -5,10 +5,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Logging;
-using OtherSideCore.Infrastructure.Entities;
 using OtherSideCore.Domain.DomainObjects;
 using AutoMapper;
-using System.Linq.Expressions;
 using OtherSideCore.Application.Repository;
 using OtherSideCore.Application;
 using OtherSideCore.Domain;
@@ -17,7 +15,10 @@ using OtherSideCore.Application.Factories;
 using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Relations;
-using System.Net.Mime;
+using System.Reflection;
+using ImageMagick;
+using System.Collections;
+using System.Linq.Expressions;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -82,7 +83,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
 
                if (_relationResolver.ContainsParentChildRelation(typeof(TEntity), parentType))
-               {                  
+               {
                   query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
                }
                else
@@ -95,11 +96,6 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             var entities = await query.ToListAsync(cancellationToken);
 
-            foreach (var entity in entities)
-            {
-               await LoadNavigationPropertiesAsync(context, entity);
-            }
-
             return _mapper.Map<List<TDomainObject>>(entities);
          }
       }
@@ -110,7 +106,7 @@ namespace OtherSideCore.Infrastructure.Repositories
          return await Task.FromResult(0);
       }
 
-      public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent, int userId, string userName)
+      public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent)
       {
          _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(CreateAsync));
 
@@ -123,13 +119,11 @@ namespace OtherSideCore.Infrastructure.Repositories
                SetParent(entity, parent);
             }
 
-            await CreateEntityAsync(context, entity, userId, userName);
-
-            _mapper.Map(entity, domainObject);
+            await CreateEntityAsync(context, entity);
          }
       }
 
-      public virtual async Task SaveAsync(TDomainObject domainObject, int userId, string userName)
+      public virtual async Task SaveAsync(TDomainObject domainObject)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}",
                                 GetType(),
@@ -138,30 +132,20 @@ namespace OtherSideCore.Infrastructure.Repositories
 
          using (var context = _dbContextFactory.CreateDbContext())
          {
-            TEntity existingEntity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+            TEntity existingEntity = await context.Set<TEntity>().FirstOrDefaultAsync(e => e.Id == domainObject.Id);
 
-            if (existingEntity != null)
-            {
-               await SpecificMapDomainObjectToEntityAsync(domainObject, existingEntity, context);
-
-               existingEntity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
-               existingEntity.HistoryInfo.LastModifiedById = userId;
-               existingEntity.HistoryInfo.LastModifiedByName = userName;
-
-               await context.SaveChangesAsync();
-
-               await LoadNavigationPropertiesAsync(context, existingEntity);
-
-               _mapper.Map(existingEntity, domainObject);
-            }
-            else
+            if (existingEntity == null)
             {
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
             }
+
+            await CopyEditablePropertiesAsync(domainObject, existingEntity, context);
+
+            await context.SaveChangesAsync();
          }
       }
 
-      public virtual async Task SaveIndexAsync(IIndexable domainObject, int userId, string userName)
+      public virtual async Task SaveIndexAsync(IIndexable domainObject)
       {
          if (!(domainObject is TDomainObject))
          {
@@ -184,16 +168,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                   if (existingEntity is IIndexable existingIndexableEntity)
                   {
                      existingIndexableEntity.Index = indexableDomainObject.Index;
-
-                     existingEntity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
-                     existingEntity.HistoryInfo.LastModifiedById = userId;
-                     existingEntity.HistoryInfo.LastModifiedByName = userName;
-
                      await context.SaveChangesAsync();
-
-                     await LoadNavigationPropertiesAsync(context, existingEntity);
-
-                     _mapper.Map(existingEntity, domainObject);
                   }
                   else
                   {
@@ -219,9 +194,6 @@ namespace OtherSideCore.Infrastructure.Repositories
          using (var context = _dbContextFactory.CreateDbContext())
          {
             var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
-
-            await LoadNavigationPropertiesAsync(context, entity);
-
             return _mapper.Map<TDomainObject>(entity);
          }
       }
@@ -251,17 +223,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                await context.SaveChangesAsync();
             }
 
-            if (affectedRows != 0)
-            {
-               domainObject.Id = 0;
-               domainObject.LastModifiedById = null;
-               domainObject.LastModifiedByName = null;
-               domainObject.CreatedById = null;
-               domainObject.CreatedByName = null;
-               domainObject.CreationDate = default;
-               domainObject.LastModifiedDateTime = default;
-            }
-            else
+            if (affectedRows == 0)
             {
                throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
             }
@@ -389,57 +351,167 @@ namespace OtherSideCore.Infrastructure.Repositories
 
       #region Private Methods 
 
-      protected virtual async Task SpecificMapDomainObjectToEntityAsync(TDomainObject source, TEntity destination, DbContext dbContext)
-      {
-         await Task.FromResult(_mapper.Map(source, destination));
-      }
-
       protected void SetParent(TEntity entity, DomainObject parent)
       {
          var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-         _relationResolver.SetRelation(entity, parentType, parent.Id, RelationType.ParentChild);
+         _relationResolver.SetParentChildRelation(entity, parentType, parent.Id, RelationType.ParentChild);
       }
 
-      protected async Task CreateEntityAsync(DbContext context, TEntity entity, int userId, string userName)
+      protected async Task CreateEntityAsync(DbContext context, TEntity entity)
       {
-         entity.HistoryInfo.CreationDate = DateTime.Now;
-         entity.HistoryInfo.LastModifiedDateTime = DateTime.Now;
-         entity.HistoryInfo.CreatedById = userId;
-         entity.HistoryInfo.CreatedByName = userName;
-         entity.HistoryInfo.LastModifiedById = userId;
-         entity.HistoryInfo.LastModifiedByName = userName;
-
          await context.Set<TEntity>().AddAsync(entity);
-
-         await LoadNavigationPropertiesAsync(context, entity);
 
          await context.SaveChangesAsync();
       }
 
-      protected async Task LoadNavigationPropertiesAsync(DbContext context, TEntity entity)
+      private async Task CopyEditablePropertiesAsync(TDomainObject domainObject, TEntity entity, DbContext context)
       {
-         foreach (var navigation in context.Entry(entity).Navigations)
+
+         MapHistoryInfo(domainObject, entity);
+
+         var ignored = GetIgnoredDomainObjectMappingProperties();
+
+         var domainObjectProps = typeof(TDomainObject).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead && !ignored.Contains(p.Name)).ToDictionary(p => p.Name);
+         var entityProps = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite).ToDictionary(p => p.Name);
+
+         foreach (var domainObjectProperty in domainObjectProps.Values)
          {
-            if (navigation.Metadata.PropertyInfo != null && !navigation.IsLoaded)
+            var domainObjectPropertyValue = domainObjectProperty.GetValue(domainObject);
+
+            if (IsCollectionButNotString(domainObjectProperty.PropertyType))
             {
-               await navigation.LoadAsync();
+               await MapCollectionAsync(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps, context);
+            }
+            else if (!IsValueTypeOrString(domainObjectProperty.PropertyType))
+            {
+               MapDomainObjectProperty(domainObjectProperty, domainObjectPropertyValue, entity, entityProps);
+            }
+            else
+            {
+               MapProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
             }
          }
       }
 
-      private TDestination MapIfNull<TSource, TDestination>(TSource source, TDestination destination)
+      private async Task MapCollectionAsync(
+         string domainObjectPropertyName,
+         object domainObjectPropertyValue,
+         TEntity entity,
+         Dictionary<string, PropertyInfo> entityProperties,
+         DbContext context)
       {
-         if (destination == null && source != null)
-         {
-            destination = _mapper.Map<TDestination>(source);
-         }
-         else if (source != null)
-         {
-            _mapper.Map(source, destination);
-         }
+         if (!entityProperties.TryGetValue(domainObjectPropertyName, out var entityCollectionProperty))
+            throw new ArgumentException($"Collection property '{domainObjectPropertyName}' not found in target type {typeof(TEntity).Name}");
 
-         return destination;
+         var entityCollectionType = entityCollectionProperty.PropertyType.GetGenericArguments().First();
+
+         if (domainObjectPropertyValue is IEnumerable domainCollection)
+         {
+            var domainList = domainCollection.Cast<object>().ToList();
+            var idProperty = domainList.FirstOrDefault()?.GetType().GetProperty(nameof(DomainObject.Id));
+            var ids = domainList.Select(item => (int)idProperty.GetValue(item)).Distinct().ToList();
+
+            var setMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set), Array.Empty<Type>())!.MakeGenericMethod(entityCollectionType);
+            var dbSet = (IQueryable<object>)setMethod.Invoke(context, null)!;
+
+            var parameter = Expression.Parameter(entityCollectionType, "e");
+            var idProp = Expression.Property(parameter, nameof(DomainObject.Id));
+            var containsMethod = typeof(List<int>).GetMethod("Contains", new[] { typeof(int) })!;
+            var idsConst = Expression.Constant(ids);
+            var body = Expression.Call(idsConst, containsMethod, idProp);
+            var lambda = Expression.Lambda(body, parameter);
+
+            var whereMethod = typeof(Queryable).GetMethods()
+                                               .First(m => m.Name == "Where" && m.GetParameters().Length == 2)
+                                               .MakeGenericMethod(entityCollectionType);
+
+            var filteredQuery = (IQueryable<object>)whereMethod.Invoke(null, new object[] { dbSet, lambda })!;
+
+            var toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions).GetMethods()
+                                                                              .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.ToListAsync) && m.IsGenericMethod && m.GetParameters().Length == 2)
+                                                                              .MakeGenericMethod(entityCollectionType);
+
+            var toListTask = (Task)toListAsyncMethod.Invoke(null, new object[] { filteredQuery, CancellationToken.None })!;
+            await toListTask.ConfigureAwait(false);
+
+            var resultProperty = toListTask.GetType().GetProperty("Result")!;
+            var typedList = resultProperty.GetValue(toListTask);
+
+            entityCollectionProperty.SetValue(entity, typedList);
+         }
       }
+
+      private void MapDomainObjectProperty(
+         PropertyInfo domainObjectProperty,
+         object domainObjectPropertyValue,
+         TEntity entity,
+         Dictionary<string, PropertyInfo> entityProperties)
+      {
+         var domainObjectIdProperty = domainObjectProperty.PropertyType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+
+         var idValue = domainObjectIdProperty.GetValue(domainObjectPropertyValue);
+         var foreignKeyName = domainObjectProperty.Name + "Id";
+
+         if (entityProperties.TryGetValue(foreignKeyName, out var foreignKeyProperty))
+         {
+            foreignKeyProperty.SetValue(entity, idValue);
+         }
+         else
+         {
+            throw new ArgumentException($"Property '{foreignKeyName}' not found in target type {typeof(TEntity).Name}");
+         }
+      }
+
+      private void MapProperty(
+         string domainObjectPropertyName, 
+         object domainObjectPropertyValue,
+         TEntity entity,
+         Dictionary<string, PropertyInfo> entityProperties)
+      {
+         if (entityProperties.TryGetValue(domainObjectPropertyName, out var targetProp))
+         {
+            targetProp.SetValue(entity, domainObjectPropertyValue);
+         }
+         else
+         {
+            throw new ArgumentException($"Property '{domainObjectPropertyName}' not found in target type {typeof(TEntity).Name}");
+         }
+      }
+
+      private bool IsValueTypeOrString(Type type)
+      {
+         return type.IsValueType || type == typeof(string);
+      }
+
+      private bool IsCollectionButNotString(Type type)
+      {
+         return typeof(System.Collections.IEnumerable).IsAssignableFrom(type)
+                && type != typeof(string);
+      }
+
+      private HashSet<string> GetIgnoredDomainObjectMappingProperties()
+      {
+         return new HashSet<string>
+         {
+            nameof(DomainObject.CreationDate),
+            nameof(DomainObject.CreatedById),
+            nameof(DomainObject.CreatedByName),
+            nameof(DomainObject.LastModifiedDateTime),
+            nameof(DomainObject.LastModifiedById),
+            nameof(DomainObject.LastModifiedByName)
+         };
+      }
+
+      private void MapHistoryInfo(TDomainObject source, TEntity target)
+      {
+         target.HistoryInfo.CreationDate = source.CreationDate;
+         target.HistoryInfo.CreatedById = source.CreatedById;
+         target.HistoryInfo.CreatedByName = source.CreatedByName;
+         target.HistoryInfo.LastModifiedDateTime = source.LastModifiedDateTime;
+         target.HistoryInfo.LastModifiedById = source.LastModifiedById;
+         target.HistoryInfo.LastModifiedByName = source.LastModifiedByName;
+      }
+
 
       #endregion
    }

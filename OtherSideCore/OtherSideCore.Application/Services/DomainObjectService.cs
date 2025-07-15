@@ -138,6 +138,14 @@ namespace OtherSideCore.Application.Services
 
                await _repository.DeleteAsync(domainObject);
 
+               domainObject.Id = 0;
+               domainObject.LastModifiedById = null;
+               domainObject.LastModifiedByName = null;
+               domainObject.CreatedById = null;
+               domainObject.CreatedByName = null;
+               domainObject.CreationDate = default;
+               domainObject.LastModifiedDateTime = default;
+
                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
 
                try
@@ -197,7 +205,11 @@ namespace OtherSideCore.Application.Services
                return;
             }
 
-            await _repository.SaveAsync(domainObject, _userContext.Id, _userContext.GetName());
+            domainObject.LastModifiedDateTime = DateTime.Now;
+            domainObject.LastModifiedById = _userContext.Id;
+            domainObject.LastModifiedByName = _userContext.GetName();
+
+            await _repository.SaveAsync(domainObject);
             await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(domainObject));
          }
       }
@@ -210,7 +222,11 @@ namespace OtherSideCore.Application.Services
          }
          else
          {
-            await _repository.SaveIndexAsync(domainObject, _userContext.Id, _userContext.GetName());
+            ((DomainObject)domainObject).LastModifiedDateTime = DateTime.Now;
+            ((DomainObject)domainObject).LastModifiedById = _userContext.Id;
+            ((DomainObject)domainObject).LastModifiedByName = _userContext.GetName();
+
+            await _repository.SaveIndexAsync(domainObject);
             await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent((DomainObject)domainObject));
          }
       }
@@ -286,7 +302,14 @@ namespace OtherSideCore.Application.Services
             indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
          }
 
-         await _repository.CreateAsync(domainObject, parent, _userContext.Id, _userContext.GetName());
+         domainObject.CreationDate = DateTime.Now;
+         domainObject.LastModifiedDateTime = DateTime.Now;
+         domainObject.CreatedById = _userContext.Id;
+         domainObject.CreatedByName = _userContext.GetName();
+         domainObject.LastModifiedById = _userContext.Id;
+         domainObject.LastModifiedByName = _userContext.GetName();
+
+         await _repository.CreateAsync(domainObject, parent);
          await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(domainObject));
       }
 

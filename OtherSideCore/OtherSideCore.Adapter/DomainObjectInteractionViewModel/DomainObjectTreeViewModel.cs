@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OtherSideCore.Adapter.DomainObjectInteractionViewModel;
-using OtherSideCore.Application.Tree;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System.Collections.ObjectModel;
@@ -15,8 +14,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       private readonly SemaphoreSlim _domainObjectEditorViewModelsSemaphore = new SemaphoreSlim(1, 1);
 
-
-      private DomainObjectTree _domainObjectTree;
       protected DomainObjectTreeViewModelDependencies _domainObjectTreeViewModelDependencies;
 
       private ObservableCollection<IDomainObjectTreeNodeViewModel> _roots;
@@ -82,11 +79,11 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public bool HasUnsavedChanges => _inlineNodes.Select(n => n.DomainObjectEditorViewModel).Any(vm => vm.HasUnsavedChanges);
 
+      public DomainObjectTreeViewModelDependencies DomainObjectTreeViewModelDependencies => _domainObjectTreeViewModelDependencies;
+
       public Type? DefaultRootType { get; set; }
       public Func<Type, Task<DomainObject>>? CreateRootDomainObjectAsync { get; set; }
-      public Func<DomainObjectViewModel, IEnumerable<DomainObject>>? ResolveRootNodes { get; set; }
-      public Action<DomainObjectViewModel, DomainObjectViewModel>? AttachRootNode { get; set; }
-      public Action<DomainObjectViewModel, DomainObjectViewModel>? DetachRootNode { get; set; }
+      public Func<DomainObjectViewModel, Task<IEnumerable<DomainObject>>>? ResolveRootNodesAsync { get; set; }
 
       #endregion
 
@@ -108,12 +105,8 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       #region Constructor
 
-      public DomainObjectTreeViewModel(
-         DomainObjectTree domainObjectTree,
-         DomainObjectTreeViewModelDependencies domainObjectTreeViewModelDependencies)
+      public DomainObjectTreeViewModel(DomainObjectTreeViewModelDependencies domainObjectTreeViewModelDependencies)
       {
-
-         _domainObjectTree = domainObjectTree;
          _domainObjectTreeViewModelDependencies = domainObjectTreeViewModelDependencies;
 
          Roots = new ObservableCollection<IDomainObjectTreeNodeViewModel>();
@@ -161,7 +154,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          _isInitializingTree = true;
 
          ContextViewModel = domainObjectViewModel;
-         await _domainObjectTree.FillDomainObjectAsync(domainObjectViewModel.DomainObject);
 
          await _domainObjectEditorViewModelsSemaphore.WaitAsync();
 
@@ -208,11 +200,6 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
 
       public virtual async Task<IDomainObjectTreeNodeViewModel> AddRootNodeAsync(DomainObjectViewModel domainObjectViewModel)
       {
-         if (ContextViewModel != null && AttachRootNode != null && !_isInitializingTree)
-         {
-            AttachRootNode(ContextViewModel, domainObjectViewModel);
-         }
-
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
          var domainObjectRootTreeViewNode = await _domainObjectTreeViewModelDependencies.DomainObjectInteractionService.CreateDomainObjectTreeNodeViewModelAsync(domainObjectViewModel);
@@ -250,14 +237,9 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          Roots.Remove(rootNodeToRemove);
 
          TreeModified?.Invoke(this, EventArgs.Empty);
-
-         if (ContextViewModel != null && DetachRootNode != null)
-         {
-            DetachRootNode(ContextViewModel, rootNodeToRemove.DomainObjectViewModel);
-         }
       }
 
-      public async Task RemoveChildNodeAsync(IDomainObjectTreeNodeViewModel nodeToRemove, IDomainObjectTreeNodeViewModel parent)
+      public void RemoveChildNode(IDomainObjectTreeNodeViewModel nodeToRemove, IDomainObjectTreeNodeViewModel parent)
       {
          PreviewTreeModified?.Invoke(this, EventArgs.Empty);
 
@@ -394,7 +376,7 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
          {
             if (childNode.Equals(nodeToRemove))
             {
-               await RemoveChildNodeAsync(nodeToRemove, parent);
+               RemoveChildNode(nodeToRemove, parent);
                return;
             }
 
@@ -411,12 +393,12 @@ namespace OtherSideCore.Adapter.DomainObjectInteraction
       {
          Clear();
 
-         if (ResolveRootNodes == null)
+         if (ResolveRootNodesAsync == null)
          {
             throw new InvalidOperationException("ResolveRootNodesAsync must be set.");
          }
 
-         foreach (var domainObject in ResolveRootNodes(context))
+         foreach (var domainObject in await ResolveRootNodesAsync(context))
          {
             var viewModel = _domainObjectTreeViewModelDependencies.DomainObjectViewModelFactory.CreateViewModel(domainObject);
             await AddRootNodeAsync(viewModel);

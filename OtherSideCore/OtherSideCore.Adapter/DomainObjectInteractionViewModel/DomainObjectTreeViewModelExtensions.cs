@@ -59,42 +59,24 @@ namespace OtherSideCore.Adapter.DomainObjectInteractionViewModel
       }
 
       public static void ConfigureTreeViewModel<TParent, TChild>(
-        this DomainObjectTreeViewModel tree,
-        Func<TParent, IEnumerable<TChild>> getChildren,
-        Action<TParent, TChild> attachChild,
-        Action<TParent, TChild> detachChild)
+        this DomainObjectTreeViewModel treeViewModel)
         where TParent : DomainObject
-        where TChild : DomainObject
+        where TChild : DomainObject, new()
       {
-         tree.DefaultRootType = typeof(TChild);
+         treeViewModel.DefaultRootType = typeof(TChild);
 
-         tree.ResolveRootNodes = context =>
+         treeViewModel.ResolveRootNodesAsync = async context =>
          {
             if (context.DomainObject is TParent parent)
             {
-               return getChildren(parent).Cast<DomainObject>();
+               var domainObjectService = treeViewModel.DomainObjectTreeViewModelDependencies.DomainObjectServiceFactory.CreateDomainObjectService<TChild>();
+               return (await domainObjectService.TryGetAllAsync(parent)).Items;
             }
 
             return Enumerable.Empty<DomainObject>();
          };
 
-         tree.CreateRootDomainObjectAsync = async (type) => await tree.CreateTypedRootDomainObjectAsync(type);
-
-         tree.AttachRootNode = (context, childViewModel) =>
-         {
-            if (context.DomainObject is TParent parent && childViewModel.DomainObject is TChild child)
-            {
-               attachChild(parent, child);
-            }
-         };
-
-         tree.DetachRootNode = (context, childViewModel) =>
-         {
-            if (context.DomainObject is TParent parent && childViewModel.DomainObject is TChild child)
-            {
-               detachChild(parent, child);
-            }
-         };
+         treeViewModel.CreateRootDomainObjectAsync = async (type) => await treeViewModel.CreateTypedRootDomainObjectAsync(type);
       }
 
       #endregion
