@@ -49,6 +49,12 @@ namespace OtherSideCore.Adapter.Services
          return mapping != null;
       }
 
+      public bool TryGetByEntityType(Type type, out DomainObjectInteractionMapping? mapping)
+      {
+         mapping = _mappings.FirstOrDefault(m => m.EntityType == type);
+         return mapping != null;
+      }
+
       public bool TryGetByDomainObjectViewModelType(Type type, out DomainObjectInteractionMapping? mapping)
       {
          mapping = _mappings.FirstOrDefault(m => m.DomainObjectViewModelType == type);

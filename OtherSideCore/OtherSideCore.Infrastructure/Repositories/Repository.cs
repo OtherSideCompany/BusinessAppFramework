@@ -16,9 +16,6 @@ using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Relations;
 using System.Reflection;
-using ImageMagick;
-using System.Collections;
-using System.Linq.Expressions;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
@@ -280,9 +277,20 @@ namespace OtherSideCore.Infrastructure.Repositories
          return domainObjectReferences;
       }
 
-      public virtual async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken)
+      public virtual async Task CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, CancellationToken cancellationToken)
       {
-         throw new NotImplementedException($"Cannot assing reference to type {GetType()}");
+         _logger.LogInformation($"{GetType()}, {nameof(CreateDomainObjectReferenceAsync)}, relationKey = {relationKey}, domainObjectId = {domainObjectId}, domainObjectReferenceId = {domainObjectReferenceId}");
+
+         if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
+         {
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
+
+            relationEntry.SetRelation(entity, domainObjectReferenceId);
+
+            await context.SaveChangesAsync(cancellationToken);
+         }            
       }
 
       public virtual async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)

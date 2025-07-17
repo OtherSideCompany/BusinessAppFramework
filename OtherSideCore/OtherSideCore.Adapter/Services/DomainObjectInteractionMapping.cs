@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Adapter.DomainObjectInteraction;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using OtherSideCore.Adapter.DomainObjectInteraction;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
@@ -19,6 +20,7 @@ namespace OtherSideCore.Adapter.Services
       public Type DomainObjectViewModelType { get; private set; }
       public Type? SearchResultType { get; private set; }
       public Type? TreeNodeViewModelType { get; private set; }
+      public Type EntityType { get; private set; }
 
       public StringKey? SelectorKey { get; private set; }
       public StringKey? WorkspaceKey { get; private set; }
@@ -41,6 +43,7 @@ namespace OtherSideCore.Adapter.Services
          Type domainObjectViewModelType,
          Type? searchResultType,         
          Type? treeNodeViewModelType,
+         Type entityType,
          StringKey? selectorKey,
          StringKey? workspaceKey,
          StringKey editorKey,
@@ -58,10 +61,14 @@ namespace OtherSideCore.Adapter.Services
          if (treeNodeViewModelType is not null && !typeof(IDomainObjectTreeNodeViewModel).IsAssignableFrom(treeNodeViewModelType))
             throw new ArgumentException($"{treeNodeViewModelType.FullName} must inherit from IDomainObjectTreeNodeViewModel", nameof(treeNodeViewModelType));
 
+         if(!typeof(IEntity).IsAssignableFrom(entityType))
+            throw new ArgumentException($"{entityType.FullName} must inherit from IEntity", nameof(entityType));
+
          DomainObjectType = domainObjectType;
          DomainObjectViewModelType = domainObjectViewModelType;
          SearchResultType = searchResultType;                 
          TreeNodeViewModelType = treeNodeViewModelType;
+         EntityType = entityType;
          SelectorKey = selectorKey;
          WorkspaceKey = workspaceKey;
          EditorKey = editorKey;

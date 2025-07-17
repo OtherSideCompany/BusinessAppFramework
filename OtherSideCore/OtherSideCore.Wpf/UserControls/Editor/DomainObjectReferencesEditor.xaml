@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OtherSideCore.Wpf.UserControls.Editor"
-             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls;assembly=OtherSideCore.Wpf"
-             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls;assembly=OtherSideCore.Wpf"
-             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions;assembly=OtherSideCore.Wpf" 
+             xmlns:osc_usercontrols="clr-namespace:OtherSideCore.Wpf.UserControls"
+             xmlns:osc_customcontrols="clr-namespace:OtherSideCore.Wpf.CustomControls"
+             xmlns:osc_extensions="clr-namespace:OtherSideCore.Wpf.Extensions" 
              xmlns:list="clr-namespace:OtherSideCore.Wpf.UserControls.List"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -16,8 +16,7 @@
                     Grid.IsSharedSizeScope="True">
          <ItemsControl.ItemTemplate>
             <DataTemplate>
-               <Grid Visibility="{Binding RelationEntry.IsSystemManaged, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}"
-                     x:Name="RelationEntryGrid">
+               <Grid Visibility="{Binding RelationEntry.IsSystemManaged, Converter={StaticResource BoolToVisibleOrCollapsed}, ConverterParameter=invert}" x:Name="RelationEntryGrid">
                   <Grid.ColumnDefinitions>
                      <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
                      <ColumnDefinition Width="*" />
@@ -41,7 +40,16 @@
                         </ItemsControl.ItemTemplate>
                      </ItemsControl>
 
-                  </Grid>                  
+                  </Grid>
+
+                  <osc_customcontrols:SvgImageButton Grid.Column="2" Width="32" Height="32" Margin="4,0,0,0"
+                                                     SvgImageButton_IconGeometry="{StaticResource icon_magnify_plus_outline}" 
+                                                     Command="{Binding DomainObjectSelectorViewModel.DisplaySelectorAsyncCommand}"
+                                                     Visibility="{Binding DomainObjectSelectorViewModel, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                  <Grid >
+                     
+                  </Grid>
 
                </Grid>
             </DataTemplate>

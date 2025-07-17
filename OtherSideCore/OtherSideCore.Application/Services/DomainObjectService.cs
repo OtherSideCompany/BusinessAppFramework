@@ -180,9 +180,9 @@ namespace OtherSideCore.Application.Services
          return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferencesAsync(relationKey, domainObjectId, cancellationToken));
       }
 
-      public async Task<DomainObjectReference> CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, Type referenceType, CancellationToken cancellationToken = default)
+      public async Task CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, CancellationToken cancellationToken = default)
       {
-         return await WithUpdateDomainObjectReferencePermissionAsync(() => _repository.CreateDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReferenceId, referenceType, cancellationToken));
+         await WithUpdateDomainObjectReferencePermissionAsync(() => _repository.CreateDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReferenceId, cancellationToken));
       }
 
       public async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
@@ -270,7 +270,7 @@ namespace OtherSideCore.Application.Services
       protected Task<T> WithCreationPermissionAsync(Func<Task<T>> action) => WithPermissionAsync(UserRolePermissionType.Create, action);
       protected Task<U> WithReadPermissionAsync<U>(Func<Task<U>> action) => WithPermissionAsync<U>(UserRolePermissionType.Read, action);
       protected Task WithUpdatePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Update, action);
-      protected Task<DomainObjectReference> WithUpdateDomainObjectReferencePermissionAsync(Func<Task<DomainObjectReference>> action) => WithPermissionAsync(UserRolePermissionType.Update, action);
+      protected Task WithUpdateDomainObjectReferencePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Update, action);
       protected Task WithDeletePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Delete, action);
 
       #endregion

@@ -127,12 +127,6 @@
     <Page Update="UserControls\Editor\DomainObjectReferencesEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UserControls\Editor\DomainObjectReferenceSelectorsView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UserControls\Editor\DomainObjectReferencesListView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="UserControls\Editor\DomainObjectReferenceView.xaml">
       <SubType>Designer</SubType>
     </Page>
