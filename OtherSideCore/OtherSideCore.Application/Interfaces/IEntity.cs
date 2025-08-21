@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OtherSideCore.Adapter
+namespace OtherSideCore.Application
 {
    public interface IEntity
    {

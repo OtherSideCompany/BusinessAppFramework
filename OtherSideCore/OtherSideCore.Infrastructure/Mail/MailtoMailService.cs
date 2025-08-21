@@ -1,12 +1,8 @@
 ﻿using OtherSideCore.Application.Mail;
 using OtherSideCore.Appplication.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Mail
 {
@@ -14,7 +10,7 @@ namespace OtherSideCore.Infrastructure.Mail
    {
       #region Fields
 
-      private IUserDialogService _userDialogService;
+      
 
       #endregion
 
@@ -32,9 +28,9 @@ namespace OtherSideCore.Infrastructure.Mail
 
       #region Constructor
 
-      public MailtoMailService(IUserDialogService userDialogService)
+      public MailtoMailService()
       {
-         _userDialogService = userDialogService;
+         
       }
 
       #endregion
@@ -56,7 +52,7 @@ namespace OtherSideCore.Infrastructure.Mail
             Process.Start(new ProcessStartInfo(mailtoUri) { UseShellExecute = true });
          }
          catch (Exception e)
-         {
+         {          
             string message = "Tentative d'envoi du mail:\n\n";
             message += $"A : {mail.To}\n";
             message += $"Sujet : {mail.Subject}\n";
@@ -67,7 +63,7 @@ namespace OtherSideCore.Infrastructure.Mail
             }
             message += $"\n\nProblème lors de l'ouverture du mail. Vérifiez que votre client mail est bien configuré.\n\n{mailtoUri}";
 
-            _userDialogService.Error(message);
+            throw new InvalidOperationException(message, e);
          }
       }
 

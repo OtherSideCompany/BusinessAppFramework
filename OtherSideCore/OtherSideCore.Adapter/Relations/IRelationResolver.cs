@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain;
+﻿using OtherSideCore.Application;
+using OtherSideCore.Domain;
 using System.Linq.Expressions;
 
 namespace OtherSideCore.Adapter.Relations

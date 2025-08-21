@@ -1,6 +1,7 @@
 ﻿using ImageMagick;
 using OtherSideCore.Adapter;
 using OtherSideCore.Adapter.Relations;
+using OtherSideCore.Application;
 using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;

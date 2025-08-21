@@ -17,7 +17,6 @@ namespace OtherSideCore.Application.Services
 
       public IUserContext UserContext { get; }
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; set; }
-      public IUserDialogService UserDialogService { get; }
       public IDomainObjectFileService DomainObjectFileService { get; }
       public IPasswordService PasswordService { get; }
       public IMailService MailService { get; }
@@ -37,7 +36,6 @@ namespace OtherSideCore.Application.Services
 
       public DomainObjectServiceDependencies(
          IUserContext userContext,
-         IUserDialogService userDialogService,
          IDomainObjectFileService domainObjectFileService,
          IPasswordService passwordService,
          IMailService mailService,
@@ -46,7 +44,6 @@ namespace OtherSideCore.Application.Services
          IUserPermissionResolverService userPermissionResolverService)
       {
          UserContext = userContext;
-         UserDialogService = userDialogService;
          DomainObjectFileService = domainObjectFileService;
          PasswordService = passwordService;
          MailService = mailService;

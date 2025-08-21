@@ -19,7 +19,6 @@ namespace OtherSideCore.Application.Services
       protected readonly IRepository<T> _repository;
       protected readonly IUserContext _userContext;
       protected readonly IDomainObjectServiceFactory _domainObjectServiceFactory;
-      protected readonly IUserDialogService _userDialogService;
       protected readonly IDomainObjectFileService _domainObjectFileService;
       protected readonly IPasswordService _passwordService;
       protected readonly IMailService _mailService;
@@ -49,7 +48,6 @@ namespace OtherSideCore.Application.Services
          _repository = repository;
          _userContext = domainObjectServiceDependencies.UserContext;
          _domainObjectServiceFactory = domainObjectServiceDependencies.DomainObjectServiceFactory;
-         _userDialogService = domainObjectServiceDependencies.UserDialogService;
          _domainObjectFileService = domainObjectServiceDependencies.DomainObjectFileService;
          _domainObjectEventBus = domainObjectServiceDependencies.DomainObjectEventBus;
          _domainObjectServiceFactory = domainObjectServiceDependencies.DomainObjectServiceFactory;
@@ -101,8 +99,7 @@ namespace OtherSideCore.Application.Services
 
          if (domainObject is ISystemObject systemObject && !String.IsNullOrEmpty(systemObject.SystemCode))
          {
-            _userDialogService.Error("Impossible de supprimer l'objet sélectionné car il est nécéssaire au fonctionnement du système.");
-            return false;
+            throw new InvalidOperationException("Impossible de supprimer l'objet sélectionné car il est nécéssaire au fonctionnement du système.");
          }
 
          try
@@ -121,21 +118,13 @@ namespace OtherSideCore.Application.Services
 
             await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
 
-            try
-            {
-               _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
-            }
-            catch (IOException)
-            {
-               _userDialogService.Error("Impossible de supprimer le dossier associé. Veuillez le supprimer manuellement.\n\n" + _domainObjectFileService.GetAssociatedDirectoryInfo(domainObject).FullName);
-            }
+            _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
 
             return true;
          }
          catch (Exception)
          {
-            _userDialogService.Error("Suppression impossible car des données sont associées");
-            return false;
+            throw new InvalidOperationException("Suppression impossible car des données sont associées");
          }
 
       }

@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Services;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace OtherSideCore.Application.Browser
 {
@@ -23,7 +18,6 @@ namespace OtherSideCore.Application.Browser
 
       public ILoggerFactory LoggerFactory { get; }
       public IUserContext UserContext { get; }
-      public IUserDialogService UserDialogService { get; }
       public IGlobalDataService GlobalDataService { get; }
       public IDomainObjectQueryServiceFactory DomainObjectQueryServiceFactory { get; }
       public IDomainObjectServiceFactory DomainObjectServiceFactory { get; }
@@ -42,7 +36,6 @@ namespace OtherSideCore.Application.Browser
       public DomainObjectBrowserDependencies(
          ILoggerFactory loggerFactory,
          IUserContext userContext,
-         IUserDialogService userDialogService,
          IGlobalDataService globalDataService,
          IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory,
          IDomainObjectServiceFactory domainObjectServiceFactory,
@@ -50,7 +43,6 @@ namespace OtherSideCore.Application.Browser
       {
          LoggerFactory = loggerFactory;
          UserContext = userContext;
-         UserDialogService = userDialogService;
          GlobalDataService = globalDataService;
          DomainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
          DomainObjectServiceFactory = domainObjectServiceFactory;

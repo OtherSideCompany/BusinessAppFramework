@@ -10,7 +10,7 @@ namespace OtherSideCore.Application.Search
       #region Fields
 
       protected IDomainObjectQueryService<TSearchResult> _domainObjectQueryService;
-      protected List<DomainObjectSearchResult> _searchResults;
+      protected List<TSearchResult> _searchResults;
       protected PageNavigation _pageNavigation;
 
       private Func<CancellationToken, Task> _selectedSearchResultChangedAsync;
@@ -28,7 +28,7 @@ namespace OtherSideCore.Application.Search
 
       public int PageSize = 20;
       public PageNavigation PageNavigation => _pageNavigation;
-      public List<DomainObjectSearchResult> SearchResults => _searchResults;
+      public List<TSearchResult> SearchResults => _searchResults;
       public Constraint<TSearchResult> ActivatedConstraint => _activatedConstraint;
 
       #endregion
@@ -45,7 +45,7 @@ namespace OtherSideCore.Application.Search
          IDomainObjectQueryService<TSearchResult> domainObjectQueryService)
       {
          _domainObjectQueryService = domainObjectQueryService;
-         _searchResults = new List<DomainObjectSearchResult>();
+         _searchResults = new List<TSearchResult>();
          _activableConstraints = new List<Constraint<TSearchResult>>();
          _filterConstraints = new List<Constraint<TSearchResult>>();
          _pageNavigation = new PageNavigation();

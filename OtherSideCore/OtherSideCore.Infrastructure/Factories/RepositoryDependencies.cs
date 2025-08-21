@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.Factories;
 using OtherSideCore.Adapter.Relations;
 using OtherSideCore.Application.Factories;
 

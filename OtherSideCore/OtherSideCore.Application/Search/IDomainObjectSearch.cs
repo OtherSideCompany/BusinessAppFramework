@@ -6,7 +6,7 @@ namespace OtherSideCore.Application.Search
    public interface IDomainObjectSearch<TSearchResult> : IDisposable where TSearchResult : DomainObjectSearchResult, new()
    {
       PageNavigation PageNavigation { get; }
-      List<DomainObjectSearchResult> SearchResults { get; }
+      List<TSearchResult> SearchResults { get; }
       Constraint<TSearchResult> ActivatedConstraint { get; }
 
       void ClearActivableConstraints();

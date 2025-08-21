@@ -10,7 +10,7 @@ namespace OtherSideCore.Infrastructure.Mail
    {
       #region Fields
 
-      private IUserDialogService _userDialogService;
+      
 
       #endregion
 
@@ -28,9 +28,9 @@ namespace OtherSideCore.Infrastructure.Mail
 
       #region Constructor
 
-      public OutlookMailService(IUserDialogService userDialogService)
+      public OutlookMailService()
       {
-         _userDialogService = userDialogService;
+         
       }
 
       #endregion
@@ -70,7 +70,7 @@ namespace OtherSideCore.Infrastructure.Mail
 
             message += "\n\nProblème lors de la création du mail dans Outlook.\n\nVérifiez que votre instance Outlook est bien démarée, ou tentez de la redémarrer.";
 
-            _userDialogService.Error(message);
+            throw new InvalidOperationException(message, e);
          }
       }
 

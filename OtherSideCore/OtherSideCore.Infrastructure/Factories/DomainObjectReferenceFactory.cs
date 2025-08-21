@@ -1,6 +1,4 @@
-﻿using OtherSideCore.Adapter;
-using OtherSideCore.Adapter.Factories;
-using OtherSideCore.Application;
+﻿using OtherSideCore.Application;
 using OtherSideCore.Application.Factories;
 using System;
 

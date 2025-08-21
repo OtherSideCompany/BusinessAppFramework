@@ -1,6 +1,4 @@
-﻿using OtherSideCore.Application;
-
-namespace OtherSideCore.Adapter.Factories
+﻿namespace OtherSideCore.Application.Factories
 {
    public interface IDomainObjectReferenceFactory
    {

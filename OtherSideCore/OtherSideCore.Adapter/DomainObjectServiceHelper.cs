@@ -99,6 +99,16 @@ namespace OtherSideCore.Adapter
             dialogService.Error(BuildPermissionErrorMessage(e.TargetType, e.PermissionType, localizationService));
             return false;
          }
+         catch (InvalidOperationException e)
+         {
+            dialogService.Error(e.Message);
+            return false;
+         }
+         catch (IOException e)
+         {
+            dialogService.Error(e.Message);
+            return false;
+         }
       }
 
       public static async Task<(bool, T?)> TryGetAsync<T>(

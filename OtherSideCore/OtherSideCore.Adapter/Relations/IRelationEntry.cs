@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Adapter;
+using OtherSideCore.Application;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using System;

@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using OtherSideCore.Adapter.DomainObjectInteraction;
+﻿using OtherSideCore.Adapter.DomainObjectInteraction;
+using OtherSideCore.Application;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;

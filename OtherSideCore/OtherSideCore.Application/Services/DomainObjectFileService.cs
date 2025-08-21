@@ -11,7 +11,6 @@ namespace OtherSideCore.Application.Services
 
       protected IAppConfiguration _appConfiguration;
       protected IImageCompressionService _imageCompressionService;
-      protected IUserDialogService _userDialogService;
 
       #endregion
 
@@ -29,11 +28,10 @@ namespace OtherSideCore.Application.Services
 
       #region Constructor
 
-      public DomainObjectFileService(IAppConfiguration appConfiguration, IImageCompressionService imageCompressionService, IUserDialogService userDialogService)
+      public DomainObjectFileService(IAppConfiguration appConfiguration, IImageCompressionService imageCompressionService)
       {
          _appConfiguration = appConfiguration;
          _imageCompressionService = imageCompressionService;
-         _userDialogService = userDialogService;
       }
 
       #endregion
@@ -87,53 +85,21 @@ namespace OtherSideCore.Application.Services
 
       public void OpenFolder(DirectoryInfo? directoryInfo)
       {
-         try
+         if (directoryInfo != null && directoryInfo.Exists)
          {
-            if (directoryInfo != null && directoryInfo.Exists)
-            {
-               Process.Start("explorer.exe", directoryInfo.FullName);
-            }
+            Process.Start("explorer.exe", directoryInfo.FullName);
          }
-         catch (System.ComponentModel.Win32Exception e)
-         {
-            _userDialogService.Error("Une erreur s'est produite lors de l'ouverture du dossier " + directoryInfo.FullName);
-         }
-         catch (ObjectDisposedException e)
-         {
-            _userDialogService.Error("Le dossier " + directoryInfo.FullName + " a été supprimé depuis la demande d'ouverture.");
-         }
-         catch (FileNotFoundException e)
-         {
-            _userDialogService.Error("Le dossier " + directoryInfo.FullName + " n'a pas été trouvé.");
-         }         
       }
 
       public void OpenFile(FileInfo fileInfo)
-      {       
-         try
+      {
+         if (fileInfo != null)
          {
-            if (fileInfo != null)
-            {
-               var p = new Process();
-               p.StartInfo = new ProcessStartInfo(fileInfo.FullName) { UseShellExecute = true };
-               p.Start();
-            }
-         }
-         catch (System.ComponentModel.Win32Exception e)
-         {
-            _userDialogService.Error("Une erreur s'est produite lors de l'ouverture du fichier " + fileInfo.FullName);
-         }
-         catch (ObjectDisposedException e)
-         {
-            _userDialogService.Error("Le fichier " + fileInfo.FullName + " a été supprimé depuis la demande d'ouverture.");
-         }
-         catch (FileNotFoundException e)
-         {
-            _userDialogService.Error("Le fichier " + fileInfo.FullName + " n'a pas été trouvé.");
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(fileInfo.FullName) { UseShellExecute = true };
+            p.Start();
          }
       }
-
-
       public void CopyFilesInAssociatedFolder(DomainObject domainObject, List<ManagedFile> managedFiles)
       {
          var associatedFolder = GetAssociatedDirectoryInfo(domainObject);
@@ -143,7 +109,7 @@ namespace OtherSideCore.Application.Services
             var destinationFilePath = Path.Combine(associatedFolder.FullName, managedFile.FileName);
 
             if (managedFile.IsInMemory)
-            {             
+            {
                using (var fileStream = new FileStream(destinationFilePath, FileMode.Create, FileAccess.Write))
                {
                   managedFile.InMemoryContent.Position = 0;
