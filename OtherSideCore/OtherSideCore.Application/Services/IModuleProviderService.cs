@@ -7,6 +7,6 @@ namespace OtherSideCore.Application.Services
    {
       List<IModule> GetModules();
       List<ISearchModule> GetSearchModules();
-      IModule? GetModuleByWorkspaceKey(StringKey key);
+      IModule? GetModuleByKey(StringKey key);
    }
 }

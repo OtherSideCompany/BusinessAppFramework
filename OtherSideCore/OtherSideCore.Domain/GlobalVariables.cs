@@ -4,6 +4,6 @@ namespace OtherSideCore.Domain
 {
    public class GlobalVariables
    {
-      public const string DefaultString = "-NA-";
+      public const string DefaultString = "NA";
    }
 }

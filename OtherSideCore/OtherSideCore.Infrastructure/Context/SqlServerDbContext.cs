@@ -51,7 +51,7 @@ namespace OtherSideCore.Infrastructure.Context
       {
          var builder = new SqlConnectionStringBuilder
          {
-            UserID = "app_user",
+            UserID = "app_admin",
             Password = _password,
             DataSource = DataSource,
             InitialCatalog = InitialCatalog,

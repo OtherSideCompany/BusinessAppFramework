@@ -1,79 +1,80 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Services
 {
-   public class WebDbInitializerService : IDbInitializerService
-   {
-      #region Fields
+    public class WebDbInitializerService : IDbInitializerService
+    {
+        #region Fields
 
-      protected IDbContextFactory<DbContext> _dbContextFactory;
+        protected IDbContextFactory<DbContext> _dbContextFactory;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Commands
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Commands
 
-      public WebDbInitializerService(
-         IDbContextFactory<DbContext> dbContextFactory)
-      {
-         _dbContextFactory = dbContextFactory;
-      }
 
-      #endregion
 
-      #region Public Methods
+        #endregion
 
-      public virtual async Task InitializeDatabaseAsync()
-      {
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            var levenshteinScript = CreateTSqlLevenshteinDistanceFunctionScript();
-            var editDistanceScript = CreateTSqlEditDistanceFunctionScript();
+        #region Constructor
 
-            await context.Database.ExecuteSqlRawAsync(levenshteinScript);
-            await context.Database.ExecuteSqlRawAsync(editDistanceScript);
-         }
-      }
+        public WebDbInitializerService(
+           IDbContextFactory<DbContext> dbContextFactory)
+        {
+            _dbContextFactory = dbContextFactory;
+        }
 
-      public string ReadSqlScript(string path, Assembly assembly)
-      {
-         using (var stream = assembly.GetManifestResourceStream(path))
-         {
-            using (var reader = new StreamReader(stream))
+        #endregion
+
+        #region Public Methods
+
+        public virtual async Task InitializeDatabaseAsync()
+        {
+            using (var context = _dbContextFactory.CreateDbContext())
             {
-               return reader.ReadToEnd();
+                var levenshteinScript = CreateTSqlLevenshteinDistanceFunctionScript();
+                var editDistanceScript = CreateTSqlEditDistanceFunctionScript();
+
+                await context.Database.ExecuteSqlRawAsync(levenshteinScript);
+                await context.Database.ExecuteSqlRawAsync(editDistanceScript);
             }
-         }
-      }
+        }
 
-      #endregion
+        public string ReadSqlScript(string path, Assembly assembly)
+        {
+            using (var stream = assembly.GetManifestResourceStream(path))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
 
-      #region Private Methods
+        #endregion
 
-      private string CreateTSqlLevenshteinDistanceFunctionScript()
-      {
-         return ReadSqlScript(typeof(DbInitializerService).Namespace + ".CreateTSqlLevenshteinDistanceFunction.sql", Assembly.GetExecutingAssembly());
-      }
+        #region Private Methods
 
-      private string CreateTSqlEditDistanceFunctionScript()
-      {
-         return ReadSqlScript(typeof(DbInitializerService).Namespace + ".CreateTSqlEditDistanceFunction.sql", Assembly.GetExecutingAssembly());
-      }
+        private string CreateTSqlLevenshteinDistanceFunctionScript()
+        {
+            return ReadSqlScript(typeof(DbInitializerService).Namespace + ".CreateTSqlLevenshteinDistanceFunction.sql", Assembly.GetExecutingAssembly());
+        }
 
-      #endregion
-   }
+        private string CreateTSqlEditDistanceFunctionScript()
+        {
+            return ReadSqlScript(typeof(DbInitializerService).Namespace + ".CreateTSqlEditDistanceFunction.sql", Assembly.GetExecutingAssembly());
+        }
+
+        #endregion
+    }
 }
