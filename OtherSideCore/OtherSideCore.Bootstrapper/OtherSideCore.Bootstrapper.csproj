@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OtherSideCore.Adapter\OtherSideCore.Adapter.csproj" />
     <ProjectReference Include="..\OtherSideCore.Application\OtherSideCore.Application.csproj" />
     <ProjectReference Include="..\OtherSideCore.Infrastructure\OtherSideCore.Infrastructure.csproj" />
   </ItemGroup>
