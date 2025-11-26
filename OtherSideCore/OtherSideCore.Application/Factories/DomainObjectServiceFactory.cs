@@ -1,76 +1,51 @@
-﻿using OtherSideCore.Application.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
 using System.Reflection;
 
 namespace OtherSideCore.Application.Factories
 {
-   public class DomainObjectServiceFactory : TypeBasedFactory, IDomainObjectServiceFactory
-   {
-      #region Fields
+    public class DomainObjectServiceFactory : IDomainObjectServiceFactory
+    {
+        #region Fields
 
-      protected IRepositoryFactory _repositoryFactory;
-      protected DomainObjectServiceDependencies _domainObjectServiceDependencies;
+        private readonly IServiceProvider _serviceProvider;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
+        #region Properties
 
 
-      #endregion
 
-      #region Constructor
+        #endregion
 
-      public DomainObjectServiceFactory(
-         IRepositoryFactory repositoryFactory,
-         DomainObjectServiceDependencies domainObjectServiceDependencies)
-      {
-         _repositoryFactory = repositoryFactory;
-         _domainObjectServiceDependencies = domainObjectServiceDependencies;
+        #region Constructor
 
-         domainObjectServiceDependencies.DomainObjectServiceFactory = this;
+        public DomainObjectServiceFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-         SetFallbackFactory(type => CreateDefaultDomainObjectService(type));
-      }
+        #endregion
 
-      #endregion
+        #region Public Methods
 
-      #region Public Methods
+        public IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new()
+        {
+            return _serviceProvider.GetRequiredService<IDomainObjectService<T>>();
+        }
 
-      public IDomainObjectService<T> CreateDomainObjectService<T>() where T : DomainObject, new()
-      {
-         return (IDomainObjectService<T>)CreateFromType<T>();
-      }
+        public object CreateDomainObjectService(Type type)
+        {
+            return _serviceProvider.GetRequiredService(type);
+        }
 
-      public object CreateDomainObjectService(Type type)
-      {
-         return CreateFromType(type);
-      }
+        #endregion
 
-      public void RegisterDomainObjectService<T>(Func<IDomainObjectService<T>> factory) where T : DomainObject, new()
-      {
-         base.Register<T>(() => factory());
-      }
+        #region Private Methods
 
-      #endregion
 
-      #region Private Methods
 
-      private object CreateDefaultDomainObjectService(Type type)
-      {
-         var method = GetType()
-             .GetMethod(nameof(CreateDefaultDomainObjectServiceGeneric), BindingFlags.NonPublic | BindingFlags.Instance)!
-             .MakeGenericMethod(type);
-
-         return method.Invoke(this, null)!;
-      }
-
-      private object CreateDefaultDomainObjectServiceGeneric<T>() where T : DomainObject, new()
-      {
-         var repo = _repositoryFactory.CreateRepository<T>();
-         return new DomainObjectService<T>(repo, _domainObjectServiceDependencies);
-      }
-
-      #endregion
-   }
+        #endregion
+    }
 }

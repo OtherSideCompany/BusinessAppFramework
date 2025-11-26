@@ -1,69 +1,68 @@
 ﻿using OtherSideCore.Application.DomainObjectEvents;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Mail;
-using OtherSideCore.Appplication.Services;
 using OtherSideCore.Domain.Services;
 namespace OtherSideCore.Application.Services
 {
-   public class DomainObjectServiceDependencies
-   {
-      #region Fields
+    public class DomainObjectServiceDependencies
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public IUserContext UserContext { get; }
-      public IDomainObjectServiceFactory DomainObjectServiceFactory { get; set; }
-      public IDomainObjectFileService DomainObjectFileService { get; }
-      public IPasswordService PasswordService { get; }
-      public IMailService MailService { get; }
-      public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
-      public IDomainObjectEventBus DomainObjectEventBus { get; }
-      public IUserPermissionResolverService UserPermissionResolverService { get; set; }
+        public IUserContext UserContext { get; set; }
+        public IDomainObjectServiceFactory DomainObjectServiceFactory { get; set; }
+        public IDomainObjectFileService DomainObjectFileService { get; }
+        public IPasswordService PasswordService { get; }
+        public IMailService MailService { get; }
+        public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
+        public IDomainObjectEventBus DomainObjectEventBus { get; }
+        public IUserPermissionResolverService UserPermissionResolverService { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectServiceDependencies(
-         IUserContext userContext,
-         IDomainObjectFileService domainObjectFileService,
-         IPasswordService passwordService,
-         IMailService mailService,
-         IDomainObjectSearchFactory domainObjectSearchFactory,
-         IDomainObjectEventBus domainObjectEventBus,
-         IUserPermissionResolverService userPermissionResolverService)
-      {
-         UserContext = userContext;
-         DomainObjectFileService = domainObjectFileService;
-         PasswordService = passwordService;
-         MailService = mailService;
-         DomainObjectSearchFactory = domainObjectSearchFactory;
-         DomainObjectEventBus = domainObjectEventBus;
-         UserPermissionResolverService = userPermissionResolverService;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectServiceDependencies(
+            IUserContext userContext,
+            IDomainObjectFileService domainObjectFileService,
+            IPasswordService passwordService,
+            IMailService mailService,
+            IDomainObjectSearchFactory domainObjectSearchFactory,
+            IDomainObjectEventBus domainObjectEventBus,
+            IUserPermissionResolverService userPermissionResolverService)
+        {
+            UserContext = userContext;
+            DomainObjectFileService = domainObjectFileService;
+            PasswordService = passwordService;
+            MailService = mailService;
+            DomainObjectSearchFactory = domainObjectSearchFactory;
+            DomainObjectEventBus = domainObjectEventBus;
+            UserPermissionResolverService = userPermissionResolverService;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

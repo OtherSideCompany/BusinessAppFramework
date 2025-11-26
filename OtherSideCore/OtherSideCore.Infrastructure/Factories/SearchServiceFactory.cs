@@ -1,54 +1,53 @@
-﻿using OtherSideCore.Application.Factories;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Services;
 using System;
 
 namespace OtherSideCore.Infrastructure.Factories
 {
-   public class SearchServiceFactory : TypeBasedFactory, ISearchServiceFactory
-   {
-      #region Fields
+    public class SearchServiceFactory : ISearchServiceFactory
+    {
+        #region Fields
+
+        private IServiceProvider _serviceProvider;
+
+        #endregion
+
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Commands
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
+        public SearchServiceFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
+        #endregion
 
-      #endregion
+        #region Public Methods
 
-      #region Public Methods
+        public ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new()
+        {
+            return _serviceProvider.GetRequiredService<ISearchService<TSearchResult>>();
+        }
 
-      public ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new()
-      {
-         return (ISearchService<TSearchResult>)CreateFromType(typeof(TSearchResult));
-      }
+        #endregion
 
-      public void Register<TSearchResult>(Func<ISearchService<TSearchResult>> factory) where TSearchResult : DomainObjectSearchResult, new()
-      {
-         Register(typeof(TSearchResult), args => factory());
-      }
-
-      #endregion
-
-      #region Private Methods
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

@@ -7,6 +7,5 @@ namespace OtherSideCore.Application.Factories
    {
       IRepository<T> CreateRepository<T>() where T : DomainObject;
       object CreateRepository(Type type);
-      void Register<T>(Func<IRepository<T>> factory) where T : DomainObject;
    }
 }

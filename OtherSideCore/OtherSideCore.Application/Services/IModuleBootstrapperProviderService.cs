@@ -3,10 +3,10 @@ using OtherSideCore.Domain;
 
 namespace OtherSideCore.Application.Services
 {
-   public interface IModuleProviderService
+   public interface IModuleBootstrapperProviderService
    {
-      List<IModule> GetModules();
+      List<IModuleBootstrapper> GetModules();
       List<ISearchModule> GetSearchModules();
-      IModule? GetModuleByKey(StringKey key);
+      IModuleBootstrapper? GetModuleByKey(StringKey key);
    }
 }

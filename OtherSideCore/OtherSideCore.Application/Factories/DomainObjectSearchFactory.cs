@@ -1,75 +1,51 @@
-﻿using OtherSideCore.Application.Search;
-using OtherSideCore.Domain.DomainObjects;
-using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OtherSideCore.Application.Search;
 
 namespace OtherSideCore.Application.Factories
 {
-   public class DomainObjectSearchFactory : IDomainObjectSearchFactory
-   {
-      #region Fields
+    public class DomainObjectSearchFactory : IDomainObjectSearchFactory
+    {
+        #region Fields
 
-      private IDomainObjectQueryServiceFactory _domainObjectQueryServiceFactory;
-      private IDomainObjectServiceFactory _domainObjectServiceFactory;
+        private IServiceProvider _serviceProvider;
 
-      private TypeBasedFactory _domainObjectSearchFactory = new();
-      
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Commands
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public DomainObjectSearchFactory(
-         IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory)
-      {
-         _domainObjectQueryServiceFactory = domainObjectQueryServiceFactory;
+        public DomainObjectSearchFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-         _domainObjectSearchFactory.SetFallbackFactory(type => CreateDefaultDomainObjectSearch(type));
-      }
+        #endregion
 
-      #endregion
+        #region Public Methods
 
-      #region Public Methods
+        public IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObjectSearchResult, new()
+        {
+            return _serviceProvider.GetRequiredService<IDomainObjectSearch<T>>();
+        }
 
-      public void RegisterDomainObjectSearch<T>(Func<IDomainObjectSearch<T>> factory) where T : DomainObjectSearchResult, new()
-      {
-         _domainObjectSearchFactory.Register<T>(() => factory());
-      }
+        #endregion
 
-      public IDomainObjectSearch<T> CreateDomainObjectSearch<T>(IDomainObjectQueryServiceFactory domainObjectQueryServiceFactory) where T : DomainObjectSearchResult, new()
-      {
-         return (IDomainObjectSearch<T>)_domainObjectSearchFactory.CreateFromType<T>();
-      }
+        #region Private Methods
 
-      #endregion
 
-      #region Private Methods
 
-      private object CreateDefaultDomainObjectSearch(Type type)
-      {
-         var method = GetType()
-             .GetMethod(nameof(CreateDefaultDomainObjectSearchGeneric), BindingFlags.NonPublic | BindingFlags.Instance)!
-             .MakeGenericMethod(type);
-
-         return method.Invoke(this, null)!;
-      }
-
-      private object CreateDefaultDomainObjectSearchGeneric<T>() where T : DomainObjectSearchResult, new()
-      {
-         return new DomainObjectSearch<T>(_domainObjectQueryServiceFactory.CreateDomainObjectQueryService<T>());
-      }
-
-      #endregion
-   }
+        #endregion
+    }
 }

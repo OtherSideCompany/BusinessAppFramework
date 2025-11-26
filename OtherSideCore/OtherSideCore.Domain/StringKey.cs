@@ -6,46 +6,48 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Domain
 {
-   public class StringKey : IEquatable<StringKey>
-   {
-      #region Fields
+    public class StringKey : IEquatable<StringKey>
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public string Key { get; }
+        public static StringKey Empty => StringKey.From(string.Empty);
 
-      #endregion
+        public string Key { get; }
 
-      #region Commands
+        #endregion
 
-
-
-      #endregion
-
-      #region Constructor
-
-      private StringKey(string key) => Key = key;
-
-      #endregion
-
-      #region Public Methods
-
-      public static StringKey From(string key) => new(key);
-      public override string ToString() => Key;
-      public override bool Equals(object? obj) => obj is StringKey other && Equals(other);
-      public bool Equals(StringKey? other) => other is not null && string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase);
-      public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Key);
-
-      #endregion
-
-      #region Private Methods
+        #region Commands
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Constructor
+
+        private StringKey(string key) => Key = key;
+
+        #endregion
+
+        #region Public Methods
+
+        public static StringKey From(string key) => new(key);
+        public override string ToString() => Key;
+        public override bool Equals(object? obj) => obj is StringKey other && Equals(other);
+        public bool Equals(StringKey? other) => other is not null && string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase);
+        public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Key);
+
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }
