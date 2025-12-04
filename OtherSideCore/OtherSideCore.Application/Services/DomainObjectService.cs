@@ -93,32 +93,22 @@ namespace OtherSideCore.Application.Services
 
         }
 
-        public virtual async Task<bool> DeleteAsync(T domainObject)
+        public virtual async Task<bool> DeleteAsync(int domainObjectId)
         {
-            var deletedDomainObjectId = domainObject.Id;
-
-            if (domainObject is ISystemObject systemObject && !String.IsNullOrEmpty(systemObject.SystemCode))
+            if (await IsSystemObjectAsync(domainObjectId))
             {
                 throw new InvalidOperationException("Impossible de supprimer l'objet sélectionné car il est nécéssaire au fonctionnement du système.");
             }
 
             try
             {
-                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(domainObject));
+                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(typeof(T), domainObjectId));
 
-                await WithDeletePermissionAsync(() => _repository.DeleteAsync(domainObject));
+                await WithDeletePermissionAsync(() => _repository.DeleteAsync(domainObjectId));
 
-                domainObject.Id = 0;
-                domainObject.LastModifiedById = null;
-                domainObject.LastModifiedByName = null;
-                domainObject.CreatedById = null;
-                domainObject.CreatedByName = null;
-                domainObject.CreationDate = default;
-                domainObject.LastModifiedDateTime = default;
+                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(typeof(T), domainObjectId));
 
-                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(domainObject, deletedDomainObjectId));
-
-                _domainObjectFileService.TryDeleteAssociatedFolder(domainObject);
+                _domainObjectFileService.TryDeleteAssociatedFolder(domainObjectId);
 
                 return true;
             }
@@ -126,7 +116,6 @@ namespace OtherSideCore.Application.Services
             {
                 throw new InvalidOperationException("Suppression impossible car des données sont associées");
             }
-
         }
 
         public async Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
@@ -151,7 +140,7 @@ namespace OtherSideCore.Application.Services
             domainObject.LastModifiedByName = _userContext.GetName();
 
             await WithUpdatePermissionAsync(() => _repository.SaveAsync(domainObject));
-            await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(domainObject));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(typeof(T), domainObject.Id));
         }
 
         public async Task SaveIndexAsync(IIndexable domainObject)
@@ -161,7 +150,7 @@ namespace OtherSideCore.Application.Services
             ((DomainObject)domainObject).LastModifiedByName = _userContext.GetName();
 
             await WithUpdatePermissionAsync(() => _repository.SaveIndexAsync(domainObject));
-            await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent((DomainObject)domainObject));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(typeof(T), domainObject.Id));
         }
 
         public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default)
@@ -184,14 +173,19 @@ namespace OtherSideCore.Application.Services
             await WithUpdatePermissionAsync(() => _repository.SetParentAsync(domainObject, parent, cancellationToken));
         }
 
-        public virtual async Task<int?> GetParentIdAsync<U>(T domainObject, CancellationToken cancellationToken = default) where U : DomainObject
+        public virtual async Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject
         {
-            return await WithReadPermissionAsync(() => _repository.GetParentIdAsync<U>(domainObject, cancellationToken));
+            return await WithReadPermissionAsync(() => _repository.GetParentIdAsync<U>(childDomainObjectId, cancellationToken));
         }
 
         #endregion
 
         #region Private Methods
+
+        private async Task<bool> IsSystemObjectAsync(int domainObjectId)
+        {
+            return typeof(T).IsAssignableFrom(typeof(ISystemObject)) && await _repository.IsSystemObjectAsync(domainObjectId);
+        }
 
         private async Task CreateWithoutRightsCheckAsync(T domainObject, DomainObject? parent)
         {
@@ -208,7 +202,7 @@ namespace OtherSideCore.Application.Services
             domainObject.LastModifiedByName = _userContext.GetName();
 
             await _repository.CreateAsync(domainObject, parent);
-            await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(domainObject));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(typeof(T), domainObject.Id));
         }
 
         private async Task<bool> CheckRightAsync(string permissionKey, int userId, UserRolePermissionType userRolePermissionType)

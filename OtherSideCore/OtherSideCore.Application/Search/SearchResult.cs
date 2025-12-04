@@ -14,13 +14,8 @@ namespace OtherSideCore.Application.Search
 
         #region Properties
 
-        public IEnumerable<TSearchResult> Items { get; set; }
+        public List<TSearchResult> Items { get; set; } = new()!;
         public int Count { get; set; }
-        public List<DomainObjectSearchResult> DomainObjectSearchResults { get; set; } = new()!;
-
-        //public int PageNumber { get; set; }
-        //public int PageSize { get; set; }
-        //public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 
         #endregion
 

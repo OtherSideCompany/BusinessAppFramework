@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtherSideCore.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace OtherSideCore.Application.Search
 {
     public class PaginatedSearchRequest : SearchRequest
     {
-        public bool ResetPages;
-        public int PageIndex;
-        public int PageSize;
+        public bool ResetPages { get; set; }
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
     }
 }

@@ -38,10 +38,10 @@ namespace OtherSideCore.Application.Services
 
       #region Public Methods
 
-      public List<FileInfo> GetAssociatedFileInfos(DomainObject domainObject)
+      public List<FileInfo> GetAssociatedFileInfos(int domainObjectId)
       {
          var fileInfos = new List<FileInfo>();
-         var directoryInfo = GetAssociatedDirectoryInfo(domainObject);
+         var directoryInfo = GetAssociatedDirectoryInfo(domainObjectId);
 
          if (Directory.Exists(directoryInfo.FullName))
          {
@@ -52,10 +52,10 @@ namespace OtherSideCore.Application.Services
          return fileInfos.OrderBy(f => f.Name).ToList();
       }
 
-      public List<DirectoryInfo> GetAssociatedNestedDirectoriesInfos(DomainObject domainObject)
+      public List<DirectoryInfo> GetAssociatedNestedDirectoriesInfos(int domainObjectId)
       {
          var directoryInfos = new List<DirectoryInfo>();
-         var directoryInfo = GetAssociatedDirectoryInfo(domainObject);
+         var directoryInfo = GetAssociatedDirectoryInfo(domainObjectId);
 
          if (Directory.Exists(directoryInfo.FullName))
          {
@@ -66,11 +66,11 @@ namespace OtherSideCore.Application.Services
          return directoryInfos.OrderBy(d => d.Name).ToList();
       }
 
-      public abstract DirectoryInfo? GetAssociatedDirectoryInfo(DomainObject domainObject);
+      public abstract DirectoryInfo? GetAssociatedDirectoryInfo(int domainObjectId);
 
-      public void CreateFolder(DomainObject domainObject)
+      public void CreateFolder(int domainObjectId)
       {
-         var folderName = GetAssociatedDirectoryInfo(domainObject)?.FullName;
+         var folderName = GetAssociatedDirectoryInfo(domainObjectId)?.FullName;
 
          if (folderName != null)
          {
@@ -78,9 +78,9 @@ namespace OtherSideCore.Application.Services
          }
       }
 
-      public void OpenFolder(DomainObject domainObject)
+      public void OpenFolder(int domainObjectId)
       {
-         OpenFolder(GetAssociatedDirectoryInfo(domainObject));
+         OpenFolder(GetAssociatedDirectoryInfo(domainObjectId));
       }
 
       public void OpenFolder(DirectoryInfo? directoryInfo)
@@ -100,9 +100,9 @@ namespace OtherSideCore.Application.Services
             p.Start();
          }
       }
-      public void CopyFilesInAssociatedFolder(DomainObject domainObject, List<ManagedFile> managedFiles)
+      public void CopyFilesInAssociatedFolder(int domainObjectId, List<ManagedFile> managedFiles)
       {
-         var associatedFolder = GetAssociatedDirectoryInfo(domainObject);
+         var associatedFolder = GetAssociatedDirectoryInfo(domainObjectId);
 
          foreach (var managedFile in managedFiles)
          {
@@ -141,9 +141,9 @@ namespace OtherSideCore.Application.Services
                 Path.GetExtension(fileInfo.Name).ToLower().Equals(".heif");
       }
 
-      public void TryDeleteAssociatedFolder(DomainObject domainObject)
+      public void TryDeleteAssociatedFolder(int domainObjectId)
       {
-         var associatedFolder = GetAssociatedDirectoryInfo(domainObject);
+         var associatedFolder = GetAssociatedDirectoryInfo(domainObjectId);
 
          if (associatedFolder != null && associatedFolder.Exists)
          {

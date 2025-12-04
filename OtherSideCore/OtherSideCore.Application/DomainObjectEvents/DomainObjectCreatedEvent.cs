@@ -7,44 +7,44 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.DomainObjectEvents
 {
-   public class DomainObjectCreatedEvent : DomainObjectEvent
-   {
-      #region Fields
+    public class DomainObjectCreatedEvent : DomainObjectEvent
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-      #endregion
-
-      #region Commands
+        #region Properties
 
 
+        #endregion
 
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectCreatedEvent(DomainObject domainObject) : base(domainObject)
-      {
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectCreatedEvent(Type domainObjectType, int domainObjectId) : base(domainObjectType, domainObjectId)
+        {
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
+        #endregion
 
-   }
+        #region Private Methods
+
+
+
+        #endregion
+
+    }
 }

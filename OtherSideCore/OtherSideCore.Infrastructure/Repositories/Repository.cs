@@ -196,9 +196,9 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
-        public virtual async Task DeleteAsync(TDomainObject domainObject)
+        public virtual async Task DeleteAsync(int domainObjectId)
         {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteAsync), domainObject.Id);
+            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteAsync), domainObjectId);
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
@@ -206,11 +206,11 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 if (_canUseExecuteDelete)
                 {
-                    affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObject.Id).ExecuteDeleteAsync();
+                    affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObjectId).ExecuteDeleteAsync();
                 }
                 else
                 {
-                    var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
+                    var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
 
                     if (entity != null)
                     {
@@ -223,7 +223,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 if (affectedRows == 0)
                 {
-                    throw new ArgumentNullException($"Entity with Id {domainObject.Id} not found in data repository {nameof(TEntity).ToString()}");
+                    throw new ArgumentNullException($"Entity with Id {domainObjectId} not found in data repository {nameof(TEntity).ToString()}");
                 }
             }
         }
@@ -326,11 +326,25 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
-        public virtual async Task<int?> GetParentIdAsync<U>(TDomainObject domainObject, CancellationToken cancellationToken = default) where U : DomainObject
+        public virtual async Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject
         {
             _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetParentIdAsync));
 
             return await Task.FromResult<int?>(null);
+        }
+
+        public async Task<bool> IsSystemObjectAsync(int domainObjectId)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(IsSystemObjectAsync)}, domainObjectId : {domainObjectId}");
+
+            if (!typeof(TEntity).IsAssignableFrom(typeof(ISystemObject)))
+                return false;
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var systemCode = await context.Set<TEntity>().Where(e => e.Id == domainObjectId).Select(e => ((ISystemObject)e).SystemCode).FirstOrDefaultAsync();
+
+            return systemCode != null;
         }
 
         public async Task<TDomainObject> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
@@ -404,22 +418,25 @@ namespace OtherSideCore.Infrastructure.Repositories
 
         private void MapDomainObjectProperty(
            PropertyInfo domainObjectProperty,
-           object domainObjectPropertyValue,
+           object? domainObjectPropertyValue,
            TEntity entity,
            Dictionary<string, PropertyInfo> entityProperties)
         {
             var domainObjectIdProperty = domainObjectProperty.PropertyType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
 
-            var idValue = domainObjectIdProperty.GetValue(domainObjectPropertyValue);
-            var foreignKeyName = domainObjectProperty.Name + "Id";
+            if (domainObjectPropertyValue != null)
+            {
+                var idValue = domainObjectIdProperty.GetValue(domainObjectPropertyValue);
+                var foreignKeyName = domainObjectProperty.Name + "Id";
 
-            if (entityProperties.TryGetValue(foreignKeyName, out var foreignKeyProperty))
-            {
-                foreignKeyProperty.SetValue(entity, idValue);
-            }
-            else
-            {
-                throw new ArgumentException($"Property '{foreignKeyName}' not found in target type {typeof(TEntity).Name}");
+                if (entityProperties.TryGetValue(foreignKeyName, out var foreignKeyProperty))
+                {
+                    foreignKeyProperty.SetValue(entity, idValue);
+                }
+                else
+                {
+                    throw new ArgumentException($"Property '{foreignKeyName}' not found in target type {typeof(TEntity).Name}");
+                }
             }
         }
 

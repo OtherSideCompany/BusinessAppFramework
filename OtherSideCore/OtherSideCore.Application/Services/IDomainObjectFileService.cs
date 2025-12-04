@@ -4,14 +4,14 @@ namespace OtherSideCore.Application.Services
 {
    public interface IDomainObjectFileService
    {
-      DirectoryInfo GetAssociatedDirectoryInfo(DomainObject domainObject);
-      List<FileInfo> GetAssociatedFileInfos(DomainObject domainObject);
-      List<DirectoryInfo> GetAssociatedNestedDirectoriesInfos(DomainObject domainObject);
-      void CreateFolder(DomainObject domainObject);
-      void OpenFolder(DomainObject domainObject);
+      DirectoryInfo GetAssociatedDirectoryInfo(int domainObjectId);
+      List<FileInfo> GetAssociatedFileInfos(int domainObjectId);
+      List<DirectoryInfo> GetAssociatedNestedDirectoriesInfos(int domainObjectId);
+      void CreateFolder(int domainObjectId);
+      void OpenFolder(int domainObjectId);
       void OpenFolder(DirectoryInfo directoryInfo);
       void OpenFile(FileInfo fileInfo);
-      void CopyFilesInAssociatedFolder(DomainObject domainObject, List<ManagedFile> managedFiles);
-      void TryDeleteAssociatedFolder(DomainObject domainObject);
+      void CopyFilesInAssociatedFolder(int domainObjectId, List<ManagedFile> managedFiles);
+      void TryDeleteAssociatedFolder(int domainObjectId);
    }
 }

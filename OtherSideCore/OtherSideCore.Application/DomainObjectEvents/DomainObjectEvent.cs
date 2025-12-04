@@ -2,45 +2,47 @@
 
 namespace OtherSideCore.Application.DomainObjectEvents
 {
-   public abstract class DomainObjectEvent
-   {
-      #region Fields
+    public abstract class DomainObjectEvent
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public DomainObject DomainObject { get; private set; }
+        public Type DomainObjectType { get; private set; }
+        public int DomainObjectId { get; private set; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectEvent(DomainObject domainObject)
-      {
-         DomainObject = domainObject;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectEvent(Type domainObjectType, int domainObjectId)
+        {
+            DomainObjectType = domainObjectType;
+            DomainObjectId = domainObjectId;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

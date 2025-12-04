@@ -10,19 +10,30 @@ namespace OtherSideCore.Application
         public const string ModuleKeyParam = "moduleKey";
         public const string DomainObjectIdParam = "domainObjectId";
 
-        public const string Modules = "api/navigation/modules";
-        public const string Workspaces = $"api/navigation/modules/{{{ModuleKeyParam}}}/workspaces";
-        public static string WorkspacesFor(string moduleKey) => Workspaces.Replace($"{{{ModuleKeyParam}}}", moduleKey);
+        public const string ModulesTemplate = "api/navigation/modules";
+        public const string WorkspacesTemplate = $"api/navigation/modules/{{{ModuleKeyParam}}}/workspaces";       
 
-        public const string Search = "api/search/[controller]";
-        public const string PaginatedSearch = "api/search/[controller]/paginated";
-        public const string SpecificSearch = $"api/search/[controller]/{{{DomainObjectIdParam}}}";
-        public static string SearchFor(Type searchResultType) => Search.Replace("[controller]", searchResultType.Name.ToLowerInvariant());
-        public static string PaginatedSearchFor(Type searchResultType) => PaginatedSearch.Replace("[controller]", searchResultType.Name.ToLowerInvariant());
-        public static string SpecificSearchFor(Type searchResultType, int domainObjectId) => SpecificSearch.Replace("[controller]", searchResultType.Name.ToLowerInvariant())
-                                                                                                           .Replace($"{{{DomainObjectIdParam}}}", domainObjectId.ToString());
+        public const string CountTemplate = "api/count/[controller]";
+        public const string SearchTemplate = "api/search/[controller]";
+        public const string PaginatedSearchTemplate = "api/search/[controller]/paginated";
+        public const string SpecificSearchTemplate = $"api/search/[controller]/{{{DomainObjectIdParam}}}";
 
-        public const string Create = "api/create/[controller]";
-        public static string CreateFor(Type domainObjectType) => Create.Replace("[controller]", domainObjectType.Name.ToLowerInvariant());
+        public const string CreateTemplate = "api/create/[controller]";
+        public const string GetTemplate = $"api/get/[controller]/{{{DomainObjectIdParam}}}";
+        public const string SaveTemplate = $"api/save/[controller]/{{{DomainObjectIdParam}}}";
+        public const string DeleteTemplate = $"api/delete/[controller]/{{{DomainObjectIdParam}}}";
+
+        public static string WorkspacesFor(string moduleKey) => WorkspacesTemplate.Replace($"{{{ModuleKeyParam}}}", moduleKey);
+        public static string For(string template, Type domainObjectType, int? id)
+        {
+            var route = template.Replace("[controller]", domainObjectType.Name.ToLowerInvariant());
+
+            if (id != null)
+            {
+                route = route.Replace($"{{{DomainObjectIdParam}}}", id.ToString());
+            }
+
+            return route;
+        }
     }
 }

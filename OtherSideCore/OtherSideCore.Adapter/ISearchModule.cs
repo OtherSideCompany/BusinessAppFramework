@@ -8,7 +8,6 @@ namespace OtherSideCore.Adapter
    {
       void RegisterServices(IServiceCollection services);
       void RegisterSearchServices(ISearchServiceFactory searchServiceFactory, IServiceProvider serviceProvider);
-      void RegisterDomainObjectSearchFactory(IDomainObjectSearchFactory domainObjectSearchFactory, IServiceProvider serviceProvider);
       void RegisterDomainObjectSearchViewModelFactory(IDomainObjectsSearchViewModelFactory domainObjectSearchFactory, IServiceProvider serviceProvider);
    }
 }

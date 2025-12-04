@@ -7,83 +7,96 @@ using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Domain.DomainObjects
 {
-   public abstract class DomainObject : IDisposable, ICloneable
-   {
-      #region Fields
+    public abstract class DomainObject : IDisposable, ICloneable
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public int Id { get; set; }
-      public DateTime CreationDate { get; set; }
-      public int? CreatedById { get; set; }
-      public string? CreatedByName { get; set; }
-      public DateTime LastModifiedDateTime { get; set; }
-      public int? LastModifiedById { get; set; }
-      public string? LastModifiedByName { get; set; }
+        [SystemProperty]
+        public int Id { get; set; }
 
-      #endregion
+        [SystemProperty]
+        public DateTime CreationDate { get; set; }
 
-      #region Constructor
+        [SystemProperty]
+        public int? CreatedById { get; set; }
 
-      public DomainObject()
-      {
-         
-      }
+        [SystemProperty]
+        public string? CreatedByName { get; set; }
 
-      #endregion
+        [SystemProperty]
+        public DateTime LastModifiedDateTime { get; set; }
 
-      #region Public Methods
+        [SystemProperty]
+        public int? LastModifiedById { get; set; }
 
-      public virtual void LoadDefaultProperties() { }
+        [SystemProperty]
+        public string? LastModifiedByName { get; set; }
 
-      public override bool Equals(object obj)
-      {
-         var item = obj as DomainObject;
+        #endregion
 
-         if (item == null)
-         {
-            return false;
-         }
+        #region Constructor
 
-         if (Id == 0 && item.Id == 0)
-         {
-            return GetHashCode() == item.GetHashCode();
-         }
-         else
-         {
-            return Id == item.Id;
-         }
-      }
+        public DomainObject()
+        {
 
-      public virtual object Clone()
-      {
-         var domainObject = (DomainObject)MemberwiseClone();
+        }
 
-         domainObject.Id = 0;
-         domainObject.CreatedById = null;
-         domainObject.LastModifiedById = null;
-         domainObject.CreatedByName = null;
-         domainObject.LastModifiedByName = null;
-         domainObject.CreationDate = DateTime.Now;
-         domainObject.LastModifiedDateTime = DateTime.Now;
+        #endregion
 
-         return domainObject;
-      }      
+        #region Public Methods
 
-      public virtual void Dispose()
-      {
-         
-      }
+        public virtual void LoadDefaultProperties() { }
 
-      #endregion
+        public override bool Equals(object obj)
+        {
+            var item = obj as DomainObject;
 
-      #region Private Methods      
-     
+            if (item == null)
+            {
+                return false;
+            }
 
-      #endregion
-   }
+            if (Id == 0 && item.Id == 0)
+            {
+                return GetHashCode() == item.GetHashCode();
+            }
+            else
+            {
+                return Id == item.Id;
+            }
+        }
+
+        public virtual object Clone()
+        {
+            var domainObject = (DomainObject)MemberwiseClone();
+
+            domainObject.Id = 0;
+            domainObject.CreatedById = null;
+            domainObject.LastModifiedById = null;
+            domainObject.CreatedByName = null;
+            domainObject.LastModifiedByName = null;
+            domainObject.CreationDate = DateTime.Now;
+            domainObject.LastModifiedDateTime = DateTime.Now;
+
+            return domainObject;
+        }
+
+        public virtual void Dispose()
+        {
+
+        }
+
+        #endregion
+
+        #region Private Methods      
+
+
+        #endregion
+    }
 }

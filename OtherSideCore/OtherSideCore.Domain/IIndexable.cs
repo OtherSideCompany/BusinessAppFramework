@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Domain
 {
-   public interface IIndexable
-   {
-      int Index { get; set; }
-   }
+    public interface IIndexable
+    {
+        int Id { get; }
+        int Index { get; set; }
+    }
 }

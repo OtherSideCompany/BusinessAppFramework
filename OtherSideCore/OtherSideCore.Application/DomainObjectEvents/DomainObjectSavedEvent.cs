@@ -24,7 +24,7 @@ namespace OtherSideCore.Application.DomainObjectEvents
 
       #region Constructor
 
-      public DomainObjectSavedEvent(DomainObject domainObject) : base(domainObject)
+      public DomainObjectSavedEvent(Type domainObjectType, int domainObjectId) : base(domainObjectType, domainObjectId)
       {
       }
 

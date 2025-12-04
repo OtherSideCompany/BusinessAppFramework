@@ -1,12 +1,10 @@
-﻿using OtherSideCore.Domain;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using OtherSideCore.Application.Interfaces;
+using OtherSideCore.Domain;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.ActionResult
 {
-    public class ApplicationAction
+    public class ApplicationAction<TDomainObject> : IApplicationAction where TDomainObject : DomainObject, new()
     {
         #region Fields
 
@@ -17,7 +15,9 @@ namespace OtherSideCore.Application.ActionResult
         #region Properties
 
         public StringKey ActionKey { get; init; } = StringKey.Empty;
-        public string ExecuteRoute { get; init; } = string.Empty;
+        public string ExecuteRouteTemplate { get; init; } = string.Empty;        
+        public HttpMethod HttpMethod { get; set; } = HttpMethod.Post;
+        public int? DomainObjectId { get; set; }
 
         #endregion
 
@@ -38,7 +38,10 @@ namespace OtherSideCore.Application.ActionResult
 
         #region Public Methods
 
-
+        public string BuildRoute()
+        {
+            return Routes.For(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
+        }
 
         #endregion
 

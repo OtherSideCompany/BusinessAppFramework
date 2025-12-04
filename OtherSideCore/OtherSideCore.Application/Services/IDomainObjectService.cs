@@ -23,7 +23,7 @@ namespace OtherSideCore.Application.Services
 
         Task SaveIndexAsync(IIndexable domainObject);
 
-        Task<bool> DeleteAsync(T domainObject);
+        Task<bool> DeleteAsync(int domainObjectId);
 
         Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default);
 
@@ -33,6 +33,6 @@ namespace OtherSideCore.Application.Services
 
         Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken = default);
 
-        Task<int?> GetParentIdAsync<U>(T domainObject, CancellationToken cancellationToken = default) where U : DomainObject;
+        Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject;
     }
 }

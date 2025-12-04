@@ -24,7 +24,7 @@ namespace OtherSideCore.Application.DomainObjectEvents
 
       #region Constructor
 
-      public DomainObjectDeletingEvent(DomainObject domainObject) : base(domainObject)
+      public DomainObjectDeletingEvent(Type domainObjectType, int domainObjectId) : base(domainObjectType, domainObjectId)
       {
          
       }

@@ -19,7 +19,6 @@ namespace OtherSideCore.Application.Services
         public IDomainObjectFileService DomainObjectFileService { get; }
         public IPasswordService PasswordService { get; }
         public IMailService MailService { get; }
-        public IDomainObjectSearchFactory DomainObjectSearchFactory { get; }
         public IDomainObjectEventBus DomainObjectEventBus { get; }
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
 
@@ -38,7 +37,6 @@ namespace OtherSideCore.Application.Services
             IDomainObjectFileService domainObjectFileService,
             IPasswordService passwordService,
             IMailService mailService,
-            IDomainObjectSearchFactory domainObjectSearchFactory,
             IDomainObjectEventBus domainObjectEventBus,
             IUserPermissionResolverService userPermissionResolverService)
         {
@@ -46,7 +44,6 @@ namespace OtherSideCore.Application.Services
             DomainObjectFileService = domainObjectFileService;
             PasswordService = passwordService;
             MailService = mailService;
-            DomainObjectSearchFactory = domainObjectSearchFactory;
             DomainObjectEventBus = domainObjectEventBus;
             UserPermissionResolverService = userPermissionResolverService;
         }

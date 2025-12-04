@@ -7,45 +7,45 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Application.DomainObjectEvents
 {
-   public class DomainObjectDeletedEvent : DomainObjectEvent
-   {
-      #region Fields
+    public class DomainObjectDeletedEvent : DomainObjectEvent
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-      public int DeletedDomainObjectId { get; set; }
-
-      #endregion
-
-      #region Commands
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
-
-      public DomainObjectDeletedEvent(DomainObject domainObject, int deletedDomainObjectId) : base(domainObject)
-      {
-         DeletedDomainObjectId = deletedDomainObjectId;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectDeletedEvent(Type domainObjectType, int domainObjectId) : base(domainObjectType, domainObjectId)
+        {
+
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Application;
+using OtherSideCore.Application.Interfaces;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Services;
+using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,169 +14,175 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Services
 {
-   public class SearchService<TSearchResult> : ISearchService<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
-   {
-      #region Fields
+    public class SearchService<TSearchResult> : ISearchService<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
+    {
+        #region Fields
 
-      protected readonly IDbContextFactory<DbContext> _dbContextFactory;
-      protected ILogger<SearchService<TSearchResult>> _logger;
+        protected readonly IDbContextFactory<DbContext> _dbContextFactory;
+        protected ILogger<SearchService<TSearchResult>> _logger;
+        protected IConstraintFactory _constraintFactory;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Commands
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
-
-      public SearchService(
-         IDbContextFactory<DbContext> dbContextFactory,
-         ILoggerFactory loggerFactory)
-      {
-         _dbContextFactory = dbContextFactory;
-         _logger = loggerFactory.CreateLogger<SearchService<TSearchResult>>();
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      public virtual async Task<List<TSearchResult>> SearchAsync(
-         List<string> filters,
-         bool extendedSearch,
-         Expression<Func<TSearchResult, bool>> constraints,
-         CancellationToken cancellationToken)
-      {
-         LogSearchAsync(nameof(SearchAsync), filters, extendedSearch);
-
-         return await SearchAsync(filters, extendedSearch, constraints, false, 0, 0, cancellationToken);
-      }
-
-      public virtual async Task<List<TSearchResult>> PaginatedSearchAsync(
-         List<string> filters,
-         bool extendedSearch,
-         Expression<Func<TSearchResult, bool>> constraints,
-         int pageNumber,
-         int pageSize,
-         CancellationToken cancellationToken)
-      {
-         LogSearchAsync(nameof(PaginatedSearchAsync), filters, extendedSearch);
-
-         return await SearchAsync(filters, extendedSearch, constraints, true, pageNumber, pageSize, cancellationToken);
-      }
+        #region Commands
 
 
-      public virtual async Task<int> CountAsync(List<string> filters, bool extendedSearch, Expression<Func<TSearchResult, bool>> predicate, CancellationToken cancellationToken)
-      {
-         LogSearchAsync(nameof(CountAsync), filters, extendedSearch);
 
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            return await GetSearchQuery(filters, extendedSearch, predicate, false, 0, 0, context).CountAsync(cancellationToken);
-         }
-      }
+        #endregion
 
-      public async Task<TSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken)
-      {
-         _logger.LogInformation("{Type}, {MethodName}, DomainObjectId = {DomainObjectId}", GetType(), nameof(SearchAsync), domainObjectId);
+        #region Constructor
 
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            var query = context.Set<TSearchResult>().AsNoTracking();
+        public SearchService(
+           IDbContextFactory<DbContext> dbContextFactory,
+           ILoggerFactory loggerFactory,
+           IConstraintFactory constraintFactory)
+        {
+            _dbContextFactory = dbContextFactory;
+            _logger = loggerFactory.CreateLogger<SearchService<TSearchResult>>();
+            _constraintFactory = constraintFactory;
+        }
 
-            query = query.Where(e => e.DomainObjectId == domainObjectId);
+        #endregion
 
-            return await query.FirstAsync(cancellationToken);
-         }
-      }
+        #region Public Methods
 
-      #endregion
+        public virtual async Task<SearchResult<TSearchResult>> SearchAsync(
+           SearchRequest searchRequest,
+           CancellationToken cancellationToken)
+        {
+            LogSearchAsync(nameof(SearchAsync), searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
-      #region Private Methods
+            return new SearchResult<TSearchResult>
+            {
+                Items = await SearchAsync(searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, cancellationToken),
+                Count = await CountAsync(searchRequest, cancellationToken)
+            };
+        }
 
-      private async Task<List<TSearchResult>> SearchAsync(List<string> filters,
-                                                          bool extendedSearch,
-                                                          Expression<Func<TSearchResult, bool>> constraints,
-                                                          bool paginated,
-                                                          int pageNumber,
-                                                          int pageSize,
-                                                          CancellationToken cancellationToken)
-      {
-         using (var context = _dbContextFactory.CreateDbContext())
-         {
-            var result =  await GetSearchQuery(filters, extendedSearch, constraints, paginated, pageNumber, pageSize, context).ToListAsync(cancellationToken);
-            return result;
-         }
-      }
+        public virtual async Task<SearchResult<TSearchResult>> PaginatedSearchAsync(
+           PaginatedSearchRequest paginatedSearchRequest,
+           CancellationToken cancellationToken)
+        {
+            LogSearchAsync(nameof(PaginatedSearchAsync), paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch);
 
-      protected IQueryable<TSearchResult> GetSearchQuery(List<string> filters,
-                                                         bool extendedSearch,
-                                                         Expression<Func<TSearchResult, bool>> constraints,
-                                                         bool paginated,
-                                                         int pageNumber,
-                                                         int pageSize,
-                                                         DbContext context)
-      {
-         var query = context.Set<TSearchResult>().AsNoTracking();
-
-         query = query.OrderByDescending(e => e.DomainObjectId).Where(constraints);
-
-         foreach (var filterConstraint in GetFilterConstraints(filters, extendedSearch))
-         {
-            query = query.Where(filterConstraint);
-         }
-
-         if (paginated)
-         {
-            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-         }
-
-         return query;
-      }
+            return new SearchResult<TSearchResult>
+            {
+                Items = await SearchAsync(paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch, true, paginatedSearchRequest.PageIndex, paginatedSearchRequest.PageSize, cancellationToken),
+                Count = await CountAsync(paginatedSearchRequest, cancellationToken)
+            };
+        }
 
 
-      protected List<Expression<Func<TSearchResult, bool>>> GetFilterConstraints(List<string> filters, bool extendedSearch)
-      {
-         var constraints = new List<Expression<Func<TSearchResult, bool>>>();
+        public virtual async Task<int> CountAsync(SearchRequest searchRequest, CancellationToken cancellationToken)
+        {
+            LogSearchAsync(nameof(CountAsync), searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
-         foreach (var filter in filters)
-         {
-            var lowerFilter = filter.ToLower();
-            var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+                return await GetSearchQuery(searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, context).CountAsync(cancellationToken);
+            }
+        }
 
-            constraints.Add(GetFilterConstraint(lowerFilter, extendedSearch, maxSearchDistance));
-         }
+        public async Task<TSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("{Type}, {MethodName}, DomainObjectId = {DomainObjectId}", GetType(), nameof(SearchAsync), domainObjectId);
 
-         return constraints;
-      }
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+                var query = context.Set<TSearchResult>().AsNoTracking();
 
-      protected virtual Expression<Func<TSearchResult, bool>> GetFilterConstraint(string lowerFilter, bool extendedSearch, int maxSearchDistance)
-      {
-         return x => false;
-      }
+                query = query.Where(e => e.DomainObjectId == domainObjectId);
 
-      private void LogSearchAsync(string methodName, List<string> filters, bool extendedSearch)
-      {
-         if (filters == null || !filters.Any())
-         {
-            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
-            GetType(), methodName, "none", extendedSearch.ToString());
-         }
-         else
-         {
-            _logger.LogInformation("{Type}, {MethodName}, filters : {Filters}, extendedSearch : {ExtendedSearch}",
-            GetType(), methodName, string.Join(',', filters), extendedSearch.ToString());
-         }
-      }
+                return await query.FirstAsync(cancellationToken);
+            }
+        }
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+        private async Task<List<TSearchResult>> SearchAsync(string constraintKey,
+                                                            List<string> filters,
+                                                            bool extendedSearch,
+                                                            bool paginated,
+                                                            int pageIndex,
+                                                            int pageSize,
+                                                            CancellationToken cancellationToken)
+        {
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
+                var result = await GetSearchQuery(constraintKey, filters, extendedSearch, paginated, pageIndex, pageSize, context).ToListAsync(cancellationToken);
+                return result;
+            }
+        }
+
+        protected IQueryable<TSearchResult> GetSearchQuery(string constraintKey, 
+                                                           List<string> filters,
+                                                           bool extendedSearch,
+                                                           bool paginated,
+                                                           int pageIndex,
+                                                           int pageSize,
+                                                           DbContext context)
+        {
+            var query = context.Set<TSearchResult>().AsNoTracking();            
+
+            query = query.OrderByDescending(e => e.DomainObjectId);
+
+            if (!constraintKey.Equals(Contracts.ConstraintKeys.AllConstraintKey))
+            {
+                var constraint = _constraintFactory.GetConstraint<TSearchResult>(StringKey.From(constraintKey));
+                query = query.Where(constraint);
+            }
+
+            foreach (var filterConstraint in GetFilterConstraints(filters, extendedSearch))
+            {
+                query = query.Where(filterConstraint);
+            }
+
+            if (paginated)
+            {
+                query = query.Skip(pageIndex * pageSize).Take(pageSize);
+            }
+
+            return query;
+        }
+
+
+        protected List<Expression<Func<TSearchResult, bool>>> GetFilterConstraints(List<string> filters, bool extendedSearch)
+        {
+            var constraints = new List<Expression<Func<TSearchResult, bool>>>();
+
+            foreach (var filter in filters)
+            {
+                var lowerFilter = filter.ToLower();
+                var maxSearchDistance = Utils.GetMaxSearchDistance(lowerFilter);
+
+                constraints.Add(GetFilterConstraint(lowerFilter, extendedSearch, maxSearchDistance));
+            }
+
+            return constraints;
+        }
+
+        protected virtual Expression<Func<TSearchResult, bool>> GetFilterConstraint(string lowerFilter, bool extendedSearch, int maxSearchDistance)
+        {
+            return x => false;
+        }
+
+        private void LogSearchAsync(string methodName, string constraint, List<string> filters, bool extendedSearch)
+        {
+            var filterString = (filters == null || !filters.Any()) ? "none" : string.Join(',', filters);
+            var constraintString = String.IsNullOrEmpty(constraint) ? "none" : constraint;
+
+            var msg = $"{GetType()}, {methodName}, constraint : {constraintString}, filters : {filterString}, extendedSearch : {extendedSearch}";
+            _logger.LogInformation(msg);
+        }
+
+        #endregion
+    }
 }

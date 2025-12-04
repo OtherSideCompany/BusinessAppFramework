@@ -38,8 +38,14 @@ namespace OtherSideCore.Domain
 
         public static StringKey From(string key) => new(key);
         public override string ToString() => Key;
-        public override bool Equals(object? obj) => obj is StringKey other && Equals(other);
-        public bool Equals(StringKey? other) => other is not null && string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase);
+        public override bool Equals(object? obj) 
+        { 
+            return obj is StringKey other && Equals(other); 
+        }
+        public bool Equals(StringKey? other) 
+        { 
+            return other is not null && string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase); 
+        }
         public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Key);
 
         #endregion
