@@ -1,4 +1,6 @@
-﻿namespace OtherSideCore.Application
+﻿using System;
+
+namespace OtherSideCore.Domain
 {
    public class HistoryInfo
    {

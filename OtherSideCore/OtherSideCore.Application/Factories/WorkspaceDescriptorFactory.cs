@@ -15,6 +15,6 @@ namespace OtherSideCore.WebUI.Factories
         public void RegisterWorkspaceDescriptor(StringKey key, Func<WorkspaceDescriptor> workspaceDescriptorFactory)
         {
             Register(key, workspaceDescriptorFactory);
-        }
+        }        
     }
 }

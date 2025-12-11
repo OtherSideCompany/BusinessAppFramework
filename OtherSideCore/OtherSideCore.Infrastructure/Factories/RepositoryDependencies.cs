@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OtherSideCore.Adapter.Relations;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Application.Relations;
 
 namespace OtherSideCore.Infrastructure.Factories
 {
@@ -21,7 +21,7 @@ namespace OtherSideCore.Infrastructure.Factories
       public ILoggerFactory LoggerFactory { get; }
       public IDomainObjectReferenceFactory DomainObjectReferenceFactory { get; }
       public IDomainObjectReferenceMapFactory ReferenceMapFactory { get; }
-      public IRelationResolver ParentChildRelationResolver { get; }
+      public IRelationResolver RelationResolver { get; }
       public IDomainObjectEntityTypeMap DomainObjectEntityTypeMap { get; }
 
       #endregion
@@ -48,7 +48,7 @@ namespace OtherSideCore.Infrastructure.Factories
          LoggerFactory = loggerFactory;
          DomainObjectReferenceFactory = domainObjectReferenceFactory;
          ReferenceMapFactory = referenceMapFactory;
-         ParentChildRelationResolver = parentChildRelationResolver;
+         RelationResolver = parentChildRelationResolver;
          DomainObjectEntityTypeMap = domainObjectEntityTypeMap;
       }
 

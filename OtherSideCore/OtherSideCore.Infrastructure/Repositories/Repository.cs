@@ -1,26 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
-using OtherSideCore.Domain.DomainObjects;
-using AutoMapper;
-using OtherSideCore.Application.Repository;
 using OtherSideCore.Application;
-using OtherSideCore.Domain;
-using OtherSideCore.Infrastructure.Factories;
 using OtherSideCore.Application.Factories;
-using OtherSideCore.Adapter.Factories;
-using OtherSideCore.Adapter;
-using OtherSideCore.Adapter.Relations;
+using OtherSideCore.Application.Relations;
+using OtherSideCore.Application.Repository;
+using OtherSideCore.Domain;
+using OtherSideCore.Domain.DomainObjects;
+using OtherSideCore.Infrastructure.Factories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject> where TDomainObject : DomainObject, new()
-                                                                                              where TEntity : class, IEntity, new()
+    public class Repository<TDomainObject, TEntity> : IDisposable, IRelationRepository, IRepository<TDomainObject>
+        where TDomainObject : DomainObject, new()
+        where TEntity : class, IEntity, new()
     {
         #region Fields
 
@@ -50,7 +51,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             _mapper = repositoryDependencies.Mapper;
             _domainObjectReferenceFactory = repositoryDependencies.DomainObjectReferenceFactory;
             _referenceMapFactory = repositoryDependencies.ReferenceMapFactory;
-            _relationResolver = repositoryDependencies.ParentChildRelationResolver;
+            _relationResolver = repositoryDependencies.RelationResolver;
         }
 
         #endregion
@@ -99,7 +100,6 @@ namespace OtherSideCore.Infrastructure.Repositories
 
         public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
         {
-            //return await CountAsync([], false, _ => true, parent, cancellationToken);
             return await Task.FromResult(0);
         }
 
@@ -250,6 +250,40 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
+        public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId)
+        {
+            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
+
+            var domainObjectReferences = new List<DomainObjectReference>();
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            foreach (var relationEntry in _relationResolver.GetEntriesBySourceType(typeof(TEntity)))
+            {
+                var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
+
+                var relatedId = relationEntry.GetRelatedId(entity);
+
+                domainObjectReferences.Add(new DomainObjectReference(relationEntry.RelationKey.Key, relatedId));
+            }
+
+            return domainObjectReferences;
+        }
+
+        public async Task HydrateDomainObjectReferenceAsync(DomainObjectReference domainObjectReference)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceAsync)}, domainObjectReferenceId : {domainObjectReference.DomainObjectId}, key : {domainObjectReference.RelationKey}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var entity = await context.Set<TEntity>().FindAsync(domainObjectReference.DomainObjectId);
+
+            if (entity != null && _relationResolver.TryGetEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
+            {
+                domainObjectReference.DisplayValue = relationEntry.GetDisplayValue(entity);
+            }
+        }
+
         public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
@@ -266,7 +300,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 if (relatedId != null)
                 {
-                    var related = await context.FindAsync(relationEntry.RelatedType, relatedId.Value);
+                    var related = await context.FindAsync(relationEntry.TargetEntityType, relatedId.Value);
 
                     if (related is IEntity relatedEntity)
                     {
@@ -304,7 +338,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
-                relationEntry.DeleteRelation(entity, domainObjectReference.DomainObjectId);
+                relationEntry.DeleteRelation(entity, domainObjectReference.DomainObjectId.Value);
 
                 await context.SaveChangesAsync();
             }
@@ -400,43 +434,37 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                 var domainObjectPropertyValue = domainObjectProperty.GetValue(domainObject);
 
-                if (IsCollectionButNotString(domainObjectProperty.PropertyType))
+                if (IsValueTypeOrString(domainObjectProperty.PropertyType))
+                {
+                    MapProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
+                }
+                else if (IsDomainObjectReference(domainObjectProperty.PropertyType))
+                {
+                    MapDomainObjectReferenceProperty(domainObjectProperty, domainObjectPropertyValue, entity, entityProps);
+                }
+                else if (IsCollectionButNotString(domainObjectProperty.PropertyType))
                 {
                     throw new ArgumentException($"Cannot map collection property '{domainObjectProperty.Name}' of type {domainObjectProperty.PropertyType} in {typeof(TDomainObject).Name}. " +
                                                  "Collections are not supported in this repository. Please use a different mapping strategy.");
                 }
-                else if (!IsValueTypeOrString(domainObjectProperty.PropertyType))
-                {
-                    MapDomainObjectProperty(domainObjectProperty, domainObjectPropertyValue, entity, entityProps);
-                }
                 else
                 {
-                    MapProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
+                    throw new ArgumentException($"Property type {domainObjectProperty.PropertyType} is unsupported for mappinng between DomainObject and Entities");
                 }
             }
         }
 
-        private void MapDomainObjectProperty(
-           PropertyInfo domainObjectProperty,
-           object? domainObjectPropertyValue,
+        private void MapDomainObjectReferenceProperty(
+           PropertyInfo domainObjectReferenceProperty,
+           object domainObjectReferencePropertyValue,
            TEntity entity,
            Dictionary<string, PropertyInfo> entityProperties)
         {
-            var domainObjectIdProperty = domainObjectProperty.PropertyType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+            var reference = (DomainObjectReference)domainObjectReferencePropertyValue;
 
-            if (domainObjectPropertyValue != null)
+            if (_relationResolver.TryGetEntry(StringKey.From(reference.RelationKey), out var relationEntry))
             {
-                var idValue = domainObjectIdProperty.GetValue(domainObjectPropertyValue);
-                var foreignKeyName = domainObjectProperty.Name + "Id";
-
-                if (entityProperties.TryGetValue(foreignKeyName, out var foreignKeyProperty))
-                {
-                    foreignKeyProperty.SetValue(entity, idValue);
-                }
-                else
-                {
-                    throw new ArgumentException($"Property '{foreignKeyName}' not found in target type {typeof(TEntity).Name}");
-                }
+                relationEntry.SetRelation(entity, reference.DomainObjectId);
             }
         }
 
@@ -465,6 +493,11 @@ namespace OtherSideCore.Infrastructure.Repositories
         {
             return typeof(System.Collections.IEnumerable).IsAssignableFrom(type)
                    && type != typeof(string);
+        }
+
+        private bool IsDomainObjectReference(Type type)
+        {
+            return typeof(DomainObjectReference).IsAssignableFrom(type);
         }
 
         private HashSet<string> GetIgnoredDomainObjectMappingProperties()

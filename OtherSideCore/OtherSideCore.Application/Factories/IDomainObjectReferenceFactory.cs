@@ -1,4 +1,6 @@
-﻿namespace OtherSideCore.Application.Factories
+﻿using OtherSideCore.Domain;
+
+namespace OtherSideCore.Application.Factories
 {
    public interface IDomainObjectReferenceFactory
    {

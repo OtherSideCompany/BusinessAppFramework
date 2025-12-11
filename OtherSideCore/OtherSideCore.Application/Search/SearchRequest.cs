@@ -12,6 +12,6 @@ namespace OtherSideCore.Application.Search
     {
         public bool ExtendedSearch { get; set; }
         public List<string> Filters { get; set; } = [];
-        public string ConstraintKey { get; set; } = default!;
+        public string ConstraintKey { get; set; } = Contracts.ConstraintKeys.AllConstraintKey;
     }
 }

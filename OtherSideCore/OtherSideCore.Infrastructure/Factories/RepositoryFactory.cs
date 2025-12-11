@@ -44,7 +44,8 @@ namespace OtherSideCore.Infrastructure.Factories
 
         public object CreateRepository(Type type)
         {
-            return _serviceProvider.GetRequiredService(type);
+            var serviceType = typeof(IRepository<>).MakeGenericType(type);
+            return _serviceProvider.GetRequiredService(serviceType);
         }
 
         #endregion

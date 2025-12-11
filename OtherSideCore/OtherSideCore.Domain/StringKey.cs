@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Domain
 {
-    public class StringKey : IEquatable<StringKey>
+    public readonly record struct StringKey : IEquatable<StringKey>
     {
         #region Fields
 
@@ -38,13 +38,9 @@ namespace OtherSideCore.Domain
 
         public static StringKey From(string key) => new(key);
         public override string ToString() => Key;
-        public override bool Equals(object? obj) 
+        public bool Equals(StringKey other) 
         { 
-            return obj is StringKey other && Equals(other); 
-        }
-        public bool Equals(StringKey? other) 
-        { 
-            return other is not null && string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase); 
+            return string.Equals(Key, other.Key, StringComparison.OrdinalIgnoreCase); 
         }
         public override int GetHashCode() => StringComparer.OrdinalIgnoreCase.GetHashCode(Key);
 

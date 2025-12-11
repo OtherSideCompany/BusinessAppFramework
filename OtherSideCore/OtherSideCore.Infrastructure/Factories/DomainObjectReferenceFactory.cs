@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Application;
 using OtherSideCore.Application.Factories;
+using OtherSideCore.Domain;
 using System;
 
 namespace OtherSideCore.Infrastructure.Factories

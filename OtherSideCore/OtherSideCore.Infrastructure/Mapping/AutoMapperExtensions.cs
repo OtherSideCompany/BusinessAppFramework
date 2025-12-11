@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using OtherSideCore.Adapter;
 using OtherSideCore.Application;
-using OtherSideCore.Domain.Attributes;
 using OtherSideCore.Domain.DomainObjects;
-using System.Linq;
-using System.Reflection;
 
 namespace OtherSideCore.Infrastructure.Mapping
 {

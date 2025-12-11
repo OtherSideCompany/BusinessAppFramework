@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Adapter.Relations;
+﻿using OtherSideCore.Application.Relations;
 using System;
 using System.Collections.Generic;
 

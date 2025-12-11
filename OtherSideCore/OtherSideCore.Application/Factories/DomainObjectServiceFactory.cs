@@ -35,9 +35,10 @@ namespace OtherSideCore.Application.Factories
             return _serviceProvider.GetRequiredService<IDomainObjectService<T>>();
         }
 
-        public object CreateDomainObjectService(Type type)
+        public object CreateDomainObjectService(Type domainObjectType)
         {
-            return _serviceProvider.GetRequiredService(type);
+            var serviceType = typeof(IDomainObjectService<>).MakeGenericType(domainObjectType);
+            return _serviceProvider.GetRequiredService(serviceType);
         }
 
         #endregion

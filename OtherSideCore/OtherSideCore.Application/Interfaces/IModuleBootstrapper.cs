@@ -8,6 +8,9 @@ namespace OtherSideCore.Application.Interfaces
         void RegisterServices(IServiceCollection services);   
         void RegisterLocalizedStrings(IServiceProvider serviceProvider);
         void RegisterBrowserDescriptors(IServiceProvider serviceProvider);
+        void RegisterSelectorDescriptors(IServiceProvider serviceProvider);
+        void RegisterReferenceSelectors(IServiceProvider serviceProvider);
+        void RegisterDomainObjectBrowserWorkspaces(IServiceProvider serviceProvider);
         void RegisterConstraints(IServiceProvider serviceProvider);
         void RegisterIcons(IServiceProvider serviceProvider);
         StringKey? GetModuleWorkspaceKey();

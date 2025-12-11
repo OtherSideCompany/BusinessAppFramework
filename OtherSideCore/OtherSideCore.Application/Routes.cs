@@ -9,6 +9,7 @@ namespace OtherSideCore.Application
     {
         public const string ModuleKeyParam = "moduleKey";
         public const string DomainObjectIdParam = "domainObjectId";
+        public const string RelationKeyParam = "relationKey";
 
         public const string ModulesTemplate = "api/navigation/modules";
         public const string WorkspacesTemplate = $"api/navigation/modules/{{{ModuleKeyParam}}}/workspaces";       
@@ -20,17 +21,23 @@ namespace OtherSideCore.Application
 
         public const string CreateTemplate = "api/create/[controller]";
         public const string GetTemplate = $"api/get/[controller]/{{{DomainObjectIdParam}}}";
+        public const string GetHydratedTemplate = $"api/get-hydrated/[controller]/{{{DomainObjectIdParam}}}";
+        public const string GetHydratedDomainObjectReferenceTemplate = $"api/get-hydrated-domainobject-reference/[controller]/{{{DomainObjectIdParam}}}/{{{RelationKeyParam}}}";
         public const string SaveTemplate = $"api/save/[controller]/{{{DomainObjectIdParam}}}";
         public const string DeleteTemplate = $"api/delete/[controller]/{{{DomainObjectIdParam}}}";
-
         public static string WorkspacesFor(string moduleKey) => WorkspacesTemplate.Replace($"{{{ModuleKeyParam}}}", moduleKey);
-        public static string For(string template, Type domainObjectType, int? id)
+        public static string For(string template, Type domainObjectType, int? id = null, string? relationKey = null)
         {
             var route = template.Replace("[controller]", domainObjectType.Name.ToLowerInvariant());
 
             if (id != null)
             {
                 route = route.Replace($"{{{DomainObjectIdParam}}}", id.ToString());
+            }
+
+            if (relationKey != null)
+            {
+                route = route.Replace($"{{{RelationKeyParam}}}", relationKey.ToString());
             }
 
             return route;

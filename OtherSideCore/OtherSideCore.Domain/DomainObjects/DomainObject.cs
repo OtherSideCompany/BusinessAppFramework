@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -51,8 +52,6 @@ namespace OtherSideCore.Domain.DomainObjects
 
         #region Public Methods
 
-        public virtual void LoadDefaultProperties() { }
-
         public override bool Equals(object obj)
         {
             var item = obj as DomainObject;
@@ -85,6 +84,18 @@ namespace OtherSideCore.Domain.DomainObjects
             domainObject.LastModifiedDateTime = DateTime.Now;
 
             return domainObject;
+        }
+
+        public IEnumerable<DomainObjectReference> GetReferences()
+        {
+            var props = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => typeof(DomainObjectReference).IsAssignableFrom(p.PropertyType));
+
+            foreach (var prop in props)
+            {
+                yield return prop.GetValue(this) as DomainObjectReference;
+            }
         }
 
         public virtual void Dispose()

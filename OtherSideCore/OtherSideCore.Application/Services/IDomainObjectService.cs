@@ -13,7 +13,11 @@ namespace OtherSideCore.Application.Services
 
         Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-        Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
+        Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
+
+        Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey);
+
+        Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
 
         Task CreateAsync(T domainObject, DomainObject? parent);
 
@@ -24,6 +28,8 @@ namespace OtherSideCore.Application.Services
         Task SaveIndexAsync(IIndexable domainObject);
 
         Task<bool> DeleteAsync(int domainObjectId);
+
+
 
         Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default);
 
