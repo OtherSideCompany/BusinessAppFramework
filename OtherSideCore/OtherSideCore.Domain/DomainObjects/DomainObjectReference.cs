@@ -1,7 +1,7 @@
 ﻿using OtherSideCore.Domain.DomainObjects;
 using System;
 
-namespace OtherSideCore.Domain
+namespace OtherSideCore.Domain.DomainObjects
 {
     public class DomainObjectReference
     {

@@ -228,15 +228,29 @@ namespace OtherSideCore.Application.Services
 
             foreach (var reference in references)
             {
-                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetEntry(StringKey.From(reference.RelationKey), out var relationEntry);
+                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceRelationEntry(StringKey.From(reference.RelationKey), out var relationEntry);
 
-                relationEntry.DomainReferenceProperty?.SetValue(domainObject, reference);
+                relationEntry.DomainProperty?.SetValue(domainObject, reference);
+            }
+
+            var referenceLists = await GetDomainObjectReferenceListsAsync(domainObject.Id);
+
+            foreach (var referenceList in referenceLists)
+            {
+                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(referenceList.RelationKey), out var relationEntry);
+
+                relationEntry.DomainProperty?.SetValue(domainObject, referenceList);
             }
         }
 
         private async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId)
         {
             return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferencesAsync(domainObjectId));
+        }
+
+        private async Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId)
+        {
+            return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferenceListsAsync(domainObjectId));
         }
 
         private async Task<bool> IsSystemObjectAsync(int domainObjectId)

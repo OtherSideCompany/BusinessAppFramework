@@ -1,13 +1,12 @@
 ﻿using OtherSideCore.Domain;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Repository
 {
     public interface IRelationRepository
     {
         Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId);
+        Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId);
         Task HydrateDomainObjectReferenceAsync(DomainObjectReference domainObjectReference);
 
 

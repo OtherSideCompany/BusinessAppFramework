@@ -48,7 +48,7 @@ namespace OtherSideCore.Application.Services
             {
                 if (domainObjectReference != null && domainObjectReference.DomainObjectId != null && domainObjectReference.DomainObjectId > 0)
                 {
-                    if (_relationResolver.TryGetEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
+                    if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
                     {
                         IRelationRepository repository = (IRelationRepository)_repositoryFactory.CreateRepository(relationEntry.TargetDomainObjectType);
                         await repository.HydrateDomainObjectReferenceAsync(domainObjectReference);

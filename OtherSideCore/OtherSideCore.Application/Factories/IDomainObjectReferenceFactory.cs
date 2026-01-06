@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Domain;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Factories
 {

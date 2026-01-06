@@ -80,7 +80,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                 {
                     var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
 
-                    if (_relationResolver.ContainsParentChildRelation(typeof(TEntity), parentType))
+                    if (_relationResolver.ContainsParentChildRelationBySourceType(typeof(TEntity), parentType))
                     {
                         query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
                     }
@@ -258,7 +258,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            foreach (var relationEntry in _relationResolver.GetEntriesBySourceType(typeof(TEntity)))
+            foreach (var relationEntry in _relationResolver.GetReferenceRelationEntriesBySourceType(typeof(TEntity)))
             {
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
 
@@ -270,6 +270,34 @@ namespace OtherSideCore.Infrastructure.Repositories
             return domainObjectReferences;
         }
 
+        public virtual async Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(GetDomainObjectReferenceListsAsync)}, domainObjectId : {domainObjectId}");
+
+            var domainObjectReferenceLists = new List<DomainObjectReferenceList>();
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            foreach (var relationEntry in _relationResolver.GetReferenceListRelationEntriesBySourceType(typeof(TEntity)))
+            {
+                var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
+
+                var collectionEntry = context.Entry(entity).Collection(relationEntry.EntityProperty.Name);
+
+                if (!collectionEntry.IsLoaded)
+                    await collectionEntry.LoadAsync();
+
+                var collectionObject = relationEntry.EntityProperty.GetValue(entity)!;
+
+                var entities = ((System.Collections.IEnumerable)collectionObject).Cast<IEntity>().ToList();
+                var relatedIds = entities.Select(e => e.Id).ToList();
+
+                domainObjectReferenceLists.Add(new DomainObjectReferenceList(relationEntry.RelationKey.Key, relatedIds));
+            }
+
+            return domainObjectReferenceLists;
+        }
+
         public async Task HydrateDomainObjectReferenceAsync(DomainObjectReference domainObjectReference)
         {
             _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceAsync)}, domainObjectReferenceId : {domainObjectReference.DomainObjectId}, key : {domainObjectReference.RelationKey}");
@@ -278,7 +306,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             var entity = await context.Set<TEntity>().FindAsync(domainObjectReference.DomainObjectId);
 
-            if (entity != null && _relationResolver.TryGetEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
+            if (entity != null && _relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
             {
                 domainObjectReference.DisplayValue = relationEntry.GetDisplayValue(entity);
             }
@@ -290,7 +318,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             var domainObjectReferences = new List<DomainObjectReference>();
 
-            if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
             {
                 using var context = _dbContextFactory.CreateDbContext();
 
@@ -316,7 +344,7 @@ namespace OtherSideCore.Infrastructure.Repositories
         {
             _logger.LogInformation($"{GetType()}, {nameof(CreateDomainObjectReferenceAsync)}, relationKey = {relationKey}, domainObjectId = {domainObjectId}, domainObjectReferenceId = {domainObjectReferenceId}");
 
-            if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
             {
                 using var context = _dbContextFactory.CreateDbContext();
 
@@ -332,7 +360,7 @@ namespace OtherSideCore.Infrastructure.Repositories
         {
             _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteDomainObjectReferenceAsync), domainObjectId);
 
-            if (_relationResolver.TryGetEntry(relationKey, out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
             {
                 using var context = _dbContextFactory.CreateDbContext();
 
@@ -411,7 +439,7 @@ namespace OtherSideCore.Infrastructure.Repositories
         protected void SetParent(TEntity entity, DomainObject parent)
         {
             var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-            _relationResolver.SetParentChildRelation(entity, parentType, parent.Id, RelationType.ParentChild);
+            _relationResolver.SetParentChildRelation(entity, parentType, parent.Id);
         }
 
         protected async Task CreateEntityAsync(DbContext context, TEntity entity)
@@ -442,6 +470,10 @@ namespace OtherSideCore.Infrastructure.Repositories
                 {
                     MapDomainObjectReferenceProperty(domainObjectProperty, domainObjectPropertyValue, entity, entityProps);
                 }
+                else if (IsDomainObjectReferenceList(domainObjectProperty.PropertyType))
+                {
+                    await MapDomainObjectReferenceListPropertyAsync(domainObjectProperty, domainObjectPropertyValue, entity, entityProps, context);
+                }
                 else if (IsCollectionButNotString(domainObjectProperty.PropertyType))
                 {
                     throw new ArgumentException($"Cannot map collection property '{domainObjectProperty.Name}' of type {domainObjectProperty.PropertyType} in {typeof(TDomainObject).Name}. " +
@@ -462,9 +494,55 @@ namespace OtherSideCore.Infrastructure.Repositories
         {
             var reference = (DomainObjectReference)domainObjectReferencePropertyValue;
 
-            if (_relationResolver.TryGetEntry(StringKey.From(reference.RelationKey), out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(reference.RelationKey), out var relationEntry))
             {
                 relationEntry.SetRelation(entity, reference.DomainObjectId);
+            }
+        }
+
+        private async Task MapDomainObjectReferenceListPropertyAsync(
+           PropertyInfo domainObjectReferenceProperty,
+           object domainObjectReferencePropertyValue,
+           TEntity entity,
+           Dictionary<string, PropertyInfo> entityProperties,
+           DbContext context)
+        {
+            var referenceList = (DomainObjectReferenceList)domainObjectReferencePropertyValue;
+
+            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(referenceList.RelationKey), out var relationEntry))
+            {
+                var desiredIds = referenceList.DomainObjectReferences.Select(r => r.DomainObjectId).Where(id => id.HasValue).Select(id => id.Value).ToHashSet();
+
+                var collectionEntry = context.Entry(entity).Collection(relationEntry.EntityProperty.Name);
+
+                if (!collectionEntry.IsLoaded)
+                    await collectionEntry.LoadAsync();
+
+                var collectionObject = relationEntry.EntityProperty.GetValue(entity)!;
+
+                var entities = ((System.Collections.IEnumerable)collectionObject).Cast<IEntity>().ToList();
+                var currentIds = entities.Select(e => e.Id).ToHashSet();
+
+                var collectionList = (System.Collections.IList)collectionObject;
+
+                var toRemove = currentIds.Except(desiredIds).ToList();
+                var toAdd = desiredIds.Except(currentIds).ToList();
+
+                foreach (var id in toRemove)
+                {
+                    var existing = entities.First(e => e.Id == id);
+                    collectionList.Remove(existing);
+                }
+
+                foreach (var id in toAdd)
+                {
+                    var stub = (IEntity)Activator.CreateInstance(relationEntry.TargetEntityType)!;
+                    stub.Id = id;
+
+                    context.Attach(stub);
+
+                    collectionList.Add(stub);
+                }
             }
         }
 
@@ -498,6 +576,11 @@ namespace OtherSideCore.Infrastructure.Repositories
         private bool IsDomainObjectReference(Type type)
         {
             return typeof(DomainObjectReference).IsAssignableFrom(type);
+        }
+
+        private bool IsDomainObjectReferenceList(Type type)
+        {
+            return typeof(DomainObjectReferenceList).IsAssignableFrom(type);
         }
 
         private HashSet<string> GetIgnoredDomainObjectMappingProperties()
