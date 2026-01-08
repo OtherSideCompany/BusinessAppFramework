@@ -156,6 +156,18 @@ namespace OtherSideCore.Application.Services
             return domainObjectReference;
         }
 
+        public async Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItem(int domainObjectId, string relationKey)
+        {
+            var domainObjectReferenceListItem = new DomainObjectReferenceListItem
+            {
+                DomainObjectId = domainObjectId
+            };
+
+            await _repository.HydrateDomainObjectReferenceListItemAsync(domainObjectReferenceListItem, relationKey);
+
+            return domainObjectReferenceListItem;
+        }
+
         public async Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
         {
             var domainObject = await WithReadPermissionAsync(() => _repository.GetFromSystemCodeAsync(systemCode, cancellationToken));

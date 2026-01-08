@@ -98,6 +98,18 @@ namespace OtherSideCore.Domain.DomainObjects
             }
         }
 
+        public IEnumerable<DomainObjectReferenceList> GetReferenceLists()
+        {
+            var props = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => typeof(DomainObjectReferenceList).IsAssignableFrom(p.PropertyType));
+
+            foreach (var prop in props)
+            {
+                yield return prop.GetValue(this) as DomainObjectReferenceList;
+            }
+        }
+
         public virtual void Dispose()
         {
 

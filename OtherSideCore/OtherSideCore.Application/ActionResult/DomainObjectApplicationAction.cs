@@ -4,7 +4,7 @@ using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.ActionResult
 {
-    public class ApplicationAction<TDomainObject> : IApplicationAction where TDomainObject : DomainObject, new()
+    public abstract class DomainObjectApplicationAction<TDomainObject> : IDomainObjectApplicationAction where TDomainObject : DomainObject, new()
     {
         #region Fields
 
@@ -15,8 +15,7 @@ namespace OtherSideCore.Application.ActionResult
         #region Properties
 
         public StringKey ActionKey { get; init; } = StringKey.Empty;
-        public string ExecuteRouteTemplate { get; init; } = string.Empty;        
-        public HttpMethod HttpMethod { get; set; } = HttpMethod.Post;
+        public string ExecuteRouteTemplate { get; init; } = string.Empty;
         public int? DomainObjectId { get; set; }
 
         #endregion
@@ -29,7 +28,7 @@ namespace OtherSideCore.Application.ActionResult
 
         #region Constructor
 
-        public ApplicationAction()
+        public DomainObjectApplicationAction()
         {
 
         }
@@ -38,7 +37,7 @@ namespace OtherSideCore.Application.ActionResult
 
         #region Public Methods
 
-        public string BuildRoute()
+        public virtual string BuildRoute()
         {
             return Routes.For(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
         }

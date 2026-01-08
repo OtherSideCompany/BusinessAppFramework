@@ -40,14 +40,14 @@ namespace OtherSideCore.Infrastructure.Entities
 
         #region Public Methods
 
-        public bool ContainsParentChildRelationBySourceType(Type sourceType, Type relatedType)
+        public bool ContainsParentChildRelationByChildType(Type childType, Type parentType)
         {
-            return _parentChildRelationEntries.Any(r => r.SourceEntityType == sourceType && r.TargetEntityType == relatedType);
+            return _parentChildRelationEntries.Any(r => r.ChildEntityType == childType && r.ParentEntityType == parentType);
         }
 
         public Expression<Func<TEntity, bool>> GetParentChildRelationPredicate<TEntity>(int relatedId, Type relatedType) where TEntity : IEntity
         {
-            var relationEntry = _parentChildRelationEntries.Where(r => r.SourceEntityType == typeof(TEntity) && r.TargetEntityType == relatedType).FirstOrDefault();
+            var relationEntry = _parentChildRelationEntries.Where(r => r.ChildEntityType == typeof(TEntity) && r.ParentEntityType == relatedType).FirstOrDefault();
 
             if (relationEntry == null)
                 throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
@@ -61,7 +61,7 @@ namespace OtherSideCore.Infrastructure.Entities
 
         public void SetParentChildRelation<TEntity>(TEntity entity, Type relatedType, int relatedId) where TEntity : IEntity
         {
-            var relationEntry = _parentChildRelationEntries.Where(r => r.SourceEntityType == typeof(TEntity) && r.TargetEntityType == relatedType).FirstOrDefault();
+            var relationEntry = _parentChildRelationEntries.Where(r => r.ChildEntityType == typeof(TEntity) && r.ParentEntityType == relatedType).FirstOrDefault();
 
             if (relationEntry == null)
                 throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
@@ -134,23 +134,30 @@ namespace OtherSideCore.Infrastructure.Entities
             throw new InvalidOperationException("Invalid reference property expression.");
         }
 
+        private static PropertyInfo ExtractProperty<TSourceEntity>(Expression<Func<TSourceEntity, int?>> expr)
+        {
+            if (expr.Body is MemberExpression member)
+                return (PropertyInfo)member.Member;
+
+            if (expr.Body is UnaryExpression unary && unary.Operand is MemberExpression unaryMember)
+                return (PropertyInfo)unaryMember.Member;
+
+            throw new InvalidOperationException("Invalid reference property expression.");
+        }
+
         protected void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-           StringKey relationKey,
-           Action<TSourceEntity, int?> relationSetter,
-           Action<TSourceEntity, int> relationDelete,
-           Func<TSourceEntity, int?> relatedIdGetter,
-           Func<TSourceEntity, TTargetEntity?>? _relatedEntityGetter,
-           Func<TTargetEntity, string>? relatedDisplayValueGetter,
+           StringKey relationKey,          
            Expression<Func<TSourceDomainObject, DomainObjectReference?>> domainExpression,
-           bool isSystemManaged,
-           bool isReadOnly)
+           Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
             where TTargetDomainObject : DomainObject
             where TSourceEntity : IEntity
             where TTargetEntity : class, IEntity
         {
             var domainProperty = ExtractProperty(domainExpression);
-            var entry = new ReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(relationKey, relationSetter, relationDelete, relatedIdGetter, _relatedEntityGetter, relatedDisplayValueGetter, domainProperty, isSystemManaged);
+            var entityIdProperty = ExtractProperty(entityIdExpression);
+
+            var entry = new ReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(relationKey, domainProperty, entityIdProperty);
 
             if (_referenceRelationEntries.Any(r => r.RelationKey.Equals(relationKey)))
             {
@@ -182,22 +189,22 @@ namespace OtherSideCore.Infrastructure.Entities
             _referenceListRelationEntries.Add(entry);
         }
 
-        protected void RegisterParentChildRelationEntry<TSourceEntity, TTargetEntity>(
+        protected void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
               StringKey relationKey,
-              Func<int, Expression<Func<TSourceEntity, bool>>> predicateBuilder,
-              Action<TSourceEntity, int?> relationSetter)
-               where TSourceEntity : IEntity
-               where TTargetEntity : class, IEntity
+              Func<int, Expression<Func<TChildEntity, bool>>> predicateBuilder,
+              Action<TChildEntity, int?> relationSetter)
+               where TChildEntity : class, IEntity
+               where TParentEntity : class, IEntity
         {
-            var entry = new ParentChildRelationEntry<TSourceEntity, TTargetEntity>(relationKey, predicateBuilder, relationSetter);
+            var entry = new ParentChildRelationEntry<TParentEntity, TChildEntity>(relationKey, predicateBuilder, relationSetter);
 
             if (_parentChildRelationEntries.Any(r => r.RelationKey.Equals(relationKey)))
             {
                 throw new ArgumentException($"Cannot add several relation entries with key {relationKey}");
             }
-            else if (ContainsParentChildRelationBySourceType(typeof(TSourceEntity), typeof(TTargetEntity)))
+            else if (ContainsParentChildRelationByChildType(typeof(TChildEntity), typeof(TParentEntity)))
             {
-                throw new ArgumentException($"Cannot add several parent child relations entries for types <{typeof(TSourceEntity)},{typeof(TTargetEntity)}>");
+                throw new ArgumentException($"Cannot add several parent child relations entries for types <{typeof(TChildEntity)},{typeof(TParentEntity)}>");
             }
 
             _parentChildRelationEntries.Add(entry);

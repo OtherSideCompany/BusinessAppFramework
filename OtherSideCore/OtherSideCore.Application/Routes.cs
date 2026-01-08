@@ -23,6 +23,7 @@ namespace OtherSideCore.Application
         public const string GetTemplate = $"api/get/[controller]/{{{DomainObjectIdParam}}}";
         public const string GetHydratedTemplate = $"api/get-hydrated/[controller]/{{{DomainObjectIdParam}}}";
         public const string GetHydratedDomainObjectReferenceTemplate = $"api/get-hydrated-domainobject-reference/[controller]/{{{DomainObjectIdParam}}}/{{{RelationKeyParam}}}";
+        public const string GetHydratedDomainObjectReferenceListItemTemplate = $"api/get-hydrated-domainobject-reference-list-item/[controller]/{{{DomainObjectIdParam}}}/{{{RelationKeyParam}}}";
         public const string SaveTemplate = $"api/save/[controller]/{{{DomainObjectIdParam}}}";
         public const string DeleteTemplate = $"api/delete/[controller]/{{{DomainObjectIdParam}}}";
         public static string WorkspacesFor(string moduleKey) => WorkspacesTemplate.Replace($"{{{ModuleKeyParam}}}", moduleKey);

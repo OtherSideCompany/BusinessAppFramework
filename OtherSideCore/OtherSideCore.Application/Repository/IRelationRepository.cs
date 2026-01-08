@@ -8,6 +8,8 @@ namespace OtherSideCore.Application.Repository
         Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId);
         Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId);
         Task HydrateDomainObjectReferenceAsync(DomainObjectReference domainObjectReference);
+        Task HydrateDomainObjectReferenceListAsync(DomainObjectReferenceList domainObjectReferenceList);
+        Task HydrateDomainObjectReferenceListItemAsync(DomainObjectReferenceListItem domainObjectReferenceListItem, string relationKey);
 
 
         Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken);

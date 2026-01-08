@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OtherSideCore.Application.Workspace
+namespace OtherSideCore.Application.Descriptors
 {
     public interface IWorkspaceDescriptor
     {

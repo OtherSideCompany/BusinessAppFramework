@@ -55,15 +55,26 @@ namespace OtherSideCore.Application.Services
                     }
                 }
             }
+
+            foreach (var domainObjectReferenceList in domainObject.GetReferenceLists())
+            {
+                if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
+                {
+                    IRelationRepository repository = (IRelationRepository)_repositoryFactory.CreateRepository(relationListEntry.TargetDomainObjectType);
+                    await repository.HydrateDomainObjectReferenceListAsync(domainObjectReferenceList);
+
+                }
+            }
         }
-
-        #endregion
-
-
-        #region Private Methods
-
-
-
-        #endregion
     }
+
+    #endregion
+
+
+    #region Private Methods
+
+
+
+    #endregion
 }
+

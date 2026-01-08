@@ -6,7 +6,7 @@ namespace OtherSideCore.Application.Relations
 {
     public interface IRelationResolver
     {
-        bool ContainsParentChildRelationBySourceType(Type sourceType, Type relatedType);
+        bool ContainsParentChildRelationByChildType(Type sourceType, Type relatedType);
         Expression<Func<TEntity, bool>> GetParentChildRelationPredicate<TEntity>(int relatedId, Type relatedType) where TEntity : IEntity;
         void SetParentChildRelation<TEntity>(TEntity entity, Type relatedType, int relatedId) where TEntity : IEntity;
 

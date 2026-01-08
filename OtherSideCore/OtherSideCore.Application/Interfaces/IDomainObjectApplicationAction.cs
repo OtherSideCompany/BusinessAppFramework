@@ -5,11 +5,10 @@ using System.Text;
 
 namespace OtherSideCore.Application.Interfaces
 {
-    public interface IApplicationAction
+    public interface IDomainObjectApplicationAction
     {
         StringKey ActionKey { get; }
         string ExecuteRouteTemplate { get; }
-        HttpMethod HttpMethod { get; }
         int? DomainObjectId { get; }
         string BuildRoute();
     }

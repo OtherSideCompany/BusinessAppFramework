@@ -16,6 +16,7 @@ namespace OtherSideCore.Application.Services
         Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
         Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey);
+        Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItem(int domainObjectId, string relationKey);
 
         Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
 

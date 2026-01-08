@@ -1,6 +1,6 @@
 ﻿using OtherSideCore.Domain;
 
-namespace OtherSideCore.Application.Workspace
+namespace OtherSideCore.Application.Descriptors
 {
     public abstract class WorkspaceDescriptor : IWorkspaceDescriptor
     {

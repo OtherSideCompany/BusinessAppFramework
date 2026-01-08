@@ -11,6 +11,7 @@ using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Factories;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -80,7 +81,7 @@ namespace OtherSideCore.Infrastructure.Repositories
                 {
                     var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
 
-                    if (_relationResolver.ContainsParentChildRelationBySourceType(typeof(TEntity), parentType))
+                    if (_relationResolver.ContainsParentChildRelationByChildType(typeof(TEntity), parentType))
                     {
                         query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
                     }
@@ -262,7 +263,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
 
-                var relatedId = relationEntry.GetRelatedId(entity);
+                var relatedId = (int?)relationEntry.EntityIdProperty.GetValue(entity);
 
                 domainObjectReferences.Add(new DomainObjectReference(relationEntry.RelationKey.Key, relatedId));
             }
@@ -308,7 +309,43 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (entity != null && _relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
             {
-                domainObjectReference.DisplayValue = relationEntry.GetDisplayValue(entity);
+                domainObjectReference.DisplayValue = entity.ToString();
+            }
+        }
+
+        public async Task HydrateDomainObjectReferenceListAsync(DomainObjectReferenceList domainObjectReferenceList)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListAsync)}, key : {domainObjectReferenceList.RelationKey}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
+            {
+                MethodInfo _hydrateTypedMethod = typeof(Repository<TDomainObject, TEntity>).GetMethod(nameof(HydrateDomainObjectReferenceListTypedAsync), BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+                var task = (Task)_hydrateTypedMethod
+                           .MakeGenericMethod(relationListEntry.TargetEntityType)
+                           .Invoke(this, new object[] { domainObjectReferenceList, context })!;
+
+                await task;
+            }
+        }
+
+        public async Task HydrateDomainObjectReferenceListItemAsync(DomainObjectReferenceListItem domainObjectReferenceListItem, string relationKey)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListItemAsync)}, domainObjectId : {domainObjectReferenceListItem.DomainObjectId}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(relationKey), out var relationListEntry))
+            {
+                MethodInfo _hydrateTypedMethod = typeof(Repository<TDomainObject, TEntity>).GetMethod(nameof(HydrateDomainObjectReferenceListItemTypedAsync), BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+                var task = (Task)_hydrateTypedMethod
+                           .MakeGenericMethod(relationListEntry.TargetEntityType)
+                           .Invoke(this, new object[] { domainObjectReferenceListItem, context })!;
+
+                await task;
             }
         }
 
@@ -324,7 +361,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
-                var relatedId = relationEntry.GetRelatedId(entity);
+                var relatedId = (int?)relationEntry.EntityIdProperty.GetValue(entity);
 
                 if (relatedId != null)
                 {
@@ -350,7 +387,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
-                relationEntry.SetRelation(entity, domainObjectReferenceId);
+                relationEntry.EntityIdProperty.SetValue(entity, domainObjectReferenceId);
 
                 await context.SaveChangesAsync(cancellationToken);
             }
@@ -366,7 +403,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
 
-                relationEntry.DeleteRelation(entity, domainObjectReference.DomainObjectId.Value);
+                relationEntry.EntityIdProperty.SetValue(entity, null);
 
                 await context.SaveChangesAsync();
             }
@@ -496,7 +533,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(reference.RelationKey), out var relationEntry))
             {
-                relationEntry.SetRelation(entity, reference.DomainObjectId);
+                relationEntry.EntityIdProperty.SetValue(entity, reference.DomainObjectId);
             }
         }
 
@@ -511,7 +548,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
             if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(referenceList.RelationKey), out var relationEntry))
             {
-                var desiredIds = referenceList.DomainObjectReferences.Select(r => r.DomainObjectId).Where(id => id.HasValue).Select(id => id.Value).ToHashSet();
+                var desiredIds = referenceList.Items.Select(r => r.DomainObjectId).ToHashSet();
 
                 var collectionEntry = context.Entry(entity).Collection(relationEntry.EntityProperty.Name);
 
@@ -604,6 +641,33 @@ namespace OtherSideCore.Infrastructure.Repositories
             target.HistoryInfo.LastModifiedDateTime = source.LastModifiedDateTime;
             target.HistoryInfo.LastModifiedById = source.LastModifiedById;
             target.HistoryInfo.LastModifiedByName = source.LastModifiedByName;
+        }
+
+        private async Task HydrateDomainObjectReferenceListTypedAsync<TargetEntity>(DomainObjectReferenceList domainObjectReferenceList, DbContext context) where TargetEntity : class, IEntity
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListTypedAsync)}, entity type : {typeof(TargetEntity)}");
+
+            var ids = domainObjectReferenceList.Items.Select(r => r.DomainObjectId).ToList();
+            var entities = await context.Set<TargetEntity>().AsNoTracking().Where(e => ids.Contains(e.Id)).ToListAsync();
+
+            var map = entities.ToDictionary(e => e.Id, e => e.ToString() ?? string.Empty);
+
+            foreach (var reference in domainObjectReferenceList.Items)
+            {
+                reference.DisplayValue = map.TryGetValue(reference.DomainObjectId, out var display) ? display : string.Empty;
+            }
+        }
+
+        private async Task HydrateDomainObjectReferenceListItemTypedAsync<TargetEntity>(DomainObjectReferenceListItem domainObjectReferenceListItem, DbContext context) where TargetEntity : class, IEntity
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListTypedAsync)}, entity type : {typeof(TargetEntity)}");
+
+            var entity = await context.Set<TargetEntity>().AsNoTracking().Where(e => e.Id == domainObjectReferenceListItem.DomainObjectId).FirstOrDefaultAsync();
+
+            if (entity != null)
+            {
+                domainObjectReferenceListItem.DisplayValue = entity.ToString();
+            }
         }
 
 

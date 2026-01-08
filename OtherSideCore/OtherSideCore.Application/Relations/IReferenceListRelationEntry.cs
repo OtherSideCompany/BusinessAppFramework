@@ -14,7 +14,7 @@ namespace OtherSideCore.Application.Relations
         Type TargetDomainObjectType { get; }
         Type SourceEntityType { get; }
         Type TargetEntityType { get; }
-        PropertyInfo? DomainProperty { get; }
-        PropertyInfo? EntityProperty { get; }
+        PropertyInfo DomainProperty { get; }
+        PropertyInfo EntityProperty { get; }
     }
 }

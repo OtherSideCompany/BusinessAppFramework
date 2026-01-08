@@ -2,7 +2,7 @@
 
 namespace OtherSideCore.Contracts.ActionResult
 {
-    public class ObjectChange
+    public class DomainObjectChange
     {
         public int DomainObjectId { get; set; }
         public ChangeType ChangeType { get; set; }

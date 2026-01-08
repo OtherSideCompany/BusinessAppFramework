@@ -1,4 +1,4 @@
-﻿using OtherSideCore.Application.Workspace;
+﻿using OtherSideCore.Application.Descriptors;
 using OtherSideCore.Domain;
 
 namespace OtherSideCore.Application.Interfaces

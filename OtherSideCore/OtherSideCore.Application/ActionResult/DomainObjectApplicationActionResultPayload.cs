@@ -1,6 +1,6 @@
 ﻿namespace OtherSideCore.Contracts.ActionResult
 {
-    public class ApplicationActionResultPayload
+    public class DomainObjectApplicationActionResultPayload
     {
         #region Fields
 
@@ -10,7 +10,7 @@
 
         #region Properties
 
-        public List<ObjectChange> Changes { get; set; } = new();
+        public List<DomainObjectChange> Changes { get; set; } = new();
 
         #endregion
 
@@ -22,7 +22,7 @@
 
         #region Constructor
 
-        public ApplicationActionResultPayload()
+        public DomainObjectApplicationActionResultPayload()
         {
 
         }

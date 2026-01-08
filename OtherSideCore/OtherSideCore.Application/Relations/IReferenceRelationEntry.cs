@@ -11,11 +11,7 @@ namespace OtherSideCore.Application.Relations
         Type TargetDomainObjectType { get; }
         Type SourceEntityType { get; }
         Type TargetEntityType { get; }
-        bool IsSystemManaged { get; }
-        PropertyInfo? DomainProperty { get; }
-        void SetRelation(IEntity entity, int? relatedId);
-        void DeleteRelation(IEntity entity, int relatedId);
-        int? GetRelatedId(IEntity entity);
-        string GetDisplayValue(IEntity entity);
+        PropertyInfo DomainProperty { get; }
+        PropertyInfo EntityIdProperty { get; }
     }
 }

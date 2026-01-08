@@ -8,7 +8,7 @@ namespace OtherSideCore.Domain.DomainObjects
         #region Fields
 
         public string RelationKey { get; set; }
-        public List<DomainObjectReference> DomainObjectReferences { get; set; } = new();
+        public List<DomainObjectReferenceListItem> Items { get; set;  } = new();
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace OtherSideCore.Domain.DomainObjects
 
             foreach (var domainObjectId in domainObjectIds)
             {
-                DomainObjectReferences.Add(new DomainObjectReference(relationKey, domainObjectId));
+                Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
             }
         }
 
@@ -45,11 +45,11 @@ namespace OtherSideCore.Domain.DomainObjects
 
         #region Public Methods
 
-        public void AddReference(int domainObjectId)
+        public void AddItem(int domainObjectId)
         {
-            if (!DomainObjectReferences.Any(r => r.DomainObjectId == domainObjectId))
+            if (!Items.Any(i => i.DomainObjectId == domainObjectId))
             {
-                DomainObjectReferences.Add(new DomainObjectReference(RelationKey, domainObjectId));
+                Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
             }
         }
 
