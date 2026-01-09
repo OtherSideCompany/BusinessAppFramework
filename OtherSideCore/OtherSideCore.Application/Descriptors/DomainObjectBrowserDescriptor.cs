@@ -15,7 +15,6 @@ namespace OtherSideCore.Application.Descriptors
         public Type DomainObjectType => typeof(TDomainObject);
         public Type SearchResultType => typeof(TSearchResult);
         public Type SearchListTemplateProviderType { get; init; } = default!;
-        public Type? EditorComponentType { get; init; } = default;
         public Type? DetailEditorComponentType { get; init; } = default;
         public List<DomainObjectApplicationAction<TDomainObject>> Actions { get; init; } = new();
         public List<string> ConstraintKeys { get; init; } = new();

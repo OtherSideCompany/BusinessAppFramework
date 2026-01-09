@@ -99,6 +99,22 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
+        public async Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(GetChildrenAsync)}, parentId : {parentId}, relationKey : {relationKey}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            {
+                ???
+            }
+            else
+            {
+                return new List<object>();
+            }
+        }
+
         public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
         {
             return await Task.FromResult(0);

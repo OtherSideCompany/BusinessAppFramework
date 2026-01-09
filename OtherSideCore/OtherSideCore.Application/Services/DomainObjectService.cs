@@ -119,6 +119,7 @@ namespace OtherSideCore.Application.Services
             }
         }
         
+
         public virtual async Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             var domainObject = await WithReadPermissionAsync(() => _repository.GetAsync(domainObjectId, cancellationToken));
@@ -129,6 +130,11 @@ namespace OtherSideCore.Application.Services
             }
 
             return domainObject;
+        }
+
+        public async Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
+        {
+            return await _repository.GetChildrenAsync(parentId, relationKey, cancellationToken);
         }
 
         public virtual async Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)

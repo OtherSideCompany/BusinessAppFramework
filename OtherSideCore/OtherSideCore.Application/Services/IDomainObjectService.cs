@@ -13,6 +13,8 @@ namespace OtherSideCore.Application.Services
 
         Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
+        Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
+
         Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
         Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey);

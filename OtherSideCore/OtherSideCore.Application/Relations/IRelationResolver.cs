@@ -14,6 +14,7 @@ namespace OtherSideCore.Application.Relations
         bool TryGetReferenceRelationEntry(StringKey key, out IReferenceRelationEntry relationEntry);
 
         bool TryGetReferenceListRelationEntry(StringKey key, out IReferenceListRelationEntry relationEntry);
+        bool TryGetParentChildRelationEntry(StringKey key, out IParentChildRelationEntry relationEntry);
 
         IEnumerable<IReferenceRelationEntry> GetReferenceRelationEntriesBySourceType(Type sourceType);
         IEnumerable<IReferenceListRelationEntry> GetReferenceListRelationEntriesBySourceType(Type sourceType);

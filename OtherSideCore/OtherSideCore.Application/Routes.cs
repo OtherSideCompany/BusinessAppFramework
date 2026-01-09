@@ -21,6 +21,7 @@ namespace OtherSideCore.Application
 
         public const string CreateTemplate = "api/create/[controller]";
         public const string GetTemplate = $"api/get/[controller]/{{{DomainObjectIdParam}}}";
+        public const string GetChildrenTemplate = $"api/getchildren/[controller]/{{{DomainObjectIdParam}}}";
         public const string GetHydratedTemplate = $"api/get-hydrated/[controller]/{{{DomainObjectIdParam}}}";
         public const string GetHydratedDomainObjectReferenceTemplate = $"api/get-hydrated-domainobject-reference/[controller]/{{{DomainObjectIdParam}}}/{{{RelationKeyParam}}}";
         public const string GetHydratedDomainObjectReferenceListItemTemplate = $"api/get-hydrated-domainobject-reference-list-item/[controller]/{{{DomainObjectIdParam}}}/{{{RelationKeyParam}}}";

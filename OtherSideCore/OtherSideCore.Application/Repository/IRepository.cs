@@ -9,6 +9,8 @@ namespace OtherSideCore.Application.Repository
 
         Task<List<T>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken);
 
+        Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
+
         Task CreateAsync(T domainObject, DomainObject? parent);
 
         Task SaveAsync(T domainObject);

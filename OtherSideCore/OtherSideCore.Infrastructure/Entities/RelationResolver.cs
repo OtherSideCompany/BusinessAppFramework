@@ -87,6 +87,12 @@ namespace OtherSideCore.Infrastructure.Entities
             return relationEntry != null;
         }
 
+        public bool TryGetParentChildRelationEntry(StringKey key, out IParentChildRelationEntry relationEntry)
+        {
+            relationEntry = _parentChildRelationEntries.FirstOrDefault(r => r.RelationKey.Equals(key));
+            return relationEntry != null;
+        }
+
         public IEnumerable<IReferenceRelationEntry> GetReferenceRelationEntriesBySourceType(Type sourceType)
         {
             return _referenceRelationEntries.Where(r => r.SourceEntityType == sourceType);

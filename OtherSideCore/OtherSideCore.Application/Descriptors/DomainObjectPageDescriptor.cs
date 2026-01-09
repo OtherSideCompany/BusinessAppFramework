@@ -10,7 +10,7 @@ namespace OtherSideCore.WebUI.Descriptors
     {
         #region Fields
 
-
+        public Type ContentComponentType { get; init; } = default!;
 
         #endregion
 
