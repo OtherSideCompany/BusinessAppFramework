@@ -11,7 +11,7 @@ namespace OtherSideCore.Application.Services
         #region Fields
 
         private readonly IRelationResolver _relationResolver;
-        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly IRelationService _relationService;
 
         #endregion
 
@@ -31,10 +31,10 @@ namespace OtherSideCore.Application.Services
 
         public ReferenceHydrator(
             IRelationResolver relationResolver,
-            IRepositoryFactory repositoryFactory)
+            IRelationService relationService)
         {
             _relationResolver = relationResolver;
-            _repositoryFactory = repositoryFactory;
+            _relationService = relationService;
         }
 
         #endregion
@@ -49,8 +49,7 @@ namespace OtherSideCore.Application.Services
                 {
                     if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
                     {
-                        IRelationService repository = (IRelationService)_repositoryFactory.CreateRepository(relationEntry.TargetDomainObjectType);
-                        await repository.HydrateDomainObjectReferenceAsync(domainObjectReference);
+                        await _relationService.HydrateDomainObjectReferenceAsync(domainObjectReference);
                     }
                 }
             }
@@ -59,8 +58,7 @@ namespace OtherSideCore.Application.Services
             {
                 if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
                 {
-                    IRelationService repository = (IRelationService)_repositoryFactory.CreateRepository(relationListEntry.TargetDomainObjectType);
-                    await repository.HydrateDomainObjectReferenceListAsync(domainObjectReferenceList);
+                    await _relationService.HydrateDomainObjectReferenceListAsync(domainObjectReferenceList);
 
                 }
             }

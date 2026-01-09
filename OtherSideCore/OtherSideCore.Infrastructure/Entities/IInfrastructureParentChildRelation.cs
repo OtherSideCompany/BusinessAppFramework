@@ -10,6 +10,6 @@ namespace OtherSideCore.Infrastructure.Entities
 {
     internal interface IInfrastructureParentChildRelation : IParentChildRelationEntry
     {
-        IQueryable<IEntity> GetChildSet(DbContext context);
+        IQueryable<int> GetChildrenIds(DbContext context, int parentId);
     }
 }

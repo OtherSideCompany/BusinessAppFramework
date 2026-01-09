@@ -13,6 +13,7 @@ namespace OtherSideCore.Application.Interfaces
         void RegisterDomainObjectBrowserWorkspaces(IServiceProvider serviceProvider);
         void RegisterConstraints(IServiceProvider serviceProvider);
         void RegisterIcons(IServiceProvider serviceProvider);
+        void RegisterDomainObjectEntityTypes(IServiceProvider serviceProvider);
         StringKey? GetModuleWorkspaceKey();
         List<StringKey> GetWorkspacesKeys();
     }

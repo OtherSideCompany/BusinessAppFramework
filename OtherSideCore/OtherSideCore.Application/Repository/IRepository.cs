@@ -8,7 +8,7 @@ namespace OtherSideCore.Application.Repository
     {
         Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);        
 
-        Task CreateAsync(T domainObject, DomainObject? parent);
+        Task CreateAsync(T domainObject);
 
         Task SaveAsync(T domainObject);
 

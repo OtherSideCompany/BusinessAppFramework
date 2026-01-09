@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Office.Interop.Outlook;
 using OtherSideCore.Application;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Entities
 {
@@ -44,36 +46,6 @@ namespace OtherSideCore.Infrastructure.Entities
         public bool ContainsParentChildRelationByChildType(Type childType, Type parentType)
         {
             return _parentChildRelationEntries.Any(r => r.ChildEntityType == childType && r.ParentEntityType == parentType);
-        }
-
-        public Expression<Func<TEntity, bool>> GetParentChildRelationPredicate<TEntity>(int relatedId, Type relatedType) where TEntity : IEntity
-        {
-            var relationEntry = _parentChildRelationEntries.Where(r => r.ChildEntityType == typeof(TEntity) && r.ParentEntityType == relatedType).FirstOrDefault();
-
-            if (relationEntry == null)
-                throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
-
-            var untypedPredicate = relationEntry.GetRelationPredicate(relatedId);
-
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-            var body = Expression.Invoke(untypedPredicate, Expression.Convert(parameter, typeof(IEntity)));
-            return Expression.Lambda<Func<TEntity, bool>>(body, parameter);
-        }
-
-        public void SetParentChildRelation<TEntity>(TEntity entity, Type relatedType, int relatedId) where TEntity : IEntity
-        {
-            var relationEntry = _parentChildRelationEntries.Where(r => r.ChildEntityType == typeof(TEntity) && r.ParentEntityType == relatedType).FirstOrDefault();
-
-            if (relationEntry == null)
-                throw new InvalidOperationException($"No parent child relation entry found for entity type {typeof(TEntity).Name} and relation type {relatedType}");
-
-            relationEntry.SetRelation(entity, relatedId);
-        }
-
-        public void DeleteReferenceRelation<TEntity, U>(TEntity entity, int relatedId) where TEntity : IEntity where U : class
-        {
-            /*var relationEntry = GetRelationEntry<TEntity>(typeof(U), relationType);
-            relationEntry.DeleteRelation(entity, relatedId);*/
         }
 
         public bool TryGetReferenceRelationEntry(StringKey key, out IReferenceRelationEntry relationEntry)
@@ -153,7 +125,7 @@ namespace OtherSideCore.Infrastructure.Entities
         }
 
         protected void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-           StringKey relationKey,          
+           StringKey relationKey,
            Expression<Func<TSourceDomainObject, DomainObjectReference?>> domainExpression,
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
@@ -172,10 +144,10 @@ namespace OtherSideCore.Infrastructure.Entities
             }
 
             _referenceRelationEntries.Add(entry);
-        }    
+        }
 
         protected void RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-              StringKey relationKey,             
+              StringKey relationKey,
               Expression<Func<TSourceDomainObject, DomainObjectReferenceList>> domainExpression,
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject
@@ -198,13 +170,13 @@ namespace OtherSideCore.Infrastructure.Entities
 
         protected void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
               StringKey relationKey,
-              Func<int, Expression<Func<TChildEntity, bool>>> predicateBuilder,
-              Action<TChildEntity, int?> relationSetter,
-              Func<DbContext, IQueryable<TChildEntity>> childSet)
+              Expression<Func<TChildEntity, int?>> parentEntityIdExpression,
+              Func<DbContext, int, IQueryable<int>> childrenIdsGetter)
                where TChildEntity : class, IEntity
                where TParentEntity : class, IEntity
         {
-            var entry = new ParentChildRelationEntry<TParentEntity, TChildEntity>(relationKey, predicateBuilder, relationSetter, childSet);
+            var parentEntityIdProperty = ExtractProperty(parentEntityIdExpression);
+            var entry = new ParentChildRelationEntry<TParentEntity, TChildEntity>(relationKey, parentEntityIdProperty, childrenIdsGetter);
 
             if (_parentChildRelationEntries.Any(r => r.RelationKey.Equals(relationKey)))
             {
@@ -216,7 +188,7 @@ namespace OtherSideCore.Infrastructure.Entities
             }
 
             _parentChildRelationEntries.Add(entry);
-        }
+        }        
 
         #endregion
     }

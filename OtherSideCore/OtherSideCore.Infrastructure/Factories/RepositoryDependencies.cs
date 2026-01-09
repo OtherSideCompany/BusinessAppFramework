@@ -35,18 +35,13 @@ namespace OtherSideCore.Infrastructure.Factories
          IDbContextFactory<DbContext> dbContextFactory,
          IMapper mapper,
          ILoggerFactory loggerFactory,
-         IDomainObjectReferenceFactory domainObjectReferenceFactory,
-         IDomainObjectReferenceMapFactory referenceMapFactory,
          IRelationResolver parentChildRelationResolver,
          IDomainObjectEntityTypeMap domainObjectEntityTypeMap)
       {
          DbContextFactory = dbContextFactory;
          Mapper = mapper;
          LoggerFactory = loggerFactory;
-         DomainObjectReferenceFactory = domainObjectReferenceFactory;
-         ReferenceMapFactory = referenceMapFactory;
          RelationResolver = parentChildRelationResolver;
-         DomainObjectEntityTypeMap = domainObjectEntityTypeMap;
       }
 
       #endregion

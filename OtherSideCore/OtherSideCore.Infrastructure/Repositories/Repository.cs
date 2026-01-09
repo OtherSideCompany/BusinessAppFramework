@@ -65,18 +65,13 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
-        public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent)
+        public async Task CreateAsync(TDomainObject domainObject)
         {
             _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(CreateAsync));
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
                 var entity = _mapper.Map<TEntity>(domainObject);
-
-                if (parent != null)
-                {
-                    SetParent(entity, parent);
-                }
 
                 await CreateEntityAsync(context, entity);
                 _mapper.Map(entity, domainObject);
@@ -331,10 +326,10 @@ namespace OtherSideCore.Infrastructure.Repositories
 
                 var collectionObject = relationEntry.EntityProperty.GetValue(entity)!;
 
-                var entities = ((System.Collections.IEnumerable)collectionObject).Cast<IEntity>().ToList();
+                var entities = ((IEnumerable)collectionObject).Cast<IEntity>().ToList();
                 var currentIds = entities.Select(e => e.Id).ToHashSet();
 
-                var collectionList = (System.Collections.IList)collectionObject;
+                var collectionList = (IList)collectionObject;
 
                 var toRemove = currentIds.Except(desiredIds).ToList();
                 var toAdd = desiredIds.Except(currentIds).ToList();

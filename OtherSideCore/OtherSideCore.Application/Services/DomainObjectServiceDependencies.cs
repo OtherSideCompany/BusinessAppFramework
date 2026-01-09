@@ -24,6 +24,7 @@ namespace OtherSideCore.Application.Services
         public IDomainObjectEventBus DomainObjectEventBus { get; }
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
         public IRelationResolver RelationResolver { get; }
+        public IRelationService RelationService { get; }
 
         #endregion
 
@@ -43,7 +44,8 @@ namespace OtherSideCore.Application.Services
             IDomainObjectEventBus domainObjectEventBus,
             IUserPermissionResolverService userPermissionResolverService,
             IRelationResolver relationResolver,
-            IReferenceHydrator referenceHydrator)
+            IReferenceHydrator referenceHydrator,
+            IRelationService relationService)
         {
             UserContext = userContext;
             DomainObjectFileService = domainObjectFileService;
@@ -53,6 +55,7 @@ namespace OtherSideCore.Application.Services
             UserPermissionResolverService = userPermissionResolverService;
             RelationResolver = relationResolver;
             ReferenceHydrator = referenceHydrator;
+            RelationService = relationService;
         }
 
         #endregion

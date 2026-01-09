@@ -7,13 +7,9 @@ namespace OtherSideCore.Application.Services
     {
         Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-        Task<(bool Success, List<T> Items)> TryGetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default);
-
-        Task<List<T>> GetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default);
-
         Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-        Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
+        Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
 
         Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
@@ -22,26 +18,14 @@ namespace OtherSideCore.Application.Services
 
         Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
 
-        Task CreateAsync(T domainObject, DomainObject? parent);
+        Task CreateAsync(T domainObject);
 
-        Task<T> CreateAsync(DomainObject? parent);
+        Task<T> CreateAsync();
 
         Task SaveAsync(T domainObject);
 
         Task SaveIndexAsync(IIndexable domainObject);
 
         Task<bool> DeleteAsync(int domainObjectId);
-
-
-
-        Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default);
-
-        Task CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, CancellationToken cancellationToken = default);
-
-        Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default);
-
-        Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken = default);
-
-        Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject;
     }
 }

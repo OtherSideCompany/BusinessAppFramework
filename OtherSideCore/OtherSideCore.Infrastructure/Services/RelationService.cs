@@ -75,7 +75,7 @@ namespace OtherSideCore.Infrastructure.Services
             var entity = await context.FindAsync(entityType, domainObjectId);
 
             foreach (var relationEntry in _relationResolver.GetReferenceListRelationEntriesBySourceType(entityType))
-            {               
+            {
                 var collectionEntry = context.Entry(entity).Collection(relationEntry.EntityProperty.Name);
 
                 if (!collectionEntry.IsLoaded)
@@ -118,7 +118,7 @@ namespace OtherSideCore.Infrastructure.Services
         {
             _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceAsync)}, domainObjectReferenceId : {domainObjectReference.DomainObjectId}, key : {domainObjectReference.RelationKey}");
 
-            using var context = _dbContextFactory.CreateDbContext();            
+            using var context = _dbContextFactory.CreateDbContext();
 
             if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
             {
@@ -138,7 +138,7 @@ namespace OtherSideCore.Infrastructure.Services
             {
                 var ids = domainObjectReferenceList.Items.Select(r => r.DomainObjectId).ToList();
 
-                foreach (var id in ids)                
+                foreach (var id in ids)
                 {
                     var entity = await context.FindAsync(relationListEntry.TargetEntityType, id);
                     domainObjectReferenceListById[id].DisplayValue = entity?.ToString();
@@ -159,36 +159,6 @@ namespace OtherSideCore.Infrastructure.Services
             }
         }
 
-        public async Task<List<T>> GetAllAsync(DomainObject parent, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
-
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                var query = context.Set<TEntity>().AsNoTracking();
-
-                if (parent != null)
-                {
-                    var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-
-                    if (_relationResolver.ContainsParentChildRelationByChildType(typeof(TEntity), parentType))
-                    {
-                        query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Cannot handle parent type {parentType} for {GetType()}");
-                    }
-                }
-
-                query = query.OrderByDescending(e => e.Id);
-
-                var entities = await query.ToListAsync(cancellationToken);
-
-                return _mapper.Map<List<TDomainObject>>(entities);
-            }
-        }
-
         public async Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation($"{GetType()}, {nameof(GetChildrenIdsAsync)}, parentId : {parentId}, relationKey : {relationKey}");
@@ -197,34 +167,27 @@ namespace OtherSideCore.Infrastructure.Services
 
             if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
             {
-                var query = ((IInfrastructureParentChildRelation)relationEntry).GetChildSet(context).AsNoTracking();
+                var query = ((IInfrastructureParentChildRelation)relationEntry).GetChildrenIds(context, parentId);
 
-                query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
-
-                query = query.OrderByDescending(e => e.Id);
-
-                var entities = await query.ToListAsync(cancellationToken);
-                return _mapper.Map(entities, entities.GetType(), ??);
+                return await query.ToListAsync(cancellationToken);
             }
             else
             {
-                return new List<object>();
+                return new List<int>();
             }
         }
 
-        public async Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken)
+        public async Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(SetParentAsync), domainObject.Id);
+            _logger.LogInformation($"{GetType()}, {nameof(SetParentAsync)}, parentId : {parentId}, childId : {childId}, relationKey : {relationKey}");
 
-            using (var context = _dbContextFactory.CreateDbContext())
+            using var context = _dbContextFactory.CreateDbContext();
+
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
             {
-                var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
-
-                if (entity != null)
-                {
-                    SetParent(entity, parent);
-                    await context.SaveChangesAsync(cancellationToken);
-                }
+                var entity = context.Find(relationEntry.ChildEntityType, childId);
+                relationEntry.ParentEntityIdProperty.SetValue(entity, parentId);
+                await context.SaveChangesAsync();
             }
         }
 
@@ -232,11 +195,6 @@ namespace OtherSideCore.Infrastructure.Services
 
         #region Private Methods
 
-        protected void SetParent(TEntity entity, DomainObject parent)
-        {
-            var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-            _relationResolver.SetParentChildRelation(entity, parentType, parent.Id);
-        }
 
         #endregion
     }

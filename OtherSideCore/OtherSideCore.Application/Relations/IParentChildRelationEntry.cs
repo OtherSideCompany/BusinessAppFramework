@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Domain;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace OtherSideCore.Application.Relations
 {
@@ -8,7 +9,6 @@ namespace OtherSideCore.Application.Relations
         StringKey RelationKey { get; }
         Type ChildEntityType { get; }
         Type ParentEntityType { get; }
-        Expression<Func<IEntity, bool>> GetRelationPredicate(int parentId);
-        void SetRelation(IEntity entity, int? parentId);
+        PropertyInfo ParentEntityIdProperty { get; }
     }
 }

@@ -57,40 +57,15 @@ namespace OtherSideCore.Application.Services
             return await WithReadPermissionAsync(() => _repository.ExistsAsync(domainObjectId, cancellationToken));
         }
 
-        public async Task<(bool Success, List<T> Items)> TryGetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default)
+        public virtual async Task CreateAsync(T domainObject)
         {
-            try
-            {
-                var items = await GetAllAsync(parent, cancellationToken);
-                return (true, items);
-            }
-            catch (UserPermissionException)
-            {
-                return (false, new List<T>());
-            }
+            await WithCreationPermissionAsync(() => CreateWithoutRightsCheckAsync(domainObject));
         }
 
-        public async Task<List<T>> GetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default)
-        {
-            var domainObjects = await WithReadPermissionAsync(() => _repository.GetAllAsync(parent, cancellationToken));
-
-            foreach (var domainObject in domainObjects)
-            {
-                await LoadReferencesAsync(domainObject);
-            }
-
-            return domainObjects;
-        }
-
-        public virtual async Task CreateAsync(T domainObject, DomainObject? parent)
-        {
-            await WithCreationPermissionAsync(() => CreateWithoutRightsCheckAsync(domainObject, parent));
-        }
-
-        public virtual async Task<T> CreateAsync(DomainObject? parent)
+        public virtual async Task<T> CreateAsync()
         {
             var domainObject = new T();
-            await WithCreationPermissionAsync(() => CreateWithoutRightsCheckAsync(domainObject, parent));
+            await WithCreationPermissionAsync(() => CreateWithoutRightsCheckAsync(domainObject));
             return domainObject;
         }
 
@@ -117,8 +92,7 @@ namespace OtherSideCore.Application.Services
             {
                 throw new InvalidOperationException("Suppression impossible car des données sont associées");
             }
-        }
-        
+        }        
 
         public virtual async Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
@@ -130,11 +104,6 @@ namespace OtherSideCore.Application.Services
             }
 
             return domainObject;
-        }
-
-        public async Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
-        {
-            return await _repository.GetChildrenAsync(parentId, relationKey, cancellationToken);
         }
 
         public virtual async Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
@@ -149,6 +118,11 @@ namespace OtherSideCore.Application.Services
             return domainObject;
         }
 
+        public async Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
+        {
+            return await _domainObjectServiceDependencies.RelationService.GetChildrenIdsAsync(parentId, relationKey, cancellationToken);
+        }
+
         public virtual async Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey)
         {
             var domainObjectReference = new DomainObjectReference
@@ -157,7 +131,7 @@ namespace OtherSideCore.Application.Services
                 RelationKey = relationKey
             };
 
-            await _repository.HydrateDomainObjectReferenceAsync(domainObjectReference);
+            await _domainObjectServiceDependencies.RelationService.HydrateDomainObjectReferenceAsync(domainObjectReference);
 
             return domainObjectReference;
         }
@@ -169,7 +143,7 @@ namespace OtherSideCore.Application.Services
                 DomainObjectId = domainObjectId
             };
 
-            await _repository.HydrateDomainObjectReferenceListItemAsync(domainObjectReferenceListItem, relationKey);
+            await _domainObjectServiceDependencies.RelationService.HydrateDomainObjectReferenceListItemAsync(domainObjectReferenceListItem, relationKey);
 
             return domainObjectReferenceListItem;
         }
@@ -211,29 +185,9 @@ namespace OtherSideCore.Application.Services
             await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(typeof(T), domainObject.Id));
         }       
 
-        public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken = default)
+        public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
-            return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferencesAsync(relationKey, domainObjectId, cancellationToken));
-        }
-
-        public async Task CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, CancellationToken cancellationToken = default)
-        {
-            await WithUpdateDomainObjectReferencePermissionAsync(() => _repository.CreateDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReferenceId, cancellationToken));
-        }
-
-        public async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken = default)
-        {
-            await WithUpdatePermissionAsync(() => _repository.DeleteDomainObjectReferenceAsync(relationKey, domainObjectId, domainObjectReference, cancellationToken));
-        }
-
-        public virtual async Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken = default)
-        {
-            await WithUpdatePermissionAsync(() => _repository.SetParentAsync(domainObject, parent, cancellationToken));
-        }
-
-        public virtual async Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject
-        {
-            return await WithReadPermissionAsync(() => _repository.GetParentIdAsync<U>(childDomainObjectId, cancellationToken));
+            return await WithReadPermissionAsync(() => _domainObjectServiceDependencies.RelationService.GetDomainObjectReferencesAsync<T>( domainObjectId));
         }
 
         #endregion
@@ -263,12 +217,12 @@ namespace OtherSideCore.Application.Services
 
         private async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId)
         {
-            return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferencesAsync(domainObjectId));
+            return await WithReadPermissionAsync(() => _domainObjectServiceDependencies.RelationService.GetDomainObjectReferencesAsync<T>(domainObjectId));
         }
 
         private async Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId)
         {
-            return await WithReadPermissionAsync(() => _repository.GetDomainObjectReferenceListsAsync(domainObjectId));
+            return await WithReadPermissionAsync(() => _domainObjectServiceDependencies.RelationService.GetDomainObjectReferenceListsAsync<T>(domainObjectId));
         }
 
         private async Task<bool> IsSystemObjectAsync(int domainObjectId)
@@ -276,13 +230,8 @@ namespace OtherSideCore.Application.Services
             return typeof(T).IsAssignableFrom(typeof(ISystemObject)) && await _repository.IsSystemObjectAsync(domainObjectId);
         }
 
-        private async Task CreateWithoutRightsCheckAsync(T domainObject, DomainObject? parent)
+        private async Task CreateWithoutRightsCheckAsync(T domainObject)
         {
-            if (domainObject is IIndexable indexableDomainObject && parent != null)
-            {
-                indexableDomainObject.Index = ((IIndexableRepository)_repository).GetNewIndex(parent);
-            }
-
             domainObject.CreationDate = DateTime.Now;
             domainObject.LastModifiedDateTime = DateTime.Now;
             domainObject.CreatedById = _userContext.Id;
@@ -290,7 +239,7 @@ namespace OtherSideCore.Application.Services
             domainObject.LastModifiedById = _userContext.Id;
             domainObject.LastModifiedByName = _userContext.GetName();
 
-            await _repository.CreateAsync(domainObject, parent);
+            await _repository.CreateAsync(domainObject);
             await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(typeof(T), domainObject.Id));
         }
 

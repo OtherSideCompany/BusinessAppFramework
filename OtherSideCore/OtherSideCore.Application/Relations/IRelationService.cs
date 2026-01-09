@@ -1,5 +1,6 @@
 ﻿using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
+using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Application.Relations
 {
@@ -11,12 +12,6 @@ namespace OtherSideCore.Application.Relations
         Task HydrateDomainObjectReferenceListAsync(DomainObjectReferenceList domainObjectReferenceList);
         Task HydrateDomainObjectReferenceListItemAsync(DomainObjectReferenceListItem domainObjectReferenceListItem, string relationKey);
         Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
-
-        Task SetParentAsync(T domainObject, DomainObject parent, CancellationToken cancellationToken);
-
-        Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject;
-
-
-
+        Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
     }
 }

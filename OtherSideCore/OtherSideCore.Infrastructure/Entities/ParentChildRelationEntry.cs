@@ -3,8 +3,11 @@ using OtherSideCore.Application;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Entities
 {
@@ -13,44 +16,27 @@ namespace OtherSideCore.Infrastructure.Entities
         where TParentEntity : class, IEntity
     {
         private StringKey _relationKey;
-        private readonly Func<int, Expression<Func<TChildEntity, bool>>> _predicateBuilder;
-        private readonly Action<TChildEntity, int?> _relationSetter;
-        private readonly Func<DbContext, IQueryable<TChildEntity>> _childSet;
+        private readonly Func<DbContext, int, IQueryable<int>> _childrenIdsGetter;
 
         public StringKey RelationKey => _relationKey;
         public Type ChildEntityType => typeof(TChildEntity);
         public Type ParentEntityType => typeof(TParentEntity);
+        public PropertyInfo ParentEntityIdProperty { get; }
 
         public ParentChildRelationEntry(
            StringKey key,
-           Func<int, Expression<Func<TChildEntity, bool>>> predicateBuilder,
-           Action<TChildEntity, int?> relationSetter,
-           Func<DbContext, IQueryable<TChildEntity>> childSet)
+           PropertyInfo parentEntityIdProperty,
+           Func<DbContext, int, IQueryable<int>> childrenIdsGetter)
         {
             _relationKey = key;
-            _predicateBuilder = predicateBuilder;
-            _relationSetter = relationSetter;
-            _childSet = childSet;
+            _childrenIdsGetter = childrenIdsGetter;
+
+            ParentEntityIdProperty = parentEntityIdProperty;
         }
 
-        public Expression<Func<IEntity, bool>> GetRelationPredicate(int relatedId)
+        public IQueryable<int> GetChildrenIds(DbContext context, int parentId)
         {
-            var specificPredicate = _predicateBuilder(relatedId);
-
-            var parameter = Expression.Parameter(typeof(IEntity), "e");
-            var casted = Expression.Convert(parameter, typeof(TChildEntity));
-            var body = Expression.Invoke(specificPredicate, casted);
-            return Expression.Lambda<Func<IEntity, bool>>(body, parameter);
-        }
-
-        public void SetRelation(IEntity entity, int? relatedId)
-        {
-            _relationSetter((TChildEntity)entity, relatedId);
-        }
-
-        public IQueryable<IEntity> GetChildSet(DbContext context)
-        {
-            return _childSet(context).Cast<IEntity>();
-        }
+            return _childrenIdsGetter(context, parentId);
+        }        
     }
 }
