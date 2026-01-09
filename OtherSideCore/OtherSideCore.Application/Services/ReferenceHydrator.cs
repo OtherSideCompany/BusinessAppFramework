@@ -1,7 +1,6 @@
 ﻿using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Interfaces;
 using OtherSideCore.Application.Relations;
-using OtherSideCore.Application.Repository;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 
@@ -50,7 +49,7 @@ namespace OtherSideCore.Application.Services
                 {
                     if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
                     {
-                        IRelationRepository repository = (IRelationRepository)_repositoryFactory.CreateRepository(relationEntry.TargetDomainObjectType);
+                        IRelationService repository = (IRelationService)_repositoryFactory.CreateRepository(relationEntry.TargetDomainObjectType);
                         await repository.HydrateDomainObjectReferenceAsync(domainObjectReference);
                     }
                 }
@@ -60,7 +59,7 @@ namespace OtherSideCore.Application.Services
             {
                 if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
                 {
-                    IRelationRepository repository = (IRelationRepository)_repositoryFactory.CreateRepository(relationListEntry.TargetDomainObjectType);
+                    IRelationService repository = (IRelationService)_repositoryFactory.CreateRepository(relationListEntry.TargetDomainObjectType);
                     await repository.HydrateDomainObjectReferenceListAsync(domainObjectReferenceList);
 
                 }

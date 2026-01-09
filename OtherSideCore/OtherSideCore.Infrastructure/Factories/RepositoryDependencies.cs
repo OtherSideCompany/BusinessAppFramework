@@ -19,10 +19,7 @@ namespace OtherSideCore.Infrastructure.Factories
       public IDbContextFactory<DbContext> DbContextFactory { get; }
       public IMapper Mapper { get; }
       public ILoggerFactory LoggerFactory { get; }
-      public IDomainObjectReferenceFactory DomainObjectReferenceFactory { get; }
-      public IDomainObjectReferenceMapFactory ReferenceMapFactory { get; }
       public IRelationResolver RelationResolver { get; }
-      public IDomainObjectEntityTypeMap DomainObjectEntityTypeMap { get; }
 
       #endregion
 

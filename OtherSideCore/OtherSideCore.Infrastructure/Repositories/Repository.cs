@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Repositories
 {
-    public class Repository<TDomainObject, TEntity> : IDisposable, IRelationRepository, IRepository<TDomainObject>
+    public class Repository<TDomainObject, TEntity> : IDisposable, IRepository<TDomainObject>
         where TDomainObject : DomainObject, new()
         where TEntity : class, IEntity, new()
     {
@@ -28,8 +28,6 @@ namespace OtherSideCore.Infrastructure.Repositories
 
         protected RepositoryDependencies _repositoryDependencies;
 
-        protected IDomainObjectReferenceFactory _domainObjectReferenceFactory;
-        protected IDomainObjectReferenceMapFactory _referenceMapFactory;
         protected IDbContextFactory<DbContext> _dbContextFactory;
         protected ILoggerFactory _loggerFactory;
         protected ILogger<Repository<TDomainObject, TEntity>> _logger;
@@ -50,8 +48,6 @@ namespace OtherSideCore.Infrastructure.Repositories
             _loggerFactory = repositoryDependencies.LoggerFactory;
             _logger = repositoryDependencies.LoggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
             _mapper = repositoryDependencies.Mapper;
-            _domainObjectReferenceFactory = repositoryDependencies.DomainObjectReferenceFactory;
-            _referenceMapFactory = repositoryDependencies.ReferenceMapFactory;
             _relationResolver = repositoryDependencies.RelationResolver;
         }
 
@@ -67,57 +63,6 @@ namespace OtherSideCore.Infrastructure.Repositories
             {
                 return await context.Set<TEntity>().AnyAsync(e => e.Id == domainObjectId, cancellationToken);
             }
-        }
-
-        public virtual async Task<List<TDomainObject>> GetAllAsync(DomainObject? parent, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetAllAsync));
-
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                var query = context.Set<TEntity>().AsNoTracking();
-
-                if (parent != null)
-                {
-                    var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-
-                    if (_relationResolver.ContainsParentChildRelationByChildType(typeof(TEntity), parentType))
-                    {
-                        query = query.Where(_relationResolver.GetParentChildRelationPredicate<TEntity>(parent.Id, parentType));
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Cannot handle parent type {parentType} for {GetType()}");
-                    }
-                }
-
-                query = query.OrderByDescending(e => e.Id);
-
-                var entities = await query.ToListAsync(cancellationToken);
-
-                return _mapper.Map<List<TDomainObject>>(entities);
-            }
-        }
-
-        public async Task<List<object>> GetChildrenAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(GetChildrenAsync)}, parentId : {parentId}, relationKey : {relationKey}");
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
-            {
-                ???
-            }
-            else
-            {
-                return new List<object>();
-            }
-        }
-
-        public virtual async Task<int> CountAsync(DomainObject? parent, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(0);
         }
 
         public async Task CreateAsync(TDomainObject domainObject, DomainObject? parent)
@@ -267,187 +212,6 @@ namespace OtherSideCore.Infrastructure.Repositories
             }
         }
 
-        public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId)
-        {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
-
-            var domainObjectReferences = new List<DomainObjectReference>();
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            foreach (var relationEntry in _relationResolver.GetReferenceRelationEntriesBySourceType(typeof(TEntity)))
-            {
-                var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
-
-                var relatedId = (int?)relationEntry.EntityIdProperty.GetValue(entity);
-
-                domainObjectReferences.Add(new DomainObjectReference(relationEntry.RelationKey.Key, relatedId));
-            }
-
-            return domainObjectReferences;
-        }
-
-        public virtual async Task<List<DomainObjectReferenceList>> GetDomainObjectReferenceListsAsync(int domainObjectId)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(GetDomainObjectReferenceListsAsync)}, domainObjectId : {domainObjectId}");
-
-            var domainObjectReferenceLists = new List<DomainObjectReferenceList>();
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            foreach (var relationEntry in _relationResolver.GetReferenceListRelationEntriesBySourceType(typeof(TEntity)))
-            {
-                var entity = await context.Set<TEntity>().FindAsync(domainObjectId);
-
-                var collectionEntry = context.Entry(entity).Collection(relationEntry.EntityProperty.Name);
-
-                if (!collectionEntry.IsLoaded)
-                    await collectionEntry.LoadAsync();
-
-                var collectionObject = relationEntry.EntityProperty.GetValue(entity)!;
-
-                var entities = ((System.Collections.IEnumerable)collectionObject).Cast<IEntity>().ToList();
-                var relatedIds = entities.Select(e => e.Id).ToList();
-
-                domainObjectReferenceLists.Add(new DomainObjectReferenceList(relationEntry.RelationKey.Key, relatedIds));
-            }
-
-            return domainObjectReferenceLists;
-        }
-
-        public async Task HydrateDomainObjectReferenceAsync(DomainObjectReference domainObjectReference)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceAsync)}, domainObjectReferenceId : {domainObjectReference.DomainObjectId}, key : {domainObjectReference.RelationKey}");
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            var entity = await context.Set<TEntity>().FindAsync(domainObjectReference.DomainObjectId);
-
-            if (entity != null && _relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
-            {
-                domainObjectReference.DisplayValue = entity.ToString();
-            }
-        }
-
-        public async Task HydrateDomainObjectReferenceListAsync(DomainObjectReferenceList domainObjectReferenceList)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListAsync)}, key : {domainObjectReferenceList.RelationKey}");
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
-            {
-                MethodInfo _hydrateTypedMethod = typeof(Repository<TDomainObject, TEntity>).GetMethod(nameof(HydrateDomainObjectReferenceListTypedAsync), BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-                var task = (Task)_hydrateTypedMethod
-                           .MakeGenericMethod(relationListEntry.TargetEntityType)
-                           .Invoke(this, new object[] { domainObjectReferenceList, context })!;
-
-                await task;
-            }
-        }
-
-        public async Task HydrateDomainObjectReferenceListItemAsync(DomainObjectReferenceListItem domainObjectReferenceListItem, string relationKey)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListItemAsync)}, domainObjectId : {domainObjectReferenceListItem.DomainObjectId}");
-
-            using var context = _dbContextFactory.CreateDbContext();
-
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(relationKey), out var relationListEntry))
-            {
-                MethodInfo _hydrateTypedMethod = typeof(Repository<TDomainObject, TEntity>).GetMethod(nameof(HydrateDomainObjectReferenceListItemTypedAsync), BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-                var task = (Task)_hydrateTypedMethod
-                           .MakeGenericMethod(relationListEntry.TargetEntityType)
-                           .Invoke(this, new object[] { domainObjectReferenceListItem, context })!;
-
-                await task;
-            }
-        }
-
-        public virtual async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(StringKey relationKey, int domainObjectId, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(GetDomainObjectReferencesAsync), domainObjectId);
-
-            var domainObjectReferences = new List<DomainObjectReference>();
-
-            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-
-                var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
-
-                var relatedId = (int?)relationEntry.EntityIdProperty.GetValue(entity);
-
-                if (relatedId != null)
-                {
-                    var related = await context.FindAsync(relationEntry.TargetEntityType, relatedId.Value);
-
-                    if (related is IEntity relatedEntity)
-                    {
-                        domainObjectReferences.Add(_domainObjectReferenceFactory.CreateDomainObjectReference(relatedEntity));
-                    }
-                }
-            }
-
-            return domainObjectReferences;
-        }
-
-        public virtual async Task CreateDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, int domainObjectReferenceId, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(CreateDomainObjectReferenceAsync)}, relationKey = {relationKey}, domainObjectId = {domainObjectId}, domainObjectReferenceId = {domainObjectReferenceId}");
-
-            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-
-                var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
-
-                relationEntry.EntityIdProperty.SetValue(entity, domainObjectReferenceId);
-
-                await context.SaveChangesAsync(cancellationToken);
-            }
-        }
-
-        public virtual async Task DeleteDomainObjectReferenceAsync(StringKey relationKey, int domainObjectId, DomainObjectReference domainObjectReference, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteDomainObjectReferenceAsync), domainObjectId);
-
-            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
-            {
-                using var context = _dbContextFactory.CreateDbContext();
-
-                var entity = await context.Set<TEntity>().FindAsync(domainObjectId, cancellationToken);
-
-                relationEntry.EntityIdProperty.SetValue(entity, null);
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task SetParentAsync(TDomainObject domainObject, DomainObject parent, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(SetParentAsync), domainObject.Id);
-
-            using (var context = _dbContextFactory.CreateDbContext())
-            {
-                var entity = await context.Set<TEntity>().FindAsync(domainObject.Id);
-
-                if (entity != null)
-                {
-                    SetParent(entity, parent);
-                    await context.SaveChangesAsync(cancellationToken);
-                }
-            }
-        }
-
-        public virtual async Task<int?> GetParentIdAsync<U>(int childDomainObjectId, CancellationToken cancellationToken = default) where U : DomainObject
-        {
-            _logger.LogInformation("{Type}, {MethodName}", GetType(), nameof(GetParentIdAsync));
-
-            return await Task.FromResult<int?>(null);
-        }
-
         public async Task<bool> IsSystemObjectAsync(int domainObjectId)
         {
             _logger.LogInformation($"{GetType()}, {nameof(IsSystemObjectAsync)}, domainObjectId : {domainObjectId}");
@@ -487,13 +251,7 @@ namespace OtherSideCore.Infrastructure.Repositories
 
         #endregion
 
-        #region Private Methods 
-
-        protected void SetParent(TEntity entity, DomainObject parent)
-        {
-            var parentType = _repositoryDependencies.DomainObjectEntityTypeMap.GetEntityType(parent.GetType());
-            _relationResolver.SetParentChildRelation(entity, parentType, parent.Id);
-        }
+        #region Private Methods         
 
         protected async Task CreateEntityAsync(DbContext context, TEntity entity)
         {
@@ -657,35 +415,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             target.HistoryInfo.LastModifiedDateTime = source.LastModifiedDateTime;
             target.HistoryInfo.LastModifiedById = source.LastModifiedById;
             target.HistoryInfo.LastModifiedByName = source.LastModifiedByName;
-        }
-
-        private async Task HydrateDomainObjectReferenceListTypedAsync<TargetEntity>(DomainObjectReferenceList domainObjectReferenceList, DbContext context) where TargetEntity : class, IEntity
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListTypedAsync)}, entity type : {typeof(TargetEntity)}");
-
-            var ids = domainObjectReferenceList.Items.Select(r => r.DomainObjectId).ToList();
-            var entities = await context.Set<TargetEntity>().AsNoTracking().Where(e => ids.Contains(e.Id)).ToListAsync();
-
-            var map = entities.ToDictionary(e => e.Id, e => e.ToString() ?? string.Empty);
-
-            foreach (var reference in domainObjectReferenceList.Items)
-            {
-                reference.DisplayValue = map.TryGetValue(reference.DomainObjectId, out var display) ? display : string.Empty;
-            }
-        }
-
-        private async Task HydrateDomainObjectReferenceListItemTypedAsync<TargetEntity>(DomainObjectReferenceListItem domainObjectReferenceListItem, DbContext context) where TargetEntity : class, IEntity
-        {
-            _logger.LogInformation($"{GetType()}, {nameof(HydrateDomainObjectReferenceListTypedAsync)}, entity type : {typeof(TargetEntity)}");
-
-            var entity = await context.Set<TargetEntity>().AsNoTracking().Where(e => e.Id == domainObjectReferenceListItem.DomainObjectId).FirstOrDefaultAsync();
-
-            if (entity != null)
-            {
-                domainObjectReferenceListItem.DisplayValue = entity.ToString();
-            }
-        }
-
+        }       
 
         #endregion
     }

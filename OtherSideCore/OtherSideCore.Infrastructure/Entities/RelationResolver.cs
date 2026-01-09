@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Application;
+﻿using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Application;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
@@ -198,11 +199,12 @@ namespace OtherSideCore.Infrastructure.Entities
         protected void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
               StringKey relationKey,
               Func<int, Expression<Func<TChildEntity, bool>>> predicateBuilder,
-              Action<TChildEntity, int?> relationSetter)
+              Action<TChildEntity, int?> relationSetter,
+              Func<DbContext, IQueryable<TChildEntity>> childSet)
                where TChildEntity : class, IEntity
                where TParentEntity : class, IEntity
         {
-            var entry = new ParentChildRelationEntry<TParentEntity, TChildEntity>(relationKey, predicateBuilder, relationSetter);
+            var entry = new ParentChildRelationEntry<TParentEntity, TChildEntity>(relationKey, predicateBuilder, relationSetter, childSet);
 
             if (_parentChildRelationEntries.Any(r => r.RelationKey.Equals(relationKey)))
             {

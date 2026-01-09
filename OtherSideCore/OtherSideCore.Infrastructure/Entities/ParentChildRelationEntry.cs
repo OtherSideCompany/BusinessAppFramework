@@ -1,18 +1,21 @@
-﻿using OtherSideCore.Application;
+﻿using Microsoft.EntityFrameworkCore;
+using OtherSideCore.Application;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace OtherSideCore.Infrastructure.Entities
 {
-    public class ParentChildRelationEntry<TParentEntity, TChildEntity> : IParentChildRelationEntry
+    public class ParentChildRelationEntry<TParentEntity, TChildEntity> : IInfrastructureParentChildRelation
         where TChildEntity : IEntity
         where TParentEntity : class, IEntity
     {
         private StringKey _relationKey;
         private readonly Func<int, Expression<Func<TChildEntity, bool>>> _predicateBuilder;
         private readonly Action<TChildEntity, int?> _relationSetter;
+        private readonly Func<DbContext, IQueryable<TChildEntity>> _childSet;
 
         public StringKey RelationKey => _relationKey;
         public Type ChildEntityType => typeof(TChildEntity);
@@ -21,11 +24,13 @@ namespace OtherSideCore.Infrastructure.Entities
         public ParentChildRelationEntry(
            StringKey key,
            Func<int, Expression<Func<TChildEntity, bool>>> predicateBuilder,
-            Action<TChildEntity, int?> relationSetter)
+           Action<TChildEntity, int?> relationSetter,
+           Func<DbContext, IQueryable<TChildEntity>> childSet)
         {
             _relationKey = key;
             _predicateBuilder = predicateBuilder;
             _relationSetter = relationSetter;
+            _childSet = childSet;
         }
 
         public Expression<Func<IEntity, bool>> GetRelationPredicate(int relatedId)
@@ -41,6 +46,11 @@ namespace OtherSideCore.Infrastructure.Entities
         public void SetRelation(IEntity entity, int? relatedId)
         {
             _relationSetter((TChildEntity)entity, relatedId);
+        }
+
+        public IQueryable<IEntity> GetChildSet(DbContext context)
+        {
+            return _childSet(context).Cast<IEntity>();
         }
     }
 }
