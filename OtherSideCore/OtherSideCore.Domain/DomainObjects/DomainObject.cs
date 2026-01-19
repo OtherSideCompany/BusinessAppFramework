@@ -1,10 +1,8 @@
 ﻿using OtherSideCore.Domain.Attributes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace OtherSideCore.Domain.DomainObjects
 {
@@ -89,7 +87,7 @@ namespace OtherSideCore.Domain.DomainObjects
         public IEnumerable<DomainObjectReference> GetReferences()
         {
             var props = GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
                 .Where(p => typeof(DomainObjectReference).IsAssignableFrom(p.PropertyType));
 
             foreach (var prop in props)

@@ -7,6 +7,7 @@ using OtherSideCore.Application;
 using OtherSideCore.Application.Factories;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Application.Repository;
+using OtherSideCore.Application.Trees;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Factories;
@@ -410,7 +411,7 @@ namespace OtherSideCore.Infrastructure.Repositories
             target.HistoryInfo.LastModifiedDateTime = source.LastModifiedDateTime;
             target.HistoryInfo.LastModifiedById = source.LastModifiedById;
             target.HistoryInfo.LastModifiedByName = source.LastModifiedByName;
-        }       
+        }
 
         #endregion
     }

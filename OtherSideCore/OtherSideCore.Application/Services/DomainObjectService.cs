@@ -2,6 +2,7 @@
 using OtherSideCore.Application.Exceptions;
 using OtherSideCore.Application.Mail;
 using OtherSideCore.Application.Repository;
+using OtherSideCore.Application.Trees;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.Attributes;
 using OtherSideCore.Domain.DomainObjects;
@@ -116,11 +117,6 @@ namespace OtherSideCore.Application.Services
             }
 
             return domainObject;
-        }
-
-        public async Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
-        {
-            return await _domainObjectServiceDependencies.RelationService.GetChildrenIdsAsync(parentId, relationKey, cancellationToken);
         }
 
         public virtual async Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey)
@@ -292,7 +288,7 @@ namespace OtherSideCore.Application.Services
         protected Task<U> WithReadPermissionAsync<U>(Func<Task<U>> action) => WithPermissionAsync<U>(UserRolePermissionType.Read, action);
         protected Task WithUpdatePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Update, action);
         protected Task WithUpdateDomainObjectReferencePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Update, action);
-        protected Task WithDeletePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Delete, action);
+        protected Task WithDeletePermissionAsync(Func<Task> action) => WithPermissionAsync(UserRolePermissionType.Delete, action);        
 
         #endregion
     }

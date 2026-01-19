@@ -4,6 +4,7 @@ using OtherSideCore.Application;
 using OtherSideCore.Application.Interfaces;
 using OtherSideCore.Application.Search;
 using OtherSideCore.Application.Services;
+using OtherSideCore.Application.Trees;
 using OtherSideCore.Domain;
 using System;
 using System.Collections.Generic;
@@ -101,6 +102,14 @@ namespace OtherSideCore.Infrastructure.Services
 
                 return await query.FirstAsync(cancellationToken);
             }
+        }
+
+        public async Task<NodeSummary> GetSummaryAsync(int domainObjectId)
+        {
+            var result = await SearchAsync(domainObjectId, CancellationToken.None);
+            var nodeSummary = result.GetSummary();
+
+            return nodeSummary;
         }
 
         #endregion

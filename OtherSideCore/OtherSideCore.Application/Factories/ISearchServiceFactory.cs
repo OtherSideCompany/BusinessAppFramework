@@ -4,8 +4,9 @@ using OtherSideCore.Application.Services;
 
 namespace OtherSideCore.Application.Factories
 {
-   public interface ISearchServiceFactory
-   {
-      ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new();
-   }
+    public interface ISearchServiceFactory
+    {
+        ISearchService<TSearchResult> CreateSearchService<TSearchResult>() where TSearchResult : DomainObjectSearchResult, new();
+        object CreateSearchService(Type domainObjectSearchResultType);
+    }
 }

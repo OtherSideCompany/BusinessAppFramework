@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Office.Interop.Outlook;
 using OtherSideCore.Application;
 using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace OtherSideCore.Infrastructure.Entities
 {
@@ -68,12 +66,20 @@ namespace OtherSideCore.Infrastructure.Entities
 
         public IEnumerable<IReferenceRelationEntry> GetReferenceRelationEntriesBySourceType(Type sourceType)
         {
-            return _referenceRelationEntries.Where(r => r.SourceEntityType == sourceType);
+            for (var t = sourceType; t != null && t != typeof(object); t = t.BaseType)
+            {
+                foreach (var entry in _referenceRelationEntries.Where(r => r.SourceEntityType == t))
+                    yield return entry;
+            }
         }
 
         public IEnumerable<IReferenceListRelationEntry> GetReferenceListRelationEntriesBySourceType(Type sourceType)
         {
-            return _referenceListRelationEntries.Where(r => r.SourceEntityType == sourceType);
+            for (var t = sourceType; t != null && t != typeof(object); t = t.BaseType)
+            {
+                foreach (var entry in _referenceListRelationEntries.Where(r => r.SourceEntityType == t))
+                    yield return entry;
+            }
         }
 
         #endregion

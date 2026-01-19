@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain;
+﻿using OtherSideCore.Application.Trees;
+using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Services
@@ -8,8 +9,6 @@ namespace OtherSideCore.Application.Services
         Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
         Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
-
-        Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
 
         Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 

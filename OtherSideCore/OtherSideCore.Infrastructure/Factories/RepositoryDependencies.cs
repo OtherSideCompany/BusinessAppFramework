@@ -35,8 +35,7 @@ namespace OtherSideCore.Infrastructure.Factories
          IDbContextFactory<DbContext> dbContextFactory,
          IMapper mapper,
          ILoggerFactory loggerFactory,
-         IRelationResolver parentChildRelationResolver,
-         IDomainObjectEntityTypeMap domainObjectEntityTypeMap)
+         IRelationResolver parentChildRelationResolver)
       {
          DbContextFactory = dbContextFactory;
          Mapper = mapper;

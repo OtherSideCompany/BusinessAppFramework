@@ -17,6 +17,7 @@ namespace OtherSideCore.Application.ActionResult
         public StringKey ActionKey { get; init; } = StringKey.Empty;
         public string ExecuteRouteTemplate { get; init; } = string.Empty;
         public int? DomainObjectId { get; set; }
+        public bool RequireDomainObjectId { get; init; } = false;
 
         #endregion
 
@@ -39,7 +40,7 @@ namespace OtherSideCore.Application.ActionResult
 
         public virtual string BuildRoute()
         {
-            return Routes.For(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
+            return Routes.BuildRoute(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
         }
 
         #endregion

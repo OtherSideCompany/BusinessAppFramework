@@ -1,4 +1,5 @@
-﻿using OtherSideCore.Domain.DomainObjects;
+﻿using OtherSideCore.Application.Trees;
+using OtherSideCore.Domain.DomainObjects;
 
 namespace OtherSideCore.Application.Search
 {
@@ -57,6 +58,11 @@ namespace OtherSideCore.Application.Search
             {
                 return DomainObjectId == item.DomainObjectId;
             }
+        }
+
+        public virtual NodeSummary GetSummary()
+        {
+            return new NodeSummary();
         }
 
         #endregion

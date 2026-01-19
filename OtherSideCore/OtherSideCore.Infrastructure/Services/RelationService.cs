@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OtherSideCore.Application;
@@ -7,13 +6,8 @@ using OtherSideCore.Application.Relations;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 using OtherSideCore.Infrastructure.Entities;
-using OtherSideCore.Infrastructure.Factories;
-using OtherSideCore.Infrastructure.Repositories;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +21,7 @@ namespace OtherSideCore.Infrastructure.Services
         private IMapper _mapper;
         protected ILogger<RelationService> _logger;
         private IRelationResolver _relationResolver;
-        private IDomainObjectEntityTypeMap _domainObjectEntityTypeMap;
+        private IDomainObjectTypeMap _domainObjectTypeMap;
 
         #endregion
 
@@ -50,13 +44,13 @@ namespace OtherSideCore.Infrastructure.Services
             IMapper mapper,
             ILoggerFactory loggerFactory,
             IRelationResolver relationResolver,
-            IDomainObjectEntityTypeMap domainObjectEntityTypeMap)
+            IDomainObjectTypeMap domainObjectTypeMap)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
             _logger = loggerFactory.CreateLogger<RelationService>();
             _relationResolver = relationResolver;
-            _domainObjectEntityTypeMap = domainObjectEntityTypeMap;
+            _domainObjectTypeMap = domainObjectTypeMap;
         }
 
         #endregion
@@ -71,7 +65,7 @@ namespace OtherSideCore.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            var entityType = _domainObjectEntityTypeMap.GetEntityType(typeof(TDomainObject));
+            var entityType = _domainObjectTypeMap.GetEntityTypeFromDomainObjectType(typeof(TDomainObject));
             var entity = await context.FindAsync(entityType, domainObjectId);
 
             foreach (var relationEntry in _relationResolver.GetReferenceListRelationEntriesBySourceType(entityType))
@@ -100,7 +94,7 @@ namespace OtherSideCore.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            var entityType = _domainObjectEntityTypeMap.GetEntityType(typeof(TDomainObject));
+            var entityType = _domainObjectTypeMap.GetEntityTypeFromDomainObjectType(typeof(TDomainObject));
 
             foreach (var relationEntry in _relationResolver.GetReferenceRelationEntriesBySourceType(entityType))
             {

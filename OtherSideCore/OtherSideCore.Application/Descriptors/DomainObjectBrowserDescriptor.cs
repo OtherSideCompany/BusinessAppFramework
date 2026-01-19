@@ -22,7 +22,7 @@ namespace OtherSideCore.Application.Descriptors
         public DomainObjectBrowserDescriptor(
             IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver,
             List<string>? constraintKeys = null)
-        {          
+        {
             Actions = new List<DomainObjectApplicationAction<TDomainObject>>
             {
                 new DomainObjectHttpApplicationAction<TDomainObject>
@@ -35,11 +35,13 @@ namespace OtherSideCore.Application.Descriptors
                 {
                     ActionKey = StringKey.From(ActionKeys.DeleteActionKey),
                     ExecuteRouteTemplate = Routes.DeleteTemplate,
-                    HttpMethod = HttpMethod.Delete
+                    HttpMethod = HttpMethod.Delete,
+                    RequireDomainObjectId = true
                 },
                 new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
                 {
-                    ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
+                    ActionKey = StringKey.From(ActionKeys.DetailsActionKey),
+                    RequireDomainObjectId = true
                 }
             };
             ConstraintKeys = new List<string>()

@@ -42,6 +42,12 @@ namespace OtherSideCore.Infrastructure.Factories
             return _serviceProvider.GetRequiredService<ISearchService<TSearchResult>>();
         }
 
+        public object CreateSearchService(Type domainObjectSearchResultType)
+        {
+            var serviceType = typeof(ISearchService<>).MakeGenericType(domainObjectSearchResultType);
+            return _serviceProvider.GetRequiredService(serviceType);
+        }
+
         #endregion
 
         #region Private Methods
