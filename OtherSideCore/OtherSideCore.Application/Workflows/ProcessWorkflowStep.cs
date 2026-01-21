@@ -1,62 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OtherSideCore.Application.Workflows
+﻿namespace OtherSideCore.Application.Workflows
 {
-   public abstract class ProcessWorkflowStep
-   {
-      #region Fields
+    public class ProcessWorkflowStep
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public string Name { get; set; }
-      public List<ProcessWorkflowStepCondition> ExecutableConditions { get; private set; }
-      public List<ProcessWorkflowStepCondition> CompletionConditions { get; private set; }
+        public string Key { get; set; }
+        public bool IsCompleted => ProcessWorkflowStepConditions.Any() && ProcessWorkflowStepConditions.All(s => s.IsCompleted);
+        public List<ProcessWorkflowStepCondition> ProcessWorkflowStepConditions { get; set; } = new();
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public ProcessWorkflowStep(string name)
-      {
-         Name = name;
-         ExecutableConditions = new List<ProcessWorkflowStepCondition>();
-         CompletionConditions = new List<ProcessWorkflowStepCondition>();
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      public bool IsExecutable() 
-      {
-         return ExecutableConditions.Any() ? ExecutableConditions.All(c => c.Evaluate()) : true;
-      }
-
-      public virtual bool IsCompleted()
-      {
-         return CompletionConditions.Any() ? CompletionConditions.All(c => c.Evaluate()) : true;
-      }
-
-      #endregion
-
-      #region Private Methods
+        #region Commands
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Constructor
+
+        public ProcessWorkflowStep(string key)
+        {
+            Key = key;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+
+
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

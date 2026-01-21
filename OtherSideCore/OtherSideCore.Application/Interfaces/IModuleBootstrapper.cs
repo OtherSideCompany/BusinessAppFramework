@@ -14,6 +14,7 @@ namespace OtherSideCore.Application.Interfaces
         void RegisterConstraints(IServiceProvider serviceProvider);
         void RegisterIcons(IServiceProvider serviceProvider);
         void RegisterDomainObjectTypesMapping(IServiceProvider serviceProvider);
+        void RegisterWorkflows(IServiceProvider serviceProvider);
         StringKey? GetModuleWorkspaceKey();
         List<StringKey> GetWorkspacesKeys();
     }

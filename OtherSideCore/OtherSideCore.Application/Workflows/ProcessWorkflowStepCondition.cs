@@ -1,52 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OtherSideCore.Application.Workflows
+﻿namespace OtherSideCore.Application.Workflows
 {
-   public class ProcessWorkflowStepCondition
-   {
-      #region Fields
+    public class ProcessWorkflowStepCondition
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public string Description { get; set; }
-      public Func<bool> Evaluate { get; set; }
+        public string Key { get; set; }
+        public bool IsCompleted { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public ProcessWorkflowStepCondition(string description, Func<bool> evaluate)
-      {
-         Description = description;
-         Evaluate = evaluate;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public ProcessWorkflowStepCondition(string key)
+        {
+            Key = key;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }
