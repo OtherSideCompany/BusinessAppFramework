@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OtherSideCore.Application.Services;
 using OtherSideCore.Domain.DomainObjects;
-using System.Reflection;
 
 namespace OtherSideCore.Application.Factories
 {

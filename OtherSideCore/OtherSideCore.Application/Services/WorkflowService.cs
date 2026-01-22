@@ -9,6 +9,7 @@ namespace OtherSideCore.Application.Services
         #region Fields
 
         private readonly IWorkflowFactory _workflowFactory;
+        private readonly IWorkflowContextLoaderFactory _workflowContextLoaderFactory;
 
         #endregion
 
@@ -26,9 +27,10 @@ namespace OtherSideCore.Application.Services
 
         #region Constructor
 
-        public WorkflowService(IWorkflowFactory workflowFactory)
+        public WorkflowService(IWorkflowFactory workflowFactory, IWorkflowContextLoaderFactory workflowContextLoaderFactory)
         {
             _workflowFactory = workflowFactory;
+            _workflowContextLoaderFactory = workflowContextLoaderFactory;
         }
 
         #endregion
@@ -38,15 +40,9 @@ namespace OtherSideCore.Application.Services
         public async Task<ProcessWorkflow> GetWorkflowAsync(string workflowKey, int domainObjectId)
         {
             var workflow = _workflowFactory.CreateWorkflow(StringKey.From(workflowKey));
-
-            foreach (var step in workflow.ProcessWorkflowSteps)
-            {
-                foreach (var condition in step.ProcessWorkflowStepConditions)
-                {
-                    condition.IsCompleted = await _conditionService.EvaluateAsync(condition.Key, domainObjectId);
-                }
-            }
-
+            var workflowContextLoader = _workflowContextLoaderFactory.Get(StringKey.From(workflowKey));
+            var context = await workflowContextLoader.LoadAsync(domainObjectId);
+            workflow.EvaluateWorkflowSate(context);
             return workflow;
         }
 

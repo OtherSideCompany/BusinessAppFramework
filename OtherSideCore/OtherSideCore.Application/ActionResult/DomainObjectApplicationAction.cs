@@ -1,4 +1,5 @@
 ﻿using OtherSideCore.Application.Interfaces;
+using OtherSideCore.Contracts;
 using OtherSideCore.Domain;
 using OtherSideCore.Domain.DomainObjects;
 

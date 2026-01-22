@@ -31,7 +31,10 @@
 
         #region Public Methods      
 
+        public virtual void EvaluateWorkflowSate(WorkflowContext workflowContext)
+        {
 
+        }
 
         #endregion
 
