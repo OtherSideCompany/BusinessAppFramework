@@ -42,6 +42,11 @@ namespace OtherSideCore.Application.Descriptors
                 {
                     ActionKey = StringKey.From(ActionKeys.DetailsActionKey),
                     RequireDomainObjectId = true
+                },
+                new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
+                {
+                    ActionKey = StringKey.From(ActionKeys.VisualiseFileActionKey),
+                    RequireDomainObjectId = true
                 }
             };
             ConstraintKeys = new List<string>()
