@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OtherSideCore\OtherSideCore\OtherSideCore.Application\OtherSideCore.Application.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Application\OtherSideCore.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OtherSideCore\OtherSideCore\OtherSideCore.Application\OtherSideCore.Application.csproj" />
-    <ProjectReference Include="..\..\..\OtherSideCore\OtherSideCore\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Application\OtherSideCore.Application.csproj" />
     <ProjectReference Include="..\OtherSideCore.Contracts\OtherSideCore.Contracts.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
   </ItemGroup>
 
 </Project>

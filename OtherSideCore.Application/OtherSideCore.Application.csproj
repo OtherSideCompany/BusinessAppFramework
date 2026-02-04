@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OtherSide.Industry.Manufacturing\OtherSide.Industry.Manufacturing\OtherSideCore.Contracts\OtherSideCore.Contracts.csproj" />
+    <ProjectReference Include="..\OtherSideCore.Contracts\OtherSideCore.Contracts.csproj" />
     <ProjectReference Include="..\OtherSideCore.Domain\OtherSideCore.Domain.csproj" />
   </ItemGroup>
 
