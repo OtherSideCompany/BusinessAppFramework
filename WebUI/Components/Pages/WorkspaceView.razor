@@ -1,0 +1,31 @@
+﻿@using Application.Descriptors
+@using Application.Interfaces
+@using Domain
+@using MudBlazor
+@using Application.Descriptors
+@using Application.Interfaces
+@using Domain
+@using WebUI.Factories
+
+@inject IWorkspaceDescriptorFactory DescriptorFactory
+
+@if (Descriptor is null)
+{
+    <MudText Color="Color.Error">Workspace @WorkspaceKey not found.</MudText>
+}
+else
+{
+    <WorkspaceHost Descriptor="Descriptor" />
+}
+
+@code {
+    [Parameter] public string WorkspaceKey { get; set; } = "";
+
+    private WorkspaceDescriptor? Descriptor;
+
+    protected override void OnParametersSet()
+    {
+        Descriptor = DescriptorFactory.GetWorkspaceDescriptor(StringKey.From(WorkspaceKey));
+    }
+}
+

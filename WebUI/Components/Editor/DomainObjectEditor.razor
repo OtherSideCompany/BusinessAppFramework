@@ -1,0 +1,128 @@
+﻿@using Application.Interfaces
+@using Contracts
+@using Domain.DomainObjects
+@using MudBlazor
+@using Application.Interfaces
+@using Domain.DomainObjects
+@using WebUI.Interfaces
+@using WebUI.Interfaces
+
+@inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
+@inject ILocalizedStringService LocalizedStringService
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+
+<style>
+    .osc-editor {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+        .osc-editor .mud-expand-panel {
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+    .osc-editor-content {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 16px;
+    }
+
+    .osc-editor-footer {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 16px;
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        padding: 16px;
+        justify-content: flex-end;
+        background-color: #fff;
+        border-top: 1px solid rgba(0,0,0,0.12);
+        box-shadow: 0 -2px 6px rgba(0,0,0,0.06);
+    }
+</style>
+
+<div class="osc-editor">
+
+    <CascadingValue Value="DomainObject">
+        <div class="osc-editor-content">
+            <MudStack Spacing="3">
+                <DomainObjectProperties OnChanged="() => MarkDirty()" />
+                <MudDivider Class="my-2" />
+                <DomainObjectHistory />
+            </MudStack>
+        </div>
+    </CascadingValue>
+
+    <MudPopover Open="@IsDirty"
+                AnchorOrigin="Origin.TopRight"
+                TransformOrigin="Origin.TopRight"
+                OverflowBehavior="OverflowBehavior.FlipNever"
+                Style="margin-left:-40px !important; margin-top:-28px;" Elevation="2">
+        <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
+            <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Save"
+                               OnClick="SaveAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
+
+
+            <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Undo"
+                               OnClick="UndoAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
+        </MudButtonGroup>
+    </MudPopover>
+
+
+</div>
+
+
+@code {
+    [Parameter] public TDomainObject? DomainObject { get; set; }
+    [Parameter] public EventCallback<bool> OnDirtyChanged { get; set; }
+
+    private Snackbar? _dirtySnackbar;
+
+    public bool IsDirty { get; set; }
+
+    public void MarkDirty()
+    {
+        if (!IsDirty)
+        {
+            SetDirtyState(true);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (DomainObject != null)
+        {
+            await DomainObjectServiceGateway.SaveAsync(DomainObject);
+            SetDirtyState(false);
+        }
+    }
+
+    private async Task UndoAsync()
+    {
+        if (DomainObject != null)
+        {
+            DomainObject = await DomainObjectServiceGateway.GetAsync(DomainObject.Id);
+            SetDirtyState(false);
+        }
+    }
+
+    private void SetDirtyState(bool isDirty)
+    {
+        IsDirty = isDirty;
+        OnDirtyChanged.InvokeAsync(isDirty);
+        StateHasChanged();
+    }
+}

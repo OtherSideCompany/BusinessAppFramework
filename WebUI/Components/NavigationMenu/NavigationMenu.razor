@@ -1,0 +1,71 @@
+﻿@using System.Globalization
+@using Application.Interfaces
+@using Domain
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using Application.Interfaces
+@using Domain
+@using WebUI.Interfaces
+@using WebUI.Interfaces
+
+@inject ILocalizedStringService LocalizedStringService
+@inject IWorkspaceNavigationService WorkspaceNavigationService
+@inject IIconFactory IconFactory
+
+<style>
+    .mud-nav-link,
+    .mud-nav-link .mud-nav-link-text,
+    .mud-nav-link .mud-nav-link-icon,
+    .mud-nav-link .mud-icon-root {
+        color: var(--mud-palette-drawer-text) !important;
+    }
+
+        .mud-nav-link .mud-nav-link-icon{
+            width: 22px;
+            height: 22px;
+        }
+
+        .mud-nav-link.active,
+        .mud-nav-link.mud-nav-link-active {
+            color: #33EA51 !important;
+        }
+
+            .mud-nav-link.active .mud-nav-link-text,
+            .mud-nav-link.active .mud-nav-link-icon,
+            .mud-nav-link.active .mud-icon-root,
+            .mud-nav-link.mud-nav-link-active .mud-nav-link-text,
+            .mud-nav-link.mud-nav-link-active .mud-nav-link-icon,
+            .mud-nav-link.mud-nav-link-active .mud-icon-root {
+                color: #33EA51 !important;
+            }
+</style>
+
+<MudNavMenu Color="Color.Dark">
+
+    @if (_moduleKeys != null)
+    {
+        @foreach (var moduleKey in _moduleKeys)
+        {
+            <MudTooltip Text="@LocalizedStringService.Get(moduleKey)" Delay="700">
+                <MudNavLink Href="@GetModuleWorkspaceLink(moduleKey)"
+                            Icon="@IconFactory.CreateIcon(StringKey.From(moduleKey))">
+                    @LocalizedStringService.Get(moduleKey)
+                </MudNavLink>
+            </MudTooltip>
+        }
+    }
+
+</MudNavMenu>
+
+@code {
+
+    private List<string> _moduleKeys { get; set; } = new()!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _moduleKeys = await WorkspaceNavigationService.GetModuleKeysAsync();
+    }
+
+    string GetModuleWorkspaceLink(string key) => "/module/" + key;
+}

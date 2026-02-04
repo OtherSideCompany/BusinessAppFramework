@@ -1,0 +1,26 @@
+﻿@using Application.Interfaces
+@using Contracts
+@using Domain.DomainObjects
+@using MudBlazor
+@using Application.Interfaces
+@using Domain.DomainObjects
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudText Typo="Typo.caption" Align="Align.Start" Style="color:gray; font-style: italic">@DisplayString</MudText>
+
+@code {
+    [CascadingParameter] public DomainObject? DomainObject { get; set; }
+
+    public string CreatedInfo =>
+        DomainObject == null
+            ? ""
+            : $"{DomainObject.CreationDate:dd/MM/yyyy HH:mm} {LocalizedStringService.Get(StringKeys.ByKey)} {DomainObject.CreatedByName}";
+
+    public string ModifiedInfo =>
+        DomainObject?.LastModifiedDateTime == null
+            ? ""
+            : $"{DomainObject.LastModifiedDateTime:dd/MM/yyyy HH:mm} {LocalizedStringService.Get(StringKeys.ByKey)} {DomainObject.LastModifiedByName}";
+
+    public string DisplayString => $"{LocalizedStringService.Get(StringKeys.CreationKey)} : {CreatedInfo}, {LocalizedStringService.Get(StringKeys.LastModificationKey)?.ToLower()} : {ModifiedInfo}";
+}

@@ -1,0 +1,56 @@
+﻿@using Application.Interfaces
+@using Contracts
+@using Domain
+@using MudBlazor
+@using Application.Interfaces
+@using Domain
+@using WebUI.Interfaces
+@using WebUI.Interfaces
+
+@inject IIconFactory IconFactory
+@inject ILocalizedStringService LocalizedStringService
+
+<MudButton Variant="Variant.Text"
+           Size="Size.Small"
+           StartIcon="@IconFactory.CreateIcon(ActionKey)"
+           IconColor="@_color"
+           OnClick="OnClickInternal"
+           Disabled="@Disabled"
+           Style="font-weight: normal;">
+    @LocalizedStringService.Get(ActionKey.Key)
+</MudButton>
+
+@code {
+    [Parameter] public StringKey ActionKey { get; set; } = StringKey.From("");
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    private Color _color { get; set; }
+
+    private async Task OnClickInternal(MouseEventArgs e)
+    {
+        if (Disabled) 
+            return;
+
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(e);
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (ActionKey.Equals(StringKey.From(ActionKeys.CreateActionKey)))
+        {
+            _color = Color.Primary;
+        }
+        else if (ActionKey.Equals(StringKey.From(ActionKeys.DeleteActionKey)))
+        {
+            _color = Color.Error;
+        }
+        else
+        {
+            _color = Color.Dark;
+        }
+    }
+}

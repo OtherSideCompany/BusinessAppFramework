@@ -1,0 +1,94 @@
+﻿@page "/module/{ModuleKey}"
+
+@using Application.Interfaces
+@using Domain
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using Application.Interfaces
+@using Domain
+@using WebUI.Interfaces
+@using WebUI.Interfaces
+
+@inject ILocalizedStringService LocalizedStringService
+@inject IWorkspaceNavigationService WorkspaceNavigationService
+@inject IIconFactory IconFactory
+
+<style>
+
+    .paper-header {
+        border-radius: 0;
+        height: 52px;
+        background: var(--mud-palette-tertiary)
+    }
+
+    .module-ws-chips .mud-chip.module-ws-chip {
+        background-color: transparent !important;
+        color: rgba(0,0,0,0.5) !important;
+    }
+
+        .module-ws-chips .mud-chip.module-ws-chip .mud-icon-root {
+            color: rgba(0,0,0,0.5) !important;
+        }
+
+        .module-ws-chips .mud-chip.module-ws-chip.mud-chip-selected {
+            background-color: var(--mud-palette-tertiary) !important;
+            color: white !important;
+        }
+
+            .module-ws-chips .mud-chip.module-ws-chip.mud-chip-selected .mud-icon-root {
+                color: white !important;
+            }
+
+</style>
+
+<MudPaper Class="paper-header" Outlined="false" Elevation="0">
+    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
+
+        <MudChipSet T="string"
+                    Class="module-ws-chips"
+                    SelectedValue="@_activeWorkspaceKey"
+                    SelectedValueChanged="OnWorkspaceChanged"
+                    SelectionMode="SelectionMode.SingleSelection">
+
+            @foreach (var key in _workspaceKeys)
+            {
+                <MudChip @key="key"
+                         T="string"
+                         Value="@key"
+                         Icon="@IconFactory.CreateIcon(StringKey.From(key))"
+                         Label="true"
+                         Class="module-ws-chip">
+                    @LocalizedStringService.Get(key)
+                </MudChip>
+            }
+        </MudChipSet>
+
+    </MudStack>
+</MudPaper>
+
+@if (_activeWorkspaceKey != null)
+{
+    <WorkspaceView WorkspaceKey="@_activeWorkspaceKey" />
+}
+
+@code {
+    [Parameter] public string ModuleKey { get; set; } = "";
+
+    private List<string> _workspaceKeys = new()!;
+    private string? _activeWorkspaceKey;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _workspaceKeys = await WorkspaceNavigationService.GetWorkspaceKeysAsync(ModuleKey);
+
+        if (_activeWorkspaceKey is null || !_workspaceKeys.Contains(_activeWorkspaceKey))
+            _activeWorkspaceKey = _workspaceKeys.FirstOrDefault();
+    }
+
+    private Task OnWorkspaceChanged(string key)
+    {
+        _activeWorkspaceKey = key;
+        return Task.CompletedTask;
+    }
+}

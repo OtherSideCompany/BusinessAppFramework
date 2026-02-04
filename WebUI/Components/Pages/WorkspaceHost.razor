@@ -1,0 +1,28 @@
+﻿@using Application.Descriptors
+@using Application.Interfaces
+@using MudBlazor
+@using Application.Descriptors
+@using Application.Interfaces
+@using Domain
+@using WebUI.Factories
+
+@inject IWorkspaceDescriptorFactory DescriptorFactory
+
+<DynamicComponent Type="Descriptor.ComponentType"
+                  Parameters="GetParameters()" 
+                  @ref="Component" />
+
+@code {
+    [Parameter] public WorkspaceDescriptor Descriptor { get; set; } = default!;
+
+    public object? Component { get; private set; }
+
+    private Dictionary<string, object> GetParameters()
+    {
+        return new Dictionary<string, object>()
+        {
+            { nameof(Descriptor), Descriptor }
+        };
+    }
+}
+
