@@ -1,0 +1,8 @@
+﻿@page "/workspace/{WorkspaceKey}"
+
+<WorkspaceView WorkspaceKey="@WorkspaceKey" />
+
+@code {
+    [Parameter] public string WorkspaceKey { get; set; } = "";
+}
+

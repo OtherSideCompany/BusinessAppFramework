@@ -1,0 +1,202 @@
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.JSInterop
+@using MudBlazor
+@using OtherSideCore.Application
+@using OtherSideCore.Application.Interfaces
+@using OtherSideCore.Application.Relations
+@using OtherSideCore.Application.Search
+@using OtherSideCore.Domain
+@using OtherSideCore.Domain.DomainObjects
+@using OtherSideCore.WebUI.Components.Pages
+@using OtherSideCore.WebUI.Components.SearchList
+@using OtherSideCore.WebUI.Components.Selector
+@using OtherSideCore.WebUI.Descriptors
+@using OtherSideCore.WebUI.Interfaces
+
+@inject IRelationResolver RelationResolver
+@inject ILocalizedStringService LocalizedStringService
+@inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
+@inject IRelationSelectorRegistry RelationSelectorRegistry
+@inject IServiceProvider ServiceProvider
+
+<MudTextField T="string"
+              Label="@Label"
+              Text="@_value"
+              Typo="Typo.body2"
+              TextChanged="TextFieldChanged"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.Start"
+              AdornmentIcon="@Icons.Material.Outlined.Search"
+              Immediate="true"
+              Error="!_isValid"
+              OnBlur="HandlerBlur"
+              Clearable="true"
+              Margin="Margin.Dense"
+              OnClearButtonClick="@ClearSelectionAsync">
+</MudTextField>
+
+<MudPopover Open="@_showPopup"
+            AnchorOrigin="Origin.BottomRight"
+            TransformOrigin="Origin.TopRight"
+            OverflowBehavior="OverflowBehavior.FlipNever">
+    <MudPaper>
+        <div @onmousedown="BeginSelection">
+            @if (_domainObjectSelectorRenderFragment != null)
+            {
+                @_domainObjectSelectorRenderFragment
+            }
+        </div>
+    </MudPaper>
+
+</MudPopover>
+
+@code {
+    [Parameter]
+    public DomainObjectReference? DomainObjectReference
+    {
+        get;
+        set
+        {
+            if (field?.DomainObjectId == value?.DomainObjectId && field?.RelationKey == value?.RelationKey)
+                return;
+
+            field = value;
+            HandleDomainObjectReferenceChanged();
+        }
+    }
+    [Parameter] public string Label { get; set; } = default!;
+    [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
+
+    private bool _isValid { get; set; }
+    private bool _isSelecting { get; set; }
+
+    private string? _value { get; set; }
+    private bool _showPopup { get; set; }
+    private IDomainObjectSelector? _domainObjectSelector { get; set; }
+    private RenderFragment? _domainObjectSelectorRenderFragment;
+
+    private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor { get; set; }
+
+    private CancellationTokenSource? _cancellationTokenSource;
+
+    private void HandleDomainObjectReferenceChanged()
+    {
+        if (DomainObjectReference == null)
+            return;
+
+        _value = DomainObjectReference.DisplayValue;
+        UpdateValidity();
+
+        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(StringKey.From(DomainObjectReference.RelationKey));
+        _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
+
+        var selectorType = _domainObjectSelectorDescriptor.ComponentType;
+
+        _domainObjectSelectorRenderFragment = builder =>
+        {
+            builder.OpenComponent(0, selectorType);
+            builder.AddAttribute(1, "Descriptor", _domainObjectSelectorDescriptor);
+            builder.AddAttribute(2, "OnItemSelected", EventCallback.Factory.Create(this, (int domainObjectId) => OnItemSelected(domainObjectId)));
+            builder.AddComponentReferenceCapture(3, inst =>
+            {
+                _domainObjectSelector = (IDomainObjectSelector)inst;
+                _domainObjectSelector?.Load(_value ?? String.Empty);
+            });
+            builder.CloseComponent();
+        };
+    }
+
+    private async void TextFieldChanged(string newText)
+    {
+        _value = newText;
+        _showPopup = true;
+
+        UpdateValidity();
+
+        if (String.IsNullOrEmpty(newText))
+        {
+            await ClearSelectionAsync();
+            return;
+        }
+
+        if (_domainObjectSelector == null)
+            return;
+
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource = new();
+
+        try
+        {
+            await Task.Delay(200, _cancellationTokenSource.Token);
+            await _domainObjectSelector.Load(_value ?? string.Empty);
+        }
+        catch (TaskCanceledException)
+        {
+
+        }
+    }
+
+    private async Task OnItemSelected(int item)
+    {
+        try
+        {
+            if (DomainObjectReference == null)
+                return;
+
+            if (RelationResolver.TryGetReferenceRelationEntry(StringKey.From(DomainObjectReference.RelationKey), out var relationEntry))
+            {
+                var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
+                dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
+                var domainObjectReference = await domainObjectServiceGateway.GetHydratedDomainObjectReference(item, DomainObjectReference.RelationKey);
+
+                DomainObjectReference.DisplayValue = domainObjectReference.DisplayValue;
+                DomainObjectReference.DomainObjectId = item;
+
+                _value = DomainObjectReference.DisplayValue;
+                UpdateValidity();
+
+                await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
+
+                StateHasChanged();
+            }
+
+            _showPopup = false;
+        }
+        finally
+        {
+            _isSelecting = false;
+        }
+    }
+
+    private void UpdateValidity()
+    {
+        _isValid = _value == DomainObjectReference?.DisplayValue;
+    }
+
+    private void BeginSelection(MouseEventArgs _)
+    {
+        _isSelecting = true;
+    }
+
+    private void HandlerBlur(FocusEventArgs args)
+    {
+        if (!_isSelecting)
+        {
+            _showPopup = false;
+        }
+    }
+
+    private async Task ClearSelectionAsync()
+    {
+        _value = string.Empty;
+        DomainObjectReference?.DomainObjectId = null;
+        DomainObjectReference?.DisplayValue = String.Empty;
+
+        _isValid = true;
+        _showPopup = false;
+
+        await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
+
+        StateHasChanged();
+    }
+}

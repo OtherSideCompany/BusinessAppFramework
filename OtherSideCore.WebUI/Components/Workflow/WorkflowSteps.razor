@@ -1,0 +1,51 @@
+﻿@using MudBlazor
+@using OtherSideCore.Application.Interfaces
+@using OtherSideCore.Application.Workflows
+@using OtherSideCore.WebUI.Components.SearchList
+
+@inject ILocalizedStringService LocalizedStringService
+
+@if (Workflow != null)
+{
+    <MudStepper CenterLabels="true" 
+                Class="wf-stepper" 
+                Style="margin-bottom:-16px" 
+                ErrorStepColor="Color.Error"
+                @bind-ActiveIndex="_activeIndex">
+        <ChildContent>
+            @foreach (var step in Workflow.ProcessWorkflowSteps)
+            {
+                <MudStep Title="@LocalizedStringService.Get(step.Key)"
+                         Completed="@step.IsCompleted">
+
+                    @foreach (var condition in step.ProcessWorkflowStepConditions)
+                    {
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <BoolIndicator Value="condition.IsCompleted" />
+                            <MudText Typo="Typo.body2">@LocalizedStringService.Get(condition.Key)</MudText>
+                        </MudStack>
+                    }
+
+                </MudStep>
+            }
+        </ChildContent>
+        <ActionContent />
+
+    </MudStepper>
+}
+
+@code {
+    [Parameter] public ProcessWorkflow? Workflow { get; set; }
+
+    private int _activeIndex;
+
+    protected override void OnParametersSet()
+    {
+        if (Workflow?.ProcessWorkflowSteps is null || Workflow.ProcessWorkflowSteps.Count == 0)
+            return;
+
+        var index = Workflow.ProcessWorkflowSteps.FindIndex(s => !s.IsCompleted);
+
+        _activeIndex = index >= 0 ? index : Workflow.ProcessWorkflowSteps.Count - 1;
+    }
+}

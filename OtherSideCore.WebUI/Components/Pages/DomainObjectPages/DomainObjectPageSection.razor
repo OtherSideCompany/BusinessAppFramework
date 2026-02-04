@@ -1,0 +1,20 @@
+﻿@using MudBlazor
+
+<MudPaper Class="pa-2 ma-2" Elevation="0">
+
+    <MudText Typo="Typo.h6">@Title</MudText>
+
+    <MudDivider Style="border-color:var(--mud-palette-primary);border-width:2px;" />
+
+    <MudStack Spacing="6" Class="mt-4">
+
+        @ChildContent
+
+    </MudStack>
+
+</MudPaper>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

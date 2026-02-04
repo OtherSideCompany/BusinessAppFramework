@@ -1,0 +1,176 @@
+﻿@using Microsoft.Extensions.Localization
+@using Microsoft.JSInterop
+@using MudBlazor
+@using OtherSideCore.Application.ActionResult
+@using OtherSideCore.Application.Browser
+@using OtherSideCore.Application.Interfaces
+@using OtherSideCore.Application.Search
+@using OtherSideCore.Contracts.ActionResult
+@using OtherSideCore.Domain
+@using OtherSideCore.Domain.DomainObjects
+@using OtherSideCore.WebUI.Components.Editor
+@using OtherSideCore.WebUI.Components.Header
+@using OtherSideCore.WebUI.Components.Pages
+@using OtherSideCore.WebUI.Components.SearchList
+@using OtherSideCore.WebUI.Descriptors
+@using OtherSideCore.WebUI.Factories
+@using OtherSideCore.WebUI.Interfaces
+@using Microsoft.AspNetCore.Components.Web;
+
+@inject ILocalizedStringService LocalizedStringService
+@inject ISearchGateway<TSearchResult> SearchService
+@inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
+@inject IIconFactory IconFactory
+@inject IJSRuntime JS
+@inject IDomainObjectBrowserWorkspaceRegistry DomainObjectBrowserWorkspaceRegistry
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+@typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
+
+@implements IDomainObjectSelector
+
+<DomainObjectSelectorLayout>
+
+    <Header>
+        <MudText Typo="Typo.subtitle2">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
+    </Header>
+
+    <Results>
+        <DynamicComponent Type="Descriptor.SearchListTemplateProviderType"
+                          @ref="_templateComponent" />
+
+        <MudDataGrid T="TSearchResult"
+                     Dense="true"
+                     Hover="true"
+                     Elevation="0"
+                     @ref="_grid"
+                     ServerData="LoadGridData"
+                     RowClass="cursor-pointer"
+                     RowsPerPage="@_pageSize"
+                     SelectedItemChanged="OnSelectedItemChangedAsync"
+                     ReadOnly="true"
+                     ColumnResizeMode="ResizeMode.Column">
+
+            <Columns>
+                @_searchListTemplateProvider?.Template?.DataGridColumns
+            </Columns>
+
+            <ToolBarContent>
+                <MudText Typo="Typo.caption">
+                    @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
+                </MudText>
+            </ToolBarContent>
+
+        </MudDataGrid>       
+
+    </Results>
+
+    <Footer>
+
+        <MudButton StartIcon="@Icons.Material.Sharp.OpenInNew"
+                   Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   OnClick="OpenModuleInNewTab">
+            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
+        </MudButton>
+
+    </Footer>
+
+</DomainObjectSelectorLayout>
+
+
+@code {
+    [Parameter] public DomainObjectSelectorDescriptor<TDomainObject, TSearchResult> Descriptor { get; set; } = default!;
+    [Parameter] public EventCallback<int> OnItemSelected { get; set; }
+
+    private string _filter { get; set; } = String.Empty;
+    private string? _lastFilter;
+    private string? _firstRenderFilter;
+    private MudDataGrid<TSearchResult>? _grid;
+    private DynamicComponent? _templateComponent;
+    private ISearchListTemplateProvider<TSearchResult>? _searchListTemplateProvider => _templateComponent?.Instance as ISearchListTemplateProvider<TSearchResult>;
+
+    private int _totalItems;
+    private int _pageSize = 20;
+
+    private bool _isLoadRequested = false;
+
+    public async Task Load(string filter)
+    {
+        if (_grid != null)
+        {
+            if (_lastFilter == filter)
+                return;
+
+            _filter = filter;
+
+            _isLoadRequested = true;
+
+            await _grid.ReloadServerData();
+
+            _isLoadRequested = false;
+
+            _lastFilter = _filter;
+        }
+        else
+        {
+            _firstRenderFilter = filter;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !String.IsNullOrEmpty(_firstRenderFilter))
+        {
+            await Load(_firstRenderFilter);
+        }
+    }
+
+    private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state)
+    {
+        if (!_isLoadRequested)
+            return new GridData<TSearchResult> { Items = new List<TSearchResult>() };
+
+        var request = new PaginatedSearchRequest
+        {
+            PageIndex = 0,
+            PageSize = _pageSize
+        };
+
+        if (!String.IsNullOrEmpty(_filter))
+        {
+            request.Filters.Add(_filter);
+        }
+
+        var result = await SearchService.PaginatedSearchAsync(request);
+
+        var items = result?.Items?.ToList() ?? new List<TSearchResult>();
+        _totalItems = result?.Count ?? 0;
+
+        StateHasChanged();
+
+        return new GridData<TSearchResult>
+        {
+            Items = items,
+            TotalItems = _totalItems
+        };
+    }   
+
+    private async Task OnSelectedItemChangedAsync(TSearchResult? item)
+    {
+        if (item != null)
+        {
+            await OnItemSelected.InvokeAsync(item.DomainObjectId);
+        }
+    }
+
+    private async Task OpenModuleInNewTab()
+    {
+        var workspaceKey = DomainObjectBrowserWorkspaceRegistry.Resolve<TDomainObject>();
+
+        var url = $"/workspace/{workspaceKey}";
+        await JS.InvokeVoidAsync("open", url, "_blank");
+    }
+}
+
+

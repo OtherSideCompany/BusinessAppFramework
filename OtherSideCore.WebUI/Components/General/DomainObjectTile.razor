@@ -1,0 +1,131 @@
+﻿@using MudBlazor
+@using OtherSideCore.Application.Search
+@using OtherSideCore.Application.Trees
+@using OtherSideCore.Domain.DomainObjects
+@using OtherSideCore.WebUI.Components.Editor
+@using OtherSideCore.WebUI.Interfaces
+@using OtherSideCore.WebUI.Services
+
+@inject ITreeGateway TreeGateway
+@inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
+@inject ISearchGateway<TSearchResult> SearchGateway
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+@typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
+
+@implements IEditable
+
+<style>
+    .osc-tile-icon-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--mud-palette-secondary);
+    }
+</style>
+
+<MudCard Class="pa-2" Style="cursor:pointer;" Elevation="0" Outlined="true">
+
+    <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+
+        <MudCardContent Class="pa-1">
+
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="4">
+
+                <MudPaper Class="osc-tile-icon-circle" Elevation="0">
+                    <MudIcon Icon="@Icon" Style="color:var(--mud-palette-white) !important;" Size="Size.Small" />
+                </MudPaper>
+
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.subtitle1" Class="fw-600">
+                        @Node?.Summary?.Title
+                    </MudText>
+
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        @Node?.Summary?.SubTitle
+                    </MudText>
+
+                </MudStack>
+
+            </MudStack>
+
+        </MudCardContent>
+
+        <MudStack Spacing="0" Row="true" Justify="Justify.FlexEnd">
+
+            <MudIconButton OnClick="EditAsync"
+                           Icon="@Icons.Material.Outlined.Edit"
+                           Size="Size.Small" />
+
+            <MudIconButton OnClick="RequestDeleteAsync"
+                           Icon="@Icons.Material.Outlined.Delete"
+                           Size="Size.Small" 
+                           Color="@Color.Error"/>
+
+        </MudStack>
+
+    </MudStack>
+
+    @if (_isEditing)
+    {
+        <CascadingValue Value="_editedObject">
+            <DomainObjectProperties />
+        </CascadingValue>
+
+        <MudStack Spacing="0" Row="true" Justify="Justify.FlexEnd">
+
+            <MudIconButton OnClick="SaveChangesAsync"
+                           Icon="@Icons.Material.Outlined.Save"
+                           Color="Color.Primary" />
+
+            <MudIconButton OnClick="CancelChangesAsync"
+                           Icon="@Icons.Material.Outlined.Undo"
+                           Color="Color.Error" />
+
+        </MudStack>
+    }
+
+</MudCard>
+
+@code {
+    [Parameter] public Node? Node { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public EventCallback<Node?> OnDeleteRequested { get; set; }
+
+    private bool _isEditing;
+    private TDomainObject? _editedObject;
+
+    public async Task SaveChangesAsync()
+    {
+        if (_isEditing && _editedObject != null && Node != null)
+        {
+            await DomainObjectServiceGateway.SaveAsync(_editedObject);
+            Node.Summary = await SearchGateway.GetNodeSummaryAsync(Node.Id);
+            _isEditing = false;
+            _editedObject = null;
+        }
+    }
+
+    public async Task CancelChangesAsync()
+    {
+        _isEditing = false;
+        _editedObject = null;
+    }
+
+    private async Task RequestDeleteAsync()
+    {
+        await OnDeleteRequested.InvokeAsync(Node);
+    }
+
+    private async Task EditAsync()
+    {
+        if (!_isEditing && Node != null)
+        {
+            _editedObject = await DomainObjectServiceGateway.GetHydratedAsync(Node.Id);            
+            _isEditing = true;            
+        }
+    }    
+}

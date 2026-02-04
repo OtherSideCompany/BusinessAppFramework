@@ -1,0 +1,44 @@
+﻿@using MudBlazor
+@using System.Linq.Expressions
+@using System.Globalization
+
+@typeparam TValue
+
+<style>
+    .align-right-input input {
+        text-align: right;
+    }
+</style>
+
+<MudNumericField T="TValue"
+                 Culture="@CultureInfo.InvariantCulture"
+                 Value="@Value"
+                 ValueChanged="@OnValueChangedInternal"
+                 HideSpinButtons="true"
+                 Class="align-right-input" 
+                 AdornmentText="@AdornmentText"
+                 Adornment="@Adornment"
+                 ReadOnly="false"
+                 Variant="Variant.Text"
+                 Underline="false"
+                 Typo="Typo.body2"
+                 Style="@Style"/>
+
+@code {
+    [CascadingParameter] public Func<Task>? NotifyItemChanged { get; set; }
+
+    [Parameter] public TValue Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public string? AdornmentText { get; set; }
+    [Parameter] public string? Style { get; set; }
+    private Adornment Adornment => String.IsNullOrEmpty(AdornmentText) ? Adornment.None : Adornment.End;
+
+    private async Task OnValueChangedInternal(TValue v)
+    {
+        if (ValueChanged.HasDelegate)
+            await ValueChanged.InvokeAsync(v);
+
+        if (NotifyItemChanged != null)
+            await NotifyItemChanged();
+    }
+}

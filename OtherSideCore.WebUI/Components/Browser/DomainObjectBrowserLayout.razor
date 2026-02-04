@@ -1,0 +1,70 @@
+﻿<style>
+    .osc-browser-page {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        gap: 8px;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    .osc-browser-header,
+    .osc-browser-pagination {
+        flex: 0 0 auto;
+    }
+
+    .osc-browser-results {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .osc-browser-drawer {
+        margin: 0;
+        padding: 0;
+    }
+
+    .mud-drawer .mud-drawer-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+</style>
+
+<div class="osc-browser-page">
+
+    @if (Header != null)
+    {
+        <div class="osc-browser-actions">
+            @Header
+        </div>
+    }
+
+    <div class="osc-browser-results">
+        @Results
+    </div>
+
+    @if (Pagination != null)
+    {
+        <div class="osc-browser-pagination">
+            @Pagination
+        </div>
+    }
+</div>
+
+@if (Drawer != null)
+{
+    @Drawer  
+}
+
+
+
+@code {
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment Results { get; set; } = default!;
+    [Parameter] public RenderFragment? Pagination { get; set; }
+    [Parameter] public RenderFragment? Drawer { get; set; }
+}
+

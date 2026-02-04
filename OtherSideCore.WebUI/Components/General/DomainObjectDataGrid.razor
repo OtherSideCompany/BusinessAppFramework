@@ -1,0 +1,167 @@
+﻿@using MudBlazor
+@using OtherSideCore.Application.Interfaces
+@using OtherSideCore.Application.Trees
+@using OtherSideCore.Appplication.Services
+@using OtherSideCore.Domain.DomainObjects
+@using OtherSideCore.WebUI.Interfaces
+
+@typeparam TItem where TItem : DomainObject, new()
+
+@inject ILocalizedStringService LocalizedStringService
+@inject ITreeGateway TreeGateway
+@inject IUserDialogService UserDialogService
+@inject IDomainObjectServiceGateway<TItem> DomainObjectServiceGateway
+@implements IEditable
+
+<style>
+    .osc-datagrid {
+        border: 1px solid var(--mud-palette-lines-default);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .osc-datagrid .mud-table-head {
+            background-color: #FAFAFC;
+        }
+</style>
+
+<MudStack Spacing="2">
+    <MudButtonGroup>
+        <MudButton StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="CreateItemAsync"
+                   IconColor="@Color.Primary"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   Style="font-weight: normal;">
+            @LocalizedStringService.Get(OtherSideCore.Contracts.ActionKeys.CreateActionKey)
+        </MudButton>
+        @ToolBarActions
+    </MudButtonGroup>
+
+    <CascadingValue Value="(Func<Task>)NotifyItemChanged">
+
+        <MudDataGrid T="TItem"
+                     EditMode="DataGridEditMode.Cell"
+                     EditTrigger="DataGridEditTrigger.OnRowClick"
+                     Items="@Items"
+                     SortMode="@SortMode.None"
+                     ReadOnly="false"
+                     Bordered="true"
+                     Dense="true"
+                     ColumnResizeMode="ResizeMode.Column"
+                     Elevation="0"
+                     Class="osc-datagrid"
+                     Virtualize="false"
+                     CommittedItemChanges="async () => await ItemChanged.InvokeAsync()">
+            <Columns>
+                @ColumnsContent
+                <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(OtherSideCore.Contracts.StringKeys.ActionsKey)">
+                    <EditTemplate>
+                        <MudButtonGroup Size="Size.Small" Color="Color.Primary">
+                            @ItemActions
+                            <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                           Size="Size.Small"
+                                           Color="Color.Error"
+                                           OnClick="async () => await DeleteItemAsync(context.Item)" />
+                        </MudButtonGroup>
+                    </EditTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+
+    </CascadingValue>
+
+</MudStack>
+
+@code {
+    [Parameter] public RenderFragment? ToolBarActions { get; set; }
+    [Parameter] public RenderFragment? ColumnsContent { get; set; }
+    [Parameter] public RenderFragment? ItemActions { get; set; }
+
+    [Parameter, EditorRequired] public int? ParentId { get; set; }
+    [Parameter, EditorRequired] public Branch? Branch { get; set; }
+
+    [Parameter] public EventCallback ItemChanged { get; set; }
+    private Task NotifyItemChanged() => ItemChanged.InvokeAsync();
+
+    public List<TItem> Items { get; private set; } = new();
+    private bool _isLoaded;
+    private bool _isLoading;
+
+    public async Task SaveChangesAsync()
+    {
+        foreach (var item in Items)
+        {
+            await DomainObjectServiceGateway.SaveAsync(item);
+        }
+    }
+
+    public async Task CancelChangesAsync()
+    {
+        Items.Clear();
+        await LoadAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        if (_isLoaded || _isLoading || Branch is null)
+            return;
+
+        _isLoading = true;
+
+        foreach (var node in Branch.Nodes)
+        {
+            await AddItemFromNodeAsync(node);
+        }
+
+        _isLoaded = true;
+        _isLoading = false;
+    }
+
+    private async Task AddItemFromNodeAsync(Node node)
+    {
+        var domainObject = await DomainObjectServiceGateway.GetHydratedAsync(node.Id);
+
+        if (domainObject != null)
+            Items.Add(domainObject);
+    }
+
+    private async Task CreateItemAsync()
+    {
+        if (ParentId == null || Branch == null)
+        {
+            return;
+        }
+
+        var node = await TreeGateway.CreateNode(ParentId.Value, Branch.ParentChildRelationKey);
+
+        if (node != null)
+        {
+            Branch.AddNode(node);
+            await AddItemFromNodeAsync(node);
+        }        
+
+        StateHasChanged();
+    }    
+
+    private async Task DeleteItemAsync(TItem? domainObject)
+    {
+        if (domainObject != null && ParentId != null && Branch != null)
+        {
+            if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(OtherSideCore.Contracts.MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+            {
+                if (await TreeGateway.DeleteNodeAsync(ParentId.Value, domainObject.Id, Branch.ParentChildRelationKey))
+                {
+                    Items.Remove(domainObject);
+                    Branch?.RemoveNode(domainObject.Id);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,202 @@
+﻿@using MudBlazor
+@using OtherSideCore.Application.Interfaces
+@using OtherSideCore.Application.Trees
+@using OtherSideCore.Domain.DomainObjects
+@using OtherSideCore.WebUI.Components.Header
+@using OtherSideCore.WebUI.Descriptors
+@using OtherSideCore.WebUI.Interfaces
+
+@inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
+@inject ILocalizedStringService LocalizedStringService
+@inject IWorkspaceDescriptorFactory DescriptorFactory
+@inject ITreeGateway TreeGateway
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+
+<style>
+    .osc-page {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+        .osc-page .mud-expand-panel {
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+    .osc-page-content {
+        flex: 1 1 auto;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="osc-page">
+
+    <DomainObjectPageLayout>
+
+        <Header>
+            <IconTextHeader Title="@(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " : " + DomainObject?.ToString())"
+                            Icon="@Icons.Material.Sharp.Edit" />
+        </Header>
+
+        <Content>
+            <CascadingValue Value="this">
+                <CascadingValue Value="DomainObject">
+                    <div class="osc-page-content">
+                        <DynamicComponent Type="@Descriptor.ContentComponentType" />
+                    </div>
+                </CascadingValue>
+            </CascadingValue>
+        </Content>
+
+    </DomainObjectPageLayout>
+
+    <MudPopover Open="@IsDirty"
+                AnchorOrigin="Origin.TopRight"
+                TransformOrigin="Origin.TopRight"
+                OverflowBehavior="OverflowBehavior.FlipNever"
+                Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
+        <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
+            <MudTooltip Text="@LocalizedStringService.Get(OtherSideCore.Contracts.StringKeys.SaveKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Save"
+                               OnClick="SaveAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
+
+
+            <MudTooltip Text="@LocalizedStringService.Get(OtherSideCore.Contracts.StringKeys.UndoKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Undo"
+                               OnClick="UndoAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
+        </MudButtonGroup>
+    </MudPopover>
+
+
+</div>
+
+
+@code {
+    [Parameter] public DomainObjectPageDescriptor<TDomainObject> Descriptor { get; set; } = default!;
+    [Parameter, SupplyParameterFromQuery]
+    public int? Id
+    {
+        get => field;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                _ = OnIdSetAsync();
+            }
+        }
+    }
+    public bool IsDirty { get; set; }
+
+    public event Func<Task>? ChangesSaved;
+    public event Func<Task>? ChangesCancelled;
+
+    protected Tree? _tree;
+
+    public TDomainObject? DomainObject { get; private set; }
+    private Snackbar? _dirtySnackbar;
+    private int? _loadedId;
+    private List<IEditable> _editableComponents { get; set; } = new();
+
+    public void RegisterEditableComponent(IEditable? editableComponent)
+    {
+        if (editableComponent == null || _editableComponents.Contains(editableComponent))
+            return;
+
+        _editableComponents.Add(editableComponent);
+    }
+
+    public async Task LoadPageTreeAsync(string pageTreeKey)
+    {
+        if (Id.HasValue)
+        {
+            var domainObjectId = Id.Value;
+
+            if (_loadedId == domainObjectId)
+                return;
+
+            _loadedId = domainObjectId;
+
+            _tree = await TreeGateway.GetTreeAsync(domainObjectId, pageTreeKey);
+        }
+    }
+
+    public Branch? GetTreeBranch(string relationKey)
+    {
+        return _tree?.GetBranch(relationKey);
+    }
+
+    public void MarkDirty()
+    {
+        if (!IsDirty)
+        {
+            SetDirtyState(true);
+        }
+    }    
+
+    private async Task OnIdSetAsync()
+    {
+        if (Id.HasValue)
+        {
+            DomainObject = await DomainObjectServiceGateway.GetHydratedAsync(Id.Value);
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (DomainObject != null)
+        {
+            await DomainObjectServiceGateway.SaveAsync(DomainObject);
+
+            foreach (var editableComponent in _editableComponents)
+            {
+                await editableComponent.SaveChangesAsync();
+            }
+
+            SetDirtyState(false);
+
+            await RaiseAsync(ChangesSaved);
+        }        
+    }
+
+    private async Task UndoAsync()
+    {
+        if (DomainObject != null)
+        {
+            DomainObject = await DomainObjectServiceGateway.GetAsync(DomainObject.Id);
+
+            foreach (var editableComponent in _editableComponents)
+            {
+                await editableComponent.CancelChangesAsync();
+            }
+
+            SetDirtyState(false);
+
+            await RaiseAsync(ChangesCancelled);
+        }        
+    }
+
+    private void SetDirtyState(bool isDirty)
+    {
+        IsDirty = isDirty;
+        StateHasChanged();
+    }
+
+    private async Task RaiseAsync(Func<Task>? @event)
+    {
+        if (@event is null) return;
+
+        foreach (var handler in @event.GetInvocationList().Cast<Func<Task>>())
+            await handler();
+    }
+}

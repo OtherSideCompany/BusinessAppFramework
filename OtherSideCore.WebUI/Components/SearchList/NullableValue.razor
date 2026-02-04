@@ -1,0 +1,29 @@
+﻿@using MudBlazor
+
+@typeparam T
+
+@if (Value is null)
+{
+    <MudIcon Icon="@Icons.Material.Outlined.DoNotDisturb"
+             Size="Size.Small" 
+             Style="color: #B0B0B0;" />
+}
+else
+{
+    @DisplayValue
+}
+
+@code {
+    [Parameter] public T? Value { get; set; }
+
+    [Parameter] public RenderFragment? DisplayValue { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        DisplayValue ??= builder =>
+        {
+            if (Value is not null)
+                builder.AddContent(0, Value!.ToString());
+        };
+    }
+}

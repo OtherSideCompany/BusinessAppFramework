@@ -1,0 +1,18 @@
+﻿@using MudBlazor
+
+<MudIcon Icon="@CurrentIcon"
+         Color="@CurrentColor"
+         Size="@Size" />
+
+@code {
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public Color TrueColor { get; set; } = Color.Success;
+    [Parameter] public Color FalseColor { get; set; } = Color.Error;
+    [Parameter] public string TrueIcon { get; set; } = Icons.Material.Filled.Check;
+    [Parameter] public string FalseIcon { get; set; } = Icons.Material.Filled.Close;
+
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+
+    private Color CurrentColor => Value ? TrueColor : FalseColor;
+    private string CurrentIcon => Value ? TrueIcon : FalseIcon;
+}
