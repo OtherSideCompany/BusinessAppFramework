@@ -8,99 +8,104 @@ using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
 {
-   public class ActionExecutionService : HttpService, IActionExecutionService
-   {
-      #region Fields
+    public class ActionExecutionService : HttpService, IActionExecutionService
+    {
+        #region Fields
 
-      private IUserDialogService _userDialogService;
-      private ILocalizedStringService _localizedStringService;
-      private NavigationManager _navigationManager;
+        private IUserDialogService _userDialogService;
+        private ILocalizedStringService _localizedStringService;
+        private NavigationManager _navigationManager;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Events
 
-      public ActionExecutionService(
-          IHttpClientFactory clientFactory,
-          IOptions<ApiClientOptions> apiClientOptions,
-          IUserDialogService userDialogService,
-          ILocalizedStringService localizedStringService,
-          NavigationManager navigationManager) :
-          base(clientFactory, apiClientOptions)
-      {
-         _userDialogService = userDialogService;
-         _localizedStringService = localizedStringService;
-         _navigationManager = navigationManager;
-      }
 
-      #endregion
 
-      #region Public Methods
+        #endregion
 
-      public async Task<DomainObjectApplicationActionResultPayload?> ExecuteAsync(IDomainObjectApplicationAction action)
-      {
-         var route = action.BuildRoute();
+        #region Constructor
 
-         if (action is IHttpDomainObjectApplicationAction httpApplicationAction)
-         {
-            HttpResult<DomainObjectApplicationActionResultPayload>? result = null;
+        public ActionExecutionService(
+            IHttpClientFactory clientFactory,
+            IOptions<ApiClientOptions> apiClientOptions,
+            IUserDialogService userDialogService,
+            ILocalizedStringService localizedStringService,
+            NavigationManager navigationManager) :
+            base(clientFactory, apiClientOptions)
+        {
+            _userDialogService = userDialogService;
+            _localizedStringService = localizedStringService;
+            _navigationManager = navigationManager;
+        }
 
-            if (httpApplicationAction.HttpMethod == HttpMethod.Post)
+        #endregion
+
+        #region Public Methods
+
+        public async Task<DomainObjectApplicationActionResultPayload?> ExecuteAsync(IDomainObjectApplicationAction action)
+        {
+            var route = action.BuildRoute();
+
+            if (action is IHttpDomainObjectApplicationAction httpApplicationAction)
             {
-               result = await PostAsync<DomainObjectApplicationActionResultPayload>(route, null);
+                HttpResult<DomainObjectApplicationActionResultPayload>? result = null;
+
+                if (httpApplicationAction.HttpMethod == HttpMethod.Post)
+                {
+                    result = await PostAsync<DomainObjectApplicationActionResultPayload>(route, null);
+                }
+                else if (httpApplicationAction.HttpMethod == HttpMethod.Delete)
+                {
+                    if (await _userDialogService.ConfirmAsync(_localizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+                    {
+                        result = await DeleteAsync<DomainObjectApplicationActionResultPayload>(route);
+                    }
+                }
+                else if (httpApplicationAction.HttpMethod == HttpMethod.Put)
+
+                {
+                    result = await PutAsync<DomainObjectApplicationActionResultPayload>(route, null);
+                }
+                else if (httpApplicationAction.HttpMethod == HttpMethod.Get)
+                {
+                    result = await GetAsync<DomainObjectApplicationActionResultPayload>(route);
+                }
+                else
+                {
+                    throw new NotSupportedException($"Unsupported HTTP verb {httpApplicationAction.HttpMethod}");
+                }
+
+                return result?.Data ?? new DomainObjectApplicationActionResultPayload();
             }
-            else if (httpApplicationAction.HttpMethod == HttpMethod.Delete)
+            else if (action is IDomainObjectNavigationApplicationAction navigationApplicationAction)
             {
-               if (await _userDialogService.ConfirmAsync(_localizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
-               {
-                  result = await DeleteAsync<DomainObjectApplicationActionResultPayload>(route);
-               }
+                _navigationManager.NavigateTo(route);
+                return null;
             }
-            else if (httpApplicationAction.HttpMethod == HttpMethod.Put)
-
+            else if (action is IDocumentNavigationApplicationAction documentNavigationApplicationAction)
             {
-               result = await PutAsync<DomainObjectApplicationActionResultPayload>(route, null);
-            }
-            else if (httpApplicationAction.HttpMethod == HttpMethod.Get)
-            {
-               result = await GetAsync<DomainObjectApplicationActionResultPayload>(route);
+                _navigationManager.NavigateTo(route);
+                return null;
             }
             else
             {
-               throw new NotSupportedException($"Unsupported HTTP verb {httpApplicationAction.HttpMethod}");
+                throw new ArgumentException($"Cannot handle {action.GetType()} action type");
             }
+        }
 
-            return result?.Data ?? new DomainObjectApplicationActionResultPayload();
-         }
-         else if (action is IDomainObjectNavigationApplicationAction navigationApplicationAction)
-         {
-            _navigationManager.NavigateTo(route);
-            return null;
-         }
-         else
-         {
-            throw new ArgumentException($"Cannot handle {action.GetType()} action type");
-         }
-      }
+        #endregion
 
-      #endregion
-
-      #region Private Methods
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

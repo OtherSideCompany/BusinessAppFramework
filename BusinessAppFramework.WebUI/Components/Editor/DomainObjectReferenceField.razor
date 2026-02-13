@@ -106,7 +106,7 @@
         };
     }
 
-    private async void TextFieldChanged(string newText)
+    private async Task TextFieldChanged(string newText)
     {
         _value = newText;
         _showPopup = true;
@@ -125,15 +125,7 @@
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource = new();
 
-        try
-        {
-            await Task.Delay(200, _cancellationTokenSource.Token);
-            await _domainObjectSelector.Load(_value ?? string.Empty);
-        }
-        catch (TaskCanceledException)
-        {
-
-        }
+        await DebouncedLoadAsync(_value ?? string.Empty);
     }
 
     private async Task OnItemSelected(int item)
@@ -198,5 +190,18 @@
         await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
 
         StateHasChanged();
+    }
+
+    private async Task DebouncedLoadAsync(string query)
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource = new();
+
+        try
+        {
+            await Task.Delay(200, _cancellationTokenSource.Token);
+            await _domainObjectSelector!.Load(query);
+        }
+        catch (TaskCanceledException) { }
     }
 }

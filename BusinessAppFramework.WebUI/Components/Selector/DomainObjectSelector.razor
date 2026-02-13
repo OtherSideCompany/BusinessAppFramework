@@ -148,6 +148,8 @@
 
         StateHasChanged();
 
+        System.Diagnostics.Debug.WriteLine(items.Count);
+
         return new GridData<TSearchResult>
         {
             Items = items,

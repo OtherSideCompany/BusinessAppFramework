@@ -266,7 +266,7 @@
         _selectedConstraintKey = Descriptor.ConstraintKeys.Any() ? Descriptor.ConstraintKeys.First() : String.Empty;
     }
 
-    private async Task ExecuteActionAsync(DomainObjectApplicationAction<TDomainObject> applicationAaction)
+    private async Task ExecuteActionAsync(IDomainObjectApplicationAction applicationAaction)
     {
         applicationAaction.DomainObjectId = _currentEditedObject?.Id;
         var payload = await ActionExecutionService.ExecuteAsync(applicationAaction);

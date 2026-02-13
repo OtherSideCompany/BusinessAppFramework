@@ -1,14 +1,10 @@
 ﻿@using Application.Search
 @using Application.Trees
+@using BusinessAppFramework.WebUI.Components.Editor
 @using Domain.DomainObjects
 @using MudBlazor
-@using Application.Search
-@using Application.Trees
-@using Domain.DomainObjects
-@using WebUI.Components.Editor
 @using WebUI.Interfaces
 @using WebUI.Services
-@using WebUI.Interfaces
 
 @inject ITreeGateway TreeGateway
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
@@ -66,8 +62,8 @@
 
             <MudIconButton OnClick="RequestDeleteAsync"
                            Icon="@Icons.Material.Outlined.Delete"
-                           Size="Size.Small" 
-                           Color="@Color.Error"/>
+                           Size="Size.Small"
+                           Color="@Color.Error" />
 
         </MudStack>
 
@@ -76,20 +72,23 @@
     @if (_isEditing)
     {
         <CascadingValue Value="_editedObject">
-            <DomainObjectProperties />
+            <DomainObjectProperties OnChanged="() => MarkDirty()" />
         </CascadingValue>
 
-        <MudStack Spacing="0" Row="true" Justify="Justify.FlexEnd">
+        @if (IsDirty)
+        {
+            <MudStack Spacing="0" Row="true" Justify="Justify.FlexEnd">
 
-            <MudIconButton OnClick="SaveChangesAsync"
-                           Icon="@Icons.Material.Outlined.Save"
-                           Color="Color.Primary" />
+                <MudIconButton OnClick="SaveChangesAsync"
+                               Icon="@Icons.Material.Outlined.Save"
+                               Color="Color.Primary" />
 
-            <MudIconButton OnClick="CancelChangesAsync"
-                           Icon="@Icons.Material.Outlined.Undo"
-                           Color="Color.Error" />
+                <MudIconButton OnClick="CancelChangesAsync"
+                               Icon="@Icons.Material.Outlined.Undo"
+                               Color="Color.Error" />
 
-        </MudStack>
+            </MudStack>
+        }
     }
 
 </MudCard>
@@ -98,9 +97,18 @@
     [Parameter] public Node? Node { get; set; }
     [Parameter] public string? Icon { get; set; }
     [Parameter] public EventCallback<Node?> OnDeleteRequested { get; set; }
+    public bool IsDirty { get; set; }
 
     private bool _isEditing;
-    private TDomainObject? _editedObject;
+    private TDomainObject? _editedObject;    
+
+    public void MarkDirty()
+    {
+        if (!IsDirty)
+        {
+            SetDirtyState(true);
+        }
+    }
 
     public async Task SaveChangesAsync()
     {
@@ -110,6 +118,7 @@
             Node.Summary = await SearchGateway.GetNodeSummaryAsync(Node.Id);
             _isEditing = false;
             _editedObject = null;
+            SetDirtyState(false);
         }
     }
 
@@ -117,6 +126,7 @@
     {
         _isEditing = false;
         _editedObject = null;
+        SetDirtyState(false);
     }
 
     private async Task RequestDeleteAsync()
@@ -128,8 +138,14 @@
     {
         if (!_isEditing && Node != null)
         {
-            _editedObject = await DomainObjectServiceGateway.GetHydratedAsync(Node.Id);            
-            _isEditing = true;            
+            _editedObject = await DomainObjectServiceGateway.GetHydratedAsync(Node.Id);
+            _isEditing = true;
         }
-    }    
+    }
+
+    private void SetDirtyState(bool isDirty)
+    {
+        IsDirty = isDirty;
+        StateHasChanged();
+    }
 }

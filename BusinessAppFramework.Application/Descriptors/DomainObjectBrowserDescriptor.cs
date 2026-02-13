@@ -15,14 +15,14 @@ namespace BusinessAppFramework.Application.Descriptors
       public Type SearchResultType => typeof(TSearchResult);
       public Type SearchListTemplateProviderType { get; init; } = default!;
       public Type? DetailEditorComponentType { get; init; } = default;
-      public List<DomainObjectApplicationAction<TDomainObject>> Actions { get; init; } = new();
+      public List<IDomainObjectApplicationAction> Actions { get; init; } = new();
       public List<string> ConstraintKeys { get; init; } = new();
 
       public DomainObjectBrowserDescriptor(
           IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver,
           List<string>? constraintKeys = null)
       {
-         Actions = new List<DomainObjectApplicationAction<TDomainObject>>
+         Actions = new List<IDomainObjectApplicationAction>
             {
                 new DomainObjectHttpApplicationAction<TDomainObject>
                 {
@@ -40,11 +40,6 @@ namespace BusinessAppFramework.Application.Descriptors
                 new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
                 {
                     ActionKey = StringKey.From(ActionKeys.DetailsActionKey),
-                    RequireDomainObjectId = true
-                },
-                new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
-                {
-                    ActionKey = StringKey.From(ActionKeys.VisualiseFileActionKey),
                     RequireDomainObjectId = true
                 }
             };

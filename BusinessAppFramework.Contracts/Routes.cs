@@ -32,6 +32,9 @@
       public const string DeleteTreeNodeTemplate = $"api/delete-treenode/{{{ParentDomainObjectIdParam}}}/{{{DomainObjectIdParam}}}/{{{KeyParam}}}";
       public const string GetTreeTemplate = $"api/get-tree/{{{DomainObjectIdParam}}}/{{{KeyParam}}}";
 
+      public const string GetHtmlDocumentTemplate = $"api/document/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
+      public const string DownloadPdfDocumentTemplate = $"api/document/pdf/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
+
       public static string BuildRoute(string template, int domainObjectId, string key)
       {
          return template.Replace($"{{{DomainObjectIdParam}}}", domainObjectId.ToString())

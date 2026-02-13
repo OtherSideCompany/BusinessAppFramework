@@ -1,0 +1,64 @@
+﻿@page "/document/{DocumentKey}/{Id:int}"
+
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.WebUI.Interfaces
+@using Microsoft.Extensions.Configuration
+@using MudBlazor
+
+@inject IDocumentGeneratorGateway DocumentGeneratorGateway
+@inject NavigationManager Nav
+@inject IConfiguration Configuration
+
+<div style="margin: 8px auto; padding-bottom: 16px">
+
+   <div style="width:210mm;">
+      <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+         <MudIconButton Icon="@Icons.Material.Outlined.Download" 
+                        OnClick="DownloadPdfDocument"/>
+      </MudStack>
+   </div>
+
+   @if (_isLoading)
+   {
+      <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+         <MudProgressCircular Indeterminate="true" Size="Size.Small" />
+      </div>
+   }
+   else
+   {
+      <div style="margin-top:8px;">
+         @_htmlMarkup
+      </div>
+   }
+
+</div>
+
+@code {
+    [Parameter] public string DocumentKey { get; set; } = "";
+    [Parameter] public int Id { get; set; }
+
+    private bool _isLoading = true;
+    private MarkupString _htmlMarkup;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _htmlMarkup = default;
+
+        var html = await DocumentGeneratorGateway.GetHtmlDocumentAsync(DocumentKey, Id);
+
+        _htmlMarkup = new MarkupString(html?.HtmlContent ?? "");
+
+        _isLoading = false;
+    }
+
+    private void DownloadPdfDocument(MouseEventArgs args)
+    {
+      var apiBaseUrl = Configuration["ApiBaseUrl"];
+      var route = Routes.BuildRoute(Routes.DownloadPdfDocumentTemplate, Id, DocumentKey);
+
+      var fullUrl = $"{apiBaseUrl}/{route}";
+
+      Nav.NavigateTo(fullUrl, forceLoad: true);
+    }
+}

@@ -2,19 +2,36 @@
 
 <MudPaper Class="pa-2 ma-2" Elevation="0">
 
-    <MudText Typo="Typo.h6">@Title</MudText>
+    <MudButton Variant="Variant.Text"
+               Color="Color.Inherit"
+               FullWidth
+               EndIcon="@(_expanded ? Icons.Material.Filled.ExpandMore : Icons.Material.Filled.ExpandLess)"
+               OnClick="Toggle"
+               Class="justify-start">
+
+
+        <MudText Typo="Typo.h6">@Title</MudText>
+
+    </MudButton>
 
     <MudDivider Style="border-color:var(--mud-palette-primary);border-width:2px;" />
 
-    <MudStack Spacing="6" Class="mt-4">
-
-        @ChildContent
-
-    </MudStack>
+    <MudCollapse Expanded="_expanded">
+        <MudStack Spacing="6" Class="mt-4">
+            @ChildContent
+        </MudStack>
+    </MudCollapse>
 
 </MudPaper>
 
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _expanded = true;
+
+    private async Task Toggle()
+    {
+        _expanded = !_expanded;
+    }
 }

@@ -1,9 +1,7 @@
 ﻿@using BusinessAppFramework.Application.Interfaces
 @using Application.Workflows
+@using BusinessAppFramework.WebUI.Components.SearchList
 @using MudBlazor
-@using BusinessAppFramework.Application.Interfaces
-@using Application.Workflows
-@using WebUI.Components.SearchList
 
 @inject ILocalizedStringService LocalizedStringService
 
@@ -11,8 +9,8 @@
 {
     <MudStepper CenterLabels="true" 
                 Class="wf-stepper" 
-                Style="margin-bottom:-16px" 
                 ErrorStepColor="Color.Error"
+                CurrentStepColor="Color.Tertiary"
                 @bind-ActiveIndex="_activeIndex">
         <ChildContent>
             @foreach (var step in Workflow.ProcessWorkflowSteps)
