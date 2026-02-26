@@ -17,5 +17,8 @@
       public static string NewKey => "New";
       public static string ActionsKey => "Actions";
       public static string SearchKey => "SearchKey";
+      public static string QuickEditKey => "QuickEdit";
+      public static string LogoKey => "Logo";
+      public static string DocumentKey => "Document";
    }
 }

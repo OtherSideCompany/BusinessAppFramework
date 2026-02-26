@@ -1,7 +1,6 @@
 ﻿@using System.Reflection
 @using Domain.DomainObjects
 @using MudBlazor
-@using Domain.DomainObjects
 
 @if (PropertyInfo.PropertyType == typeof(string))
 {
@@ -47,7 +46,7 @@ else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyT
     <MudDatePicker Date="@(PropertyValue as DateTime?)"
                    Style="font-size: var(--mud-typography-body2-size);"
                    Margin="Margin.Dense"
-                   DateChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }"
+                   DateChanged="OnDateChanged"
                    Variant="Variant.Outlined" 
                    Editable="true"
                    Clearable="PropertyInfo.PropertyType == typeof(DateTime?)" />
@@ -70,4 +69,15 @@ else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
     [Parameter, EditorRequired] public object PropertyValue { get; init; }
     [Parameter, EditorRequired] public DomainObject DomainObject { get; init; }
     [Parameter] public EventCallback OnChanged { get; set; }
+
+    private async Task OnDateChanged(DateTime? v)
+    {
+        var current = (DateTime?)PropertyInfo.GetValue(DomainObject);
+    
+        if (Nullable.Equals(current, v))
+            return;
+    
+        PropertyInfo.SetValue(DomainObject, v);
+        await OnChanged.InvokeAsync();
+    }
 }

@@ -125,7 +125,7 @@
         }
     }
 
-    private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state)
+    private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state, CancellationToken cancellationToken)
     {
         if (!_isLoadRequested)
             return new GridData<TSearchResult> { Items = new List<TSearchResult>() };

@@ -63,7 +63,7 @@ namespace BusinessAppFramework.WebUI.Services
 
       #region Private Methods
 
-      private HttpClient CreateClient() => _clientFactory.CreateClient(_apiClientOptions.ApiClientName);
+      protected HttpClient CreateClient() => _clientFactory.CreateClient(_apiClientOptions.ApiClientName);
 
       private async Task<T?> ReadFromJsonAsync<T>(HttpResponseMessage httpResponseMessage)
       {

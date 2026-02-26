@@ -160,7 +160,7 @@
     </Pagination>
 
     @* Editor *@   
-    <Drawer>
+    <Drawer>        
         <MudDrawer Open="_editorOpen"
                    Anchor="Anchor.Right"
                    Elevation="2"
@@ -169,11 +169,17 @@
                    Overlay="false"
                    Class="editor-drawer">
 
-                <div style="display:flex; justify-content:flex-end; padding:8px 8px 0 0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 8px 8px 16px">
+
+                   <MudStack Row="true" Style="ma-2" AlignItems="AlignItems.Center" Spacing="2">
+                      <MudIcon Icon="@Icons.Material.Outlined.Edit" />
+                      <MudText Typo="Typo.h6">@LocalizedStringService.Get(Contracts.StringKeys.QuickEditKey)</MudText>
+                   </MudStack>                   
+
                     <MudIconButton Icon="@Icons.Material.Outlined.Close"
                                    Size="Size.Small" 
                                    OnClick="CloseDrawerAsync" />
-                </div>
+                </div>                
 
                 <DomainObjectEditor TDomainObject="TDomainObject"
                                     DomainObject="@_currentEditedObject"
@@ -211,7 +217,7 @@
     private TSearchResult? _selectedItem;
 
 
-    private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state)
+    private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state, CancellationToken cancellationToken)
     {
         var request = new PaginatedSearchRequest
         {

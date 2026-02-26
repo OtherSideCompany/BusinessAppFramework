@@ -53,7 +53,7 @@
                      Elevation="0"
                      Class="osc-datagrid"
                      Virtualize="false"
-                     CommittedItemChanges="async () => await ItemChanged.InvokeAsync()">
+                     CommittedItemChanges="OnCommitedItemChanged">
             <Columns>
                 @ColumnsContent
                 <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
@@ -164,5 +164,11 @@
                 }
             }
         }
+    }
+
+    private async Task<DataGridEditFormAction> OnCommitedItemChanged(TItem item)
+    {
+       await ItemChanged.InvokeAsync();
+       return DataGridEditFormAction.Close;
     }
 }

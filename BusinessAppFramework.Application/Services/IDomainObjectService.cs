@@ -8,6 +8,7 @@ namespace BusinessAppFramework.Application.Services
       Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
       Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+      Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
 
       Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 

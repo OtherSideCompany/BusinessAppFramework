@@ -106,6 +106,15 @@ namespace BusinessAppFramework.Application.Services
          return domainObject;
       }
 
+      public virtual async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
+      {
+         var domainObjects = await WithReadPermissionAsync(() => _repository.GetAllAsync(cancellationToken));
+
+         domainObjects.ForEach(async domainObject => await LoadReferencesAsync(domainObject));
+
+         return domainObjects;
+      }
+
       public virtual async Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
       {
          var domainObject = await GetAsync(domainObjectId, cancellationToken);

@@ -15,6 +15,8 @@ namespace BusinessAppFramework.Application.Repository
 
       Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken);
 
+      Task<List<T>> GetAllAsync(CancellationToken cancellationToken);
+
       Task<T> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken);
 
       Task DeleteAsync(int domainObjectId);

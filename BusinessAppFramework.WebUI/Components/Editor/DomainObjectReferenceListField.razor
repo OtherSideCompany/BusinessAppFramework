@@ -72,22 +72,24 @@
 </MudChipSet>
 
 
-@code {
+@code { 
     [Parameter]
     public DomainObjectReferenceList? DomainObjectReferenceList
     {
-        get;
+        get => _domainObjectReferenceList;
         set
         {
-            if (field?.RelationKey == value?.RelationKey)
+            if (_domainObjectReferenceList?.RelationKey == value?.RelationKey)
                 return;
 
-            field = value;
+            _domainObjectReferenceList = value;
             HandleDomainObjectReferenceListChanged();
         }
     }
     [Parameter] public string Label { get; set; } = default!;
     [Parameter] public EventCallback<DomainObjectReferenceList?> OnDomainObjectReferenceListChanged { get; set; }
+
+    private DomainObjectReferenceList? _domainObjectReferenceList;
 
     private bool _showPopup { get; set; }
     private bool _isSelecting { get; set; }

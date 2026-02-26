@@ -150,6 +150,17 @@ namespace BusinessAppFramework.Infrastructure.Repositories
          }
       }
 
+      public async Task<List<TDomainObject>> GetAllAsync(CancellationToken cancellationToken)
+      {
+         _logger.LogInformation($"{GetType()}, {nameof(GetAllAsync)}");
+
+         using (var context = _dbContextFactory.CreateDbContext())
+         {
+            var entity = await context.Set<TEntity>().ToListAsync();
+            return _mapper.Map<List<TDomainObject>>(entity);
+         }
+      }
+
       public virtual async Task DeleteAsync(int domainObjectId)
       {
          _logger.LogInformation("{Type}, {MethodName}, entityId : {EntityId}", GetType(), nameof(DeleteAsync), domainObjectId);

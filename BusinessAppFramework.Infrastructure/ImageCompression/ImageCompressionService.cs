@@ -1,8 +1,11 @@
 ﻿using BusinessAppFramework.Application.Services;
 using ImageMagick;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace BusinessAppFramework.Infrastructure.ImageCompression
 {
@@ -100,7 +103,29 @@ namespace BusinessAppFramework.Infrastructure.ImageCompression
          }
       }
 
+      public async Task<byte[]> CompressPngImageAsync(Stream inputPng, int maxWidth, int maxHeight)
+      {
+         using var image = await SixLabors.ImageSharp.Image.LoadAsync(inputPng);
 
+         if (image.Width > maxWidth || image.Height > maxHeight)
+         {
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+               Mode = ResizeMode.Max,
+               Size = new SixLabors.ImageSharp.Size(maxWidth, maxHeight)
+            }));
+         }
+
+         using var output = new MemoryStream();
+
+         var encoder = new PngEncoder
+         {
+            CompressionLevel = PngCompressionLevel.BestCompression
+         };
+
+         await image.SaveAsync(output, encoder);
+         return output.ToArray();
+      }
 
       #endregion
 
@@ -131,7 +156,7 @@ namespace BusinessAppFramework.Infrastructure.ImageCompression
          }
 
          return null;
-      }
+      }      
 
       #endregion
    }

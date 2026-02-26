@@ -50,22 +50,24 @@
 
 </MudPopover>
 
-@code {
+@code {   
     [Parameter]
     public DomainObjectReference? DomainObjectReference
     {
-        get;
+        get => _domainObjectReference;
         set
         {
-            if (field?.DomainObjectId == value?.DomainObjectId && field?.RelationKey == value?.RelationKey)
+            if (_domainObjectReference?.DomainObjectId == value?.DomainObjectId && _domainObjectReference?.RelationKey == value?.RelationKey)
                 return;
 
-            field = value;
+            _domainObjectReference = value;
             HandleDomainObjectReferenceChanged();
         }
     }
     [Parameter] public string Label { get; set; } = default!;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
+
+    private DomainObjectReference? _domainObjectReference;
 
     private bool _isValid { get; set; }
     private bool _isSelecting { get; set; }
