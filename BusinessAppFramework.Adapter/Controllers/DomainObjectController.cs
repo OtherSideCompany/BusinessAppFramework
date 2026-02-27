@@ -10,7 +10,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
    [ApiController]
    [Authorize]
-   public class DomainObjectController<TDomainObject, TSearchResult> : ControllerBase
+   public abstract class DomainObjectController<TDomainObject, TSearchResult> : ControllerBase
        where TDomainObject : DomainObject, new()
        where TSearchResult : DomainObjectSearchResult, new()
    {

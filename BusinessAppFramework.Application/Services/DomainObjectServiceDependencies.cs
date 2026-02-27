@@ -18,7 +18,6 @@ namespace BusinessAppFramework.Application.Services
 
       public IUserContext UserContext { get; set; }
       public IReferenceHydrator ReferenceHydrator { get; set; }
-      public IDomainObjectFileService DomainObjectFileService { get; }
       public IPasswordService PasswordService { get; }
       public IMailService MailService { get; }
       public IDomainObjectEventBus DomainObjectEventBus { get; }
@@ -38,7 +37,6 @@ namespace BusinessAppFramework.Application.Services
 
       public DomainObjectServiceDependencies(
           IUserContext userContext,
-          IDomainObjectFileService domainObjectFileService,
           IPasswordService passwordService,
           IMailService mailService,
           IDomainObjectEventBus domainObjectEventBus,
@@ -48,7 +46,6 @@ namespace BusinessAppFramework.Application.Services
           IRelationService relationService)
       {
          UserContext = userContext;
-         DomainObjectFileService = domainObjectFileService;
          PasswordService = passwordService;
          MailService = mailService;
          DomainObjectEventBus = domainObjectEventBus;

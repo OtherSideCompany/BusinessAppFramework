@@ -32,6 +32,11 @@
       public const string DeleteTreeNodeTemplate = $"api/delete-treenode/{{{ParentDomainObjectIdParam}}}/{{{DomainObjectIdParam}}}/{{{KeyParam}}}";
       public const string GetTreeTemplate = $"api/get-tree/{{{DomainObjectIdParam}}}/{{{KeyParam}}}";
 
+      public const string UploadDocumentTemplate = $"api/[controller]/upload/{{{DomainObjectIdParam}}}";
+      public const string DeleteDocumentTemplate = $"api/[controller]/delete/{{{DomainObjectIdParam}}}";
+      public const string DocumentExistsTemplate = $"api/[controller]/exists/{{{DomainObjectIdParam}}}";
+      public const string DownloadDocumentTemplate = $"api/[controller]/download/{{{DomainObjectIdParam}}}";
+
       public const string GetHtmlDocumentTemplate = $"api/document/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
       public const string DownloadPdfDocumentTemplate = $"api/document/pdf/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
 
@@ -62,6 +67,23 @@
       public static string BuildRoute(string template, Type domainObjectType, int? id = null, string? key = null)
       {
          var route = template.Replace("[controller]", domainObjectType.Name.ToLowerInvariant());
+
+         if (id != null)
+         {
+            route = route.Replace($"{{{DomainObjectIdParam}}}", id.ToString());
+         }
+
+         if (key != null)
+         {
+            route = route.Replace($"{{{KeyParam}}}", key.ToString());
+         }
+
+         return route;
+      }
+
+      public static string BuildRoute(string template, string type, int? id = null, string? key = null)
+      {
+         var route = template.Replace("[controller]", type.ToLowerInvariant());
 
          if (id != null)
          {

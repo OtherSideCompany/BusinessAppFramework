@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\MyBusinessApp\BaseData.Domain\BaseData.Domain.csproj" />
     <ProjectReference Include="..\BusinessAppFramework.Application\BusinessAppFramework.Application.csproj" />
     <ProjectReference Include="..\BusinessAppFramework.Contracts\BusinessAppFramework.Contracts.csproj" />
     <ProjectReference Include="..\BusinessAppFramework.Domain\BusinessAppFramework.Domain.csproj" />

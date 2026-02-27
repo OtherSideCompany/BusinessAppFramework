@@ -34,7 +34,4 @@
     <ProjectReference Include="..\BusinessAppFramework.Contracts\BusinessAppFramework.Contracts.csproj" />
     <ProjectReference Include="..\BusinessAppFramework.Domain\BusinessAppFramework.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Documents\" />
-  </ItemGroup>
 </Project>

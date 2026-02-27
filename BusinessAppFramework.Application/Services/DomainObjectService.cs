@@ -15,7 +15,6 @@ namespace BusinessAppFramework.Application.Services
 
       protected DomainObjectServiceDependencies _domainObjectServiceDependencies;
       protected readonly IRepository<T> _repository;
-      protected readonly IDomainObjectFileService _domainObjectFileService;
       protected readonly IPasswordService _passwordService;
       protected readonly IMailService _mailService;
       protected readonly IDomainObjectEventBus _domainObjectEventBus;
@@ -43,7 +42,6 @@ namespace BusinessAppFramework.Application.Services
       {
          _domainObjectServiceDependencies = domainObjectServiceDependencies;
          _repository = repository;
-         _domainObjectFileService = domainObjectServiceDependencies.DomainObjectFileService;
          _domainObjectEventBus = domainObjectServiceDependencies.DomainObjectEventBus;
          _userContext = domainObjectServiceDependencies.UserContext;
       }
@@ -83,8 +81,6 @@ namespace BusinessAppFramework.Application.Services
             await WithDeletePermissionAsync(() => _repository.DeleteAsync(domainObjectId));
 
             await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(typeof(T), domainObjectId));
-
-            _domainObjectFileService.TryDeleteAssociatedFolder(domainObjectId);
 
             return true;
          }

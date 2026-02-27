@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace BusinessAppFramework.Bootstrapper.Services
 {
    public interface IBootstrapService
    {
-      IServiceCollection GetServices();
+      IServiceCollection GetServices(ConfigurationManager configurationManager);
    }
 }
