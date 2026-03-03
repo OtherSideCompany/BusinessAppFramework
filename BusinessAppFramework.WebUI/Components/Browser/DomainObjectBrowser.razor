@@ -1,5 +1,5 @@
 ﻿@using System.Threading.Tasks
-@using Application.ActionResult
+@using Application.Actions
 @using Application.Descriptors
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Search
@@ -105,11 +105,27 @@
 
             <MudSpacer />
 
-            @foreach (var action in Descriptor.Actions)
-            {
-                var disabled = action.RequireDomainObjectId && !_hasSelection;
+            @{
+                var hasGlobalActions = Descriptor.ApplicationActions?.Any() == true;
+                var hasSelectionActions = Descriptor.DomainObjectApplicationActions?.Any() == true;
+            }
 
-                <ActionButton OnClick="() => ExecuteActionAsync(action)"
+            @foreach (var action in Descriptor.ApplicationActions)
+            {
+                <ActionButton OnClick="() => ExecuteApplicationActionAsync(action)"
+                              ActionKey="action.ActionKey" />
+            }
+
+            @if (hasGlobalActions && hasSelectionActions)
+            {
+                <MudDivider Vertical="true" Class="mx-2" Style="height:24px; width:1px;" />
+            }
+
+            @foreach (var action in Descriptor.DomainObjectApplicationActions)
+            {
+                var disabled = !_hasSelection;
+
+                <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
                               ActionKey="action.ActionKey"
                               Disabled="@disabled" />
             }
@@ -272,11 +288,21 @@
         _selectedConstraintKey = Descriptor.ConstraintKeys.Any() ? Descriptor.ConstraintKeys.First() : String.Empty;
     }
 
-    private async Task ExecuteActionAsync(IDomainObjectApplicationAction applicationAaction)
+    private async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
     {
-        applicationAaction.DomainObjectId = _currentEditedObject?.Id;
-        var payload = await ActionExecutionService.ExecuteAsync(applicationAaction);
+        var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+        await RefreshServerDataAsync(payload);
+    }
 
+    private async Task ExecuteDomainObjectApplicationActionAsync(IDomainObjectApplicationAction applicationAction)
+    {
+        applicationAction.DomainObjectId = _currentEditedObject?.Id ?? 0;
+        var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+        await RefreshServerDataAsync(payload);        
+    }
+
+    public async Task RefreshServerDataAsync(DomainObjectApplicationActionResultPayload? payload)
+    {
         if (payload != null && _grid != null)
         {
             if (payload.Changes.Any(c => c.ChangeType == ChangeType.Added) ||

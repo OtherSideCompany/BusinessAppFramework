@@ -1,10 +1,10 @@
-﻿using BusinessAppFramework.Application.ActionResult;
+﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
 
 namespace BusinessAppFramework.WebUI.Interfaces
 {
    public interface IActionExecutionService
    {
-      Task<DomainObjectApplicationActionResultPayload?> ExecuteAsync(IDomainObjectApplicationAction action);
+        Task<DomainObjectApplicationActionResultPayload?> ExecuteApplicationActionAsync(IApplicationAction action);
    }
 }

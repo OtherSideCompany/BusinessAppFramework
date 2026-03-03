@@ -1,11 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts;
-using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 
-namespace BusinessAppFramework.Application.ActionResult
+namespace BusinessAppFramework.Application.Actions
 {
-   public abstract class DomainObjectApplicationAction<TDomainObject> : IDomainObjectApplicationAction where TDomainObject : DomainObject, new()
+   public abstract class DomainObjectApplicationAction<TDomainObject> : ApplicationAction, IDomainObjectApplicationAction where TDomainObject : DomainObject, new()
    {
       #region Fields
 
@@ -15,10 +14,7 @@ namespace BusinessAppFramework.Application.ActionResult
 
       #region Properties
 
-      public StringKey ActionKey { get; init; } = StringKey.Empty;
-      public string ExecuteRouteTemplate { get; init; } = string.Empty;
-      public int? DomainObjectId { get; set; }
-      public bool RequireDomainObjectId { get; init; } = false;
+      public int DomainObjectId { get; set; }
 
       #endregion
 
@@ -39,7 +35,7 @@ namespace BusinessAppFramework.Application.ActionResult
 
       #region Public Methods
 
-      public virtual string BuildRoute()
+      public override string BuildRoute()
       {
          return Routes.BuildRoute(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
       }

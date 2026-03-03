@@ -1,7 +1,7 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Domain.DomainObjects;
 
-namespace BusinessAppFramework.Application.ActionResult
+namespace BusinessAppFramework.Application.Actions
 {
    public class DomainObjectNavigationApplicationAction<TDomainObject> : DomainObjectApplicationAction<TDomainObject>, IDomainObjectNavigationApplicationAction where TDomainObject : DomainObject, new()
    {

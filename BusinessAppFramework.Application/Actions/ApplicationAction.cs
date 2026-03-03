@@ -1,9 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain;
 
-namespace BusinessAppFramework.Application.ActionResult
+namespace BusinessAppFramework.Application.Actions
 {
-    public class DocumentNavigationApplicationAction : IDocumentNavigationApplicationAction
+    public abstract class ApplicationAction : IApplicationAction
     {
         #region Fields
 
@@ -12,11 +13,10 @@ namespace BusinessAppFramework.Application.ActionResult
         #endregion
 
         #region Properties
+
         public StringKey ActionKey { get; init; } = StringKey.Empty;
-        public StringKey DocumentKey { get; init; } = StringKey.Empty;
         public string ExecuteRouteTemplate { get; init; } = string.Empty;
-        public int? DomainObjectId { get; set; }
-        public bool RequireDomainObjectId { get; init; } = true;
+        public string ControllerName { get; set;  } = string.Empty;
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace BusinessAppFramework.Application.ActionResult
 
         #region Constructor
 
-        public DocumentNavigationApplicationAction()
+        public ApplicationAction()
         {
 
         }
@@ -39,9 +39,8 @@ namespace BusinessAppFramework.Application.ActionResult
 
         public virtual string BuildRoute()
         {
-            return $"/document/{DocumentKey}/{DomainObjectId}";
+            return Routes.BuildControllerRoute(ExecuteRouteTemplate, ControllerName);
         }
-
 
         #endregion
 

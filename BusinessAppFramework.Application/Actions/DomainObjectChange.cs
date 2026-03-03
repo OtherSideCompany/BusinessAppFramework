@@ -1,4 +1,4 @@
-﻿namespace BusinessAppFramework.Application.ActionResult
+﻿namespace BusinessAppFramework.Application.Actions
 {
    public class DomainObjectChange
    {

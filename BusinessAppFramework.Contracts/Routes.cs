@@ -38,7 +38,7 @@
       public const string DownloadDocumentTemplate = $"api/[controller]/download/{{{DomainObjectIdParam}}}";
 
       public const string GetHtmlDocumentTemplate = $"api/document/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
-      public const string DownloadPdfDocumentTemplate = $"api/document/pdf/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
+      public const string DownloadPdfDocumentTemplate = $"api/document/download/{{{KeyParam}}}/{{{DomainObjectIdParam}}}";
 
       public static string BuildRoute(string template, int domainObjectId)
       {
@@ -81,7 +81,12 @@
          return route;
       }
 
-      public static string BuildRoute(string template, string type, int? id = null, string? key = null)
+        public static string BuildControllerRoute(string template, string controller)
+        {
+            return template.Replace("[controller]", controller.ToLowerInvariant());
+        }
+
+        public static string BuildRoute(string template, string type, int? id = null, string? key = null)
       {
          var route = template.Replace("[controller]", type.ToLowerInvariant());
 

@@ -2,12 +2,8 @@
 
 namespace BusinessAppFramework.Application.Interfaces
 {
-    public interface IDomainObjectApplicationAction
+    public interface IDomainObjectApplicationAction : IApplicationAction
     {
-        StringKey ActionKey { get; }
-        string ExecuteRouteTemplate { get; }
-        int? DomainObjectId { get; set; }
-        bool RequireDomainObjectId { get; }
-        string BuildRoute();
+        int DomainObjectId { get; set; }
     }
 }

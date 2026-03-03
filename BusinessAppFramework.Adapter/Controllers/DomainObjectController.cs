@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.ActionResult;
+﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts;

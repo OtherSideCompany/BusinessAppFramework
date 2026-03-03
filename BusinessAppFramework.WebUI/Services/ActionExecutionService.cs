@@ -1,9 +1,10 @@
-﻿using BusinessAppFramework.Application.ActionResult;
+﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -15,6 +16,7 @@ namespace BusinessAppFramework.WebUI.Services
         private IUserDialogService _userDialogService;
         private ILocalizedStringService _localizedStringService;
         private NavigationManager _navigationManager;
+        private IConfiguration _configuration;
 
         #endregion
 
@@ -37,19 +39,21 @@ namespace BusinessAppFramework.WebUI.Services
             IOptions<ApiClientOptions> apiClientOptions,
             IUserDialogService userDialogService,
             ILocalizedStringService localizedStringService,
-            NavigationManager navigationManager) :
+            NavigationManager navigationManager,
+            IConfiguration configuration) :
             base(clientFactory, apiClientOptions)
         {
             _userDialogService = userDialogService;
             _localizedStringService = localizedStringService;
             _navigationManager = navigationManager;
+            _configuration = configuration;
         }
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods        
 
-        public async Task<DomainObjectApplicationActionResultPayload?> ExecuteAsync(IDomainObjectApplicationAction action)
+        public async Task<DomainObjectApplicationActionResultPayload?> ExecuteApplicationActionAsync(IApplicationAction action)
         {
             var route = action.BuildRoute();
 
@@ -89,8 +93,16 @@ namespace BusinessAppFramework.WebUI.Services
                 _navigationManager.NavigateTo(route);
                 return null;
             }
-            else if (action is IDocumentNavigationApplicationAction documentNavigationApplicationAction)
+            else if (action is IDocumentDownloadApplicationAction documentDownloadApplicationAction)
             {
+                var apiBaseUrl = _configuration["ApiBaseUrl"];
+                var fullUrl = $"{apiBaseUrl}/{route}";
+
+                _navigationManager.NavigateTo(fullUrl, forceLoad:true);
+                return null;
+            }
+            else if (action is IDocumentNavigationApplicationAction documentNavigationApplicationAction)
+            {              
                 _navigationManager.NavigateTo(route);
                 return null;
             }

@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.ActionResult;
+﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
