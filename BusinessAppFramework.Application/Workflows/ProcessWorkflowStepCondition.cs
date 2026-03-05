@@ -1,45 +1,47 @@
-﻿namespace BusinessAppFramework.Application.Workflows
+﻿using BusinessAppFramework.Application.Interfaces;
+
+namespace BusinessAppFramework.Application.Workflows
 {
-   public class ProcessWorkflowStepCondition
-   {
-      #region Fields
+    public class ProcessWorkflowStepCondition
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public string Key { get; set; }
-      public bool IsCompleted { get; set; }
+        public string Key { get; set; }
+        public bool IsCompleted { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public ProcessWorkflowStepCondition(string key)
-      {
-         Key = key;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public ProcessWorkflowStepCondition(string key)
+        {
+            Key = key;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

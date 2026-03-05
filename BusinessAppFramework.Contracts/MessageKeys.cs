@@ -6,5 +6,6 @@
         public static string AbordChangesMessage = "Abandonner les changements ?";
         public static string FileNoteFoundMessage = "Le fichier demandé n'existe pas.";
         public static string ServerErrorMessage = "Le serveur a répondu avec une erreur.";
+        public static string NotImplementedMessage = "Fonctionnalité en développement";
     }
 }

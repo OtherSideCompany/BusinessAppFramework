@@ -5,7 +5,6 @@ using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
-using Microsoft.Identity.Client;
 
 namespace BusinessAppFramework.Application.Descriptors
 {
@@ -41,7 +40,14 @@ namespace BusinessAppFramework.Application.Descriptors
                 $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
                 $"{ApiRouteSegments.Create}";
 
+            var importExportAction = new DomainObjectHttpApplicationAction<TDomainObject>
+            {
+                ActionKey = StringKey.From(ActionKeys.ImportExportDataActionKey),
+                HttpMethod = HttpMethod.Post,
+            };
+
             ApplicationActions.Add(createAction);
+            ApplicationActions.Add(importExportAction);
 
             var deleteAction = new DomainObjectHttpApplicationAction<TDomainObject>
             {

@@ -14,8 +14,6 @@ namespace BusinessAppFramework.WebUI.Services
     {
         #region Fields
 
-        private IUserDialogService _userDialogService;
-        private ILocalizedStringService _localizedStringService;
         private NavigationManager _navigationManager;
         private IConfiguration _configuration;
 
@@ -45,8 +43,6 @@ namespace BusinessAppFramework.WebUI.Services
             ILogger<ApplicationActionExecutionService> logger) :
             base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
-            _userDialogService = userDialogService;
-            _localizedStringService = localizedStringService;
             _navigationManager = navigationManager;
             _configuration = configuration;
         }
@@ -62,6 +58,12 @@ namespace BusinessAppFramework.WebUI.Services
             if (action is IHttpDomainObjectApplicationAction httpApplicationAction)
             {
                 HttpResult<DomainObjectApplicationActionResultPayload>? result = null;
+
+                if (httpApplicationAction.ActionKey.Key == ActionKeys.ImportExportDataActionKey)
+                {
+                    _userDialogService.SnackShow(MessageKeys.NotImplementedMessage);
+                    return new DomainObjectApplicationActionResultPayload();
+                }
 
                 if (httpApplicationAction.HttpMethod == HttpMethod.Post)
                 {

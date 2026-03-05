@@ -21,5 +21,7 @@
         public static string QuickEditKey => "QuickEdit";
         public static string LogoKey => "Logo";
         public static string DocumentKey => "Document";
+        public static string DeletedKey => "Deleted";
+        public static string WorkflowKey => "Workflow";
     }
 }
