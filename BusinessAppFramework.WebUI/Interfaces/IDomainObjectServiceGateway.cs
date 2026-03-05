@@ -10,8 +10,6 @@ namespace BusinessAppFramework.WebUI.Interfaces
 
       //Task<List<T>> GetAllAsync(DomainObject? parent = null, CancellationToken cancellationToken = default);
 
-      Task<List<int>> GetChildrenIdsAsync(int parentId, string key, CancellationToken cancellationToken = default);
-
       Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
       Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
       Task<DomainObjectReference?> GetHydratedDomainObjectReference(int domainObjectReference, string key);

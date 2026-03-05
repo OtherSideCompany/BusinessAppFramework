@@ -2,8 +2,10 @@
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
+using Microsoft.Identity.Client;
 
 namespace BusinessAppFramework.Application.Descriptors
 {
@@ -21,32 +23,46 @@ namespace BusinessAppFramework.Application.Descriptors
 
         public DomainObjectBrowserDescriptor(
             IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver,
+            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
             List<string>? constraintKeys = null)
         {
-            ApplicationActions = new List<IApplicationAction>
+            ApplicationActions = new List<IApplicationAction>();
+            DomainObjectApplicationActions = new List<IDomainObjectApplicationAction>();
+
+            var createAction = new DomainObjectHttpApplicationAction<TDomainObject>
             {
-                new HttpApplicationAction
-                {
-                    ActionKey = StringKey.From(ActionKeys.CreateActionKey),
-                    ExecuteRouteTemplate = Routes.CreateTemplate,
-                    HttpMethod = HttpMethod.Post,
-                    ControllerName = typeof(TDomainObject).Name.ToLowerInvariant(),
-                }                
+                ActionKey = StringKey.From(ActionKeys.CreateActionKey),
+                HttpMethod = HttpMethod.Post,
             };
 
-            DomainObjectApplicationActions = new List<IDomainObjectApplicationAction>
+            createAction.ExecuteRoute =
+                $"{ApiRouteSegments.Root}/" +
+                $"{ApiRouteSegments.DomainObjects}/" +
+                $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
+                $"{ApiRouteSegments.Create}";
+
+            ApplicationActions.Add(createAction);
+
+            var deleteAction = new DomainObjectHttpApplicationAction<TDomainObject>
             {
-                new DomainObjectHttpApplicationAction<TDomainObject>
-                {
-                    ActionKey = StringKey.From(ActionKeys.DeleteActionKey),
-                    ExecuteRouteTemplate = Routes.DeleteTemplate,
-                    HttpMethod = HttpMethod.Delete
-                },
-                new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
-                {
-                    ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
-                }
+                ActionKey = StringKey.From(ActionKeys.DeleteActionKey),
+                HttpMethod = HttpMethod.Delete
             };
+
+            deleteAction.ExecuteRoute =
+                $"{ApiRouteSegments.Root}/" +
+                $"{ApiRouteSegments.DomainObjects}/" +
+                $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
+                $"{ApiRouteSegments.Delete}/" +
+                $"{ApiRouteParams.DomainObjectId}";
+
+            var pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
+            {
+                ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
+            };
+
+            DomainObjectApplicationActions.Add(deleteAction);
+            DomainObjectApplicationActions.Add(pageNavigationAction);
 
             ConstraintKeys = new List<string>()
             {

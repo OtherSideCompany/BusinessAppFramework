@@ -1,9 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Actions
 {
-    public class DocumentNavigationApplicationAction : IDocumentNavigationApplicationAction
+    public class DocumentGeneratorNavigationApplicationAction : IDocumentNavigationApplicationAction
     {
         #region Fields
 
@@ -14,7 +15,7 @@ namespace BusinessAppFramework.Application.Actions
         #region Properties
         public StringKey ActionKey { get; init; } = StringKey.Empty;
         public StringKey DocumentKey { get; set; } = StringKey.Empty;
-        public string ExecuteRouteTemplate { get; init; } = string.Empty;
+        public string ExecuteRoute { get; init; } = string.Empty;
         public int DomainObjectId { get; set; }
         public bool RequireDomainObjectId { get; init; } = true;
 
@@ -26,10 +27,9 @@ namespace BusinessAppFramework.Application.Actions
 
         #endregion
 
-
         #region Constructor
 
-        public DocumentNavigationApplicationAction()
+        public DocumentGeneratorNavigationApplicationAction()
         {
 
         }
@@ -40,7 +40,7 @@ namespace BusinessAppFramework.Application.Actions
 
         public virtual string BuildRoute()
         {
-            return $"/document/{DocumentKey}/{DomainObjectId}";
+            return $"/{ApiRouteSegments.DocumentGenerator}/{DocumentKey}/{DomainObjectId}";
         }
 
 

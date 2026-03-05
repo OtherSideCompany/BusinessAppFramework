@@ -10,9 +10,12 @@
     [Parameter] public Color FalseColor { get; set; } = Color.Error;
     [Parameter] public string TrueIcon { get; set; } = Icons.Material.Filled.Check;
     [Parameter] public string FalseIcon { get; set; } = Icons.Material.Filled.Close;
+    [Parameter] public bool Invert { get; set; }
 
     [Parameter] public Size Size { get; set; } = Size.Medium;
 
-    private Color CurrentColor => Value ? TrueColor : FalseColor;
-    private string CurrentIcon => Value ? TrueIcon : FalseIcon;
+    private bool EffectiveValue => Invert ? !Value : Value;
+
+    private Color CurrentColor => EffectiveValue ? TrueColor : FalseColor;
+    private string CurrentIcon => EffectiveValue ? TrueIcon : FalseIcon;
 }

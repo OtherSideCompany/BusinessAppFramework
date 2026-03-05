@@ -1,69 +1,73 @@
 ﻿using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Application.Trees;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessAppFramework.Adapter.Controllers
 {
-   [ApiController]
-   [Authorize]
-   public abstract class DomainObjectSearchController<TSearchResult> : ControllerBase
-      where TSearchResult : DomainObjectSearchResult, new()
-   {
-      #region Fields
+    [ApiController]
+    [Authorize]
+    public abstract class DomainObjectSearchController<TSearchResult> : ControllerBase
+       where TSearchResult : DomainObjectSearchResult, new()
+    {
+        #region Fields
 
-      protected readonly ISearchService<TSearchResult> _searchService;
+        protected readonly ISearchService<TSearchResult> _searchService;
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public DomainObjectSearchController(ISearchService<TSearchResult> searchService)
-      {
-         _searchService = searchService;
-      }
+        public DomainObjectSearchController(ISearchService<TSearchResult> searchService)
+        {
+            _searchService = searchService;
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      [HttpPost(Routes.CountTemplate)]
-      public virtual async Task<ActionResult<int>> Count([FromBody] SearchRequest searchRequest)
-      {
-         var result = await _searchService.CountAsync(searchRequest);
-         return Ok(result);
-      }
+        [HttpPost(SearchRouteSegments.Count)]
+        public virtual async Task<ActionResult<int>> Count([FromBody] SearchRequest searchRequest)
+        {
+            var result = await _searchService.CountAsync(searchRequest);
+            return Ok(result);
+        }
 
-      [HttpPost(Routes.SearchTemplate)]
-      public virtual async Task<ActionResult<SearchResult<TSearchResult>>> Search([FromBody] SearchRequest searchRequest)
-      {
-         var result = await _searchService.SearchAsync(searchRequest);
-         return Ok(result);
-      }
+        [HttpPost()]
+        public virtual async Task<ActionResult<SearchResult<TSearchResult>>> Search(
+            [FromBody] SearchRequest searchRequest)
+        {
+            var result = await _searchService.SearchAsync(searchRequest);
+            return Ok(result);
+        }
 
-      [HttpPost(Routes.PaginatedSearchTemplate)]
-      public async Task<ActionResult<SearchResult<TSearchResult>>> PaginatedSearch([FromBody] PaginatedSearchRequest paginatedSearchRequest)
-      {
-         var result = await _searchService.PaginatedSearchAsync(paginatedSearchRequest);
-         return Ok(result);
-      }
+        [HttpPost(SearchRouteSegments.Paginated)]
+        public async Task<ActionResult<SearchResult<TSearchResult>>> PaginatedSearch(
+            [FromBody] PaginatedSearchRequest paginatedSearchRequest)
+        {
+            var result = await _searchService.PaginatedSearchAsync(paginatedSearchRequest);
+            return Ok(result);
+        }
 
-      [HttpPost(Routes.SpecificSearchTemplate)]
-      public async Task<ActionResult<TSearchResult>> GetSearchResultAsync([FromBody] int domainObjectId)
-      {
-         var result = await _searchService.SearchAsync(domainObjectId);
-         return Ok(result);
-      }
+        [HttpPost($"{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public async Task<ActionResult<TSearchResult>> GetSearchResultAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
+        {
+            var result = await _searchService.SearchAsync(domainObjectId);
+            return Ok(result);
+        }
 
-      [HttpGet(Routes.GetSummaryTemplate)]
-      public async Task<ActionResult<NodeSummary?>> GetSummaryAsync(int domainObjectId)
-      {
-         var result = await _searchService.GetSummaryAsync(domainObjectId);
-         return Ok(result);
-      }
+        [HttpGet($"{SearchRouteSegments.Summary}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public async Task<ActionResult<NodeSummary?>> GetSummaryAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
+        {
+            var result = await _searchService.GetSummaryAsync(domainObjectId);
+            return Ok(result);
+        }
 
-      #endregion
-   }
+        #endregion
+    }
 }

@@ -1,7 +1,7 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Search;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +44,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
       #region Public Methods
 
-      [HttpPost(Routes.CreateTemplate)]
+      [HttpPost(DomainObjectRouteSegments.Create)]
       public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> CreateAsync()
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
@@ -60,8 +60,9 @@ namespace BusinessAppFramework.Adapter.Controllers
          return Ok(applicationActionResultPayload);
       }
 
-      [HttpGet(Routes.GetTemplate)]
-      public virtual async Task<ActionResult<TDomainObject>> GetAsync(int domainObjectId)
+      [HttpGet($"{DomainObjectRouteSegments.Get}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+      public virtual async Task<ActionResult<TDomainObject>> GetAsync(
+          [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
          var domainObject = await service.GetAsync(domainObjectId);
@@ -69,8 +70,9 @@ namespace BusinessAppFramework.Adapter.Controllers
          return Ok(domainObject);
       }
 
-      [HttpGet(Routes.GetHydratedTemplate)]
-      public virtual async Task<ActionResult<TDomainObject>> GetHydratedAsync(int domainObjectId)
+      [HttpGet($"{DomainObjectRouteSegments.GetHydrated}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+      public virtual async Task<ActionResult<TDomainObject>> GetHydratedAsync(
+          [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
          var domainObject = await service.GetHydratedAsync(domainObjectId);
@@ -78,17 +80,21 @@ namespace BusinessAppFramework.Adapter.Controllers
          return Ok(domainObject);
       }
 
-      [HttpGet(Routes.GetHydratedDomainObjectReferenceTemplate)]
-      public virtual async Task<ActionResult<DomainObjectReference>> GetHydratedDomainObjectReferenceAsync(int domainObjectId, string key)
+      [HttpGet($"{DomainObjectRouteSegments.GetHydratedReference}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
+      public virtual async Task<ActionResult<DomainObjectReference>> GetHydratedDomainObjectReferenceAsync(
+          [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+          [FromRoute(Name = ApiRouteParams.Key)] string relationKey)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
-         var domainObjectReference = await service.GetHydratedDomainObjectReference(domainObjectId, key);
+         var domainObjectReference = await service.GetHydratedDomainObjectReference(domainObjectId, relationKey);
 
          return Ok(domainObjectReference);
       }
 
-      [HttpGet(Routes.GetHydratedDomainObjectReferenceListItemTemplate)]
-      public virtual async Task<ActionResult<DomainObjectReferenceListItem>> GetHydratedDomainObjectReferenceListItemAsync(int domainObjectId, string key)
+      [HttpGet($"{DomainObjectRouteSegments.GetHydratedReferenceList}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
+      public virtual async Task<ActionResult<DomainObjectReferenceListItem>> GetHydratedDomainObjectReferenceListItemAsync(
+          [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+          [FromRoute(Name = ApiRouteParams.Key)] string key)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
          var domainObjectReferenceListItem = await service.GetHydratedDomainObjectReferenceListItem(domainObjectId, key);
@@ -97,8 +103,9 @@ namespace BusinessAppFramework.Adapter.Controllers
       }
 
 
-      [HttpPut(Routes.SaveTemplate)]
-      public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> SaveAsync(TDomainObject domainObject)
+      [HttpPut(DomainObjectRouteSegments.Save)]
+      public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> SaveAsync(
+          [FromBody] TDomainObject domainObject)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
          await service.SaveAsync(domainObject);
@@ -113,8 +120,9 @@ namespace BusinessAppFramework.Adapter.Controllers
          return Ok(applicationActionResultPayload);
       }
 
-      [HttpDelete(Routes.DeleteTemplate)]
-      public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> DeleteAsync(int domainObjectId)
+      [HttpDelete($"{DomainObjectRouteSegments.Delete}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+      public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> DeleteAsync(
+          [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
       {
          var service = _domainObjectServiceFactory.CreateDomainObjectService<TDomainObject>();
          await service.DeleteAsync(domainObjectId);

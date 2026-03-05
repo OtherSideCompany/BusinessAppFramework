@@ -1,5 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Actions
@@ -37,7 +37,7 @@ namespace BusinessAppFramework.Application.Actions
 
       public override string BuildRoute()
       {
-         return Routes.BuildRoute(ExecuteRouteTemplate, typeof(TDomainObject), DomainObjectId);
+         return ExecuteRoute.Replace(ApiRouteParams.DomainObjectId, DomainObjectId.ToString());
       }
 
       #endregion

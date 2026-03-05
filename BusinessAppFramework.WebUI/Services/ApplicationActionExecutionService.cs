@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
 {
-    public class ActionExecutionService : HttpService, IActionExecutionService
+    public class ApplicationActionExecutionService : HttpService, IApplicationActionExecutionService
     {
         #region Fields
 
@@ -34,7 +34,7 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public ActionExecutionService(
+        public ApplicationActionExecutionService(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
             IUserDialogService userDialogService,

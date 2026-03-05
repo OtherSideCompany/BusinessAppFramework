@@ -1,57 +1,60 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Workflows;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessAppFramework.Adapter.Controllers
 {
-   [ApiController]
-   [Authorize]
-   public class WorkflowController : ControllerBase
-   {
-      #region Fields
+    [ApiController]
+    [Authorize]
+    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.Workflow}")]
+    public class WorkflowController : ControllerBase
+    {
+        #region Fields
 
-      private IWorkflowService _workflowService;
+        private IWorkflowService _workflowService;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
-
-      public WorkflowController(IWorkflowService workflowService)
-      {
-         _workflowService = workflowService;
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      [HttpGet(Routes.GetWorkflowTemplate)]
-      public virtual async Task<ActionResult<ProcessWorkflow>> GetAsync(string key, int domainObjectId)
-      {
-         var workflow = await _workflowService.GetWorkflowAsync(key, domainObjectId);
-         return Ok(workflow);
-      }
-
-      #endregion
-
-      #region Private Methods
+        #region Events
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Constructor
+
+        public WorkflowController(IWorkflowService workflowService)
+        {
+            _workflowService = workflowService;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        [HttpGet($"{WorkflowRouteSegments.GetWorkflow}/{{{ApiRouteParams.Key}}}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public virtual async Task<ActionResult<ProcessWorkflow>> GetAsync(
+            [FromRoute(Name = ApiRouteParams.Key)] string key,
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
+        {
+            var workflow = await _workflowService.GetWorkflowAsync(key, domainObjectId);
+            return Ok(workflow);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

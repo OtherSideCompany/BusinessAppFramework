@@ -1,5 +1,4 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Actions
@@ -15,8 +14,7 @@ namespace BusinessAppFramework.Application.Actions
         #region Properties
 
         public StringKey ActionKey { get; init; } = StringKey.Empty;
-        public string ExecuteRouteTemplate { get; init; } = string.Empty;
-        public string ControllerName { get; set;  } = string.Empty;
+        public string ExecuteRoute { get; set; } = string.Empty;
 
         #endregion
 
@@ -39,7 +37,7 @@ namespace BusinessAppFramework.Application.Actions
 
         public virtual string BuildRoute()
         {
-            return Routes.BuildControllerRoute(ExecuteRouteTemplate, ControllerName);
+            return ExecuteRoute;
         }
 
         #endregion

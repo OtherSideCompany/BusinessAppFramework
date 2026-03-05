@@ -3,7 +3,7 @@ using BusinessAppFramework.Application.Interfaces;
 
 namespace BusinessAppFramework.WebUI.Interfaces
 {
-   public interface IActionExecutionService
+   public interface IApplicationActionExecutionService
    {
         Task<DomainObjectApplicationActionResultPayload?> ExecuteApplicationActionAsync(IApplicationAction action);
    }

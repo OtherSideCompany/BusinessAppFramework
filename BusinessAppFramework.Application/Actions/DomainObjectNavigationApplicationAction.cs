@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Actions
@@ -36,7 +37,7 @@ namespace BusinessAppFramework.Application.Actions
 
       public override string BuildRoute()
       {
-         return $"/workspace/{_domainObjectPageWorkspaceKeyResolver.GetPageWorkspaceKey<TDomainObject>()}?id={DomainObjectId}";
+         return $"/{ApiRouteSegments.Workspace}/{_domainObjectPageWorkspaceKeyResolver.GetPageWorkspaceKey<TDomainObject>()}?id={DomainObjectId}";
       }
 
       #endregion

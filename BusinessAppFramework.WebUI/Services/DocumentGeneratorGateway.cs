@@ -1,54 +1,53 @@
 ﻿using BusinessAppFramework.Adapter.Responses;
-using BusinessAppFramework.Contracts;
-using BusinessAppFramework.Domain.DomainObjects;
+using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
 {
-   public class DocumentGeneratorGateway : HttpService, IDocumentGeneratorGateway
-   {
-      #region Fields
+    public class DocumentGeneratorGateway : HttpService, IDocumentGeneratorGateway
+    {
+        #region Fields
+        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.DocumentGenerator}";
+
+        #endregion
+
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Events
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public DocumentGeneratorGateway(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
+        public DocumentGeneratorGateway(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
         : base(clientFactory, apiClientOptions)
-      {
+        {
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public async Task<DocumentHtmlResponse?> GetHtmlDocumentAsync(string key, int objectId)
-      {
-         return (await GetAsync<DocumentHtmlResponse>(Routes.BuildRoute(Routes.GetHtmlDocumentTemplate, objectId, key))).Data;
-      }
+        public async Task<DocumentHtmlResponse?> GetHtmlDocumentAsync(string key, int objectId)
+        {
+            var route = $"{_baseUrl}/{DocumentRouteSegments.GetHtml}/{key}/{objectId}";
+            return (await GetAsync<DocumentHtmlResponse>(route)).Data;
+        }
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

@@ -1,15 +1,13 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
 
 namespace BusinessAppFramework.Application.Actions
 {
-    public class DocumentDownloadApplicationAction : DocumentNavigationApplicationAction, IDocumentDownloadApplicationAction
+    public class DocumentDownloadApplicationAction : DocumentGeneratorNavigationApplicationAction, IDocumentDownloadApplicationAction
     {        
         public override string BuildRoute()
         {
-            var route = Routes.BuildRoute(Routes.DownloadPdfDocumentTemplate, DomainObjectId, DocumentKey.Key);
-
-            return route;
+            return $"{ApiRouteSegments.Root}/{ApiRouteSegments.Documents}/{DocumentRouteSegments.DownloadPdf}/{DocumentKey.Key}/{DomainObjectId}";
         }
     }
 }

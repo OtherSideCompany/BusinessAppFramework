@@ -1,73 +1,81 @@
-﻿using BusinessAppFramework.Application.Relations;
+﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Relations;
+using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
-using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Contracts.ApiRoutes;
+using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
 {
-   public class TreeGateway : HttpService, ITreeGateway
-   {
-      #region Fields
+    public class TreeGateway : HttpService, ITreeGateway
+    {
+        #region Fields
 
-      private IRelationResolver _relationResolver;
-      private IDomainObjectTypeMap _domainObjectTypeMap;
+        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Tree}";
 
-      #endregion
+        private IRelationResolver _relationResolver;
+        private IDomainObjectTypeMap _domainObjectTypeMap;
+        
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Events
 
-      public TreeGateway(
+
+
+        #endregion
+
+        #region Constructor
+
+        public TreeGateway(
           IHttpClientFactory clientFactory,
           IOptions<ApiClientOptions> apiClientOptions,
           IRelationResolver relationResolver,
           IDomainObjectTypeMap domainObjectTypeMap) : base(clientFactory, apiClientOptions)
-      {
-         _relationResolver = relationResolver;
-         _domainObjectTypeMap = domainObjectTypeMap;
-      }
+        {
+            _relationResolver = relationResolver;
+            _domainObjectTypeMap = domainObjectTypeMap;
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public async Task<Tree?> GetTreeAsync(int domainObjectId, string key)
-      {
-         var tree = (await GetAsync<Tree>(Routes.BuildRoute(Routes.GetTreeTemplate, domainObjectId, key))).Data;
+        public async Task<Tree?> GetTreeAsync(int domainObjectId, string key)
+        {
+            var route = $"{_baseUrl}/{TreeRouteSegments.GetTree}/{domainObjectId}/{key}";
+            var tree = (await GetAsync<Tree>(route)).Data;
 
-         return tree;
-      }
+            return tree;
+        }
 
-      public async Task<Node?> CreateNode(int parentDomainObjectId, string parentChildRelationKey)
-      {
-         return (await PostAsync<Node>(Routes.BuildRouteFromParent(Routes.CreateTreeNodeTemplate, parentDomainObjectId, parentChildRelationKey), null)).Data;
-      }
+        public async Task<Node?> CreateNode(int parentDomainObjectId, string parentChildRelationKey)
+        {
+            var route = $"{_baseUrl}/{TreeRouteSegments.CreateNode}/{parentDomainObjectId}/{parentChildRelationKey}";
+            return (await PostAsync<Node>(route, null)).Data;
+        }
 
-      public async Task<bool> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey)
-      {
-         var result = await DeleteAsync<bool>(Routes.BuildRoute(Routes.DeleteTreeNodeTemplate, parentId, childId, parentChildRelationKey));
+        public async Task<bool> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey)
+        {
+            var route = $"{_baseUrl}/{TreeRouteSegments.DeleteNode}/{parentId}/{childId}/{parentChildRelationKey}";
+            var result = await DeleteAsync<bool>(route);
 
-         return result?.Data == true;
-      }
+            return result?.Data == true;
+        }
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

@@ -7,5 +7,6 @@
         public static string DetailsActionKey => "Détails";
         public static string VisualiseFileActionKey => "VisualiseFile";
         public static string DownloadFileActionKey => "DownloadFileAction";
+        public static string CancelActionKey => "CancelAction";
     }
 }
