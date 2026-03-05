@@ -1,8 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -31,11 +33,14 @@ namespace BusinessAppFramework.WebUI.Services
         #region Constructor
 
         public DomainObjectDocumentServiceGateway(
-         IHttpClientFactory clientFactory,
-         IOptions<ApiClientOptions> apiClientOptions,
-         IConfiguration configuration,
-         IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry) :
-         base(clientFactory, apiClientOptions)
+            IHttpClientFactory clientFactory,
+            IOptions<ApiClientOptions> apiClientOptions,
+            IConfiguration configuration,
+            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
+            ILogger<DomainObjectDocumentServiceGateway<T>> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService) :
+         base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _configuration = configuration;
             _domainObjectRouteKeyRegistry = domainObjectRouteKeyRegistry;

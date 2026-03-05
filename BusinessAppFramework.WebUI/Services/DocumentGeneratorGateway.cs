@@ -1,6 +1,9 @@
 ﻿using BusinessAppFramework.Adapter.Responses;
+using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -26,8 +29,13 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public DocumentGeneratorGateway(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
-        : base(clientFactory, apiClientOptions)
+        public DocumentGeneratorGateway(
+            IHttpClientFactory clientFactory, 
+            IOptions<ApiClientOptions> apiClientOptions,
+            ILogger<DocumentGeneratorGateway> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService)
+        : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
 
         }

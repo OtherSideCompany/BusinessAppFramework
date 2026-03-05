@@ -1,0 +1,33 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using Contracts
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudDialog>
+    <TitleContent>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Dense="true">
+            @LocalizedStringService.Get(StringKeys.ErrorKey)
+        </MudAlert>
+    </TitleContent>
+    <DialogContent>        
+        <MudPaper Class="pa-3" Outlined="true" Style="border-color: var(--mud-palette-error);">
+            <MudText Typo="Typo.body2" Style="white-space: pre-line;">
+                @Message
+            </MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Error" 
+                   StartIcon="@Icons.Material.Filled.Check" 
+                   OnClick="Ok">@LocalizedStringService.Get(StringKeys.OkKey)</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public string Message { get; set; } = default!;
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+
+    private void Ok() => MudDialog?.Close(DialogResult.Ok(true));
+}

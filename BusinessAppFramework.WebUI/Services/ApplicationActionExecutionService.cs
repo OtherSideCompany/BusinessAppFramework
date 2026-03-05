@@ -5,6 +5,7 @@ using BusinessAppFramework.Contracts;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -40,8 +41,9 @@ namespace BusinessAppFramework.WebUI.Services
             IUserDialogService userDialogService,
             ILocalizedStringService localizedStringService,
             NavigationManager navigationManager,
-            IConfiguration configuration) :
-            base(clientFactory, apiClientOptions)
+            IConfiguration configuration,
+            ILogger<ApplicationActionExecutionService> logger) :
+            base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _userDialogService = userDialogService;
             _localizedStringService = localizedStringService;

@@ -1,9 +1,13 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -36,8 +40,11 @@ namespace BusinessAppFramework.WebUI.Services
         public DomainObjectServiceGateway(
             IHttpClientFactory clientFactory, 
             IOptions<ApiClientOptions> apiClientOptions,
-            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry)
-          : base(clientFactory, apiClientOptions)
+            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
+            ILogger<DomainObjectServiceGateway<T>> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService)
+          : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _domainObjectRouteKeyRegistry = domainObjectRouteKeyRegistry;
         }

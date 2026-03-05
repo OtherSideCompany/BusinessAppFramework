@@ -1,8 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -23,8 +25,11 @@ namespace BusinessAppFramework.WebUI.Services
         public DomainObjectSearchGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
-            ISearchRouteKeyRegistry searchRouteKeyRegistry)
-            : base(clientFactory, apiClientOptions)
+            ISearchRouteKeyRegistry searchRouteKeyRegistry,
+            ILogger<DomainObjectSearchGateway<TSearchResult>> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService)
+            : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _searchRouteKeyRegistry = searchRouteKeyRegistry;
         }

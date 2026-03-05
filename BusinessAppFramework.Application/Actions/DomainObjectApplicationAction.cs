@@ -37,7 +37,7 @@ namespace BusinessAppFramework.Application.Actions
 
       public override string BuildRoute()
       {
-         return ExecuteRoute.Replace(ApiRouteParams.DomainObjectId, DomainObjectId.ToString());
+            return "unknownroute";// ExecuteRoute.Replace(ApiRouteParams.DomainObjectId, DomainObjectId.ToString());
       }
 
       #endregion

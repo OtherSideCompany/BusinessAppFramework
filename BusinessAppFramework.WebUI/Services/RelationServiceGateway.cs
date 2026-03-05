@@ -1,6 +1,9 @@
-﻿using BusinessAppFramework.Application.Search;
+﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Search;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -27,8 +30,13 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public RelationServiceGateway(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
-          : base(clientFactory, apiClientOptions)
+        public RelationServiceGateway(
+            IHttpClientFactory clientFactory, 
+            IOptions<ApiClientOptions> apiClientOptions,
+            ILogger<RelationServiceGateway> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService)
+          : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
 
         }

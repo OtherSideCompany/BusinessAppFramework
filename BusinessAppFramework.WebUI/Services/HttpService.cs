@@ -1,5 +1,9 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Services;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens.Experimental;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -11,6 +15,9 @@ namespace BusinessAppFramework.WebUI.Services
 
         protected readonly IHttpClientFactory _clientFactory;
         protected readonly ApiClientOptions _apiClientOptions;
+        protected readonly ILogger _logger;
+        protected readonly ILocalizedStringService _localizedStringService;
+        protected readonly IUserDialogService _userDialogService;
 
         #endregion
 
@@ -28,10 +35,18 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public HttpService(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
+        public HttpService(
+            IHttpClientFactory clientFactory, 
+            IOptions<ApiClientOptions> apiClientOptions,
+            ILogger<HttpService> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService)
         {
             _clientFactory = clientFactory;
             _apiClientOptions = apiClientOptions.Value;
+            _logger = logger;
+            _localizedStringService = localizedStringService;
+            _userDialogService = userDialogService;
         }
 
         #endregion
@@ -40,22 +55,22 @@ namespace BusinessAppFramework.WebUI.Services
 
         public async Task<HttpResult<T>> GetAsync<T>(string route)
         {
-            return await ExecuteHttpRequest<T>(client => client.GetAsync(route));
+            return await TryExecuteHttpRequest<T>(client => client.GetAsync(route));
         }
 
         public async Task<HttpResult<T>> PostAsync<T>(string route, object? body)
         {
-            return await ExecuteHttpRequest<T>(client => client.PostAsJsonAsync(route, body));
+            return await TryExecuteHttpRequest<T>(client => client.PostAsJsonAsync(route, body));
         }
 
         public async Task<HttpResult<T>> PutAsync<T>(string route, object? body)
         {
-            return await ExecuteHttpRequest<T>(client => client.PutAsJsonAsync(route, body));
+            return await TryExecuteHttpRequest<T>(client => client.PutAsJsonAsync(route, body));
         }
 
         public async Task<HttpResult<T>> DeleteAsync<T>(string route)
         {
-            return await ExecuteHttpRequest<T>(client => client.DeleteAsync(route));
+            return await TryExecuteHttpRequest<T>(client => client.DeleteAsync(route));
         }
 
         #endregion
@@ -71,6 +86,19 @@ namespace BusinessAppFramework.WebUI.Services
                 {
                     PropertyNameCaseInsensitive = true
                 });
+        }
+
+        private async Task<HttpResult<T>> TryExecuteHttpRequest<T>(Func<HttpClient, Task<HttpResponseMessage>> httpCall)
+        {
+            var result = await ExecuteHttpRequest<T>(httpCall);
+
+            if (!result.Success)
+            {
+                await _userDialogService.DialogErrorAsync(result.ErrorMessage ?? "no error message");
+                _logger.LogWarning("HTTP failure: {Report}", result.ErrorMessage);
+            }
+
+            return result;
         }
 
         private async Task<HttpResult<T>> ExecuteHttpRequest<T>(Func<HttpClient, Task<HttpResponseMessage>> httpCall)
@@ -98,28 +126,20 @@ namespace BusinessAppFramework.WebUI.Services
             return new HttpResult<T>(true, data, null, (int)httpResponseMessage.StatusCode);
         }
 
-        private async Task<HttpResult<T>> CreateFailureHttpResultAsync<T>(HttpResponseMessage httpResponseMessage)
+        private async Task<HttpResult<T>> CreateFailureHttpResultAsync<T>(HttpResponseMessage response)
         {
-            string? error = null;
+            var body = response.Content != null ? await response.Content.ReadAsStringAsync() : null;
 
-            try
-            {
-                error = await httpResponseMessage.Content.ReadAsStringAsync();
-                if (string.IsNullOrWhiteSpace(error))
-                    error = httpResponseMessage.ReasonPhrase;
-            }
-            catch
-            {
-                error = httpResponseMessage.ReasonPhrase;
-            }
+            var report = $"HTTP error {(int)response.StatusCode} : {response.ReasonPhrase}\n\n" +
+                         $"Request message : \n{response.RequestMessage}\n\n" +
+                         $"Body : \n{body}";
 
             return new HttpResult<T>(
-                Success: false,
+                false,
                 Data: default,
-                ErrorMessage: error,
-                StatusCode: (int)httpResponseMessage.StatusCode
-            );
-        }
+                ErrorMessage: report,
+                StatusCode: (int)response.StatusCode);
+        }        
 
         private HttpResult<T> CreateExceptionHttpResult<T>(Exception ex)
         {

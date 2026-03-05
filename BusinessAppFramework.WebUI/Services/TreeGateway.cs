@@ -1,10 +1,12 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Search;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -35,10 +37,14 @@ namespace BusinessAppFramework.WebUI.Services
         #region Constructor
 
         public TreeGateway(
-          IHttpClientFactory clientFactory,
-          IOptions<ApiClientOptions> apiClientOptions,
-          IRelationResolver relationResolver,
-          IDomainObjectTypeMap domainObjectTypeMap) : base(clientFactory, apiClientOptions)
+            IHttpClientFactory clientFactory,
+            IOptions<ApiClientOptions> apiClientOptions,
+            IRelationResolver relationResolver,
+            IDomainObjectTypeMap domainObjectTypeMap,
+            ILogger<TreeGateway> logger,
+            ILocalizedStringService localizedStringService,
+            IUserDialogService userDialogService) : 
+            base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _relationResolver = relationResolver;
             _domainObjectTypeMap = domainObjectTypeMap;

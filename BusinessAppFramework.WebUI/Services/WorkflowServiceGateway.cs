@@ -1,8 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
+using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Application.Workflows;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -29,8 +31,13 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public WorkflowServiceGateway(IHttpClientFactory clientFactory, IOptions<ApiClientOptions> apiClientOptions)
-          : base(clientFactory, apiClientOptions)
+        public WorkflowServiceGateway(
+            IHttpClientFactory clientFactory, 
+            IOptions<ApiClientOptions> apiClientOptions,
+            ILocalizedStringService localizedStringService,
+            ILogger<WorkflowServiceGateway> logger,
+            IUserDialogService userDialogService)
+          : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
 
         }
