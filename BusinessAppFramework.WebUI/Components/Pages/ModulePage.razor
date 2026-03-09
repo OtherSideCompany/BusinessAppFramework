@@ -93,7 +93,14 @@
     {
         _activeWorkspaceKey = key;
 
-        var uri = NavigationManager.GetUriWithQueryParameter("workspace", key);
+        var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
+        {
+            ["workspace"] = key,
+            ["search"] = null,
+            ["constraint"] = null,
+            ["page"] = null
+        });
+
         NavigationManager.NavigateTo(uri);
 
         return Task.CompletedTask;

@@ -24,6 +24,7 @@
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
 @inject IIconFactory IconFactory
 @inject IUserDialogService UserDialogService
+@inject NavigationManager NavigationManager
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
@@ -210,6 +211,12 @@
 @code {
     [Parameter] public DomainObjectBrowserDescriptor<TDomainObject, TSearchResult> Descriptor { get; set; } = default!;
 
+    [SupplyParameterFromQuery(Name = "search")] [Parameter] public string? SearchFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "constraint")] [Parameter] public string? ConstraintFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "page")] [Parameter] public int? PageFromQuery { get; set; }
+
+    private bool _pendingGridReload;
+
     private DynamicComponent? _templateComponent;
     private ISearchListTemplateProvider<TSearchResult>? _searchListTemplateProvider => _templateComponent?.Instance as ISearchListTemplateProvider<TSearchResult>;
     private bool _editorOpen;
@@ -285,7 +292,41 @@
     {
         base.OnParametersSet();
 
-        _selectedConstraintKey = Descriptor.ConstraintKeys.Any() ? Descriptor.ConstraintKeys.First() : String.Empty;
+        var newSearchText = SearchFromQuery ?? string.Empty;
+
+        var newConstraintKey =
+            !string.IsNullOrWhiteSpace(ConstraintFromQuery) && Descriptor.ConstraintKeys.Contains(ConstraintFromQuery)
+                ? ConstraintFromQuery
+                : Descriptor.ConstraintKeys.FirstOrDefault() ?? string.Empty;
+
+        var newPage = PageFromQuery.HasValue && PageFromQuery.Value > 0
+            ? PageFromQuery.Value - 1
+            : 0;
+
+        var hasChanged =
+            newSearchText != _searchText ||
+            newConstraintKey != _selectedConstraintKey ||
+            newPage != _currentPage;
+
+        _searchText = newSearchText;
+        _selectedConstraintKey = newConstraintKey;
+        _currentPage = newPage;
+
+        if (hasChanged)
+        {
+            _pendingGridReload = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (_pendingGridReload && _grid != null)
+        {
+            _pendingGridReload = false;
+            await _grid.ReloadServerData();
+        }
     }
 
     private async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
@@ -347,6 +388,8 @@
     {
         if ((e.Key == "Enter" || e.Key == "NumpadEnter") && _grid != null)
         {
+            _currentPage = 0;
+            UpdateUrl();
             await _grid.ReloadServerData();
         }
     }
@@ -366,6 +409,7 @@
     private async Task HandlePageChangedAsync(int selectedPage)
     {
         _currentPage = selectedPage - 1;
+        UpdateUrl();
 
         if (_grid != null)
         {
@@ -373,9 +417,12 @@
         }
     }
 
-    private async void OnConstraintChanged(string? newSelectedContraintKey)
+    private async Task OnConstraintChanged(string? newSelectedContraintKey)
     {
         _selectedConstraintKey = newSelectedContraintKey ?? String.Empty;
+        _currentPage = 0;
+
+        UpdateUrl();
 
         if (_grid != null)
         {
@@ -399,6 +446,18 @@
 
             StateHasChanged();
         }
+    }
+
+    private void UpdateUrl(bool replace = false)
+    {
+        var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
+        {
+            ["search"] = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            ["constraint"] = string.IsNullOrWhiteSpace(_selectedConstraintKey) ? null : _selectedConstraintKey,
+            ["page"] = _currentPage > 0 ? _currentPage + 1 : null
+        });
+
+        NavigationManager.NavigateTo(uri, replace: replace);
     }
 }
 

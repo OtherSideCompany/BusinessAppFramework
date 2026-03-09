@@ -2,6 +2,6 @@
 {
    public static class ConstraintKeys
    {
-      public static string AllConstraintKey => "AllConstraint";
+      public static string AllConstraintKey => "all";
    }
 }
