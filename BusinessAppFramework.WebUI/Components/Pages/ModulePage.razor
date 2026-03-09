@@ -10,6 +10,7 @@
 @inject ILocalizedStringService LocalizedStringService
 @inject IWorkspaceNavigationService WorkspaceNavigationService
 @inject IIconFactory IconFactory
+@inject NavigationManager NavigationManager
 
 <style>
 
@@ -71,6 +72,7 @@
 
 @code {
     [Parameter] public string ModuleKey { get; set; } = "";
+    [Parameter][SupplyParameterFromQuery(Name = "workspace")] public string? QueryWorkspaceKey { get; set; }
 
     private List<string> _workspaceKeys = new()!;
     private string? _activeWorkspaceKey;
@@ -79,13 +81,21 @@
     {
         _workspaceKeys = await WorkspaceNavigationService.GetWorkspaceKeysAsync(ModuleKey);
 
-        if (_activeWorkspaceKey is null || !_workspaceKeys.Contains(_activeWorkspaceKey))
+        if (!string.IsNullOrWhiteSpace(QueryWorkspaceKey) && _workspaceKeys.Contains(QueryWorkspaceKey))
+        {
+            _activeWorkspaceKey = QueryWorkspaceKey;
+        }
+        else if (_activeWorkspaceKey is null || !_workspaceKeys.Contains(_activeWorkspaceKey))
             _activeWorkspaceKey = _workspaceKeys.FirstOrDefault();
     }
 
     private Task OnWorkspaceChanged(string key)
     {
         _activeWorkspaceKey = key;
+
+        var uri = NavigationManager.GetUriWithQueryParameter("workspace", key);
+        NavigationManager.NavigateTo(uri);
+
         return Task.CompletedTask;
     }
 }
