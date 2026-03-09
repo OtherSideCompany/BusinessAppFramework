@@ -1,6 +1,7 @@
 ﻿using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
+using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +50,17 @@ namespace BusinessAppFramework.Adapter.Controllers
             await _relationService.SetParentAsync(parentDomainObjectId, domainObjectId, key);
 
             return Ok();
+        }
+
+        [HttpGet($"{RelationshipSegments.GetHydratedReference}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
+        public virtual async Task<ActionResult<DomainObjectReference?>> GetHydratedReference(
+            [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+            [FromRoute(Name = ApiRouteParams.Key)] string key)
+        {
+            var reference = await _relationService.GetHydratedReferenceAsync(parentDomainObjectId, domainObjectId, key);
+
+            return Ok(reference);
         }
 
         #endregion

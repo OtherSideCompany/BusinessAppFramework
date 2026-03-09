@@ -16,8 +16,8 @@ namespace BusinessAppFramework.WebUI.Services
     {
         #region Fields
 
-        private string _controllerKey => _domainObjectRouteKeyRegistry.GetRouteKey<T>();
-        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{_controllerKey}";
+        protected string _controllerKey => _domainObjectRouteKeyRegistry.GetRouteKey<T>();
+        protected string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{_controllerKey}";
 
         private IDomainObjectRouteKeyRegistry _domainObjectRouteKeyRegistry;
 

@@ -61,7 +61,7 @@ namespace BusinessAppFramework.WebUI.Services
 
                 if (httpApplicationAction.ActionKey.Key == ActionKeys.ImportExportDataActionKey)
                 {
-                    _userDialogService.SnackShow(MessageKeys.NotImplementedMessage);
+                    _userDialogService.SnackShow(_localizedStringService.Get(MessageKeys.NotImplementedMessage)!);
                     return new DomainObjectApplicationActionResultPayload();
                 }
 

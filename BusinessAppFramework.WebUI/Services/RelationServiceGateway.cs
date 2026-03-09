@@ -1,7 +1,7 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Services;
 using BusinessAppFramework.Contracts.ApiRoutes;
+using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -49,6 +49,12 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var route = $"{_baseUrl}/{RelationshipSegments.SetParent}/{parentId}/{childId}/{key}";
             await PutAsync<object>(route, null);
+        }
+
+        public async Task<DomainObjectReference?> GetHydratedReference(int parentId, int childId, string key)
+        {
+            var route = $"{_baseUrl}/{RelationshipSegments.GetHydratedReference}/{parentId}/{childId}/{key}";
+            return (await GetAsync<DomainObjectReference?>(route)).Data;
         }
 
         #endregion

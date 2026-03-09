@@ -2,7 +2,6 @@
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Trees;
-using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using Microsoft.AspNetCore.Authorization;
