@@ -1,0 +1,45 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using BaseData.Contracts
+@using BaseData.Domain.DomainObjects
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.Domain
+@using BusinessAppFramework.WebUI.Components.Browser
+@using MudBlazor
+@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Components.General
+@using BusinessAppFramework.WebUI.Components.Header
+@using BusinessAppFramework.WebUI.Components.Pages
+@using BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
+@using BusinessAppFramework.WebUI.Interfaces
+@using BusinessAppFramework.WebUI.Components.Editor
+@using Search.Contracts.SearchResults
+
+@inject ILocalizedStringService LocalizedStringService
+
+@typeparam T where T : DomainObject, new()
+
+<MudStack Spacing="6">
+
+    <MudStack Spacing="2" Row="true" Class="mr-4 ml-4">
+        <ActionButton OnClick="() => DeleteAsync()"
+                      ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+    </MudStack>
+
+    <DomainObjectPageSection Title="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
+        <DomainObjectProperties OnChanged="() => DomainObjectPage?.MarkDirty()" Columns="4" />
+        <DomainObjectHistory />
+    </DomainObjectPageSection>
+</MudStack>
+
+@code {
+    [CascadingParameter] public DomainObjectPage<T>? DomainObjectPage { get; set; }
+
+    private async Task DeleteAsync()
+    {
+        if (DomainObjectPage != null)
+        {
+            await DomainObjectPage.DeleteAsync();
+        }
+    }
+}
+
