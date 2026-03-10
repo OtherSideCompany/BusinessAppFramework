@@ -38,7 +38,7 @@ namespace BusinessAppFramework.DocumentRendering
 
       #region Public Methods
 
-      public abstract Task<object?> LoadAsync(int domainObjectId, CancellationToken cancellationToken = default);
+      public abstract Task<object?> LoadAsync(int domainObjectId, string cultureInfo, CancellationToken cancellationToken = default);
 
       #endregion
 
