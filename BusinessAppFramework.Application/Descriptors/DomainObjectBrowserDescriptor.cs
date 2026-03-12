@@ -66,9 +66,9 @@ namespace BusinessAppFramework.Application.Descriptors
             {
                 ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
             };
-
-            DomainObjectApplicationActions.Add(deleteAction);
+            
             DomainObjectApplicationActions.Add(pageNavigationAction);
+            DomainObjectApplicationActions.Add(deleteAction);
 
             ConstraintKeys = new List<string>()
             {
