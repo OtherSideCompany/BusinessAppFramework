@@ -101,9 +101,25 @@ namespace BusinessAppFramework.Adapter.Controllers
             if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(key), out var parentChildRelation))
             {
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+
+                int? nextIndex = null;
+
+                if (childDomainObjectType != null && typeof(IIndexable).IsAssignableFrom(childDomainObjectType))
+                {
+                    var maxIndex = await _relationService.GetMaxChildIndexAsync(parentDomainObjectId, key);
+                    nextIndex = maxIndex.HasValue ? maxIndex.Value + 1 : 0;
+                }
+
                 dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
                 var domainObject = await domainObjectService.CreateAsync();
                 await _relationService.SetParentAsync(parentDomainObjectId, domainObject.Id, key);
+                
+                if (domainObject is IIndexable indexable && nextIndex.HasValue)
+                {
+                    indexable.Index = nextIndex.Value;
+                    await domainObjectService.SaveAsync(domainObject);
+                }
+
                 node = new Node(domainObject.Id);
 
                 var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);

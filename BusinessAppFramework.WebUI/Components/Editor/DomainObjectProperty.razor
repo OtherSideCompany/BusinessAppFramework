@@ -1,6 +1,9 @@
 ﻿@using System.Reflection
+@using BusinessAppFramework.Application.Interfaces
 @using Domain.DomainObjects
 @using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
 
 @if (PropertyInfo.PropertyType == typeof(string))
 {
@@ -39,7 +42,9 @@ else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyTy
                      Immediate="true"
                      Value="@(PropertyValue as decimal?)"
                      ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }"
-                     Variant="Variant.Outlined" />
+                     Variant="Variant.Outlined" 
+                     HideSpinButtons="true" 
+                     Culture="System.Globalization.CultureInfo.InvariantCulture" />
 }
 else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyType == typeof(DateTime?))
 {
@@ -62,6 +67,27 @@ else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
     var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
     <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
                                     OnDomainObjectReferenceListChanged="async doreflist => { PropertyInfo.SetValue(DomainObject, doreflist); await OnChanged.InvokeAsync(); }" />
+}
+else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
+{
+    var enumType = PropertyInfo.PropertyType.IsEnum
+        ? PropertyInfo.PropertyType
+        : Nullable.GetUnderlyingType(PropertyInfo.PropertyType)!;
+    var enumValues = Enum.GetValues(enumType).Cast<object>().ToList();
+    var isNullable = Nullable.GetUnderlyingType(PropertyInfo.PropertyType) is not null;
+
+    <MudSelect T="object"
+               Margin="Margin.Dense"
+               Typo="Typo.body2"
+               Value="@PropertyValue"
+               Variant="Variant.Outlined"
+               Clearable="isNullable"
+               ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }">
+        @foreach (var enumValue in enumValues)
+        {
+            <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(enumValue.ToString()!)</MudSelectItem>
+        }
+    </MudSelect>
 }
 
 @code {

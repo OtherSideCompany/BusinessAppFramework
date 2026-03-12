@@ -5,55 +5,56 @@ using Microsoft.Extensions.Logging;
 
 namespace BusinessAppFramework.Infrastructure.Factories
 {
-   public class RepositoryDependencies
-   {
-      #region Fields
+    public class RepositoryDependencies
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public IDbContextFactory<DbContext> DbContextFactory { get; }
-      public IMapper Mapper { get; }
-      public ILoggerFactory LoggerFactory { get; }
-      public IRelationResolver RelationResolver { get; }
+        public IDbContextFactory<DbContext> DbContextFactory { get; }
+        public IMapper Mapper { get; }
+        public ILoggerFactory LoggerFactory { get; }
+        public IRelationResolver RelationResolver { get; }
+        public IRelationService RelationService { get; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public RepositoryDependencies(
-         IDbContextFactory<DbContext> dbContextFactory,
-         IMapper mapper,
-         ILoggerFactory loggerFactory,
-         IRelationResolver parentChildRelationResolver)
-      {
-         DbContextFactory = dbContextFactory;
-         Mapper = mapper;
-         LoggerFactory = loggerFactory;
-         RelationResolver = parentChildRelationResolver;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public RepositoryDependencies(
+           IDbContextFactory<DbContext> dbContextFactory,
+           IMapper mapper,
+           ILoggerFactory loggerFactory,
+           IRelationResolver parentChildRelationResolver)
+        {
+            DbContextFactory = dbContextFactory;
+            Mapper = mapper;
+            LoggerFactory = loggerFactory;
+            RelationResolver = parentChildRelationResolver;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

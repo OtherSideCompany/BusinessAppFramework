@@ -9,6 +9,7 @@ using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -198,6 +199,38 @@ namespace BusinessAppFramework.Infrastructure.Services
             return children;
         }
 
+        public async Task<int?> GetMaxChildIndexAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
+        {           
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
+            {
+                var childrendIds = await GetChildrenIdsAsync(parentId, relationKey);
+
+                if (!childrendIds.Any())
+                    return null;
+
+                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+
+                int maxIndex = 0;
+
+                foreach (var childId in childrendIds)
+                {
+                    var child = await domainObjectService.GetAsync(childId, cancellationToken);
+
+                    if (child is IIndexable indexableChild)
+                    {
+                        maxIndex = Math.Max(maxIndex, indexableChild.Index);
+                    }
+                }
+
+                return maxIndex;
+            }
+            else
+            {
+                return null;
+            }            
+        }
+
         public async Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation($"{GetType()}, {nameof(SetParentAsync)}, parentId : {parentId}, childId : {childId}, relationKey : {relationKey}");
@@ -229,7 +262,7 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
 
             return null;
-        }
+        }        
 
         #endregion
 

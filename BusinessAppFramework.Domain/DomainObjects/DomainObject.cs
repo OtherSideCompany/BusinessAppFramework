@@ -6,118 +6,118 @@ using System.Reflection;
 
 namespace BusinessAppFramework.Domain.DomainObjects
 {
-   public abstract class DomainObject : IDisposable, ICloneable
-   {
-      #region Fields
+    public abstract class DomainObject : IDisposable, ICloneable
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      [SystemProperty]
-      public int Id { get; set; }
+        [SystemProperty]
+        public int Id { get; set; }
 
-      [SystemProperty]
-      public DateTime CreationDate { get; set; }
+        [SystemProperty]
+        public DateTime CreationDate { get; set; } = DateTime.Now;
 
-      [SystemProperty]
-      public int? CreatedById { get; set; }
+        [SystemProperty]
+        public int? CreatedById { get; set; }
 
-      [SystemProperty]
-      public string CreatedByName { get; set; }
+        [SystemProperty]
+        public string CreatedByName { get; set; }
 
-      [SystemProperty]
-      public DateTime LastModifiedDateTime { get; set; }
+        [SystemProperty]
+        public DateTime LastModifiedDateTime { get; set; } = DateTime.Now;
 
-      [SystemProperty]
-      public int? LastModifiedById { get; set; }
+        [SystemProperty]
+        public int? LastModifiedById { get; set; }
 
-      [SystemProperty]
-      public string LastModifiedByName { get; set; }
+        [SystemProperty]
+        public string LastModifiedByName { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public DomainObject()
-      {
+        public DomainObject()
+        {
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public override bool Equals(object obj)
-      {
-         var item = obj as DomainObject;
+        public override bool Equals(object obj)
+        {
+            var item = obj as DomainObject;
 
-         if (item == null)
-         {
-            return false;
-         }
+            if (item == null)
+            {
+                return false;
+            }
 
-         if (Id == 0 && item.Id == 0)
-         {
-            return GetHashCode() == item.GetHashCode();
-         }
-         else
-         {
-            return Id == item.Id;
-         }
-      }
+            if (Id == 0 && item.Id == 0)
+            {
+                return GetHashCode() == item.GetHashCode();
+            }
+            else
+            {
+                return Id == item.Id;
+            }
+        }
 
-      public virtual object Clone()
-      {
-         var domainObject = (DomainObject)MemberwiseClone();
+        public virtual object Clone()
+        {
+            var domainObject = (DomainObject)MemberwiseClone();
 
-         domainObject.Id = 0;
-         domainObject.CreatedById = null;
-         domainObject.LastModifiedById = null;
-         domainObject.CreatedByName = null;
-         domainObject.LastModifiedByName = null;
-         domainObject.CreationDate = DateTime.Now;
-         domainObject.LastModifiedDateTime = DateTime.Now;
+            domainObject.Id = 0;
+            domainObject.CreatedById = null;
+            domainObject.LastModifiedById = null;
+            domainObject.CreatedByName = null;
+            domainObject.LastModifiedByName = null;
+            domainObject.CreationDate = DateTime.Now;
+            domainObject.LastModifiedDateTime = DateTime.Now;
 
-         return domainObject;
-      }
+            return domainObject;
+        }
 
-      public IEnumerable<DomainObjectReference> GetReferences()
-      {
-         var props = GetType()
-             .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
-             .Where(p => typeof(DomainObjectReference).IsAssignableFrom(p.PropertyType));
+        public IEnumerable<DomainObjectReference> GetReferences()
+        {
+            var props = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+                .Where(p => typeof(DomainObjectReference).IsAssignableFrom(p.PropertyType));
 
-         foreach (var prop in props)
-         {
-            yield return prop.GetValue(this) as DomainObjectReference;
-         }
-      }
+            foreach (var prop in props)
+            {
+                yield return prop.GetValue(this) as DomainObjectReference;
+            }
+        }
 
-      public IEnumerable<DomainObjectReferenceList> GetReferenceLists()
-      {
-         var props = GetType()
-             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-             .Where(p => typeof(DomainObjectReferenceList).IsAssignableFrom(p.PropertyType));
+        public IEnumerable<DomainObjectReferenceList> GetReferenceLists()
+        {
+            var props = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => typeof(DomainObjectReferenceList).IsAssignableFrom(p.PropertyType));
 
-         foreach (var prop in props)
-         {
-            yield return prop.GetValue(this) as DomainObjectReferenceList;
-         }
-      }
+            foreach (var prop in props)
+            {
+                yield return prop.GetValue(this) as DomainObjectReferenceList;
+            }
+        }
 
-      public virtual void Dispose()
-      {
+        public virtual void Dispose()
+        {
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      #region Private Methods      
+        #region Private Methods      
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

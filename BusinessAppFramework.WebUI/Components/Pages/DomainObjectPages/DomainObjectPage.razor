@@ -189,6 +189,11 @@
         }
     }
 
+    public void RaiseStateHasChanged()
+    {
+        StateHasChanged();
+    }
+
     private async Task OnIdSetAsync()
     {
         if (Id.HasValue)

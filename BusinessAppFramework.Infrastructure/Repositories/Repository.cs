@@ -30,6 +30,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
         protected ILogger<Repository<TDomainObject, TEntity>> _logger;
         protected IMapper _mapper;
         protected IRelationResolver _relationResolver;
+        protected IRelationService _relationService;
 
         protected bool _canUseExecuteDelete = true;
 
@@ -46,6 +47,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
             _logger = repositoryDependencies.LoggerFactory.CreateLogger<Repository<TDomainObject, TEntity>>();
             _mapper = repositoryDependencies.Mapper;
             _relationResolver = repositoryDependencies.RelationResolver;
+            _relationService = repositoryDependencies.RelationService;
         }
 
         #endregion
