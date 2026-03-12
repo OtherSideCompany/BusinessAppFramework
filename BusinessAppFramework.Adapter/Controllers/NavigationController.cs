@@ -12,16 +12,16 @@ namespace BusinessAppFramework.Adapter.Controllers
     public class NavigationController : ControllerBase
     {       
         protected readonly ICurrentUserService _currentUserService;
-        protected readonly IModuleBootstrapperProviderService _moduleProviderService;
+        protected readonly IModuleBootstrapperPurchaseService _modulePurchaseService;
         protected readonly IUserPermissionResolverService _userPermissionResolverService;
 
         public NavigationController(
            ICurrentUserService currentUserService,
-           IModuleBootstrapperProviderService moduleProviderService,
+           IModuleBootstrapperPurchaseService modulePurchaseService,
            IUserPermissionResolverService userPermissionResolverService)
         {
             _currentUserService = currentUserService;
-            _moduleProviderService = moduleProviderService;
+            _modulePurchaseService = modulePurchaseService;
             _userPermissionResolverService = userPermissionResolverService;
         }
 
@@ -32,7 +32,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             if (_currentUserService.UserId.HasValue)
             {
-                foreach (var module in _moduleProviderService.GetModules())
+                foreach (var module in _modulePurchaseService.GetModules())
                 {
                     var key = module.GetModuleWorkspaceKey();
 
@@ -57,7 +57,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             if (_currentUserService.UserId.HasValue)
             {
-                var module = _moduleProviderService.GetModuleByKey(StringKey.From(moduleKey));
+                var module = _modulePurchaseService.GetModuleByKey(StringKey.From(moduleKey));
 
                 if (module != null)
                 {
