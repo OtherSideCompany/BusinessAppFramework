@@ -3,6 +3,6 @@
    public interface ICurrentUserService
    {
       int? UserId { get; }
-      string? AuthenticationPurchaseId { get; }
+      string? AuthenticationProviderId { get; }
    }
 }

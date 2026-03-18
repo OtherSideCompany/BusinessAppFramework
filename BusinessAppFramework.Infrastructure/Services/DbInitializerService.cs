@@ -10,7 +10,6 @@ namespace BusinessAppFramework.Infrastructure.Services
       #region Fields
 
       protected IDbContextFactory<DbContext> _dbContextFactory;
-      //protected IModulePurchaseService _modulePurchaseService;
 
       #endregion
 

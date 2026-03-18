@@ -3,7 +3,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Services
 {
-   public interface IModuleBootstrapperPurchaseService
+   public interface IModuleBootstrapperProviderService
    {
       List<IModuleBootstrapper> GetModules();
       List<ISearchModule> GetSearchModules();
