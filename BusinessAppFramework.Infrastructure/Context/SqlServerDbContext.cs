@@ -46,7 +46,7 @@ namespace BusinessAppFramework.Infrastructure.Context
       {
          var builder = new SqlConnectionStringBuilder
          {
-            UserID = "app_admin",
+            UserID = UserId,
             Password = _password,
             DataSource = DataSource,
             InitialCatalog = InitialCatalog,
