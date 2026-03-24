@@ -53,12 +53,20 @@ namespace BusinessAppFramework.Domain.DomainObjects
          }
       }
 
-      #endregion
+        public void AddItem(int domainObjectId, string displayValue)
+        {
+            if (!Items.Any(i => i.DomainObjectId == domainObjectId))
+            {
+                Items.Add(new DomainObjectReferenceListItem(domainObjectId, displayValue));
+            }
+        }
 
-      #region Private Methods
+        #endregion
+
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

@@ -58,6 +58,7 @@ namespace BusinessAppFramework.Application.Services
         public virtual async Task CreateAsync(T domainObject)
         {
             await WithCreationPermissionAsync(() => CreateWithoutRightsCheckAsync(domainObject));
+            await LoadReferencesAsync(domainObject);
         }
 
         public virtual async Task<T> CreateAsync()
