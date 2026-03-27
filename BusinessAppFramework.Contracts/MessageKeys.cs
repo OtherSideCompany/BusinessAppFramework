@@ -8,5 +8,6 @@
         public static string ServerErrorMessage = "ServerErrorMessage";
         public static string NotImplementedMessage = "NotImplementedMessage";
         public static string CannotExecuteAction = "CannotExecuteAction";
+        public static string PageNotFound = "PageNotFound";
     }
 }
