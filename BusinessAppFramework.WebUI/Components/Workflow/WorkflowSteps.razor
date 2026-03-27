@@ -18,13 +18,19 @@
                 <MudStep Title="@LocalizedStringService.Get(step.Key)"
                          Completed="@step.IsCompleted">
 
-                    @foreach (var condition in step.ProcessWorkflowStepConditions)
-                    {
-                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-                            <BoolIndicator Value="condition.IsCompleted" />
-                            <MudText Typo="Typo.body2">@LocalizedStringService.Get(condition.Key)</MudText>
-                        </MudStack>
-                    }
+                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start;">
+                        @foreach (var condition in step.ProcessWorkflowStepConditions)
+                        {
+                            <div style="display: flex; align-items: center; gap: 8px;
+                                        background: @(condition.IsCompleted ? "var(--mud-palette-success-hover)" : "var(--mud-palette-error-hover)");
+                                        border: 1px solid @(condition.IsCompleted ? "var(--mud-palette-success)" : "var(--mud-palette-error)");
+                                        border-radius: 8px;
+                                        padding: 4px 10px;">
+                                <BoolIndicator Value="condition.IsCompleted" />
+                                <MudText Typo="Typo.caption">@LocalizedStringService.Get(condition.Key)</MudText>
+                            </div>
+                        }
+                    </div>
 
                 </MudStep>
             }

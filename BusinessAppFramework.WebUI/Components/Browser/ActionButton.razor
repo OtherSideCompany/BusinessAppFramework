@@ -2,21 +2,32 @@
 @using Contracts
 @using Domain
 @using MudBlazor
-@using BusinessAppFramework.Application.Interfaces
-@using Domain
-@using WebUI.Interfaces
 @using WebUI.Interfaces
 
 @inject IIconFactory IconFactory
 @inject ILocalizedStringService LocalizedStringService
 
-<MudButton Variant="Variant.Text"
+<style>
+    .osc-action-button {
+        font-weight: normal;
+        background: var(--mud-palette-surface);
+        border-color: var(--mud-palette-divider);
+        border-radius: 16px;
+        padding: 4px 14px;
+    }
+        .osc-action-button:hover {
+            background: var(--mud-palette-background-grey) !important;
+            border-color: var(--mud-palette-divider) !important;
+        }
+</style>
+
+<MudButton Variant="Variant.Outlined"           
            Size="Size.Small"
            StartIcon="@IconFactory.CreateIcon(ActionKey)"
            IconColor="@_color"
            OnClick="OnClickInternal"
            Disabled="@Disabled"
-           Style="font-weight: normal;">
+           Class="osc-action-button">
     @LocalizedStringService.Get(ActionKey.Key)
 </MudButton>
 

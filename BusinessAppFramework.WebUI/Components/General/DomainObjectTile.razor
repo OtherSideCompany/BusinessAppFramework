@@ -23,11 +23,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--mud-palette-secondary);
+        background: var(--mud-palette-primary);
+    }
+
+    .osc-tile {
+        cursor: pointer;
+        border: 1px solid var(--mud-palette-divider);
+        border-radius: 8px;
+    }
+
+    .osc-tile:hover {
+        border-color: var(--mud-palette-primary) !important;
+        background: var(--mud-palette-background-gray) !important;
     }
 </style>
 
-<MudCard Class="pa-2" Style="cursor:pointer;" Elevation="0" Outlined="true">
+<MudCard Class="pa-2 osc-tile" Elevation="0" Outlined="false">
 
     <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
 

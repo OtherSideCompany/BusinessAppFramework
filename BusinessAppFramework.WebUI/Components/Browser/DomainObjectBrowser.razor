@@ -54,6 +54,14 @@
             width: 100%;
         }
 
+    .osc-search .mud-input-outlined-border {
+        border-radius: 8px !important;
+    }
+
+    .osc-search .mud-input-outlined {
+        border-radius: 8px !important;
+    }
+
     .osc-table .mud-table-head {
         background-color: #FAFAFC;
     }
@@ -62,11 +70,29 @@
         background-color: #FAFAFC;
         color: #212121;
     }
+
+    .osc-table {
+        border: 1px solid var(--mud-palette-divider);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .osc-table .mud-table-row:last-child td {
+            border-bottom: none;
+        }
+
+        .osc-table .mud-table-head .mud-table-cell {
+            background: var(--mud-palette-background-gray);
+        }
 </style>
 
 <DomainObjectBrowserLayout>
 
     <Header>
+
+        <MudText Typo="Typo.h5" Style="font-weight:500;" Class="mb-2">
+            @LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)
+            </MudText>
 
         <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
 
@@ -80,7 +106,8 @@
                           Underline="false"
                           @bind-Value="_searchText"
                           OnKeyUp="HandleKeyUp"
-                          Margin="Margin.Dense" />
+                          Margin="Margin.Dense"
+                          Style="background: var(--mud-palette-surface);" />
 
             <MudChipSet T="string"
                         CheckMark SelectionMode="SelectionMode.SingleSelection"
@@ -141,7 +168,7 @@
 
         <MudDataGrid T="TSearchResult"
                      Class="osc-table"
-                     Dense="false"
+                     Dense="true"
                      Hover="true"
                      Elevation="0"
                      @ref="_grid"
@@ -177,7 +204,7 @@
     </Pagination>
 
     @* Editor *@   
-    <Drawer>        
+    <Drawer>
         <MudDrawer Open="_editorOpen"
                    Anchor="Anchor.Right"
                    Elevation="2"
@@ -186,22 +213,22 @@
                    Overlay="false"
                    Class="editor-drawer">
 
-                <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 8px 8px 16px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 8px 8px 16px">
 
-                   <MudStack Row="true" Style="ma-2" AlignItems="AlignItems.Center" Spacing="2">
-                      <MudIcon Icon="@Icons.Material.Outlined.Edit" />
-                      <MudText Typo="Typo.h6">@LocalizedStringService.Get(Contracts.StringKeys.QuickEditKey)</MudText>
-                   </MudStack>                   
+                <MudStack Row="true" Style="ma-2" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Outlined.Edit" />
+                    <MudText Typo="Typo.h6">@LocalizedStringService.Get(Contracts.StringKeys.QuickEditKey)</MudText>
+                </MudStack>
 
-                    <MudIconButton Icon="@Icons.Material.Outlined.Close"
-                                   Size="Size.Small" 
-                                   OnClick="CloseDrawerAsync" />
-                </div>                
+                <MudIconButton Icon="@Icons.Material.Outlined.Close"
+                               Size="Size.Small"
+                               OnClick="CloseDrawerAsync" />
+            </div>
 
-                <DomainObjectEditor TDomainObject="TDomainObject"
-                                    DomainObject="@_currentEditedObject"
-                                    OnDirtyChanged="HandleEditorDirtyChanged"
-                                    @ref="_editor" />
+            <DomainObjectEditor TDomainObject="TDomainObject"
+                                DomainObject="@_currentEditedObject"
+                                OnDirtyChanged="HandleEditorDirtyChanged"
+                                @ref="_editor" />
         </MudDrawer>
     </Drawer>
 
@@ -211,9 +238,9 @@
 @code {
     [Parameter] public DomainObjectBrowserDescriptor<TDomainObject, TSearchResult> Descriptor { get; set; } = default!;
 
-    [SupplyParameterFromQuery(Name = "search")] [Parameter] public string? SearchFromQuery { get; set; }
-    [SupplyParameterFromQuery(Name = "constraint")] [Parameter] public string? ConstraintFromQuery { get; set; }
-    [SupplyParameterFromQuery(Name = "page")] [Parameter] public int? PageFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "search")][Parameter] public string? SearchFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "constraint")][Parameter] public string? ConstraintFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "page")][Parameter] public int? PageFromQuery { get; set; }
 
     private bool _pendingGridReload;
 
@@ -339,7 +366,7 @@
     {
         applicationAction.DomainObjectId = _currentEditedObject?.Id ?? 0;
         var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
-        await RefreshServerDataAsync(payload);        
+        await RefreshServerDataAsync(payload);
     }
 
     public async Task RefreshServerDataAsync(DomainObjectApplicationActionResultPayload? payload)

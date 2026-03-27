@@ -2,15 +2,41 @@
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
-@using BusinessAppFramework.Application.Interfaces
-@using Domain.DomainObjects
 
 @inject ILocalizedStringService LocalizedStringService
 
-<MudText Typo="Typo.caption" Align="Align.Start" Style="color:gray; font-style: italic">@DisplayString</MudText>
+@if (Dense)
+{
+    <div style="position: relative; display: inline-block;">
+        <MudIconButton Icon="@Icons.Material.Outlined.Info"
+                       Size="Size.Small"
+                       Style="color: var(--mud-palette-text-secondary);"
+                       OnClick="@(() => _open = !_open)" />
+
+        <MudPopover Open="_open"
+                    AnchorOrigin="Origin.BottomLeft"
+                    TransformOrigin="Origin.TopRight"
+                    Paper="true"
+                    Style="padding: 12px 16px; max-width: 320px; margin-top: 4px;">
+            <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">
+                @DisplayString
+            </MudText>
+        </MudPopover>
+    </div>
+
+    <MudOverlay Visible="_open"
+                OnClick="@(() => _open = false)"
+                AutoClose="true" />
+}
+else
+{
+    <MudText Typo="Typo.caption" Align="Align.Start" Style="color:gray; font-style: italic">@DisplayString</MudText>
+}
 
 @code {
     [CascadingParameter] public DomainObject? DomainObject { get; set; }
+    [Parameter] public bool Dense { get; set; }
+    private bool _open = false;
 
     public string CreatedInfo =>
         DomainObject == null

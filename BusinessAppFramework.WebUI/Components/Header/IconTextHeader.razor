@@ -1,7 +1,6 @@
 ﻿@using BusinessAppFramework.Application.Interfaces
 @using Microsoft.Extensions.Localization
 @using MudBlazor
-@using BusinessAppFramework.Application.Interfaces
 @using Domain
 @using WebUI.Interfaces
 
@@ -26,7 +25,7 @@
 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="osc-module-header">
 
     <MudPaper Class="osc-icon-circle" Elevation="0">
-        <MudIcon Icon="@Icon" Style="color:var(--mud-palette-white) !important;" Size="Size.Medium" />
+        <MudIcon Icon="@Icon" Style="color:var(--mud-palette-white) !important;" Size="@IconSize" />
     </MudPaper>
 
     <MudText Typo="@Typo" Style="color:var(--mud-palette-text-primary) !important; font-weight:500">@Title</MudText>
@@ -37,4 +36,5 @@
     [Parameter] public string? Icon { get; set; } = Icons.Material.Sharp.Block;
     [Parameter] public string Title { get; set; } = "Undefined";
     [Parameter] public Typo Typo { get; set; } = Typo.h5;
+    [Parameter] public Size IconSize { get; set; } = Size.Medium;
 }

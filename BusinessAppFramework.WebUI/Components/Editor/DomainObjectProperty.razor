@@ -62,12 +62,6 @@ else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
     <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
                                 OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(DomainObject, doref); await OnChanged.InvokeAsync(); }" />
 }
-else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
-{
-    var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
-    <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
-                                    OnDomainObjectReferenceListChanged="async doreflist => { PropertyInfo.SetValue(DomainObject, doreflist); await OnChanged.InvokeAsync(); }" />
-}
 else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
 {
     var enumType = PropertyInfo.PropertyType.IsEnum

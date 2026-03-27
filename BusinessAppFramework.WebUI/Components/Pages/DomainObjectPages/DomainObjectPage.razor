@@ -3,6 +3,7 @@
 @using Application.Trees
 @using BusinessAppFramework.Application.Services
 @using BusinessAppFramework.WebUI.Components.Browser
+@using BusinessAppFramework.WebUI.Components.Editor
 @using BusinessAppFramework.WebUI.Components.Header
 @using Contracts
 @using Domain.DomainObjects
@@ -41,16 +42,16 @@
     @if (_isDeleted)
     {
         <MudStack Style="height:100%;"
-        AlignItems="AlignItems.Center"
-        Justify="Justify.Center">
+                  AlignItems="AlignItems.Center"
+                  Justify="Justify.Center">
 
             <MudPaper Class="pa-6"
-            Elevation="6"
-            Style="border-radius:12px;">
+                      Elevation="6"
+                      Style="border-radius:12px;">
                 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
                     <MudIcon Icon="@Icons.Material.Filled.Done"
-                    Size="Size.Large"
-                    Color="Color.Primary" />
+                             Size="Size.Large"
+                             Color="Color.Primary" />
 
                     <MudText Typo="Typo.h5">
                         @LocalizedStringService.Get(StringKeys.DeletedKey)
@@ -66,9 +67,11 @@
         <DomainObjectPageLayout>
 
             <Header>
-                <IconTextHeader Title="@(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " : " + DomainObject?.ToString())"
-                Icon="@Icons.Material.Sharp.Edit" />
-            </Header>        
+                <IconTextHeader Title="@(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " " + DomainObject?.ToString())"
+                                Icon="@Icons.Material.Sharp.Edit"
+                                Typo="Typo.h5"
+                                IconSize="Size.Medium" />
+            </Header>
 
             <Content>
                 <CascadingValue Value="this">
@@ -83,24 +86,24 @@
         </DomainObjectPageLayout>
 
         <MudPopover Open="@IsDirty"
-        AnchorOrigin="Origin.TopRight"
-        TransformOrigin="Origin.TopRight"
-        OverflowBehavior="OverflowBehavior.FlipNever"
-        Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
+                    AnchorOrigin="Origin.TopRight"
+                    TransformOrigin="Origin.TopRight"
+                    OverflowBehavior="OverflowBehavior.FlipNever"
+                    Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
             <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
                 <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
                     <MudIconButton Icon="@Icons.Material.Filled.Save"
-                    OnClick="SaveAsync"
-                    Style="color:white"
-                    Size="Size.Large" />
+                                   OnClick="SaveAsync"
+                                   Style="color:white"
+                                   Size="Size.Large" />
                 </MudTooltip>
 
 
                 <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
                     <MudIconButton Icon="@Icons.Material.Filled.Undo"
-                    OnClick="UndoAsync"
-                    Style="color:white"
-                    Size="Size.Large" />
+                                   OnClick="UndoAsync"
+                                   Style="color:white"
+                                   Size="Size.Large" />
                 </MudTooltip>
             </MudButtonGroup>
         </MudPopover>
@@ -111,7 +114,7 @@
 
 
 @code {
-    [Parameter] public DomainObjectPageDescriptor<TDomainObject> Descriptor { get; set; } = default!; 
+    [Parameter] public DomainObjectPageDescriptor<TDomainObject> Descriptor { get; set; } = default!;
     [Parameter] public List<IApplicationAction> ApplicationActions { get; set; } = new();
     [Parameter, SupplyParameterFromQuery]
     public int? Id
@@ -126,14 +129,16 @@
             }
         }
     }
+    public TDomainObject? DomainObject { get; private set; }
     public bool IsDirty { get; set; }
 
     public event Func<Task>? ChangesSaved;
     public event Func<Task>? ChangesCancelled;
+    public event Func<Task>? DomainObjectSet;
+    public event Func<Task>? PageTreeLoaded;
 
     protected Tree? _tree;
 
-    public TDomainObject? DomainObject { get; private set; }
     private int? _id;
     private Snackbar? _dirtySnackbar;
     private int? _loadedId;
@@ -160,6 +165,8 @@
             _loadedId = domainObjectId;
 
             _tree = await TreeGateway.GetTreeAsync(domainObjectId, pageTreeKey);
+
+            await RaiseAsync(PageTreeLoaded);
         }
     }
 
@@ -174,7 +181,7 @@
         {
             SetDirtyState(true);
         }
-    }    
+    }
 
     public async Task DeleteAsync()
     {
@@ -200,6 +207,8 @@
         {
             DomainObject = await DomainObjectServiceGateway.GetHydratedAsync(Id.Value);
             StateHasChanged();
+
+            await RaiseAsync(DomainObjectSet);
         }
     }
 
@@ -217,14 +226,14 @@
             SetDirtyState(false);
 
             await RaiseAsync(ChangesSaved);
-        }        
+        }
     }
 
     private async Task UndoAsync()
     {
         if (DomainObject != null)
         {
-            DomainObject = await DomainObjectServiceGateway.GetAsync(DomainObject.Id);
+            DomainObject = await DomainObjectServiceGateway.GetHydratedAsync(DomainObject.Id);
 
             foreach (var editableComponent in _editableComponents)
             {
@@ -234,7 +243,8 @@
             SetDirtyState(false);
 
             await RaiseAsync(ChangesCancelled);
-        }        
+            await RaiseAsync(DomainObjectSet);
+        }
     }
 
     private void SetDirtyState(bool isDirty)
@@ -249,5 +259,5 @@
 
         foreach (var handler in @event.GetInvocationList().Cast<Func<Task>>())
             await handler();
-    }    
+    }
 }

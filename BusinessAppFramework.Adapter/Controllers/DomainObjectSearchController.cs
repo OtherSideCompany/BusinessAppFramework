@@ -52,7 +52,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(result);
         }
 
-        [HttpPost($"{{{ApiRouteParams.DomainObjectId}:int}}")]
+        [HttpGet($"{{{ApiRouteParams.DomainObjectId}:int}}")]
         public async Task<ActionResult<TSearchResult>> GetSearchResultAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {

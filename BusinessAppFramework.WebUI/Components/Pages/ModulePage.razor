@@ -17,26 +17,9 @@
     .paper-header {
         border-radius: 0;
         height: 52px;
-        background: var(--mud-palette-tertiary)
+        background: var(--mud-palette-surface);
+        border-bottom: 1px solid var(--mud-palette-divider);
     }
-
-    .module-ws-chips .mud-chip.module-ws-chip {
-        background-color: transparent !important;
-        color: rgba(0,0,0,0.5) !important;
-    }
-
-        .module-ws-chips .mud-chip.module-ws-chip .mud-icon-root {
-            color: rgba(0,0,0,0.5) !important;
-        }
-
-        .module-ws-chips .mud-chip.module-ws-chip.mud-chip-selected {
-            background-color: var(--mud-palette-tertiary) !important;
-            color: white !important;
-        }
-
-            .module-ws-chips .mud-chip.module-ws-chip.mud-chip-selected .mud-icon-root {
-                color: white !important;
-            }
 
 </style>
 
@@ -51,14 +34,15 @@
 
             @foreach (var key in _workspaceKeys)
             {
-                <MudChip @key="key"
-                         T="string"
-                         Value="@key"
-                         Icon="@IconFactory.CreateIcon(StringKey.From(key))"
-                         Label="true"
-                         Class="module-ws-chip">
-                    @LocalizedStringService.Get(key)
-                </MudChip>
+                var isActive = key == _activeWorkspaceKey;
+                <MudTooltip Text="@LocalizedStringService.Get(key)" Placement="Placement.Bottom">                  
+                    <MudIconButton Icon="@IconFactory.CreateIcon(StringKey.From(key))"
+                                   Size="Size.Medium"
+                                   OnClick="() => OnWorkspaceChanged(key)"
+                                   Class="mr-4"
+                                   Style="@(isActive ? "color: var(--mud-palette-primary); width: 36px; height: 36px;" :
+                                                       "color: var(--mud-palette-text-secondary); width: 36px; height: 36px;")" />
+                </MudTooltip>
             }
         </MudChipSet>
 

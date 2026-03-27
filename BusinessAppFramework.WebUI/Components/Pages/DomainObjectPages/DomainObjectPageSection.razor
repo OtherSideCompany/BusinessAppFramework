@@ -1,23 +1,24 @@
 ﻿@using MudBlazor
 
-<MudPaper Class="pa-2 ml-2 mr-2" Elevation="0">
+<MudPaper Elevation="0"
+          Style="border: 1px solid var(--mud-palette-divider); border-radius: 8px; overflow: hidden;">
 
-    <MudButton Variant="Variant.Text"
-               Color="Color.Inherit"
-               FullWidth
-               EndIcon="@(_expanded ? Icons.Material.Filled.ExpandMore : Icons.Material.Filled.ExpandLess)"
-               OnClick="Toggle"
-               Class="justify-start">
+    <div @onclick="Toggle"
+         style="background: var(--mud-palette-background-gray);
+                padding: 8px 16px;
+                display: flex; align-items: center; justify-content: space-between;
+                cursor: pointer;">
+        <MudText Typo="Typo.subtitle2">@Title</MudText>
+        <MudIcon Icon="@(_expanded? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" />
+    </div>
 
-
-        <MudText Typo="Typo.h6">@Title</MudText>
-
-    </MudButton>
-
-    <MudDivider Style="border-color:var(--mud-palette-primary);border-width:2px;" />
+    @if (_expanded)
+    {
+        <MudDivider />
+    }
 
     <MudCollapse Expanded="_expanded">
-        <MudStack Spacing="4" Class="mt-4">
+        <MudStack Spacing="4" Class="pa-4">
             @ChildContent
         </MudStack>
     </MudCollapse>
@@ -28,7 +29,7 @@
     [Parameter, EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    private bool _expanded = true;
+    private bool _expanded;
 
     private async Task Toggle()
     {

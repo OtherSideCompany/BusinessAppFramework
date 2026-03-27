@@ -1,0 +1,13 @@
+﻿.osc-table {
+    border: 1px solid var(--mud-palette-divider);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .osc-table .mud-table-row:last-child td {
+        border-bottom: none;
+    }
+
+    .osc-table .mud-table-head .mud-table-cell {
+        background: var(--mud-palette-background-gray);
+    }
