@@ -91,6 +91,42 @@ namespace BusinessAppFramework.Adapter.Controllers
             return tree;
         }
 
+        [HttpGet($"{TreeRouteSegments.GetTreeBranch}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}/{{{ApiRouteParams.RelationKey}}}")]
+        public async Task<ActionResult<Branch?>> GetTreeAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+            [FromRoute(Name = ApiRouteParams.Key)] string pageTreeKey,
+            [FromRoute(Name = ApiRouteParams.RelationKey)] string relationKey)
+        {
+            var tree = _treeFactory.CreateTree(StringKey.From(pageTreeKey));
+            tree.RootId = domainObjectId;
+
+            var branch = tree.GetBranch(relationKey);
+
+            if (branch == null)
+                return null;
+
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(branch.ParentChildRelationKey), out var parentChildRelation))
+            {
+                var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
+
+                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+
+                var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+                dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
+
+                foreach (var id in nodeIds)
+                {
+                    var node = new Node(id);
+                    node.Summary = await searchService.GetSummaryAsync(id);
+                    branch.Nodes.Add(node);
+                }
+            }
+
+
+            return branch;
+        }
+
         [HttpPost($"{TreeRouteSegments.CreateNode}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
         public async Task<ActionResult<Node?>> CreateNode(
              [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,
@@ -112,12 +148,12 @@ namespace BusinessAppFramework.Adapter.Controllers
 
                 dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
                 var domainObject = await domainObjectService.CreateAsync();
-                await _relationService.SetParentAsync(parentDomainObjectId, domainObject.Id, key);
+                await _relationService.SetParentAsync(parentDomainObjectId, domainObject.Id, key);                
                 
                 if (domainObject is IIndexable indexable && nextIndex.HasValue)
                 {
                     indexable.Index = nextIndex.Value;
-                    await domainObjectService.SaveAsync(domainObject);
+                    await domainObjectService.SaveIndexAsync(domainObject);
                 }
 
                 node = new Node(domainObject.Id);

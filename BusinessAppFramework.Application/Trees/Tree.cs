@@ -38,12 +38,27 @@
          return Branches.FirstOrDefault(b => b.ParentChildRelationKey.Equals(parentChildRelationKey));
       }
 
-      #endregion
+        public void SetBranch(Branch branch)
+        {
+            var existing = Branches.FirstOrDefault(b => b.ParentChildRelationKey.Equals(branch.ParentChildRelationKey));
 
-      #region Private Methods
+            if (existing is not null)
+            {
+                var index = Branches.IndexOf(existing);
+                Branches[index] = branch;
+            }
+            else
+            {
+                Branches.Add(branch);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

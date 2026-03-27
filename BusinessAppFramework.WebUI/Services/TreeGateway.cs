@@ -8,6 +8,7 @@ using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PuppeteerSharp.Input;
 
 namespace BusinessAppFramework.WebUI.Services
 {
@@ -60,6 +61,14 @@ namespace BusinessAppFramework.WebUI.Services
             var tree = (await GetAsync<Tree>(route)).Data;
 
             return tree;
+        }
+
+        public async Task<Branch?> GetTreeBranchAsync(int domainObjectId, string pageTreeKey, string relationKey)
+        {
+            var route = $"{_baseUrl}/{TreeRouteSegments.GetTreeBranch}/{domainObjectId}/{pageTreeKey}/{relationKey}";
+            var branch = (await GetAsync<Branch>(route)).Data;
+
+            return branch;
         }
 
         public async Task<Node?> CreateNode(int parentDomainObjectId, string parentChildRelationKey)

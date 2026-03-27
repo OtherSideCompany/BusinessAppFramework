@@ -45,15 +45,15 @@
                   AlignItems="AlignItems.Center"
                   Justify="Justify.Center">
 
-            <MudPaper Class="pa-6"
+            <MudPaper Class="px-4 py-2"
                       Elevation="6"
                       Style="border-radius:12px;">
                 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
                     <MudIcon Icon="@Icons.Material.Filled.Done"
-                             Size="Size.Large"
+                             Size="Size.Medium"
                              Color="Color.Primary" />
 
-                    <MudText Typo="Typo.h5">
+                    <MudText Typo="Typo.subtitle1">
                         @LocalizedStringService.Get(StringKeys.DeletedKey)
                     </MudText>
                 </MudStack>
@@ -67,10 +67,9 @@
         <DomainObjectPageLayout>
 
             <Header>
-                <IconTextHeader Title="@(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " " + DomainObject?.ToString())"
-                                Icon="@Icons.Material.Sharp.Edit"
-                                Typo="Typo.h5"
-                                IconSize="Size.Medium" />
+                <MudText Typo="Typo.h5" Style="font-weight:500;">
+                    @(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " " + DomainObject?.ToString())
+                </MudText>
             </Header>
 
             <Content>
@@ -173,6 +172,19 @@
     public Branch? GetTreeBranch(string relationKey)
     {
         return _tree?.GetBranch(relationKey);
+    }
+
+    public async Task UpdateTreeBranchAsync(string pageTreeKey, string relationKey)
+    {
+        if (Id.HasValue)
+        {
+            var branch = await TreeGateway.GetTreeBranchAsync(Id.Value, pageTreeKey, relationKey);
+
+            if (branch == null)
+                return;
+
+            _tree?.SetBranch(branch);
+        }
     }
 
     public void MarkDirty()

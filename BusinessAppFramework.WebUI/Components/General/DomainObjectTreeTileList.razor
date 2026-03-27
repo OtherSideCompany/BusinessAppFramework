@@ -53,6 +53,11 @@
     [Parameter] public int? ParentId { get; set; }
     [Parameter] public Branch? Branch { get; set; }
 
+    public void RaiseStateChanged()
+    {
+        StateHasChanged();
+    }
+
     protected async virtual Task CreateAsync()
     {
         if (ParentId == null || Branch == null)
