@@ -9,31 +9,25 @@
 @inject ILocalizedStringService LocalizedStringService
 @inject IWorkspaceNavigationService WorkspaceNavigationService
 @inject IIconFactory IconFactory
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
 
 <style>
-    .mud-nav-link,
-    .mud-nav-link .mud-nav-link-text,
-    .mud-nav-link .mud-nav-link-icon,
-    .mud-nav-link .mud-icon-root {
+    .mud-icon-button {
         color: var(--mud-palette-drawer-text) !important;
     }
 
-        .mud-nav-link .mud-nav-link-icon{
+        .mud-icon-button .mud-icon-root {
             width: 22px;
             height: 22px;
         }
 
-        .mud-nav-link.active,
-        .mud-nav-link.mud-nav-link-active {
+        .mud-icon-button.active-nav {
             color: #33EA51 !important;
         }
 
-            .mud-nav-link.active .mud-nav-link-text,
-            .mud-nav-link.active .mud-nav-link-icon,
-            .mud-nav-link.active .mud-icon-root,
-            .mud-nav-link.mud-nav-link-active .mud-nav-link-text,
-            .mud-nav-link.mud-nav-link-active .mud-nav-link-icon,
-            .mud-nav-link.mud-nav-link-active .mud-icon-root {
+            .mud-icon-button.active-nav .mud-icon-root {
                 color: #33EA51 !important;
             }
 </style>
@@ -42,15 +36,20 @@
 
     @if (_moduleKeys != null)
     {
-        @foreach (var moduleKey in _moduleKeys)
-        {
-            <MudTooltip Text="@LocalizedStringService.Get(moduleKey)" Delay="700">
-                <MudNavLink Href="@GetModuleWorkspaceLink(moduleKey)"
-                            Icon="@IconFactory.CreateIcon(StringKey.From(moduleKey))">
-                    @LocalizedStringService.Get(moduleKey)
-                </MudNavLink>
-            </MudTooltip>
-        }
+        <MudStack Spacing="0">
+            @foreach (var moduleKey in _moduleKeys)
+            {
+                var href = GetModuleWorkspaceLink(moduleKey);
+                var isActive = NavigationManager.Uri.Contains(href);
+
+                <MudTooltip Text="@LocalizedStringService.Get(moduleKey)" Delay="700" Placement="Placement.Right">
+                    <MudIconButton Href="@href"
+                                   Icon="@IconFactory.CreateIcon(StringKey.From(moduleKey))"
+                                   Color="Color.Inherit"
+                                   Class="@(isActive ? "active-nav" : "")" />
+                </MudTooltip>
+            }
+        </MudStack>
     }
 
 </MudNavMenu>
@@ -62,7 +61,18 @@
     protected override async Task OnInitializedAsync()
     {
         _moduleKeys = await WorkspaceNavigationService.GetModuleKeysAsync();
+        NavigationManager.LocationChanged += OnLocationChanged;
     }
 
     string GetModuleWorkspaceLink(string key) => "/module/" + key;
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }

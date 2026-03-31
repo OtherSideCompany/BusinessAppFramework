@@ -2,10 +2,13 @@
 
 @using BusinessAppFramework.Application.Interfaces
 @using Domain
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Extensions.Localization
 @using MudBlazor
 @using WebUI.Interfaces
+
+@attribute [Authorize]
 
 @inject ILocalizedStringService LocalizedStringService
 @inject IWorkspaceNavigationService WorkspaceNavigationService
@@ -16,35 +19,27 @@
 
     .paper-header {
         border-radius: 0;
-        height: 52px;
-        background: var(--mud-palette-surface);
+        height:48px;
+        background: var(--mud-palette-background);
         border-bottom: 1px solid var(--mud-palette-divider);
     }
 
 </style>
 
 <MudPaper Class="paper-header" Outlined="false" Elevation="0">
-    <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
+    <MudStack AlignItems="AlignItems.Center" Row="true" Justify="Justify.Center" Style="height:100%;">
 
-        <MudChipSet T="string"
-                    Class="module-ws-chips"
-                    SelectedValue="@_activeWorkspaceKey"
-                    SelectedValueChanged="OnWorkspaceChanged"
-                    SelectionMode="SelectionMode.SingleSelection">
-
-            @foreach (var key in _workspaceKeys)
-            {
-                var isActive = key == _activeWorkspaceKey;
-                <MudTooltip Text="@LocalizedStringService.Get(key)" Placement="Placement.Bottom">                  
-                    <MudIconButton Icon="@IconFactory.CreateIcon(StringKey.From(key))"
-                                   Size="Size.Medium"
-                                   OnClick="() => OnWorkspaceChanged(key)"
-                                   Class="mr-4"
-                                   Style="@(isActive ? "color: var(--mud-palette-primary); width: 36px; height: 36px;" :
-                                                       "color: var(--mud-palette-text-secondary); width: 36px; height: 36px;")" />
-                </MudTooltip>
-            }
-        </MudChipSet>
+        @foreach (var key in _workspaceKeys)
+        {
+            var isActive = key == _activeWorkspaceKey;
+            <MudTooltip Text="@LocalizedStringService.Get(key)" Placement="Placement.Bottom">
+                <MudIconButton Icon="@IconFactory.CreateIcon(StringKey.From(key))"
+                               Size="Size.Small"
+                               OnClick="() => OnWorkspaceChanged(key)"
+                               Style="@(isActive ? "color: var(--mud-palette-primary) !important; width: 36px; height: 36px;" :
+                                                   "color: var(--mud-palette-text-secondary) !important; width: 36px; height: 36px;")" />
+            </MudTooltip>
+        }
 
     </MudStack>
 </MudPaper>
@@ -60,10 +55,16 @@
 
     private List<string> _workspaceKeys = new()!;
     private string? _activeWorkspaceKey;
+    private string? _loadedModuleKey;
 
     protected override async Task OnParametersSetAsync()
     {
-        _workspaceKeys = await WorkspaceNavigationService.GetWorkspaceKeysAsync(ModuleKey);
+        if (_loadedModuleKey != ModuleKey)
+        {
+            _loadedModuleKey = ModuleKey;
+            _workspaceKeys = await WorkspaceNavigationService.GetWorkspaceKeysAsync(ModuleKey);
+            _activeWorkspaceKey = null;
+        }
 
         if (!string.IsNullOrWhiteSpace(QueryWorkspaceKey) && _workspaceKeys.Contains(QueryWorkspaceKey))
         {

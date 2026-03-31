@@ -1,6 +1,9 @@
 ﻿@page "/workspace/{WorkspaceKey}"
 
 @using BusinessAppFramework.Contracts.ApiRoutes
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 <WorkspaceView WorkspaceKey="@WorkspaceKey" />
 

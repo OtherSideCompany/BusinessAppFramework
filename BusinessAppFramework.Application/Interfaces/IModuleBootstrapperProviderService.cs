@@ -1,7 +1,6 @@
-﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Domain;
+﻿using BusinessAppFramework.Domain;
 
-namespace BusinessAppFramework.Application.Services
+namespace BusinessAppFramework.Application.Interfaces
 {
    public interface IModuleBootstrapperProviderService
    {

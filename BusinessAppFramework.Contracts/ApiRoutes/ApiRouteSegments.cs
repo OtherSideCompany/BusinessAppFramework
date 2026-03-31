@@ -18,5 +18,8 @@
         public const string GetHydrated = "get-hydrated";
         public const string Save = "save";
         public const string Delete = "delete";
+
+        public const string Authentication = "authentication";
+        public const string Login = "login";
     }
 }

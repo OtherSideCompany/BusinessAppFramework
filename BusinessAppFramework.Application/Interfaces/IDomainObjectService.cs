@@ -1,7 +1,7 @@
 ﻿using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 
-namespace BusinessAppFramework.Application.Services
+namespace BusinessAppFramework.Application.Interfaces
 {
    public interface IDomainObjectService<T> where T : DomainObject, new()
    {

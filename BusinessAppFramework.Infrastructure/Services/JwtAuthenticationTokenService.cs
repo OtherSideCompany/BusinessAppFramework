@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.Services;
+﻿using BusinessAppFramework.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;

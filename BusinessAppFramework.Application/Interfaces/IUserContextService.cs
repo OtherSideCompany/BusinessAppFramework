@@ -1,4 +1,4 @@
-﻿namespace BusinessAppFramework.Application.Services
+﻿namespace BusinessAppFramework.Application.Interfaces
 {
    public interface IUserContextService
    {

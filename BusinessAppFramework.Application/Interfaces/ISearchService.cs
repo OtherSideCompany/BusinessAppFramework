@@ -1,7 +1,7 @@
 ﻿using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 
-namespace BusinessAppFramework.Application.Services
+namespace BusinessAppFramework.Application.Interfaces
 {
    public interface ISearchService<TSearchResult> where TSearchResult : DomainObjectSearchResult, new()
    {

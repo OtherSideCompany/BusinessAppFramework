@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.Services;
+﻿using BusinessAppFramework.Application.Interfaces;
 using ImageMagick;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;

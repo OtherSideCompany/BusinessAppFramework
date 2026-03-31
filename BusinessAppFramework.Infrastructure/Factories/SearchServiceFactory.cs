@@ -1,6 +1,6 @@
 ﻿using BusinessAppFramework.Application.Factories;
+using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
-using BusinessAppFramework.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 

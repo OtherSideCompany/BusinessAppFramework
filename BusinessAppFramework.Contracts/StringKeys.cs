@@ -23,5 +23,9 @@
         public static string DocumentKey => "Document";
         public static string DeletedKey => "Deleted";
         public static string WorkflowKey => "Workflow";
+        public static string LoginKey => "Login";
+        public static string PasswordKey => "Password";
+        public static string ConnectionKey => "Connection";
+        public static string ConnectKey => "Connect";
     }
 }

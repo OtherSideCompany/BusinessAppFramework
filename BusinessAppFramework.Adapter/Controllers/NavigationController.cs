@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.Services;
+﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using Microsoft.AspNetCore.Authorization;

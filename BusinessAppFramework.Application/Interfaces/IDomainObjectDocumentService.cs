@@ -1,6 +1,6 @@
 ﻿using BusinessAppFramework.Domain.DomainObjects;
 
-namespace BusinessAppFramework.Application.Services
+namespace BusinessAppFramework.Application.Interfaces
 {
    public interface IDomainObjectDocumentService<T> where T : DomainObject
    {

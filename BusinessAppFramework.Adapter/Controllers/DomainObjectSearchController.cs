@@ -1,5 +1,5 @@
-﻿using BusinessAppFramework.Application.Search;
-using BusinessAppFramework.Application.Services;
+﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using Microsoft.AspNetCore.Authorization;

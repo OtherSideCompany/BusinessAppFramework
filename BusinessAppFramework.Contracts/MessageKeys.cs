@@ -9,5 +9,6 @@
         public static string NotImplementedMessage = "NotImplementedMessage";
         public static string CannotExecuteAction = "CannotExecuteAction";
         public static string PageNotFound = "PageNotFound";
+        public static string EnterCredentials = "EnterCredentials";
     }
 }

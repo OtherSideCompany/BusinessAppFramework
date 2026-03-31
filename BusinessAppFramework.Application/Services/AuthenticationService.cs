@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Application.Repository;
+﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Repository;
 using BusinessAppFramework.Domain.Services;
 
 namespace BusinessAppFramework.Application.Services

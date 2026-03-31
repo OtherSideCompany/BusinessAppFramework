@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application.Services;
+﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Domain.DomainObjects;
 using System;
 using System.Collections.Generic;

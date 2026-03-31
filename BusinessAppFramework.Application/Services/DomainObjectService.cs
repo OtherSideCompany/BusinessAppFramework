@@ -1,5 +1,6 @@
 ﻿using BusinessAppFramework.Application.DomainObjectEvents;
 using BusinessAppFramework.Application.Exceptions;
+using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Mail;
 using BusinessAppFramework.Application.Repository;
 using BusinessAppFramework.Domain;
