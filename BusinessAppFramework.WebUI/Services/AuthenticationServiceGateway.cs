@@ -54,7 +54,7 @@ namespace BusinessAppFramework.WebUI.Services
 
             var result = await PostAsync<AuthenticationResponse>(route, request);
 
-            return result.Data ?? new AuthenticationResponse { Success = false, ErrorMessage = "Server error" };
+            return result.Data ?? new AuthenticationResponse { Success = false, ErrorKey = Contracts.MessageKeys.ServerError };
         }
 
         #endregion

@@ -1,7 +1,8 @@
 ﻿namespace BusinessAppFramework.Application.Interfaces
 {
-   public interface ICurrentUserService
-   {
-      int? UserId { get; }
-   }
+    public interface ICurrentUserService
+    {
+        int? UserId { get; }
+        string UserName { get; }
+    }
 }

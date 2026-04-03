@@ -10,7 +10,7 @@
     <div style="position: relative; display: inline-block;">
         <MudIconButton Icon="@Icons.Material.Outlined.Info"
                        Size="Size.Small"
-                       Style="color: var(--mud-palette-text-secondary);"
+                       Style="color: var(--mud-palette-text-secondary) !important;"
                        OnClick="@(() => _open = !_open)" />
 
         <MudPopover Open="_open"
@@ -18,7 +18,7 @@
                     TransformOrigin="Origin.TopRight"
                     Paper="true"
                     Style="padding: 12px 16px; max-width: 320px; margin-top: 4px;">
-            <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">
+            <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary) !important;">
                 @DisplayString
             </MudText>
         </MudPopover>

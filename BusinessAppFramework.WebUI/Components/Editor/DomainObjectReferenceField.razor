@@ -19,38 +19,71 @@
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 @inject IServiceProvider ServiceProvider
 
-<MudTextField T="string"
-              Label="@Label"
-              Text="@_value"
-              Typo="Typo.body2"
-              TextChanged="TextFieldChanged"
-              Variant="Variant.Outlined"
-              Adornment="Adornment.Start"
-              AdornmentIcon="@Icons.Material.Outlined.Search"
-              Immediate="true"
-              Error="!_isValid"
-              OnBlur="HandlerBlur"
-              Clearable="true"
-              Margin="Margin.Dense"
-              OnClearButtonClick="@ClearSelectionAsync">
-</MudTextField>
+<style>
+    .mud-icon-button-size-small .mud-icon-root {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
 
-<MudPopover Open="@_showPopup"
-            AnchorOrigin="Origin.BottomRight"
-            TransformOrigin="Origin.TopRight"
-            OverflowBehavior="OverflowBehavior.FlipNever">
-    <MudPaper>
-        <div @onmousedown="BeginSelection">
+    .lookup-field,
+    .lookup-field .mud-input-slot,
+    .lookup-field .mud-input-adornment {
+        cursor: pointer;
+    }
+</style>
+
+<MudField Label="@Label"
+          Typo="Typo.body2"
+          Variant="Variant.Outlined"
+          Margin="Margin.Dense"
+          @onclick="OpenSelector"
+          AdornmentIcon="@Icons.Material.Outlined.Search"
+          Adornment="Adornment.End"
+          Style="cursor: pointer;"
+          Class="lookup-field">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        @if (!string.IsNullOrEmpty(_value))
+        {            
+            <MudIconButton Color="@Color.Default"
+                           Icon="@Icons.Material.Filled.Clear"
+                           Size="@Size.Small"
+                           OnClick="ClearSelectionAsync"
+                           @onmousedown:stopPropagation
+                           Style="width:24px; height:24px; margin:-4px;"
+                           Class="mud-icon-button-size-small" />
+            <MudText Typo="Typo.body2">
+                @_value
+            </MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2" Style="color: var(--mud-palette-text-disabled);">
+                @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SelectToSearch)
+            </MudText>
+        }        
+    </MudStack>
+</MudField>
+
+<MudDialog @bind-Visible="_showPopup"
+           Options="@(new DialogOptions
+           {
+               BackdropClick = true,
+               NoHeader = true,
+               MaxWidth = MaxWidth.Large,
+               FullWidth = true
+           })">
+    <DialogContent>
+        <div>
             @if (_domainObjectSelectorRenderFragment != null)
             {
                 @_domainObjectSelectorRenderFragment
             }
         </div>
-    </MudPaper>
+    </DialogContent>
+</MudDialog>
 
-</MudPopover>
-
-@code {   
+@code {
     [Parameter]
     public DomainObjectReference? DomainObjectReference
     {
@@ -70,7 +103,6 @@
     private DomainObjectReference? _domainObjectReference;
 
     private bool _isValid { get; set; }
-    private bool _isSelecting { get; set; }
 
     private string? _value { get; set; }
     private bool _showPopup { get; set; }
@@ -87,7 +119,6 @@
             return;
 
         _value = DomainObjectReference.DisplayValue;
-        UpdateValidity();
 
         var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(StringKey.From(DomainObjectReference.RelationKey));
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
@@ -108,83 +139,47 @@
         };
     }
 
-    private async Task TextFieldChanged(string newText)
+    private async void OpenSelector()
     {
-        _value = newText;
         _showPopup = true;
 
-        UpdateValidity();
+        await Task.Delay(200);
 
-        if (String.IsNullOrEmpty(newText))
+        if (_domainObjectSelector != null)
         {
-            await ClearSelectionAsync();
-            return;
+            await _domainObjectSelector.Load(string.Empty);
         }
-
-        if (_domainObjectSelector == null)
-            return;
-
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = new();
-
-        await DebouncedLoadAsync(_value ?? string.Empty);
     }
 
     private async Task OnItemSelected(int item)
     {
-        try
+        if (DomainObjectReference == null)
+            return;
+
+        if (RelationResolver.TryGetReferenceRelationEntry(StringKey.From(DomainObjectReference.RelationKey), out var relationEntry))
         {
-            if (DomainObjectReference == null)
-                return;
+            var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
+            dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
+            var domainObjectReference = await domainObjectServiceGateway.GetHydratedDomainObjectReference(item, DomainObjectReference.RelationKey);
 
-            if (RelationResolver.TryGetReferenceRelationEntry(StringKey.From(DomainObjectReference.RelationKey), out var relationEntry))
-            {
-                var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
-                dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
-                var domainObjectReference = await domainObjectServiceGateway.GetHydratedDomainObjectReference(item, DomainObjectReference.RelationKey);
+            DomainObjectReference.DisplayValue = domainObjectReference.DisplayValue;
+            DomainObjectReference.DomainObjectId = item;
 
-                DomainObjectReference.DisplayValue = domainObjectReference.DisplayValue;
-                DomainObjectReference.DomainObjectId = item;
+            _value = DomainObjectReference.DisplayValue;
 
-                _value = DomainObjectReference.DisplayValue;
-                UpdateValidity();
+            await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
 
-                await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
-
-                StateHasChanged();
-            }
-
-            _showPopup = false;
+            StateHasChanged();
         }
-        finally
-        {
-            _isSelecting = false;
-        }
-    }
 
-    private void UpdateValidity()
-    {
-        _isValid = _value == DomainObjectReference?.DisplayValue;
-    }
-
-    private void BeginSelection(MouseEventArgs _)
-    {
-        _isSelecting = true;
-    }
-
-    private void HandlerBlur(FocusEventArgs args)
-    {
-        if (!_isSelecting)
-        {
-            _showPopup = false;
-        }
+        _showPopup = false;
     }
 
     private async Task ClearSelectionAsync()
     {
-        _value = string.Empty;
+        _value = null;
         DomainObjectReference?.DomainObjectId = null;
-        DomainObjectReference?.DisplayValue = String.Empty;
+        DomainObjectReference?.DisplayValue = null;
 
         _isValid = true;
         _showPopup = false;
@@ -192,18 +187,5 @@
         await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
 
         StateHasChanged();
-    }
-
-    private async Task DebouncedLoadAsync(string query)
-    {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource = new();
-
-        try
-        {
-            await Task.Delay(200, _cancellationTokenSource.Token);
-            await _domainObjectSelector!.Load(query);
-        }
-        catch (TaskCanceledException) { }
     }
 }

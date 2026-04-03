@@ -9,5 +9,7 @@
         public static string DownloadFileActionKey => "DownloadFileAction";
         public static string CancelActionKey => "CancelAction";
         public static string ImportExportDataActionKey => "ImportExportDataAction";
+        public static string LogOutActionKey => "LogOutActionKey";
+        public static string ChangePasswordActionKey => "ResetPasswordActionKey";
     }
 }

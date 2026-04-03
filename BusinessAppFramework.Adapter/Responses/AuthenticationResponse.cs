@@ -9,8 +9,9 @@ namespace BusinessAppFramework.Adapter.Responses
     {
         public bool Success { get; set; }
         public int UserId { get; set; }
+        public string UserName { get; set; } = default!;
         public string? Token { get; set; }
-        public string? ErrorMessage { get; set; } = GlobalVariables.DefaultString;
+        public string? ErrorKey { get; set; } = GlobalVariables.DefaultString;
 
     }
 }

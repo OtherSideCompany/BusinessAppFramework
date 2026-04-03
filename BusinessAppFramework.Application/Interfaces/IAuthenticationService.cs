@@ -2,6 +2,7 @@
 {
    public interface IAuthenticationService
    {
-      Task<(bool, int)> VerifyPasswordAsync(string userName, string password);
+        Task<bool> UserExistsAsync(string userName);
+        Task<(bool, int)> VerifyPasswordAsync(string userName, string password);
    }
 }

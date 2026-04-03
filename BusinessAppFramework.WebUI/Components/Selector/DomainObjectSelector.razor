@@ -28,10 +28,55 @@
 
 @implements IDomainObjectSelector
 
+<style>
+    .osc-search.mud-input-control {
+        flex: 0 0 300px;
+        max-width: 300px;
+        min-width: 200px;
+    }
+
+        .osc-search.mud-input-control .mud-input {
+            width: 100%;
+        }
+
+    .osc-search .mud-input-outlined-border {
+        border-radius: 8px !important;
+    }
+
+    .osc-search .mud-input-outlined {
+        border-radius: 8px !important;
+    }    
+</style>
+
 <DomainObjectSelectorLayout>
 
     <Header>
-        <MudText Typo="Typo.subtitle2">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
+        <MudStack Row="false">
+
+            <MudText Typo="Typo.subtitle2">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
+
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+
+                <MudTextField T="string"
+                              Class="osc-search"
+                              Placeholder="@LocalizedStringService.Get(Contracts.StringKeys.SearchKey)"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Small"
+                              Variant="Variant.Outlined"
+                              Underline="false"
+                              @bind-Value="_filter"
+                              OnKeyUp="HandleKeyUp"
+                              Margin="Margin.Dense"
+                              Style="background: var(--mud-palette-surface);" />
+
+                <MudText Typo="Typo.caption" Style="margin-top:4px; color:gray;">
+                    @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
+                </MudText>
+
+            </MudStack>
+
+        </MudStack>
     </Header>
 
     <Results>
@@ -54,24 +99,20 @@
                 @_searchListTemplateProvider?.Template?.DataGridColumns
             </Columns>
 
-            <ToolBarContent>
-                <MudText Typo="Typo.caption">
-                    @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
-                </MudText>
-            </ToolBarContent>
-
-        </MudDataGrid>       
+        </MudDataGrid>
 
     </Results>
 
     <Footer>
 
-        <MudButton StartIcon="@Icons.Material.Sharp.OpenInNew"
-                   Color="Color.Primary"
-                   Variant="Variant.Filled"
-                   OnClick="OpenModuleInNewTab">
-            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
-        </MudButton>
+        <MudTooltip Text="@LocalizedStringService.Get(Contracts.StringKeys.NewKey)">
+            <MudIconButton Icon="@Icons.Material.Sharp.Add"
+                           Color="Color.Primary"
+                           Variant="Variant.Text"
+                           Size="Size.Small"
+                           OnClick="OpenModuleInNewTab" 
+                           Class="ml-2"/>
+        </MudTooltip>
 
     </Footer>
 
@@ -103,17 +144,33 @@
 
             _filter = filter;
 
-            _isLoadRequested = true;
-
-            await _grid.ReloadServerData();
-
-            _isLoadRequested = false;
-
-            _lastFilter = _filter;
+            await ReloadAsync();
         }
         else
         {
             _firstRenderFilter = filter;
+        }
+    }
+
+    private async Task ReloadAsync()
+    {
+        _isLoadRequested = true;
+
+        if (_grid != null)
+        {
+            await _grid.ReloadServerData();
+        }
+
+        _isLoadRequested = false;
+
+        _lastFilter = _filter;
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if ((e.Key == "Enter" || e.Key == "NumpadEnter") && _grid != null)
+        {
+            await ReloadAsync();
         }
     }
 
@@ -155,7 +212,7 @@
             Items = items,
             TotalItems = _totalItems
         };
-    }   
+    }
 
     private async Task OnSelectedItemChangedAsync(TSearchResult? item)
     {

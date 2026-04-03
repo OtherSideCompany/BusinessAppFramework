@@ -13,14 +13,6 @@
 @inject IRelationResolver RelationResolver
 @inject IServiceProvider ServiceProvider
 
-<style>
-    .osc-popover-anchor {
-        display: inline-flex;
-        vertical-align: middle;
-        position: relative;
-    }
-</style>
-
 <MudChipSet T="DomainObjectReference">
 
     @if (DomainObjectReferenceList != null)
@@ -36,37 +28,33 @@
         }
     }
 
-    <span class="osc-popover-anchor">
+    <MudIconButton Icon="@Icons.Material.Filled.Add"
+                   Color="Color.Primary"
+                   Size="Size.Small"
+                   OnClick="OpenSelector" />
 
-        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       OnClick="OpenSelector"
-        Style="">
-        </MudIconButton>
-
-        <MudPopover Open="@_showPopup"
-                    AnchorOrigin="Origin.BottomLeft"
-                    TransformOrigin="Origin.TopLeft"
-                    OverflowBehavior="OverflowBehavior.FlipNever"
-                    Style="transform: translateY(4px)">
-            <MudPaper>
-                <div @onmousedown="BeginSelection">
-                    @if (_domainObjectSelectorRenderFragment != null)
-                    {
-                        @_domainObjectSelectorRenderFragment
-                    }
-                </div>
-            </MudPaper>
-
-        </MudPopover>
-
-    </span>
+    <MudDialog @bind-Visible="_showPopup"
+               Options="@(new DialogOptions
+               {
+                   BackdropClick = true,
+                   NoHeader = true,
+                   MaxWidth = MaxWidth.Small,
+                   FullWidth = true
+               })">
+        <DialogContent>
+            <div>
+                @if (_domainObjectSelectorRenderFragment != null)
+                {
+                    @_domainObjectSelectorRenderFragment
+                }
+            </div>
+        </DialogContent>
+    </MudDialog>
 
 </MudChipSet>
 
 
-@code { 
+@code {
     [Parameter]
     public DomainObjectReferenceList? DomainObjectReferenceList
     {
@@ -86,7 +74,6 @@
     private DomainObjectReferenceList? _domainObjectReferenceList;
 
     private bool _showPopup { get; set; }
-    private bool _isSelecting { get; set; }
     private IDomainObjectSelector? _domainObjectSelector { get; set; }
     private RenderFragment? _domainObjectSelectorRenderFragment;
     private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor { get; set; }
@@ -112,63 +99,42 @@
                 _domainObjectSelector?.Load(String.Empty);
             });
             builder.CloseComponent();
-        };        
+        };
     }
 
     private async Task OnItemSelected(int domainObjectId)
     {
-        try
+        _showPopup = false;
+
+        if (DomainObjectReferenceList == null || DomainObjectReferenceList.Items.Any(i => i.DomainObjectId == domainObjectId))
+            return;
+
+        DomainObjectReferenceList.AddItem(domainObjectId);
+
+        await OnDomainObjectReferenceListChanged.InvokeAsync(DomainObjectReferenceList);
+
+        StateHasChanged();
+
+        if (RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(DomainObjectReferenceList.RelationKey), out var relationListEntry))
         {
-            if (DomainObjectReferenceList == null || DomainObjectReferenceList.Items.Any(i => i.DomainObjectId == domainObjectId))
-                return;
+            var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationListEntry.SourceDomainObjectType);
+            dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
+            var domainObjectReferenceListItem = await domainObjectServiceGateway.GetHydratedDomainObjectReferenceListItem(domainObjectId, DomainObjectReferenceList.RelationKey);
 
-            DomainObjectReferenceList.AddItem(domainObjectId);
-
-            await OnDomainObjectReferenceListChanged.InvokeAsync(DomainObjectReferenceList);
-
-            StateHasChanged();
-
-            if (RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(DomainObjectReferenceList.RelationKey), out var relationListEntry))
-            {
-                var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationListEntry.SourceDomainObjectType);
-                dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
-                var domainObjectReferenceListItem = await domainObjectServiceGateway.GetHydratedDomainObjectReferenceListItem(domainObjectId, DomainObjectReferenceList.RelationKey);
-
-                var item = DomainObjectReferenceList.Items.First(i => i.DomainObjectId == domainObjectId);
-                item.DisplayValue = domainObjectReferenceListItem.DisplayValue;
-            }
-
-            _showPopup = false;
-        }
-        finally
-        {
-            _isSelecting = false;
+            var item = DomainObjectReferenceList.Items.First(i => i.DomainObjectId == domainObjectId);
+            item.DisplayValue = domainObjectReferenceListItem.DisplayValue;
         }
     }
 
     private async void OpenSelector()
-    {      
-        _isSelecting = false;
+    {
         _showPopup = true;
 
         await Task.Delay(200);
 
         if (_domainObjectSelector != null)
-        {            
-            await _domainObjectSelector.Load(string.Empty);
-        }
-    }
-
-    private void BeginSelection(MouseEventArgs _)
-    {
-        _isSelecting = true;
-    }
-
-    private void HandlerBlur(FocusEventArgs args)
-    {
-        if (!_isSelecting)
         {
-            _showPopup = false;
+            await _domainObjectSelector.Load(string.Empty);
         }
     }
 

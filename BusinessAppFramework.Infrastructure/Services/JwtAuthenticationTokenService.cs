@@ -20,11 +20,12 @@ namespace BusinessAppFramework.Infrastructure.Services
          _issuer = configuration["Jwt:Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer");
       }
 
-      public string GenerateAccessToken(int userId)
+      public string GenerateAccessToken(int userId, string name)
       {
          var claims = new[]
          {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, name.ToString()),
         };
 
          var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
@@ -34,7 +35,7 @@ namespace BusinessAppFramework.Infrastructure.Services
              issuer: _issuer,
              audience: _issuer,
              claims: claims,
-             expires: DateTime.UtcNow.AddHours(2),
+             expires: DateTime.UtcNow.AddHours(8),
              signingCredentials: creds);
 
          return new JwtSecurityTokenHandler().WriteToken(token);

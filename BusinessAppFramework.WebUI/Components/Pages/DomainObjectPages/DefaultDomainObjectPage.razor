@@ -20,9 +20,18 @@
 
 <MudStack Spacing="6">
 
-    <MudStack Spacing="2" Row="true" Class="mr-4 ml-4">
-        <ActionButton OnClick="() => DeleteAsync()"
-                      ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+    <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+
+        <MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
+
+            <DomainObjectHistory Dense="true" />
+
+        </MudStack>
+
+        <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center">
+            <ActionButton OnClick="() => DeleteAsync()"
+                          ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+        </MudStack>
     </MudStack>
 
     <DomainObjectPageSection Title="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">

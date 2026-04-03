@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+
+<MudFileUpload T="IBrowserFile"
+               DragAndDrop="true"
+               Accept="@AcceptedImageFormats"
+               MaximumFileCount="1"
+               FilesChanged="(file) => ImageFileSelected(file)">
+    <SelectedTemplate />
+</MudFileUpload>
+
+@if (ImageData != null && ImageData.Length > 0)
+{
+    <MudImage Src="@GetImageDataUrl()"
+              ObjectFit="ObjectFit.Contain"
+              Height="200" />
+}
+
+@code {
+    [Parameter, EditorRequired] public string AcceptedImageFormats { get; set; }
+    [Parameter, EditorRequired] public string DisplayedImageFormat { get; set; }
+    [Parameter] public EventCallback<byte[]> OnImageSelected { get; set; }
+
+    private byte[]? ImageData { get; set; }
+
+    public void SetImageData(byte[]? data)
+    {
+        ImageData = data;
+        StateHasChanged();
+    }
+
+    private async Task ImageFileSelected(IBrowserFile file)
+    {
+        if (file == null)
+            return;
+
+        using var stream = file.OpenReadStream(5_000_000);
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        var imageBytes = memoryStream.ToArray();
+
+        await OnImageSelected.InvokeAsync(imageBytes);
+    }
+
+    private string GetImageDataUrl()
+    {
+        if (ImageData != null)
+        {
+            var base64 = Convert.ToBase64String(ImageData);
+            return $"data:{DisplayedImageFormat};base64,{base64}";
+        }
+        return string.Empty;
+    }
+}

@@ -2,6 +2,7 @@
 {
    public interface IUserCredentialsRepository
    {
-      Task<(int userId, string passwordHash)> GetUserPasswordHashAsync(string userName);
+        Task<bool> UserExistsAsync(string userName);
+        Task<(int userId, string passwordHash)> GetUserPasswordHashAsync(string userName);
    }
 }

@@ -10,5 +10,8 @@
         public static string CannotExecuteAction = "CannotExecuteAction";
         public static string PageNotFound = "PageNotFound";
         public static string EnterCredentials = "EnterCredentials";
+        public static string UserDoesNotExists = "UserDoesNotExists";
+        public static string InvalidPassword = "InvalidPassword";
+        public static string ServerError = "ServerError";
     }
 }

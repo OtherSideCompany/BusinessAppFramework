@@ -19,7 +19,7 @@ namespace BusinessAppFramework.Application.Services
         protected readonly IPasswordService _passwordService;
         protected readonly IMailService _mailService;
         protected readonly IDomainObjectEventBus _domainObjectEventBus;
-        protected readonly IUserContext _userContext;
+        protected readonly ICurrentUserService _currentUserService;
 
         #endregion
 
@@ -44,7 +44,8 @@ namespace BusinessAppFramework.Application.Services
             _domainObjectServiceDependencies = domainObjectServiceDependencies;
             _repository = repository;
             _domainObjectEventBus = domainObjectServiceDependencies.DomainObjectEventBus;
-            _userContext = domainObjectServiceDependencies.UserContext;
+            _currentUserService = domainObjectServiceDependencies.CurrentUserService;
+            _passwordService = domainObjectServiceDependencies.PasswordService;
         }
 
         #endregion
@@ -170,8 +171,8 @@ namespace BusinessAppFramework.Application.Services
             }
 
             domainObject.LastModifiedDateTime = DateTime.Now;
-            domainObject.LastModifiedById = _userContext.Id;
-            domainObject.LastModifiedByName = _userContext.GetName();
+            domainObject.LastModifiedById = _currentUserService.UserId;
+            domainObject.LastModifiedByName = _currentUserService.UserName;
 
             await WithUpdatePermissionAsync(() => _repository.SaveAsync(domainObject));
             await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(typeof(T), domainObject.Id));
@@ -180,8 +181,8 @@ namespace BusinessAppFramework.Application.Services
         public async Task SaveIndexAsync(IIndexable domainObject)
         {
             ((DomainObject)domainObject).LastModifiedDateTime = DateTime.Now;
-            ((DomainObject)domainObject).LastModifiedById = _userContext.Id;
-            ((DomainObject)domainObject).LastModifiedByName = _userContext.GetName();
+            ((DomainObject)domainObject).LastModifiedById = _currentUserService.UserId;
+            ((DomainObject)domainObject).LastModifiedByName = _currentUserService.UserName;
 
             await WithUpdatePermissionAsync(() => _repository.SaveIndexAsync(domainObject));
             await _domainObjectEventBus.PublishAsync(new DomainObjectSavedEvent(typeof(T), domainObject.Id));
@@ -236,10 +237,10 @@ namespace BusinessAppFramework.Application.Services
         {
             domainObject.CreationDate = DateTime.Now;
             domainObject.LastModifiedDateTime = DateTime.Now;
-            domainObject.CreatedById = _userContext.Id;
-            domainObject.CreatedByName = _userContext.GetName();
-            domainObject.LastModifiedById = _userContext.Id;
-            domainObject.LastModifiedByName = _userContext.GetName();
+            domainObject.CreatedById = _currentUserService.UserId;
+            domainObject.CreatedByName = _currentUserService.UserName;
+            domainObject.LastModifiedById = _currentUserService.UserId;
+            domainObject.LastModifiedByName = _currentUserService.UserName;
 
             await _repository.CreateAsync(domainObject);
             await _domainObjectEventBus.PublishAsync(new DomainObjectCreatedEvent(typeof(T), domainObject.Id));
@@ -275,7 +276,7 @@ namespace BusinessAppFramework.Application.Services
 
         private async Task<U> WithPermissionAsync<U>(UserRolePermissionType permissionType, Func<Task<U>> action)
         {
-            if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _userContext.Id, permissionType))
+            if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _currentUserService.UserId!.Value, permissionType))
                 throw new UserPermissionException(typeof(T), permissionType);
 
             return await action();
@@ -283,7 +284,7 @@ namespace BusinessAppFramework.Application.Services
 
         private async Task WithPermissionAsync(UserRolePermissionType permissionType, Func<Task> action)
         {
-            if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _userContext.Id, permissionType))
+            if (!await CheckRightAsync(UserRolePermissionKeyHelper.GetPermissionKey<T>(), _currentUserService.UserId!.Value, permissionType))
                 throw new UserPermissionException(typeof(T), permissionType);
 
             await action();

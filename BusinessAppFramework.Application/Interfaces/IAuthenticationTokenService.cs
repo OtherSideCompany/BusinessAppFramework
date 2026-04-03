@@ -2,7 +2,7 @@
 {
    public interface IAuthenticationTokenService
    {
-      string GenerateAccessToken(int userId);
+      string GenerateAccessToken(int userId, string name);
       string GenerateRefreshToken();
    }
 }

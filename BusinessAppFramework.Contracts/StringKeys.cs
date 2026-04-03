@@ -27,5 +27,6 @@
         public static string PasswordKey => "Password";
         public static string ConnectionKey => "Connection";
         public static string ConnectKey => "Connect";
+        public static string SelectToSearch => "SelectToSearch";
     }
 }

@@ -39,18 +39,24 @@ namespace BusinessAppFramework.Adapter.Controllers
         [HttpPost(ApiRouteSegments.Login)]
         public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request)
         {
+            var userExists = await _authenticationService.UserExistsAsync(request.UserName);
             var (succes, userId) = await _authenticationService.VerifyPasswordAsync(request.UserName, request.Password);
             var authenticationResponse = new AuthenticationResponse();
 
-            if (succes)
+            if(!userExists)
+            {
+                authenticationResponse.ErrorKey = Contracts.MessageKeys.UserDoesNotExists;
+            }
+            else if (succes)
             {
                 authenticationResponse.Success = true;
-                authenticationResponse.Token = _authenticationTokenService.GenerateAccessToken(userId);
+                authenticationResponse.Token = _authenticationTokenService.GenerateAccessToken(userId, request.UserName);
                 authenticationResponse.UserId = userId;
+                authenticationResponse.UserName = request.UserName;
             }
             else
             {
-                authenticationResponse.ErrorMessage = "Invalid username or password.";
+                authenticationResponse.ErrorKey = Contracts.MessageKeys.InvalidPassword;
             }
 
             return Ok(authenticationResponse);

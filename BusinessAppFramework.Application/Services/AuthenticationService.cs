@@ -51,12 +51,17 @@ namespace BusinessAppFramework.Application.Services
          }
       }
 
-      #endregion
+        public async Task<bool> UserExistsAsync(string userName)
+        {
+            return await _userCredentialsRepository.UserExistsAsync(userName);
+        }
 
-      #region Prvate Methods
+        #endregion
+
+        #region Prvate Methods
 
 
 
-      #endregion
-   }
+        #endregion
+    }
 }

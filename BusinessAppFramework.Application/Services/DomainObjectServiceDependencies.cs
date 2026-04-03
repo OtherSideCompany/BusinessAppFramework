@@ -6,67 +6,67 @@ using BusinessAppFramework.Domain.Services;
 
 namespace BusinessAppFramework.Application.Services
 {
-   public class DomainObjectServiceDependencies
-   {
-      #region Fields
+    public class DomainObjectServiceDependencies
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public IUserContext UserContext { get; set; }
-      public IReferenceHydrator ReferenceHydrator { get; set; }
-      public IPasswordService PasswordService { get; }
-      public IMailService MailService { get; }
-      public IDomainObjectEventBus DomainObjectEventBus { get; }
-      public IUserPermissionResolverService UserPermissionResolverService { get; set; }
-      public IRelationResolver RelationResolver { get; }
-      public IRelationService RelationService { get; }
+        public ICurrentUserService CurrentUserService { get; set; }
+        public IReferenceHydrator ReferenceHydrator { get; set; }
+        public IPasswordService PasswordService { get; }
+        public IMailService MailService { get; }
+        public IDomainObjectEventBus DomainObjectEventBus { get; }
+        public IUserPermissionResolverService UserPermissionResolverService { get; set; }
+        public IRelationResolver RelationResolver { get; }
+        public IRelationService RelationService { get; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectServiceDependencies(
-          IUserContext userContext,
-          IPasswordService passwordService,
-          IMailService mailService,
-          IDomainObjectEventBus domainObjectEventBus,
-          IUserPermissionResolverService userPermissionResolverService,
-          IRelationResolver relationResolver,
-          IReferenceHydrator referenceHydrator,
-          IRelationService relationService)
-      {
-         UserContext = userContext;
-         PasswordService = passwordService;
-         MailService = mailService;
-         DomainObjectEventBus = domainObjectEventBus;
-         UserPermissionResolverService = userPermissionResolverService;
-         RelationResolver = relationResolver;
-         ReferenceHydrator = referenceHydrator;
-         RelationService = relationService;
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Commands
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectServiceDependencies(
+            ICurrentUserService currentUserService,
+            IPasswordService passwordService,
+            IMailService mailService,
+            IDomainObjectEventBus domainObjectEventBus,
+            IUserPermissionResolverService userPermissionResolverService,
+            IRelationResolver relationResolver,
+            IReferenceHydrator referenceHydrator,
+            IRelationService relationService)
+        {
+            CurrentUserService = currentUserService;
+            PasswordService = passwordService;
+            MailService = mailService;
+            DomainObjectEventBus = domainObjectEventBus;
+            UserPermissionResolverService = userPermissionResolverService;
+            RelationResolver = relationResolver;
+            ReferenceHydrator = referenceHydrator;
+            RelationService = relationService;
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

@@ -14,22 +14,18 @@
 @implements IDisposable
 
 <style>
-    .mud-icon-button {
-        color: var(--mud-palette-drawer-text) !important;
+    .mud-icon-button .mud-icon-root {
+        width: 22px;
+        height: 22px;
     }
 
-        .mud-icon-button .mud-icon-root {
-            width: 22px;
-            height: 22px;
-        }
+    .mud-icon-button.active-nav {
+        color: #33EA51 !important;
+    }
 
-        .mud-icon-button.active-nav {
+        .mud-icon-button.active-nav .mud-icon-root {
             color: #33EA51 !important;
         }
-
-            .mud-icon-button.active-nav .mud-icon-root {
-                color: #33EA51 !important;
-            }
 </style>
 
 <MudNavMenu Color="Color.Dark">
@@ -37,6 +33,19 @@
     @if (_moduleKeys != null)
     {
         <MudStack Spacing="0">
+
+            @{
+                var homeRef = NavigationManager.BaseUri;
+                var isHomeActive = NavigationManager.Uri.Equals(homeRef, StringComparison.OrdinalIgnoreCase);
+
+                <MudTooltip Text="@LocalizedStringService.Get("")" Delay="300" Placement="Placement.Right">
+                    <MudIconButton Href="@homeRef"
+                                   Icon="@Icons.Material.Outlined.Home"
+                                   Color="Color.Inherit"
+                                   Class="@(isHomeActive ? "active-nav" : "")" />
+                </MudTooltip>
+            }
+
             @foreach (var moduleKey in _moduleKeys)
             {
                 var href = GetModuleWorkspaceLink(moduleKey);
