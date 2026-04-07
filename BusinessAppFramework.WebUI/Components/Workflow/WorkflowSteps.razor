@@ -18,7 +18,7 @@
                 <MudStep Title="@LocalizedStringService.Get(step.Key)"
                          Completed="@step.IsCompleted">
 
-                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-start;">
+                    <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px; align-items: flex-start;">
                         @foreach (var condition in step.ProcessWorkflowStepConditions)
                         {
                             <div style="display: flex; align-items: center; gap: 8px;

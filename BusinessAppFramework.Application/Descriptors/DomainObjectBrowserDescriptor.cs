@@ -19,6 +19,7 @@ namespace BusinessAppFramework.Application.Descriptors
         public List<IApplicationAction> ApplicationActions { get; init; } = new();
         public List<IDomainObjectApplicationAction> DomainObjectApplicationActions { get; init; } = new();
         public List<string> ConstraintKeys { get; init; } = new();
+        public string DefaultConstraintKey { get; init; }
 
         public DomainObjectBrowserDescriptor(
             IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver,
@@ -74,6 +75,8 @@ namespace BusinessAppFramework.Application.Descriptors
             {
                 Contracts.ConstraintKeys.AllConstraintKey
             };
+
+            DefaultConstraintKey = Contracts.ConstraintKeys.AllConstraintKey;
 
             if (constraintKeys != null)
             {

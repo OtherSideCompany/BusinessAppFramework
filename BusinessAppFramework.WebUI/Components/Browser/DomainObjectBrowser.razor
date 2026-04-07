@@ -321,7 +321,7 @@
         var newConstraintKey =
             !string.IsNullOrWhiteSpace(ConstraintFromQuery) && Descriptor.ConstraintKeys.Contains(ConstraintFromQuery)
                 ? ConstraintFromQuery
-                : Descriptor.ConstraintKeys.FirstOrDefault() ?? string.Empty;
+                : Descriptor.DefaultConstraintKey ?? string.Empty;
 
         var newPage = PageFromQuery.HasValue && PageFromQuery.Value > 0
             ? PageFromQuery.Value - 1
