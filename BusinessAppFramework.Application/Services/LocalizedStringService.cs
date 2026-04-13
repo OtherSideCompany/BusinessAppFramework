@@ -18,13 +18,13 @@ namespace BusinessAppFramework.Application.Services
          cultures[culture] = value;
       }
 
-      public string? Get(string key)
+      public string Get(string key)
       {
          var currentCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
          return Get(key, currentCulture);
       }
 
-      public string? Get(string key, string culture)
+      public string Get(string key, string culture)
       {
          if (_data.TryGetValue(key, out var cultures))
          {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MudBlazor;
 
 namespace BusinessAppFramework.WebUI.Services
 {
@@ -15,6 +16,7 @@ namespace BusinessAppFramework.WebUI.Services
 
         private NavigationManager _navigationManager;
         private IConfiguration _configuration;
+        private IDialogService _dialogService;
 
         #endregion
 
@@ -39,11 +41,13 @@ namespace BusinessAppFramework.WebUI.Services
             ILocalizedStringService localizedStringService,
             NavigationManager navigationManager,
             IConfiguration configuration,
-            ILogger<ApplicationActionExecutionService> logger) :
+            ILogger<ApplicationActionExecutionService> logger,
+            IDialogService dialogService) :
             base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _navigationManager = navigationManager;
             _configuration = configuration;
+            _dialogService = dialogService;
         }
 
         #endregion
@@ -91,9 +95,27 @@ namespace BusinessAppFramework.WebUI.Services
 
                 return result?.Data ?? new DomainObjectApplicationActionResultPayload();
             }
-            else if (action is IDomainObjectNavigationApplicationAction navigationApplicationAction)
+            else if (action is IDomainObjectNavigationApplicationAction domainObjectNavigationApplicationAction)
             {
                 _navigationManager.NavigateTo(route);
+                return null;
+            }
+            else if (action is IOpenDialogApplicationAction openDialogApplicationAction)
+            {
+                DialogParameters? parameters = new DialogParameters
+                {
+                    { nameof(IOpenDialogApplicationAction.ExecuteRoute), openDialogApplicationAction.ExecuteRoute }
+                };
+
+                var dialogOptions = new DialogOptions
+                {
+                    BackdropClick = true,
+                    MaxWidth = MaxWidth.Medium,
+                    FullWidth = true
+                };
+
+                await _dialogService.ShowAsync(openDialogApplicationAction.ComponentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
+
                 return null;
             }
             else if (action is IDocumentDownloadApplicationAction documentDownloadApplicationAction)
@@ -101,11 +123,11 @@ namespace BusinessAppFramework.WebUI.Services
                 var apiBaseUrl = _configuration["ApiBaseUrl"];
                 var fullUrl = $"{apiBaseUrl}/{route}";
 
-                _navigationManager.NavigateTo(fullUrl, forceLoad:true);
+                _navigationManager.NavigateTo(fullUrl, forceLoad: true);
                 return null;
             }
             else if (action is IDocumentNavigationApplicationAction documentNavigationApplicationAction)
-            {              
+            {
                 _navigationManager.NavigateTo(route);
                 return null;
             }

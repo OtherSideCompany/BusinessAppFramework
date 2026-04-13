@@ -5,6 +5,7 @@ using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
+using PuppeteerSharp;
 
 namespace BusinessAppFramework.Application.Descriptors
 {
@@ -67,7 +68,7 @@ namespace BusinessAppFramework.Application.Descriptors
             {
                 ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
             };
-            
+
             DomainObjectApplicationActions.Add(pageNavigationAction);
             DomainObjectApplicationActions.Add(deleteAction);
 
@@ -81,6 +82,16 @@ namespace BusinessAppFramework.Application.Descriptors
             if (constraintKeys != null)
             {
                 ConstraintKeys.AddRange(constraintKeys);
+            }
+        }
+
+        public void RemoveDefaultCreationAction()
+        {
+            var creationAction = ApplicationActions.Where(aa => aa.ActionKey.Equals(StringKey.From(ActionKeys.CreateActionKey))).FirstOrDefault();
+
+            if (creationAction != null)
+            {
+                ApplicationActions.Remove(creationAction);
             }
         }
     }
