@@ -114,7 +114,6 @@
 
 @code {
     [Parameter] public DomainObjectPageDescriptor<TDomainObject> Descriptor { get; set; } = default!;
-    [Parameter] public List<IApplicationAction> ApplicationActions { get; set; } = new();
     [Parameter, SupplyParameterFromQuery]
     public int? Id
     {

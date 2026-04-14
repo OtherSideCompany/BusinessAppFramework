@@ -13,7 +13,7 @@
                   Immediate="true"
                   Value="@(PropertyValue?.ToString())"
                   Variant="Variant.Outlined"
-                  ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }" />
+                  ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }" />
 }
 else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
 {
@@ -23,14 +23,14 @@ else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType =
                      Immediate="true"
                      Value="@(PropertyValue as int?)"
                      Variant="Variant.Outlined"
-                     ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }"
+                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
                      HideSpinButtons="true" />
 }
 else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
 {
     <MudSwitch T="bool?"
                Value="@(PropertyValue as bool?)"
-               ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }"
+               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
                Color="Color.Primary"
                Style="margin-left:-4px !important" />
 }
@@ -41,7 +41,7 @@ else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyTy
                      Typo="Typo.body2"
                      Immediate="true"
                      Value="@(PropertyValue as decimal?)"
-                     ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }"
+                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
                      Variant="Variant.Outlined" 
                      HideSpinButtons="true" 
                      Culture="System.Globalization.CultureInfo.InvariantCulture" />
@@ -60,7 +60,7 @@ else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
 {
     var domainObjectReference = PropertyValue as DomainObjectReference;
     <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
-                                OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(DomainObject, doref); await OnChanged.InvokeAsync(); }" />
+                                OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(); }" />
 }
 else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
 {
@@ -76,7 +76,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
                Value="@PropertyValue"
                Variant="Variant.Outlined"
                Clearable="isNullable"
-               ValueChanged="async v => { PropertyInfo.SetValue(DomainObject, v); await OnChanged.InvokeAsync(); }">
+               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }">
         @foreach (var enumValue in enumValues)
         {
             <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(enumValue.ToString()!)</MudSelectItem>
@@ -87,17 +87,17 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
 @code {
     [Parameter, EditorRequired] public PropertyInfo PropertyInfo { get; init; }
     [Parameter, EditorRequired] public object PropertyValue { get; init; }
-    [Parameter, EditorRequired] public DomainObject DomainObject { get; init; }
+    [Parameter, EditorRequired] public object Target { get; init; }
     [Parameter] public EventCallback OnChanged { get; set; }
 
     private async Task OnDateChanged(DateTime? v)
     {
-        var current = (DateTime?)PropertyInfo.GetValue(DomainObject);
+        var current = (DateTime?)PropertyInfo.GetValue(Target);
     
         if (Nullable.Equals(current, v))
             return;
     
-        PropertyInfo.SetValue(DomainObject, v);
+        PropertyInfo.SetValue(Target, v);
         await OnChanged.InvokeAsync();
     }
 }

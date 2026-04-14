@@ -16,7 +16,7 @@
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 
 <MudGrid Spacing="2">
-    @if (DomainObject != null)
+    @if (Target != null)
     {
         var props = GetEditableProperties().ToList();
 
@@ -25,8 +25,8 @@
             var prop = props[i];
             var propKey = $"{prop.DeclaringType?.Name}_{prop.Name}";
             var label = LocalizedStringService.Get(propKey);
-            var concreteProperty = DomainObject.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
-            var value = concreteProperty?.GetValue(DomainObject);
+            var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
+            var value = concreteProperty?.GetValue(Target);
 
             if (Columns == 1)
             {
@@ -36,10 +36,10 @@
 
                 <MudItem xs="@_valueXs">
 
-                    <DomainObjectProperty PropertyInfo="@prop"
-                                          PropertyValue="@value"
-                                          DomainObject="@DomainObject"
-                                          OnChanged="async() => await OnChanged.InvokeAsync()" />
+                    <ObjectProperty PropertyInfo="@prop"
+                                    PropertyValue="@value"
+                                    Target="@Target"
+                                    OnChanged="async() => await OnChanged.InvokeAsync()" />
                 </MudItem>
             }
             else
@@ -47,10 +47,10 @@
                 <MudItem xs="@_valueXs">
                     <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">@label</MudText>
 
-                    <DomainObjectProperty PropertyInfo="@prop"
-                                          PropertyValue="@value"
-                                          DomainObject="@DomainObject"
-                                          OnChanged="async() => await OnChanged.InvokeAsync()" />
+                    <ObjectProperty PropertyInfo="@prop"
+                                    PropertyValue="@value"
+                                    Target="@Target"
+                                    OnChanged="async() => await OnChanged.InvokeAsync()" />
                 </MudItem>
             }                      
         }
@@ -58,7 +58,7 @@
 </MudGrid>
 
     @code {
-    [CascadingParameter] public DomainObject? DomainObject { get; set; }
+    [CascadingParameter] public object? Target { get; set; }
     [Parameter] public EventCallback OnChanged { get; set; }
     [Parameter] public int Columns { get; set; } = 1;
 
@@ -88,10 +88,10 @@
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
     {
-        if (DomainObject == null)
+        if (Target == null)
             return new List<PropertyInfo>();
 
-        return DomainObject.GetType()
+        return Target.GetType()
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.CanRead && p.CanWrite)
             .Where(p => !IsSystemProperty(p))

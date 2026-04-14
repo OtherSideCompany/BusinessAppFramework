@@ -83,7 +83,7 @@
     @if (_isEditing)
     {
         <CascadingValue Value="_editedObject">
-            <DomainObjectProperties OnChanged="() => MarkDirty()" />
+            <ObjectProperties OnChanged="() => MarkDirty()" />
         </CascadingValue>
 
         @if (IsDirty)

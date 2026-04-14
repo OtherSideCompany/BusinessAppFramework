@@ -114,7 +114,11 @@ namespace BusinessAppFramework.WebUI.Services
                     FullWidth = true
                 };
 
-                await _dialogService.ShowAsync(openDialogApplicationAction.ComponentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
+                var dialog = await _dialogService.ShowAsync(openDialogApplicationAction.ComponentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
+                var result = await dialog.Result;
+
+                if (result != null && result.Data is DomainObjectApplicationActionResultPayload domainObjectApplicationActionResultPayload)
+                    return domainObjectApplicationActionResultPayload;
 
                 return null;
             }
