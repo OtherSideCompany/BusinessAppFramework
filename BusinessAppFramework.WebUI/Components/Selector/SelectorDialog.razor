@@ -1,0 +1,52 @@
+﻿@using BusinessAppFramework.Application.Descriptors
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        @if (_domainObjectSelectorRenderFragment != null)
+        {
+            @_domainObjectSelectorRenderFragment
+        }
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public IDomainObjectSelectorDescriptor Descriptor { get; set; } = default!;
+    [Parameter] public string? InitialSearch { get; set; }
+
+    private IDomainObjectSelector? _domainObjectSelector;
+    private RenderFragment? _domainObjectSelectorRenderFragment;
+    private bool _needsLoad = true;
+
+    protected override void OnInitialized()
+    {
+        var selectorType = Descriptor.ComponentType;
+
+        _domainObjectSelectorRenderFragment = builder =>
+        {
+            builder.OpenComponent(0, selectorType);
+            builder.AddAttribute(1, "Descriptor", Descriptor);
+            builder.AddAttribute(2, "OnItemSelected", EventCallback.Factory.Create(this, (int id) =>
+            {
+                MudDialog.Close(DialogResult.Ok(id));
+            }));
+            builder.AddComponentReferenceCapture(3, inst =>
+            {
+                _domainObjectSelector = (IDomainObjectSelector)inst;
+            });
+            builder.CloseComponent();
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _needsLoad && _domainObjectSelector != null)
+        {
+            _needsLoad = false;
+            await _domainObjectSelector.Load(InitialSearch ?? string.Empty);
+            StateHasChanged();
+        }
+    }
+}

@@ -13,7 +13,7 @@ namespace BusinessAppFramework.Application.Actions
 
         #region Properties
 
-        public Type ComponentType { get; set; }
+        public StringKey ComponentKey { get; set; }
         public string DialogTitle { get; set; }
 
         #endregion

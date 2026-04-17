@@ -20,7 +20,7 @@
 
 @inject ILocalizedStringService LocalizedStringService
 @inject IApplicationActionExecutionService ActionExecutionService
-@inject ISearchGateway<TSearchResult> SearchService
+@inject ISearchGateway<TSearchResult> SearchGateway
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
 @inject IIconFactory IconFactory
 @inject IUserDialogService UserDialogService
@@ -276,7 +276,7 @@
         if (!string.IsNullOrEmpty(_searchText))
             request.Filters.Add(_searchText);
 
-        var result = await SearchService.PaginatedSearchAsync(request);
+        var result = await SearchGateway.PaginatedSearchAsync(request);
 
         var items = result?.Items?.ToList() ?? new List<TSearchResult>();
         _totalItems = result?.Count ?? 0;

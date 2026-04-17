@@ -18,6 +18,7 @@
 @inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 @inject IServiceProvider ServiceProvider
+@inject IDialogService DialogService
 
 <style>
     .mud-icon-button-size-small .mud-icon-root {
@@ -65,7 +66,7 @@
     </MudStack>
 </MudField>
 
-<MudDialog @bind-Visible="_showPopup"
+@* <MudDialog @bind-Visible="_showPopup"
            Options="@(new DialogOptions
            {
                BackdropClick = true,
@@ -81,9 +82,119 @@
             }
         </div>
     </DialogContent>
-</MudDialog>
+</MudDialog> *@
 
 @code {
+    [Parameter]
+    public DomainObjectReference? DomainObjectReference
+    {
+        get => _domainObjectReference;
+        set
+        {
+            if (_domainObjectReference?.DomainObjectId == value?.DomainObjectId && _domainObjectReference?.RelationKey == value?.RelationKey)
+                return;
+
+            _domainObjectReference = value;
+            HandleDomainObjectReferenceChanged();
+        }
+    }
+    [Parameter] public string Label { get; set; } = default!;
+    [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
+
+    private DomainObjectReference? _domainObjectReference;
+    private string? _value;
+    private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor;
+
+    private async Task OpenSelector()
+    {
+        if (_domainObjectSelectorDescriptor == null)
+            return;
+
+        var parameters = new DialogParameters
+        {
+            { nameof(SelectorDialog.Descriptor), _domainObjectSelectorDescriptor },
+            { nameof(SelectorDialog.InitialSearch), _value ?? string.Empty }
+        };
+
+        var options = new DialogOptions
+        {
+            BackdropClick = true,
+            NoHeader = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SelectorDialog>(string.Empty, parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            var selectedId = (int)result.Data;
+            await OnItemSelected(selectedId);
+        }
+    }
+
+    private async Task OnItemSelected(int item)
+    {
+        if (DomainObjectReference == null)
+            return;
+
+        if (RelationResolver.TryGetReferenceRelationEntry(StringKey.From(DomainObjectReference.RelationKey), out var relationEntry))
+        {
+            var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
+            dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
+            var domainObjectReference = await domainObjectServiceGateway.GetHydratedDomainObjectReference(item, DomainObjectReference.RelationKey);
+
+            DomainObjectReference.DisplayValue = domainObjectReference.DisplayValue;
+            DomainObjectReference.DomainObjectId = item;
+
+            _value = DomainObjectReference.DisplayValue;
+
+            await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClearSelectionAsync()
+    {
+        _value = null;
+        DomainObjectReference?.DomainObjectId = null;
+        DomainObjectReference?.DisplayValue = null;
+
+        await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
+
+        StateHasChanged();
+    }
+
+    private void HandleDomainObjectReferenceChanged()
+    {
+        if (DomainObjectReference == null)
+            return;
+
+        _value = DomainObjectReference.DisplayValue;
+
+        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(StringKey.From(DomainObjectReference.RelationKey));
+        _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
+
+        // var selectorType = _domainObjectSelectorDescriptor.ComponentType;
+
+        // _domainObjectSelectorRenderFragment = builder =>
+        // {
+        //     builder.OpenComponent(0, selectorType);
+        //     builder.AddAttribute(1, "Descriptor", _domainObjectSelectorDescriptor);
+        //     builder.AddAttribute(2, "OnItemSelected", EventCallback.Factory.Create(this, (int domainObjectId) => OnItemSelected(domainObjectId)));
+        //     builder.AddComponentReferenceCapture(3, inst =>
+        //     {
+        //         _domainObjectSelector = (IDomainObjectSelector)inst;
+        //         _domainObjectSelector?.Load(_value ?? String.Empty);
+        //     });
+        //     builder.CloseComponent();
+        // };
+    }
+}
+
+@* @code {
     [Parameter]
     public DomainObjectReference? DomainObjectReference
     {
@@ -188,4 +299,4 @@
 
         StateHasChanged();
     }
-}
+} *@

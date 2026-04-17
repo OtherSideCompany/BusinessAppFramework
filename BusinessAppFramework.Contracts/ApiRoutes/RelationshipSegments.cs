@@ -8,5 +8,6 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
     {
         public const string SetParent = "set-parent";
         public const string GetHydratedReference = "get-hydrated-reference";
+        public const string GetChildrenIds = "get-children-ids";
     }
 }

@@ -1,44 +1,45 @@
 ﻿namespace BusinessAppFramework.Application.Actions
 {
-   public class DomainObjectApplicationActionResultPayload
-   {
-      #region Fields
+    public class DomainObjectApplicationActionResultPayload
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public List<DomainObjectChange> Changes { get; set; } = new();
+        public List<DomainObjectChange> Changes { get; set; } = new();
+        public string? ErrorMessageKey { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Events
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectApplicationActionResultPayload()
-      {
-
-      }
-
-      #endregion
-
-      #region Public Methods
+        #region Events
 
 
 
-      #endregion
+        #endregion
 
-      #region Private Methods
+        #region Constructor
+
+        public DomainObjectApplicationActionResultPayload()
+        {
+
+        }
+
+        #endregion
+
+        #region Public Methods
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

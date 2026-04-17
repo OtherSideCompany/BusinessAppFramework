@@ -63,6 +63,16 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(reference);
         }
 
+        [HttpGet($"{RelationshipSegments.GetChildrenIds}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
+        public virtual async Task<ActionResult<List<int>>> GetChildrenIds(
+            [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,
+            [FromRoute(Name = ApiRouteParams.Key)] string key)
+        {
+            var reference = await _relationService.GetChildrenIdsAsync(parentDomainObjectId, key);
+
+            return Ok(reference);
+        }
+
         #endregion
 
         #region Private Methods

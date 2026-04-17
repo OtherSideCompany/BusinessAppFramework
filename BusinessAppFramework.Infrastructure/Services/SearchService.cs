@@ -183,7 +183,7 @@ namespace BusinessAppFramework.Infrastructure.Services
          return x => false;
       }
 
-      private void LogSearchAsync(string methodName, string constraint, List<string> filters, bool extendedSearch)
+      protected void LogSearchAsync(string methodName, string constraint, List<string> filters, bool extendedSearch)
       {
          var filterString = filters == null || !filters.Any() ? "none" : string.Join(',', filters);
          var constraintString = string.IsNullOrEmpty(constraint) ? "none" : constraint;

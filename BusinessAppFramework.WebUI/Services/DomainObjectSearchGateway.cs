@@ -13,7 +13,7 @@ namespace BusinessAppFramework.WebUI.Services
         #region Fields
 
         private string _controllerKey => _searchRouteKeyRegistry.GetRouteKey<TSearchResult>();
-        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Search}/{_controllerKey}";
+        protected string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Search}/{_controllerKey}";
 
         private ISearchRouteKeyRegistry _searchRouteKeyRegistry;
 

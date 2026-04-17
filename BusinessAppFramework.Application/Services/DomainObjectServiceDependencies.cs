@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.DomainObjectEvents;
+using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Mail;
 using BusinessAppFramework.Application.Relations;
@@ -24,6 +25,7 @@ namespace BusinessAppFramework.Application.Services
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
         public IRelationResolver RelationResolver { get; }
         public IRelationService RelationService { get; }
+        public IDomainObjectServiceFactory DomainObjectServiceFactory { get; }
 
         #endregion
 

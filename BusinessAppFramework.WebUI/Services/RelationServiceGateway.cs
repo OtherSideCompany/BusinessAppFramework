@@ -50,10 +50,16 @@ namespace BusinessAppFramework.WebUI.Services
             await PutAsync<object>(route, null);
         }
 
-        public async Task<DomainObjectReference?> GetHydratedReference(int parentId, int childId, string key)
+        public async Task<DomainObjectReference?> GetHydratedReferenceAsync(int parentId, int childId, string key)
         {
             var route = $"{_baseUrl}/{RelationshipSegments.GetHydratedReference}/{parentId}/{childId}/{key}";
             return (await GetAsync<DomainObjectReference?>(route)).Data;
+        }
+
+        public async Task<List<int>> GetChildrenIdsAsync(int parentId, string key)
+        {
+            var route = $"{_baseUrl}/{RelationshipSegments.GetChildrenIds}/{parentId}/{key}";
+            return (await GetAsync<List<int>>(route)).Data;
         }
 
         #endregion

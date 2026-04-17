@@ -17,6 +17,7 @@ namespace BusinessAppFramework.WebUI.Services
         private NavigationManager _navigationManager;
         private IConfiguration _configuration;
         private IDialogService _dialogService;
+        private IComponentRegistry _componentRegistry;
 
         #endregion
 
@@ -42,12 +43,14 @@ namespace BusinessAppFramework.WebUI.Services
             NavigationManager navigationManager,
             IConfiguration configuration,
             ILogger<ApplicationActionExecutionService> logger,
-            IDialogService dialogService) :
+            IDialogService dialogService,
+            IComponentRegistry componentRegistry) :
             base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _navigationManager = navigationManager;
             _configuration = configuration;
             _dialogService = dialogService;
+            _componentRegistry = componentRegistry;
         }
 
         #endregion
@@ -109,12 +112,12 @@ namespace BusinessAppFramework.WebUI.Services
 
                 var dialogOptions = new DialogOptions
                 {
-                    BackdropClick = true,
                     MaxWidth = MaxWidth.Medium,
                     FullWidth = true
                 };
 
-                var dialog = await _dialogService.ShowAsync(openDialogApplicationAction.ComponentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
+                var componentType = _componentRegistry.Resolve(openDialogApplicationAction.ComponentKey);
+                var dialog = await _dialogService.ShowAsync(componentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
                 var result = await dialog.Result;
 
                 if (result != null && result.Data is DomainObjectApplicationActionResultPayload domainObjectApplicationActionResultPayload)
