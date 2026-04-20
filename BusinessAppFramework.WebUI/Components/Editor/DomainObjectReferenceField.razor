@@ -41,21 +41,16 @@
           @onclick="OpenSelector"
           AdornmentIcon="@Icons.Material.Outlined.Search"
           Adornment="Adornment.End"
-          Style="cursor: pointer;"
+          Style="cursor: pointer"
           Class="lookup-field">
     <MudStack Row="true" AlignItems="AlignItems.Center">
         @if (!string.IsNullOrEmpty(_value))
         {            
-            <MudIconButton Color="@Color.Default"
-                           Icon="@Icons.Material.Filled.Clear"
-                           Size="@Size.Small"
-                           OnClick="ClearSelectionAsync"
-                           @onmousedown:stopPropagation
-                           Style="width:24px; height:24px; margin:-4px;"
-                           Class="mud-icon-button-size-small" />
-            <MudText Typo="Typo.body2">
+            <MudChip T="string" Size="Size.Medium" Variant="Variant.Filled"
+                     Color="Color.Primary" CloseIcon="@Icons.Material.Filled.Close" OnClose="ClearSelectionAsync"
+                     Style="margin: 0;">
                 @_value
-            </MudText>
+            </MudChip>           
         }
         else
         {

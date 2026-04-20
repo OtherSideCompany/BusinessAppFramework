@@ -52,12 +52,12 @@
                                     Target="@Target"
                                     OnChanged="async() => await OnChanged.InvokeAsync()" />
                 </MudItem>
-            }                      
+            }
         }
     }
 </MudGrid>
 
-    @code {
+@code {
     [CascadingParameter] public object? Target { get; set; }
     [Parameter] public EventCallback OnChanged { get; set; }
     [Parameter] public int Columns { get; set; } = 1;
@@ -79,7 +79,7 @@
             _labelXs = 4;
             _valueXs = 8;
         }
-        else 
+        else
         {
             _labelXs = 0;
             _valueXs = 12 / Columns;

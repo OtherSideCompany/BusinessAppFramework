@@ -72,7 +72,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
             {
                 var entity = _mapper.Map<TEntity>(domainObject);
 
-                await CreateEntityAsync(context, entity);
+                await CreateEntityAsync(context, entity, domainObject);
                 _mapper.Map(entity, domainObject);
             }
         }
@@ -258,8 +258,9 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
         #region Private Methods         
 
-        protected async Task CreateEntityAsync(DbContext context, TEntity entity)
+        protected async Task CreateEntityAsync(DbContext context, TEntity entity, TDomainObject domainObject)
         {
+            await CopyEditablePropertiesAsync(domainObject, entity, context);
             await context.Set<TEntity>().AddAsync(entity);
 
             await context.SaveChangesAsync();

@@ -22,6 +22,8 @@
         {
             <MudChip T="DomainObjectReferenceListItem"
                      Color="Color.Primary"
+                     Size="Size.Medium"
+                     Variant="Variant.Filled"
                      CloseIcon="@Icons.Material.Filled.Close"
                      OnClose="(() => RemoveReference(reference))">
                 @reference.DisplayValue

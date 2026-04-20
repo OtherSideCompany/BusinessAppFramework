@@ -1,0 +1,22 @@
+﻿@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Components.Editor
+@using MudBlazor
+
+<DomainObjectReferenceField DomainObjectReference="@Value" 
+                            OnDomainObjectReferenceChanged="@OnValueChangedInternal" />
+
+@code {
+    [CascadingParameter] public Func<Task>? NotifyItemChanged { get; set; }
+
+    [Parameter] public DomainObjectReference? Value { get; set; }
+    [Parameter] public EventCallback<DomainObjectReference?> ValueChanged { get; set; }
+
+    private async Task OnValueChangedInternal(DomainObjectReference v)
+    {
+        if (ValueChanged.HasDelegate)
+            await ValueChanged.InvokeAsync(v);
+
+        if (NotifyItemChanged != null)
+            await NotifyItemChanged();
+    }
+}
