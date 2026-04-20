@@ -12,6 +12,7 @@
 @inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
 @inject IRelationResolver RelationResolver
 @inject IServiceProvider ServiceProvider
+@inject IDialogService DialogService
 
 <MudChipSet T="DomainObjectReference">
 
@@ -32,24 +33,6 @@
                    Color="Color.Primary"
                    Size="Size.Small"
                    OnClick="OpenSelector" />
-
-    <MudDialog @bind-Visible="_showPopup"
-               Options="@(new DialogOptions
-               {
-                   BackdropClick = true,
-                   NoHeader = true,
-                   MaxWidth = MaxWidth.Small,
-                   FullWidth = true
-               })">
-        <DialogContent>
-            <div>
-                @if (_domainObjectSelectorRenderFragment != null)
-                {
-                    @_domainObjectSelectorRenderFragment
-                }
-            </div>
-        </DialogContent>
-    </MudDialog>
 
 </MudChipSet>
 
@@ -72,11 +55,38 @@
     [Parameter] public EventCallback<DomainObjectReferenceList?> OnDomainObjectReferenceListChanged { get; set; }
 
     private DomainObjectReferenceList? _domainObjectReferenceList;
+    private string? _value;
 
-    private bool _showPopup { get; set; }
-    private IDomainObjectSelector? _domainObjectSelector { get; set; }
-    private RenderFragment? _domainObjectSelectorRenderFragment;
     private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor { get; set; }
+
+    private async void OpenSelector()
+    {
+        if (_domainObjectSelectorDescriptor == null)
+            return;
+
+        var parameters = new DialogParameters
+        {
+            { nameof(SelectorDialog.Descriptor), _domainObjectSelectorDescriptor },
+            { nameof(SelectorDialog.InitialSearch), _value ?? string.Empty }
+        };
+
+        var options = new DialogOptions
+        {
+            BackdropClick = true,
+            NoHeader = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SelectorDialog>(string.Empty, parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            var selectedId = (int)result.Data;
+            await OnItemSelected(selectedId);
+        }
+    }
 
     private async void HandleDomainObjectReferenceListChanged()
     {
@@ -87,33 +97,16 @@
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
 
         var selectorType = _domainObjectSelectorDescriptor.ComponentType;
-
-        _domainObjectSelectorRenderFragment = builder =>
-        {
-            builder.OpenComponent(0, selectorType);
-            builder.AddAttribute(1, "Descriptor", _domainObjectSelectorDescriptor);
-            builder.AddAttribute(2, "OnItemSelected", EventCallback.Factory.Create(this, (int domainObjectId) => OnItemSelected(domainObjectId)));
-            builder.AddComponentReferenceCapture(3, inst =>
-            {
-                _domainObjectSelector = (IDomainObjectSelector)inst;
-                _domainObjectSelector?.Load(String.Empty);
-            });
-            builder.CloseComponent();
-        };
     }
 
     private async Task OnItemSelected(int domainObjectId)
     {
-        _showPopup = false;
-
         if (DomainObjectReferenceList == null || DomainObjectReferenceList.Items.Any(i => i.DomainObjectId == domainObjectId))
             return;
 
         DomainObjectReferenceList.AddItem(domainObjectId);
 
         await OnDomainObjectReferenceListChanged.InvokeAsync(DomainObjectReferenceList);
-
-        StateHasChanged();
 
         if (RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(DomainObjectReferenceList.RelationKey), out var relationListEntry))
         {
@@ -124,19 +117,9 @@
             var item = DomainObjectReferenceList.Items.First(i => i.DomainObjectId == domainObjectId);
             item.DisplayValue = domainObjectReferenceListItem.DisplayValue;
         }
-    }
 
-    private async void OpenSelector()
-    {
-        _showPopup = true;
-
-        await Task.Delay(200);
-
-        if (_domainObjectSelector != null)
-        {
-            await _domainObjectSelector.Load(string.Empty);
-        }
-    }
+        StateHasChanged();
+    }    
 
     private async void RemoveReference(DomainObjectReferenceListItem item)
     {

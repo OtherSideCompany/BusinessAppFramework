@@ -9,15 +9,15 @@
                 display: flex; align-items: center; justify-content: space-between;
                 cursor: pointer;">
         <MudText Typo="Typo.subtitle2">@Title</MudText>
-        <MudIcon Icon="@(_expanded? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" />
+        <MudIcon Icon="@(Expanded? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" />
     </div>
 
-    @if (_expanded)
+    @if (Expanded)
     {
         <MudDivider />
     }
 
-    <MudCollapse Expanded="_expanded">
+    <MudCollapse Expanded="Expanded">
         <MudStack Spacing="4" Class="pa-4">
             @ChildContent
         </MudStack>
@@ -28,11 +28,10 @@
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    private bool _expanded;
+    [Parameter] public bool Expanded { get; set; }
 
     private async Task Toggle()
     {
-        _expanded = !_expanded;
+        Expanded = !Expanded;
     }
 }
