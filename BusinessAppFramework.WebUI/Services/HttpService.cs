@@ -52,6 +52,21 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Public Methods
 
+        public async Task<HttpResult> PostAsync(string route, object? body = null)
+        {
+            return await TryExecuteHttpRequest(client => client.PostAsJsonAsync(route, body));
+        }
+
+        public async Task<HttpResult> PutAsync(string route, object? body = null)
+        {
+            return await TryExecuteHttpRequest(client => client.PutAsJsonAsync(route, body));
+        }
+
+        public async Task<HttpResult> DeleteAsync(string route)
+        {
+            return await TryExecuteHttpRequest(client => client.DeleteAsync(route));
+        }
+
         public async Task<HttpResult<T>> GetAsync<T>(string route)
         {
             return await TryExecuteHttpRequest<T>(client => client.GetAsync(route));
@@ -85,6 +100,37 @@ namespace BusinessAppFramework.WebUI.Services
                 {
                     PropertyNameCaseInsensitive = true
                 });
+        }
+
+        private async Task<HttpResult> TryExecuteHttpRequest(Func<HttpClient, Task<HttpResponseMessage>> httpCall)
+        {
+            var result = await ExecuteHttpRequest(httpCall);
+
+            if (!result.Success)
+            {
+                await _userDialogService.DialogErrorAsync(result.ErrorMessage ?? "no error message");
+                _logger.LogWarning("HTTP failure: {Report}", result.ErrorMessage);
+            }
+
+            return result;
+        }
+
+        private async Task<HttpResult> ExecuteHttpRequest(Func<HttpClient, Task<HttpResponseMessage>> httpCall)
+        {
+            try
+            {
+                var client = CreateClient();
+                var response = await httpCall(client);
+
+                if (!response.IsSuccessStatusCode)
+                    return await CreateFailureHttpResultAsync(response);
+
+                return new HttpResult(true, null, (int)response.StatusCode);
+            }
+            catch (Exception ex)
+            {
+                return new HttpResult(false, ex.Message, null);
+            }
         }
 
         private async Task<HttpResult<T>> TryExecuteHttpRequest<T>(Func<HttpClient, Task<HttpResponseMessage>> httpCall)
@@ -123,6 +169,17 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var data = await ReadFromJsonAsync<T>(httpResponseMessage);
             return new HttpResult<T>(true, data, null, (int)httpResponseMessage.StatusCode);
+        }
+
+        private async Task<HttpResult> CreateFailureHttpResultAsync(HttpResponseMessage response)
+        {
+            var body = response.Content != null ? await response.Content.ReadAsStringAsync() : null;
+
+            var report = $"HTTP error {(int)response.StatusCode} : {response.ReasonPhrase}\n\n" +
+                         $"Request message : \n{response.RequestMessage}\n\n" +
+                         $"Body : \n{body}";
+
+            return new HttpResult(false, report, (int)response.StatusCode);
         }
 
         private async Task<HttpResult<T>> CreateFailureHttpResultAsync<T>(HttpResponseMessage response)

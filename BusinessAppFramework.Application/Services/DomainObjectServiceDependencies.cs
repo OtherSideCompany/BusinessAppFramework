@@ -25,7 +25,6 @@ namespace BusinessAppFramework.Application.Services
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
         public IRelationResolver RelationResolver { get; }
         public IRelationService RelationService { get; }
-        public IDomainObjectServiceFactory DomainObjectServiceFactory { get; }
 
         #endregion
 

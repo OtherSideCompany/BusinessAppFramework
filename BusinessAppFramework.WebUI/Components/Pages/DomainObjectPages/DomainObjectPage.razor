@@ -183,6 +183,8 @@
                 return;
 
             _tree?.SetBranch(branch);
+
+            await RaiseAsync(PageTreeLoaded);
         }
     }
 

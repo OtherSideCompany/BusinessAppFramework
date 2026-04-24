@@ -84,6 +84,8 @@
     public List<TItem> Items { get; private set; } = new();
     private bool _isLoaded;
     private bool _isLoading;
+    private int? _loadedParentId;
+    private Branch? _loadedBranch;
 
     public async Task SaveChangesAsync()
     {
@@ -96,26 +98,39 @@
     public async Task CancelChangesAsync()
     {
         Items.Clear();
-        await LoadAsync();
+        await LoadAsync(true);
     }
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        await LoadAsync();
+
+        if (ParentId != _loadedParentId || Branch != _loadedBranch)
+        {
+            await LoadAsync(true);
+        }
+        else
+        {
+            await LoadAsync(false);
+        }
     }
 
-    private async Task LoadAsync()
+    private async Task LoadAsync(bool refresh)
     {
-        if (_isLoaded || _isLoading || Branch is null)
+        if ((_isLoaded && !refresh) || _isLoading || Branch is null)
             return;
 
         _isLoading = true;
+
+        Items.Clear();
 
         foreach (var node in Branch.Nodes)
         {
             await AddItemFromNodeAsync(node);
         }
+
+        _loadedParentId = ParentId;
+        _loadedBranch = Branch;
 
         _isLoaded = true;
         _isLoading = false;

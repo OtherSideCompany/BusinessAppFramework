@@ -4,6 +4,7 @@ using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
+using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,30 +70,14 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             foreach (var branch in tree.Branches)
             {
-                if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(branch.ParentChildRelationKey), out var parentChildRelation))
-                {
-                    var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
-
-                    var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
-                    dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
-
-                    var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
-                    dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
-
-                    foreach (var id in nodeIds)
-                    {
-                        var node = new Node(id);
-                        node.Summary = await searchService.GetSummaryAsync(id);
-                        branch.Nodes.Add(node);
-                    }
-                }
+                await LoadBranchAsync(branch, domainObjectId);
             }
 
             return tree;
         }
 
         [HttpGet($"{TreeRouteSegments.GetTreeBranch}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}/{{{ApiRouteParams.RelationKey}}}")]
-        public async Task<ActionResult<Branch?>> GetTreeAsync(
+        public async Task<ActionResult<Branch?>> GetTreeBranchAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
             [FromRoute(Name = ApiRouteParams.Key)] string pageTreeKey,
             [FromRoute(Name = ApiRouteParams.RelationKey)] string relationKey)
@@ -105,24 +90,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             if (branch == null)
                 return null;
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(branch.ParentChildRelationKey), out var parentChildRelation))
-            {
-                var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
-
-                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
-                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
-
-                var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
-                dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
-
-                foreach (var id in nodeIds)
-                {
-                    var node = new Node(id);
-                    node.Summary = await searchService.GetSummaryAsync(id);
-                    branch.Nodes.Add(node);
-                }
-            }
-
+            await LoadBranchAsync(branch, domainObjectId);        
 
             return branch;
         }
@@ -187,7 +155,33 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         #region Private Methods
 
+        private async Task LoadBranchAsync(Branch branch, int domainObjectId)
+        {
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(branch.ParentChildRelationKey), out var parentChildRelation))
+            {
+                var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
 
+                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+
+                var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+                dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
+
+                foreach (var id in nodeIds)
+                {
+                    var node = new Node(id);
+                    node.Summary = await searchService.GetSummaryAsync(id);
+                    branch.Nodes.Add(node);
+
+                    foreach (var template in branch.ChildBranchTemplates)
+                    {
+                        var childBranch = new Branch(template);
+                        node.ChildBranches.Add(childBranch);
+                        await LoadBranchAsync(childBranch, node.Id);
+                    }
+                }
+            }
+        }
 
         #endregion
     }

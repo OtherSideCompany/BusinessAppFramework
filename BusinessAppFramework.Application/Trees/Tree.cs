@@ -1,42 +1,42 @@
 ﻿namespace BusinessAppFramework.Application.Trees
 {
-   public class Tree
-   {
-      #region Fields
+    public class Tree
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public int RootId { get; set; }
-      public object? Root { get; set; }
-      public List<Branch> Branches { get; set; } = new();
+        public int RootId { get; set; }
+        public object? Root { get; set; }
+        public List<Branch> Branches { get; set; } = new();
 
-      #endregion
+        #endregion
 
-      #region Events
+        #region Events
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public Tree()
-      {
+        public Tree()
+        {
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public Branch? GetBranch(string parentChildRelationKey)
-      {
-         return Branches.FirstOrDefault(b => b.ParentChildRelationKey.Equals(parentChildRelationKey));
-      }
+        public Branch? GetBranch(string parentChildRelationKey)
+        {
+            return Branches.FirstOrDefault(b => b.ParentChildRelationKey.Equals(parentChildRelationKey));
+        }
 
         public void SetBranch(Branch branch)
         {

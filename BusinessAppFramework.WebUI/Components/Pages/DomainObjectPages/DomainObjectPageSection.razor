@@ -18,7 +18,7 @@
     }
 
     <MudCollapse Expanded="Expanded">
-        <MudStack Spacing="4" Class="pa-4">
+        <MudStack Spacing="4" Style="@($"padding: {ContentPadding * 4}px;")">
             @ChildContent
         </MudStack>
     </MudCollapse>
@@ -29,6 +29,7 @@
     [Parameter, EditorRequired] public string Title { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool Expanded { get; set; }
+    [Parameter] public int ContentPadding { get; set; } = 4;
 
     private async Task Toggle()
     {
