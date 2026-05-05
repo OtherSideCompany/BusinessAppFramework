@@ -1,0 +1,43 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using Contracts
+@using Domain
+@using MudBlazor
+@using WebUI.Interfaces
+
+@inject IIconFactory IconFactory
+@inject ILocalizedStringService LocalizedStringService
+
+<style>
+    .menu-action-button .mud-button-root {
+        background-color: var(--mud-palette-surface);
+        border-color: var(--mud-palette-divider);
+        border-radius: 16px;
+        padding: 4px 14px;
+        font-weight: 400;
+    }
+
+    .menu-action-button .mud-button-root:hover {
+        background: var(--mud-palette-background-grey) !important;
+        border-color: var(--mud-palette-divider) !important;
+    }
+</style>
+
+<MudMenu Label="@LocalizedStringService.Get(ActionKey.Key)"
+         Variant="Variant.Outlined"
+         Size="Size.Small"
+         EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+         StartIcon="@IconFactory.CreateIcon(ActionKey)"
+         IconColor="@_color"
+         Disabled="@Disabled"
+         Dense="true"
+         Class="menu-action-button">
+    @MenuItems
+</MudMenu>
+
+@code {
+    [Parameter] public StringKey ActionKey { get; set; } = StringKey.From("");
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public RenderFragment? MenuItems { get; set; }
+
+    private Color _color { get; set; } = Color.Dark;
+}

@@ -13,6 +13,7 @@ namespace BusinessAppFramework.Application.Relations
         Task<List<TChild>> GetChildrenAsync<TChild>(int parentId, string relationKey, CancellationToken cancellationToken = default) where TChild : DomainObject, new();
         Task<int?> GetMaxChildIndexAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
         Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
+        Task<int?> GetParentIdAsync(int childId, string relationKey, CancellationToken cancellationToken = default);
         Task<DomainObjectReference?> GetHydratedReferenceAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
     }
 }

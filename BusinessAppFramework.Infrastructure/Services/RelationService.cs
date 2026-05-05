@@ -245,6 +245,21 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
         }
 
+        public async Task<int?> GetParentIdAsync(int childId, string relationKey, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(GetParentIdAsync)}, childId : {childId}, relationKey : {relationKey}");
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            {
+                var entity = context.Find(relationEntry.ChildEntityType, childId);
+                return (int?)relationEntry.ParentEntityIdProperty.GetValue(entity);
+            }
+
+            return null;
+        }
+
         public async Task<DomainObjectReference?> GetHydratedReferenceAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation($"{GetType()}, {nameof(GetHydratedReferenceAsync)}, parentId : {parentId}, childId : {childId}, relationKey : {relationKey}");

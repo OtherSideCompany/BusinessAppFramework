@@ -199,7 +199,7 @@
         </MudStack>
     </Pagination>
 
-    @* Editor *@   
+    @* Editor *@
     <Drawer>
         <MudDrawer Open="_editorOpen"
                    Anchor="Anchor.Right"
@@ -359,11 +359,18 @@
         await RefreshServerDataAsync(payload);
     }
 
-    private async Task ExecuteDomainObjectApplicationActionAsync(IDomainObjectApplicationAction applicationAction)
+    private async Task ExecuteDomainObjectApplicationActionAsync(IApplicationAction applicationAction)
     {
-        applicationAction.DomainObjectId = _currentEditedObject?.Id ?? 0;
-        var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
-        await RefreshServerDataAsync(payload);
+        if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction)
+        {
+            domainObjectApplicationAction.DomainObjectId = _currentEditedObject?.Id ?? 0;
+            var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+            await RefreshServerDataAsync(payload);
+        }
+        else
+        {
+            await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+        }
     }
 
     public async Task RefreshServerDataAsync(DomainObjectApplicationActionResultPayload? payload)

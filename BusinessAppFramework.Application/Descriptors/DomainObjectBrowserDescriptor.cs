@@ -18,7 +18,7 @@ namespace BusinessAppFramework.Application.Descriptors
         public Type SearchListTemplateProviderType { get; init; } = default!;
         public Type? DetailEditorComponentType { get; init; } = default;
         public List<IApplicationAction> ApplicationActions { get; init; } = new();
-        public List<IDomainObjectApplicationAction> DomainObjectApplicationActions { get; init; } = new();
+        public List<IApplicationAction> DomainObjectApplicationActions { get; init; } = new();
         public List<string> ConstraintKeys { get; init; } = new();
         public string DefaultConstraintKey { get; init; }
 
@@ -28,7 +28,7 @@ namespace BusinessAppFramework.Application.Descriptors
             List<string>? constraintKeys = null)
         {
             ApplicationActions = new List<IApplicationAction>();
-            DomainObjectApplicationActions = new List<IDomainObjectApplicationAction>();
+            DomainObjectApplicationActions = new List<IApplicationAction>();
 
             var createAction = new DomainObjectHttpApplicationAction<TDomainObject>
             {
@@ -92,6 +92,16 @@ namespace BusinessAppFramework.Application.Descriptors
             if (creationAction != null)
             {
                 ApplicationActions.Remove(creationAction);
+            }
+        }
+
+        public void RemoveDefaultDomainObjectApplicationAction(StringKey actionKey)
+        {
+            var action = DomainObjectApplicationActions.Where(aa => aa.ActionKey.Equals(actionKey)).FirstOrDefault();
+
+            if (action != null)
+            {
+                DomainObjectApplicationActions.Remove(action);
             }
         }
     }
