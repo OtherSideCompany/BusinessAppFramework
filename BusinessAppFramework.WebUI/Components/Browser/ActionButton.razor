@@ -15,21 +15,49 @@
         border-radius: 16px;
         padding: 4px 14px;
     }
+
         .osc-action-button:hover {
             background: var(--mud-palette-background-grey) !important;
             border-color: var(--mud-palette-divider) !important;
         }
+
+
+        .osc-action-button.mud-icon-button {
+            border-radius: 16px !important;
+            border-color: var(--mud-palette-divider) !important;
+        }
+
+            .osc-action-button.mud-icon-button:hover {
+                background: var(--mud-palette-background-grey) !important;
+                border-color: var(--mud-palette-divider) !important;
+            }
 </style>
 
-<MudButton Variant="Variant.Outlined"           
-           Size="Size.Small"
-           StartIcon="@IconFactory.CreateIcon(ActionKey)"
-           IconColor="@_color"
-           OnClick="OnClickInternal"
-           Disabled="@Disabled"
-           Class="osc-action-button">
-    @LocalizedStringService.Get(ActionKey.Key)
-</MudButton>
+@if (ActionKey.Key.Equals(ActionKeys.ImportExportDataActionKey))
+{
+    <MudTooltip Text="@LocalizedStringService.Get(ActionKey.Key)">
+        <MudIconButton Variant="Variant.Outlined"
+                       Size="Size.Small"
+                       Icon="@IconFactory.CreateIcon(ActionKey)"
+                       Color="@_color"
+                       OnClick="OnClickInternal"
+                       Disabled="@Disabled"
+                       Class="osc-action-button">        
+        </MudIconButton>
+    </MudTooltip>
+}
+else
+{
+    <MudButton Variant="Variant.Outlined"
+               Size="Size.Small"
+               StartIcon="@IconFactory.CreateIcon(ActionKey)"
+               IconColor="@_color"
+               OnClick="OnClickInternal"
+               Disabled="@Disabled"
+               Class="osc-action-button">
+        @LocalizedStringService.Get(ActionKey.Key)
+    </MudButton>
+}
 
 @code {
     [Parameter] public StringKey ActionKey { get; set; } = StringKey.From("");
@@ -40,7 +68,7 @@
 
     private async Task OnClickInternal(MouseEventArgs e)
     {
-        if (Disabled) 
+        if (Disabled)
             return;
 
         if (OnClick.HasDelegate)

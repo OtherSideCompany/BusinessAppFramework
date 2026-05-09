@@ -66,7 +66,7 @@ namespace BusinessAppFramework.Application.Descriptors
 
             var pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
             {
-                ActionKey = StringKey.From(ActionKeys.DetailsActionKey)
+                ActionKey = StringKey.From(ActionKeys.EditActionKey)
             };
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
@@ -85,13 +85,13 @@ namespace BusinessAppFramework.Application.Descriptors
             }
         }
 
-        public void RemoveDefaultCreationAction()
+        public void RemoveDefaultApplicationAction(StringKey actionKey)
         {
-            var creationAction = ApplicationActions.Where(aa => aa.ActionKey.Equals(StringKey.From(ActionKeys.CreateActionKey))).FirstOrDefault();
+            var action = ApplicationActions.Where(aa => aa.ActionKey.Equals(actionKey)).FirstOrDefault();
 
-            if (creationAction != null)
+            if (action != null)
             {
-                ApplicationActions.Remove(creationAction);
+                ApplicationActions.Remove(action);
             }
         }
 

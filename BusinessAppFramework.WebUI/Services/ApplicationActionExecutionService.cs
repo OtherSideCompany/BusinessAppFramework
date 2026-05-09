@@ -107,7 +107,8 @@ namespace BusinessAppFramework.WebUI.Services
             {
                 DialogParameters? parameters = new DialogParameters
                 {
-                    { nameof(IOpenDialogApplicationAction.ExecuteRoute), openDialogApplicationAction.ExecuteRoute }
+                    { nameof(IOpenDialogApplicationAction.ExecuteRoute), openDialogApplicationAction.ExecuteRoute },
+                    { nameof(IOpenDialogApplicationAction.DomainObjectId), openDialogApplicationAction.DomainObjectId }
                 };
 
                 var dialogOptions = new DialogOptions

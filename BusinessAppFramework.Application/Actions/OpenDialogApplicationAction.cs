@@ -15,6 +15,7 @@ namespace BusinessAppFramework.Application.Actions
 
         public StringKey ComponentKey { get; set; }
         public string DialogTitle { get; set; }
+        public int? DomainObjectId { get; set; }
 
         #endregion
 

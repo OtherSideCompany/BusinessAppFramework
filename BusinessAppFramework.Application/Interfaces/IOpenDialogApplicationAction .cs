@@ -6,5 +6,6 @@ namespace BusinessAppFramework.Application.Interfaces
     {
         StringKey ComponentKey { get; }
         string DialogTitle { get; }
+        int? DomainObjectId { get; set; }
     }
 }
