@@ -18,29 +18,34 @@
 
 @typeparam T where T : DomainObject, new()
 
-<MudStack Spacing="6">
+<MudStack Spacing="4" Style="height: 100% !important;">
 
     <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+       
+        <DefaultDomainObjectPageTitle DomainObject="@DomainObjectPage?.DomainObject" DescriptorKey="@DescriptorKey" />
 
-        <MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
+        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
 
-            <DomainObjectHistory Dense="true" />
-
-        </MudStack>
-
-        <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center">
             <ActionButton OnClick="() => DeleteAsync()"
                           ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+
         </MudStack>
+
     </MudStack>
 
-    <DomainObjectPageSection Title="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
-        <ObjectProperties OnChanged="() => DomainObjectPage?.MarkDirty()" Columns="4" />
-    </DomainObjectPageSection>
+    <DomainObjectPageTabs>
+        <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
+            <CascadingValue Value="@DomainObjectPage?.DomainObject">
+                <ObjectProperties OnChanged="() => DomainObjectPage?.MarkDirty()" Columns="4" />
+            </CascadingValue>
+        </MudTabPanel>
+    </DomainObjectPageTabs>
+
 </MudStack>
 
 @code {
     [CascadingParameter] public DomainObjectPage<T>? DomainObjectPage { get; set; }
+    [CascadingParameter] public string? DescriptorKey { get; set; }
 
     private async Task DeleteAsync()
     {

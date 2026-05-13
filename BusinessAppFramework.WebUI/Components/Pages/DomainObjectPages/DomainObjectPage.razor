@@ -34,7 +34,12 @@
     .osc-page-content {
         flex: 1 1 auto;
         overflow-y: auto;
+        height: 0;
     }
+
+        .osc-page-content > div {
+            height: 100%;
+        }
 </style>
 
 <div class="osc-page">
@@ -65,23 +70,15 @@
     else
     {
         <DomainObjectPageLayout>
-
-            <Header>
-                <MudText Typo="Typo.h5" Style="font-weight:500;">
-                    @(LocalizedStringService.Get(Descriptor.WorkspaceKey.Key) + " " + DomainObject?.ToString())
-                </MudText>
-            </Header>
-
-            <Content>
-                <CascadingValue Value="this">
-                    <CascadingValue Value="DomainObject">
+            <CascadingValue Value="this">
+                <CascadingValue Value="DomainObject">
+                    <CascadingValue Value="@Descriptor.WorkspaceKey.Key">
                         <div class="osc-page-content">
                             <DynamicComponent Type="@Descriptor.ContentComponentType" />
                         </div>
                     </CascadingValue>
                 </CascadingValue>
-            </Content>
-
+            </CascadingValue>
         </DomainObjectPageLayout>
 
         <MudPopover Open="@IsDirty"

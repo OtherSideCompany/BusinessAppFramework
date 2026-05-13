@@ -1,49 +1,19 @@
 ﻿<style>
     .osc-domainobject-page {
         height: 100%;
-        display: flex;
-        flex-direction: column;
         overflow: hidden;
-        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
         background: var(--mud-palette-background);
-    }
-
-    .osc-domainobject-header {
-        flex: 0 0 auto;
-        padding: 16px 16px 0px 16px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .osc-domainobject-content {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        padding: 8px 16px 16px 16px;
+        padding: 16px;
     }
 
 </style>
 
 <div class="osc-domainobject-page">
-
-    @if (Header != null)
-    {
-        <div class="osc-domainobject-header">
-            @Header
-        </div>
-    }
-
-    @if (Content != null)
-    {
-        <div class="osc-domainobject-content">
-            @Content
-        </div>
-    }   
+    @ChildContent
 </div>
 
 @code {
-    [Parameter] public RenderFragment? Header { get; set; }
-    [Parameter] public RenderFragment? Content { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 }

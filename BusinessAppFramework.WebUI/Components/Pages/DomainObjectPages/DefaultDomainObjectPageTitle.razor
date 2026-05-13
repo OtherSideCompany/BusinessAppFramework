@@ -1,0 +1,30 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Components.Editor
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudStack Spacing="2">
+    <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
+
+        <MudText Typo="Typo.h6">
+            @(LocalizedStringService.Get(DescriptorKey ?? ""))
+        </MudText>
+
+        <MudChip T="string"
+                 Variant="Variant.Outlined"
+                 Size="Size.Small"
+                 Color="Color.Default"
+                 Style="font-size: 12px; font-weight: 700; color: var(--mud-palette-text-secondary);">
+            @DomainObject?.ToString()
+        </MudChip>
+
+    </MudStack>
+    <DomainObjectHistory />
+</MudStack>
+
+@code {
+    [Parameter] public DomainObject? DomainObject { get; set; }
+    [Parameter] public string? DescriptorKey { get; set; }
+}

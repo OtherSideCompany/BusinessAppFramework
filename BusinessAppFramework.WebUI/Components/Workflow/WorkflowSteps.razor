@@ -5,9 +5,64 @@
 
 @inject ILocalizedStringService LocalizedStringService
 
+<style>
+    .wf-row {
+        display: flex;
+        gap: 12px;
+    }
+
+    .wf-step {
+        flex: 1;
+        padding: 12px;
+        transition: border-color 0.15s ease;
+        border-radius:12px;
+    }
+
+    .wf-step-completed {
+        background-color: var(--mud-palette-success-hover) !important;
+        border-color: var(--mud-palette-primary) !important;
+        color: var(--mud-palette-success-darken) !important;
+    }
+
+    .wf-step-active {
+        background-color: var(--mud-palette-secondary-hover) !important;
+        border-color: var(--mud-palette-secondary-info) !important;
+        border-width: 2px !important;
+        padding: 11px !important; 
+        color: var(--mud-palette-secondary-darken) !important;
+    }
+
+    .wf-step-pending {
+        background-color: var(--mud-palette-surface) !important;
+        border-color: var(--mud-palette-lines-default) !important;
+        color: var(--mud-palette-text-disabled) !important;
+    }
+</style>
+
 @if (Workflow != null)
 {
-    <MudStepper CenterLabels="true"
+    <div style="display: flex; gap: 4px;">
+
+        @foreach (var step in Workflow.ProcessWorkflowSteps)
+        {
+            <MudPaper Outlined="true" Class="@($"wf-step {GetStepCssClass(step)}")">
+                <MudStack Row="true" Justify="Justify.Center">
+                    @if (step.IsCompleted)
+                    {
+                        <MudIcon Icon="@Icons.Material.Outlined.Check" />
+                    }
+                    else if (_firstIncomplete == step)
+                    {
+                        <MudIcon Icon="@Icons.Material.Outlined.Pending" />
+                    }
+                    <MudText>@LocalizedStringService.Get(@step.Key)</MudText>
+                </MudStack>
+            </MudPaper>
+        }
+
+    </div>
+
+    @* <MudStepper CenterLabels="true"
                 Class="wf-stepper"
                 ErrorStepColor="Color.Error"
                 CurrentStepColor="Color.Tertiary"
@@ -37,13 +92,14 @@
         </ChildContent>
         <ActionContent />
 
-    </MudStepper>
+    </MudStepper> *@
 }
 
 @code {
     [Parameter] public ProcessWorkflow? Workflow { get; set; }
 
     private int _activeIndex;
+    private ProcessWorkflowStep? _firstIncomplete;
 
     protected override void OnParametersSet()
     {
@@ -53,5 +109,22 @@
         var index = Workflow.ProcessWorkflowSteps.FindIndex(s => !s.IsCompleted);
 
         _activeIndex = index >= 0 ? index : Workflow.ProcessWorkflowSteps.Count - 1;
+    }
+
+    private string GetStepCssClass(ProcessWorkflowStep step)
+    {
+        if (step.IsCompleted) 
+            return "wf-step-completed";
+
+        if (IsActive(step)) 
+            return "wf-step-active";
+
+        return "wf-step-pending";
+    }
+
+    private bool IsActive(ProcessWorkflowStep step)
+    {
+        _firstIncomplete = Workflow?.ProcessWorkflowSteps.FirstOrDefault(s => !s.IsCompleted);
+        return _firstIncomplete == step;
     }
 }
