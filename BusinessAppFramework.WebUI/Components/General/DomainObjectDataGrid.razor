@@ -157,10 +157,10 @@
         {
             Branch.AddNode(node);
             await AddItemFromNodeAsync(node);
-        }        
+        }
 
         StateHasChanged();
-    }    
+    }
 
     private async Task DeleteItemAsync(TItem? domainObject)
     {
@@ -179,7 +179,7 @@
 
     private async Task<DataGridEditFormAction> OnCommitedItemChanged(TItem item)
     {
-       await ItemChanged.InvokeAsync();
-       return DataGridEditFormAction.Close;
+        await ItemChanged.InvokeAsync();
+        return DataGridEditFormAction.Close;
     }
 }

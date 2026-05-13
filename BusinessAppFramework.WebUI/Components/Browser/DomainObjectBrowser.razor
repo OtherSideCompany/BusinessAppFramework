@@ -370,7 +370,8 @@
         else if (applicationAction is IOpenDialogApplicationAction openDialogApplicationAction)
         {
             openDialogApplicationAction.DomainObjectId = _currentEditedObject?.Id;
-            await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+            var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+            await RefreshServerDataAsync(payload);
         }
         else
         {
