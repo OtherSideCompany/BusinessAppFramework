@@ -30,9 +30,9 @@ namespace BusinessAppFramework.Application.Descriptors
             ApplicationActions = new List<IApplicationAction>();
             DomainObjectApplicationActions = new List<IApplicationAction>();
 
-            var createAction = new DomainObjectHttpApplicationAction<TDomainObject>
+            var createAction = new DomainObjectHttpApplicationAction
             {
-                ActionKey = StringKey.From(ActionKeys.CreateActionKey),
+                ActionKey = ActionKeys.CreateActionKey,
                 HttpMethod = HttpMethod.Post,
             };
 
@@ -42,18 +42,18 @@ namespace BusinessAppFramework.Application.Descriptors
                 $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
                 $"{ApiRouteSegments.Create}";
 
-            var importExportAction = new DomainObjectHttpApplicationAction<TDomainObject>
+            var importExportAction = new DomainObjectHttpApplicationAction
             {
-                ActionKey = StringKey.From(ActionKeys.ImportExportDataActionKey),
+                ActionKey = ActionKeys.ImportExportDataActionKey,
                 HttpMethod = HttpMethod.Post,
             };
 
             ApplicationActions.Add(createAction);
             ApplicationActions.Add(importExportAction);
 
-            var deleteAction = new DomainObjectHttpApplicationAction<TDomainObject>
+            var deleteAction = new DomainObjectHttpApplicationAction
             {
-                ActionKey = StringKey.From(ActionKeys.DeleteActionKey),
+                ActionKey = ActionKeys.DeleteActionKey,
                 HttpMethod = HttpMethod.Delete
             };
 
@@ -66,7 +66,7 @@ namespace BusinessAppFramework.Application.Descriptors
 
             var pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
             {
-                ActionKey = StringKey.From(ActionKeys.EditActionKey)
+                ActionKey = ActionKeys.EditActionKey
             };
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
@@ -85,7 +85,7 @@ namespace BusinessAppFramework.Application.Descriptors
             }
         }
 
-        public void RemoveDefaultApplicationAction(StringKey actionKey)
+        public void RemoveDefaultApplicationAction(string actionKey)
         {
             var action = ApplicationActions.Where(aa => aa.ActionKey.Equals(actionKey)).FirstOrDefault();
 
@@ -95,7 +95,7 @@ namespace BusinessAppFramework.Application.Descriptors
             }
         }
 
-        public void RemoveDefaultDomainObjectApplicationAction(StringKey actionKey)
+        public void RemoveDefaultDomainObjectApplicationAction(string actionKey)
         {
             var action = DomainObjectApplicationActions.Where(aa => aa.ActionKey.Equals(actionKey)).FirstOrDefault();
 

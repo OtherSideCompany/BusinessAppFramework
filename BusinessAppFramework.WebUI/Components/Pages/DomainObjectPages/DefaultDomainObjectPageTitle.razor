@@ -12,13 +12,19 @@
             @(LocalizedStringService.Get(DescriptorKey ?? ""))
         </MudText>
 
-        <MudChip T="string"
-                 Variant="Variant.Outlined"
-                 Size="Size.Small"
-                 Color="Color.Default"
-                 Style="font-size: 12px; font-weight: 700; color: var(--mud-palette-text-secondary);">
-            @DomainObject?.ToString()
-        </MudChip>
+        <MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
+
+            <MudChip T="string"
+                     Variant="Variant.Outlined"
+                     Size="Size.Small"
+                     Color="Color.Default"
+                     Style="font-size: 12px; font-weight: 700; color: var(--mud-palette-text-secondary);">
+                @DomainObject?.ToString()
+            </MudChip>
+
+            @Tags
+
+        </MudStack>
 
     </MudStack>
     <DomainObjectHistory />
@@ -27,4 +33,5 @@
 @code {
     [Parameter] public DomainObject? DomainObject { get; set; }
     [Parameter] public string? DescriptorKey { get; set; }
+    [Parameter] public RenderFragment? Tags { get; set; }
 }

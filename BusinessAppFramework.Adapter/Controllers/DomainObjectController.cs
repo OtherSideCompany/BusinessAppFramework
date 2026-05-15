@@ -5,6 +5,7 @@ using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace BusinessAppFramework.Adapter.Controllers
 {
@@ -103,15 +104,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromBody] TDomainObject domainObject)
         {
             await _service.SaveAsync(domainObject);
-
-            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
-            applicationActionResultPayload.Changes.Add(new DomainObjectChange
-            {
-                DomainObjectId = domainObject.Id,
-                ChangeType = ChangeType.Modified
-            });
-
-            return Ok(applicationActionResultPayload);
+            return Ok(CreateModifiedPayload(domainObject.Id));
         }
 
         [HttpDelete($"{DomainObjectRouteSegments.Delete}/{{{ApiRouteParams.DomainObjectId}:int}}")]
@@ -134,7 +127,18 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         #region Private Methods
 
+        protected DomainObjectApplicationActionResultPayload CreateModifiedPayload(int domainObjectId)
+        {
+            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
 
+            applicationActionResultPayload.Changes.Add(new DomainObjectChange
+            {
+                DomainObjectId = domainObjectId,
+                ChangeType = ChangeType.Modified
+            });
+
+            return applicationActionResultPayload;
+        }
 
         #endregion
     }

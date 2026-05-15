@@ -14,71 +14,136 @@
 @implements IDisposable
 
 <style>
-    .mud-icon-button .mud-icon-root {
-        width: 22px;
-        height: 22px;
+    .nav-menu-icon {
+        width: 16px;
+        height: 16px;
     }
 
-    .mud-icon-button.active-nav {
-        color: #33EA51 !important;
+    .nav-menu-button-text {
+        color: white;
+        font-size: 12px;
     }
 
-        .mud-icon-button.active-nav .mud-icon-root {
-            color: #33EA51 !important;
+    .module-text {
+        font-size: 14px;
+        color: #5A5E72;
+    }
+
+    .nav-item {
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background 0.15s ease;
+    }
+
+        .nav-item:hover {
+            background: rgba(139, 128, 255, 0.08);
+        }
+
+    .module-header {
+        border-radius: 4px;
+        transition: background 0.15s ease;
+    }
+
+        .module-header:hover {
+            background: rgba(139, 128, 255, 0.08);
         }
 </style>
 
 <MudNavMenu Color="Color.Dark">
 
-    @if (_moduleKeys != null)
+    <div style="height:12px;" />
+
+    @{
+        var homeRef = NavigationManager.BaseUri;
+           
+        <MudStack Justify="Justify.Center">
+            <MudButton Href="@homeRef"
+                       Style="text-transform: none;">
+                <MudText Color="Color.Inherit" Style="color:white" Typo="Typo.h6">@AppName</MudText>
+            </MudButton>
+        </MudStack>
+
+    }
+
+    @foreach (var moduleKey in _moduleKeys)
     {
-        <MudStack Spacing="0">
+        <div style="height:8px;" />
 
-            @{
-                var homeRef = NavigationManager.BaseUri;
-                var isHomeActive = NavigationManager.Uri.Equals(homeRef, StringComparison.OrdinalIgnoreCase);
+        <div class="module-header" style="display: flex; align-items: center; justify-content: space-between; padding-right: 8px; cursor: pointer; height:32px;"
+             @onclick="() => ToggleModule(moduleKey)">
+            <MudText Class="module-text" Style="padding-left:16px;">@LocalizedStringService.Get(moduleKey)</MudText>
+            <MudIcon Icon="@(IsExpanded(moduleKey) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                     Style="color: #4A4D5E; width: 14px; height: 14px;" />
+        </div>
 
-                <MudTooltip Text="@LocalizedStringService.Get("")" Delay="300" Placement="Placement.Right">
-                    <MudIconButton Href="@homeRef"
-                                   Icon="@Icons.Material.Outlined.Home"
-                                   Color="Color.Inherit"
-                                   Class="@(isHomeActive ? "active-nav" : "")" />
-                </MudTooltip>
-            }
-
-            @foreach (var moduleKey in _moduleKeys)
+        @if (IsExpanded(moduleKey))
+        {
+            @foreach (var workspaceKey in _workspaceKeys[moduleKey])
             {
-                var href = GetModuleWorkspaceLink(moduleKey);
+                var href = GetWorkspaceLink(workspaceKey);
                 var isActive = NavigationManager.Uri.Contains(href);
 
-                <MudTooltip Text="@LocalizedStringService.Get(moduleKey)" Delay="700" Placement="Placement.Right">
-                    <MudIconButton Href="@href"
-                                   Icon="@IconFactory.CreateIcon(StringKey.From(moduleKey))"
-                                   Color="Color.Inherit"
-                                   Class="@(isActive ? "active-nav" : "")" />
-                </MudTooltip>
+                if (isActive)
+                {
+                    <MudStack Row="true" Spacing="0" Style="background:rgba(51, 234, 81, 0.1);">
+                        <div style="width: 3px; background: #33EA51; border-radius: 0 2px 2px 0;" />
+                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:13px;">
+                            <MudIcon Icon="@IconFactory.CreateIcon(StringKey.From(workspaceKey))" Class="nav-menu-icon" Style="color:#33EA51" />
+                            <MudButton Href="@href"
+                                       Style="text-transform: none;">
+                                <MudText Class="nav-menu-button-text" Style="color:#33EA51">@LocalizedStringService.Get(workspaceKey)</MudText>
+                            </MudButton>
+                        </MudStack>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:16px;" Class="nav-item">
+                        <MudIcon Icon="@IconFactory.CreateIcon(StringKey.From(workspaceKey))" Class="nav-menu-icon" />
+                        <MudButton Href="@href"
+                                   FullWidth="true"
+                                   Style="text-transform: none; justify-content: flex-start;">
+                            <MudText Class="nav-menu-button-text">@LocalizedStringService.Get(workspaceKey)</MudText>
+                        </MudButton>
+                    </MudStack>
+                }
             }
-        </MudStack>
+        }
     }
+
 
 </MudNavMenu>
 
 @code {
+    [Parameter, EditorRequired] public string AppName { get; set; }
 
     private List<string> _moduleKeys { get; set; } = new()!;
+    private Dictionary<string, List<string>> _workspaceKeys { get; set; } = new()!;
+    private Dictionary<string, bool> _expandedModules = new();
 
     protected override async Task OnInitializedAsync()
     {
         _moduleKeys = await WorkspaceNavigationService.GetModuleKeysAsync();
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        foreach (var moduleKey in _moduleKeys)
+        {
+            _workspaceKeys[moduleKey] = await WorkspaceNavigationService.GetWorkspaceKeysAsync(moduleKey);
+        }
     }
 
-    string GetModuleWorkspaceLink(string key) => "/module/" + key;
+    private string GetWorkspaceLink(string workspaceKey) => "/workspace/" + workspaceKey;
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         StateHasChanged();
     }
+
+    private bool IsExpanded(string moduleKey)
+        => _expandedModules.GetValueOrDefault(moduleKey, false);
+
+    private void ToggleModule(string moduleKey)
+        => _expandedModules[moduleKey] = !IsExpanded(moduleKey);
 
     public void Dispose()
     {

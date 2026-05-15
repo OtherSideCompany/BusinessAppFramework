@@ -3,7 +3,7 @@ using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Actions
 {
-   public class DomainObjectHttpApplicationAction<TDomainObject> : DomainObjectApplicationAction<TDomainObject>, IHttpDomainObjectApplicationAction where TDomainObject : DomainObject, new()
+   public class DomainObjectHttpApplicationAction : DomainObjectApplicationAction, IHttpDomainObjectApplicationAction
    {
       #region Fields
 

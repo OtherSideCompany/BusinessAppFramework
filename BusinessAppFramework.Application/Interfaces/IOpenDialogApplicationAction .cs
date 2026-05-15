@@ -4,7 +4,7 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IOpenDialogApplicationAction : IApplicationAction
     {
-        StringKey ComponentKey { get; }
+        string ComponentKey { get; }
         string DialogTitle { get; }
         int? DomainObjectId { get; set; }
     }

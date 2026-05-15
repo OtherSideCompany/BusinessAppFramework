@@ -13,7 +13,7 @@ namespace BusinessAppFramework.Application.Actions
         #endregion
 
         #region Properties
-        public StringKey ActionKey { get; init; } = StringKey.Empty;
+        public string ActionKey { get; init; } = string.Empty;
         public StringKey DocumentKey { get; set; } = StringKey.Empty;
         public string ExecuteRoute { get; init; } = string.Empty;
         public int DomainObjectId { get; set; }

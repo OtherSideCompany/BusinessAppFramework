@@ -1,5 +1,4 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Actions
 {
@@ -13,7 +12,7 @@ namespace BusinessAppFramework.Application.Actions
 
         #region Properties
 
-        public StringKey ComponentKey { get; set; }
+        public string ComponentKey { get; set; }
         public string DialogTitle { get; set; }
         public int? DomainObjectId { get; set; }
 

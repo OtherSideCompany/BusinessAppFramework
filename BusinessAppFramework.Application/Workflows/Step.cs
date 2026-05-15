@@ -1,8 +1,6 @@
-﻿using BusinessAppFramework.Application.Interfaces;
-
-namespace BusinessAppFramework.Application.Workflows
+﻿namespace BusinessAppFramework.Application.Workflows
 {
-    public class ProcessWorkflowStepCondition
+    public class Step
     {
         #region Fields
 
@@ -12,8 +10,10 @@ namespace BusinessAppFramework.Application.Workflows
 
         #region Properties
 
-        public string Key { get; set; }
+        public bool IsActive { get; set; }
         public bool IsCompleted { get; set; }
+        public string Key { get; set; }
+        public Transition? OutgoingTransition { get; set; }
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace BusinessAppFramework.Application.Workflows
 
         #region Constructor
 
-        public ProcessWorkflowStepCondition(string key)
+        public Step(string key)
         {
             Key = key;
         }

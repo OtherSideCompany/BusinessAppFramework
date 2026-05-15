@@ -2,18 +2,18 @@
 
 namespace BusinessAppFramework.Application.Workflows
 {
-    public class ProcessWorkflow
+    public class Condition
     {
         #region Fields
 
-        
+
 
         #endregion
 
         #region Properties
 
-        public List<Step> Steps { get; set; } = new();
-        public List<Transition> Transitions { get; set; } = new();
+        public string Key { get; set; }
+        public bool IsCompleted { get; set; }
 
         #endregion
 
@@ -25,19 +25,16 @@ namespace BusinessAppFramework.Application.Workflows
 
         #region Constructor
 
-        public ProcessWorkflow()
+        public Condition(string key)
         {
-            
+            Key = key;
         }
 
         #endregion
 
-        #region Public Methods      
+        #region Public Methods
 
-        public virtual void EvaluateWorkflowSate(WorkflowContext workflowContext)
-        {
 
-        }
 
         #endregion
 

@@ -1,6 +1,7 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Domain;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
@@ -65,7 +66,7 @@ namespace BusinessAppFramework.WebUI.Services
             {
                 HttpResult<DomainObjectApplicationActionResultPayload>? result = null;
 
-                if (httpApplicationAction.ActionKey.Key == ActionKeys.ImportExportDataActionKey)
+                if (httpApplicationAction.ActionKey == ActionKeys.ImportExportDataActionKey)
                 {
                     _userDialogService.SnackShow(_localizedStringService.Get(MessageKeys.NotImplementedMessage)!);
                     return new DomainObjectApplicationActionResultPayload();
@@ -117,7 +118,7 @@ namespace BusinessAppFramework.WebUI.Services
                     FullWidth = true
                 };
 
-                var componentType = _componentRegistry.Resolve(openDialogApplicationAction.ComponentKey);
+                var componentType = _componentRegistry.Resolve(StringKey.From(openDialogApplicationAction.ComponentKey));
                 var dialog = await _dialogService.ShowAsync(componentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
                 var result = await dialog.Result;
 

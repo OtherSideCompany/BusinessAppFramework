@@ -4,7 +4,7 @@ using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Actions
 {
-   public class DomainObjectNavigationApplicationAction<TDomainObject> : DomainObjectApplicationAction<TDomainObject>, IDomainObjectNavigationApplicationAction where TDomainObject : DomainObject, new()
+   public class DomainObjectNavigationApplicationAction<TDomainObject> : DomainObjectApplicationAction, IDomainObjectNavigationApplicationAction where TDomainObject : DomainObject, new()
    {
       #region Fields
 

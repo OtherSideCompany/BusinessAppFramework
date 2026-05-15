@@ -272,8 +272,18 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
             var ignored = GetIgnoredDomainObjectMappingProperties();
 
-            var domainObjectProps = typeof(TDomainObject).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead && !ignored.Contains(p.Name)).ToDictionary(p => p.Name);
-            var entityProps = typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanWrite).ToDictionary(p => p.Name);
+            var domainObjectProps = typeof(TDomainObject)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.CanRead &&
+                            !ignored.Contains(p.Name) &&
+                            p.GetGetMethod()?.GetBaseDefinition().IsAbstract != true)
+                .ToDictionary(p => p.Name);
+
+            var entityProps = typeof(TEntity)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.CanWrite &&
+                            p.GetGetMethod()?.GetBaseDefinition().IsAbstract != true)
+                .ToDictionary(p => p.Name);
 
             foreach (var domainObjectProperty in domainObjectProps.Values)
             {
