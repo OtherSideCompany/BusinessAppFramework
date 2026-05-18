@@ -23,8 +23,7 @@ namespace BusinessAppFramework.WebUI.Authentication
 
                 if (!string.IsNullOrEmpty(token))
                 {
-                    request.Headers.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 }
             }
 

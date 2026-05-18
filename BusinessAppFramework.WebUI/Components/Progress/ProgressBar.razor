@@ -1,0 +1,39 @@
+﻿@using MudBlazor
+
+<MudStack Spacing="1" Style="min-width: 100px;">
+    <MudStack Row="true" Justify="Justify.SpaceBetween">
+        <MudText Typo="Typo.caption" Align="Align.Right" Style="color: var(--mud-palette-text-secondary)">
+            @Current.ToString("0.##") / @Total.ToString("0.##")
+        </MudText>
+        <MudText Typo="Typo.caption" Align="Align.Right" Style="color: var(--mud-palette-text-secondary)">
+            @_clampedPercentage.ToString("0")%
+        </MudText>
+    </MudStack>
+    <MudProgressLinear Color="@_color"
+                       Value="@_clampedPercentage"
+                       Min="0"
+                       Max="100"
+                       Size="Size.Large"
+                       Rounded="true" />
+
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public decimal Total { get; set; }
+    [Parameter, EditorRequired] public decimal Current { get; set; }
+
+    private double _percentage => Total > 0 ? (double)(Current / Total * 100m) : 0d;
+    private double _clampedPercentage;
+    private Color _color;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _clampedPercentage = Math.Min(100d, Math.Max(0d, _percentage));
+
+        _color = _clampedPercentage >= 100d ? Color.Primary
+              : _clampedPercentage > 0d ? Color.Secondary
+              : Color.Default;
+    }
+}

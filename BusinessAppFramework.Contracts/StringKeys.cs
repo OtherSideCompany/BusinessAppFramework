@@ -29,5 +29,6 @@
         public static string ConnectKey => "Connect";
         public static string SelectToSearchKey => "SelectToSearch";
         public static string StatusKey => "Status";
+        public static string ProgressionKey => "Progression";
     }
 }
