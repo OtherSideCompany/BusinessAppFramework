@@ -1,9 +1,4 @@
 ﻿using BusinessAppFramework.Application.Actions;
-using BusinessAppFramework.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Transactions;
 
 namespace BusinessAppFramework.Application.Workflows
 {
@@ -17,7 +12,6 @@ namespace BusinessAppFramework.Application.Workflows
 
         #region Properties
 
-        public string Key { get; set; }
         public DomainObjectHttpApplicationAction? DomainObjectHttpApplicationAction { get; set; }
         public OpenDialogApplicationAction? OpenDialogApplicationAction { get; set; }
         public bool IsExecuted { get; set; }
@@ -36,9 +30,9 @@ namespace BusinessAppFramework.Application.Workflows
 
         #region Constructor
 
-        public Transition(string key)
+        public Transition()
         {
-            Key = key;
+            
         }
 
         #endregion
