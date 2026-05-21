@@ -46,7 +46,7 @@
         get => _domainObjectReferenceList;
         set
         {
-            if (_domainObjectReferenceList?.RelationKey == value?.RelationKey)
+            if (ReferenceEquals(_domainObjectReferenceList, value))
                 return;
 
             _domainObjectReferenceList = value;
@@ -90,7 +90,7 @@
         }
     }
 
-    private async void HandleDomainObjectReferenceListChanged()
+    private void HandleDomainObjectReferenceListChanged()
     {
         if (DomainObjectReferenceList == null)
             return;

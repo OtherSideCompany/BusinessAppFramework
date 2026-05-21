@@ -19,12 +19,15 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         [Inject] protected IUserDialogService UserDialogService { get; set; } = default!;
         [Inject] protected IApplicationActionExecutionService ApplicationActionExecutionService { get; set; } = default!;
         [Inject] protected IDialogService DialogService { get; set; } = default!;
+        [Inject] protected IIconFactory IconFactory { get; set; } = default!;
 
-        protected abstract string PageTreeKey { get; }
+        protected virtual string? PageTreeKey { get; }
 
         protected bool _isDeleted;
         protected Tree? _tree;
         protected int? _loadedId;
+        protected Workflow.Workflow? _workflow;
+
         private List<IEditable> _editableComponents { get; set; } = new();
 
         #endregion
@@ -38,7 +41,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
         #endregion
 
-        #region Public Methods        
+        #region Public Methods
 
         public void RegisterEditableComponent(IEditable? editableComponent)
         {
@@ -53,16 +56,18 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             return _tree?.GetBranch(relationKey);
         }
 
-        public async Task UpdateTreeBranchAsync(string pageTreeKey, string relationKey)
+        public async Task UpdateTreeBranchAsync(string relationKey)
         {
-            if (Id.HasValue)
+            if (Id.HasValue && PageTreeKey != null)
             {
-                var branch = await TreeGateway.GetTreeBranchAsync(Id.Value, pageTreeKey, relationKey);
+                var branch = await TreeGateway.GetTreeBranchAsync(Id.Value, PageTreeKey, relationKey);
 
                 if (branch == null)
                     return;
 
                 _tree?.SetBranch(branch);
+
+                StateHasChanged();
             }
         }
 
@@ -88,11 +93,18 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
         }
 
-        public async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
+        public virtual async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction, int? id)
         {
-            if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction && Id != null)
+            if (id != null)
             {
-                domainObjectApplicationAction.DomainObjectId = Id.Value;
+                if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction)
+                {
+                    domainObjectApplicationAction.DomainObjectId = id.Value;
+                }
+                else if (applicationAction is IOpenDialogApplicationAction openDialogApplicationAction)
+                {
+                    openDialogApplicationAction.DomainObjectId = id.Value;
+                }
             }
 
             var payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
@@ -103,9 +115,14 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
         }
 
+        public virtual async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
+        {
+            await ExecuteApplicationActionAsync(applicationAction, Id);
+        }
+
         #endregion
 
-        #region Private Methods
+        #region Private Methods        
 
         protected override async Task OnParametersSetAsync()
         {
@@ -129,6 +146,12 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
 
             _loadedId = Id.Value;
+
+            if (_workflow != null)
+            {
+                await _workflow.RefreshWorkflowAsync();
+            }
+
             StateHasChanged();
         }
 
