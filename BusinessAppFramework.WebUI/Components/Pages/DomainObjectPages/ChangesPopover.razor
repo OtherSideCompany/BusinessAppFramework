@@ -1,0 +1,34 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudPopover Open="@IsDirty"
+            AnchorOrigin="Origin.TopRight"
+            TransformOrigin="Origin.TopRight"
+            OverflowBehavior="OverflowBehavior.FlipNever"
+            Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
+    <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
+        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
+            <MudIconButton Icon="@Icons.Material.Filled.Save"
+                           OnClick="SaveAsync"
+                           Style="color:white"
+                           Size="Size.Large" />
+        </MudTooltip>
+
+
+        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
+            <MudIconButton Icon="@Icons.Material.Filled.Undo"
+                           OnClick="UndoAsync"
+                           Style="color:white"
+                           Size="Size.Large" />
+        </MudTooltip>
+    </MudButtonGroup>
+</MudPopover>
+
+@code{
+    [Parameter, EditorRequired] public bool IsDirty { get; set; }
+    [Parameter] public EventCallback SaveAsync { get; set; }
+    [Parameter] public EventCallback UndoAsync { get; set; }
+}

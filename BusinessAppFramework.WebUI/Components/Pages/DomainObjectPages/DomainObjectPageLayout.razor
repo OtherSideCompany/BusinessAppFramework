@@ -8,12 +8,43 @@
         padding: 16px;
     }
 
+        .osc-domainobject-page ::deep .mud-expand-panel {
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+    .osc-page-content {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        height: 0;
+    }
+
+        .osc-page-content > div {
+            height: 100%;
+        }
 </style>
 
-<div class="osc-domainobject-page">
-    @ChildContent
-</div>
+@if (IsDeleted)
+{
+    <DeletedDomainObjectPage />
+}
+else
+{
+    <div class="osc-domainobject-page">
+        <div class="osc-page-content">
+            @ChildContent
+        </div>
+    </div>
+
+    <ChangesPopover IsDirty="IsDirty"
+                    SaveAsync="OnSave"
+                    UndoAsync="OnUndo" />
+}
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsDeleted { get; set; }
+    [Parameter] public bool IsDirty { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnUndo { get; set; }
 }

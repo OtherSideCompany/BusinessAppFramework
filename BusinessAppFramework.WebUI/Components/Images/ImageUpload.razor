@@ -1,32 +1,43 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 
-<MudFileUpload T="IBrowserFile"
-               DragAndDrop="true"
-               Accept="@AcceptedImageFormats"
-               MaximumFileCount="1"
-               FilesChanged="(file) => ImageFileSelected(file)">
-    <SelectedTemplate />
-</MudFileUpload>
+<MudStack Spacing="4">
 
-@if (ImageData != null && ImageData.Length > 0)
-{
-    <MudImage Src="@GetImageDataUrl()"
-              ObjectFit="ObjectFit.Contain"
-              Height="200" />
-}
+    @if (_imageData != null && _imageData.Length > 0)
+    {
+        <MudImage Src="@GetImageDataUrl()"
+                  ObjectFit="ObjectFit.Contain"
+                  Height="200" />
+    }
+
+    <MudFileUpload T="IBrowserFile"
+                   DragAndDrop="true"
+                   Accept="@AcceptedImageFormats"
+                   MaximumFileCount="1"
+                   FilesChanged="(file) => ImageFileSelected(file)">
+        <SelectedTemplate />
+    </MudFileUpload>
+
+
+
+</MudStack>
 
 @code {
+    [Parameter] public byte[]? ImageData { get; set; }
     [Parameter, EditorRequired] public string AcceptedImageFormats { get; set; }
     [Parameter, EditorRequired] public string DisplayedImageFormat { get; set; }
     [Parameter] public EventCallback<byte[]> OnImageSelected { get; set; }
 
-    private byte[]? ImageData { get; set; }
+    private byte[]? _imageData;
+    private byte[]? _lastImageData;
 
-    public void SetImageData(byte[]? data)
+    protected override void OnParametersSet()
     {
-        ImageData = data;
-        StateHasChanged();
+        if (!ReferenceEquals(ImageData, _lastImageData))
+        {
+            _lastImageData = ImageData;
+            _imageData = ImageData;
+        }
     }
 
     private async Task ImageFileSelected(IBrowserFile file)
@@ -39,14 +50,15 @@
         await stream.CopyToAsync(memoryStream);
         var imageBytes = memoryStream.ToArray();
 
+        _imageData = imageBytes;
         await OnImageSelected.InvokeAsync(imageBytes);
     }
 
     private string GetImageDataUrl()
     {
-        if (ImageData != null)
+        if (_imageData != null)
         {
-            var base64 = Convert.ToBase64String(ImageData);
+            var base64 = Convert.ToBase64String(_imageData);
             return $"data:{DisplayedImageFormat};base64,{base64}";
         }
         return string.Empty;

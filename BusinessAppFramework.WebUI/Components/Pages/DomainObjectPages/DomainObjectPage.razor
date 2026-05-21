@@ -1,11 +1,6 @@
 ﻿@using Application.Descriptors
 @using Application.Trees
-@using BusinessAppFramework.Application.Actions
 @using BusinessAppFramework.Application.Interfaces
-@using BusinessAppFramework.Application.Services
-@using BusinessAppFramework.WebUI.Components.Browser
-@using BusinessAppFramework.WebUI.Components.Editor
-@using BusinessAppFramework.WebUI.Components.Header
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
@@ -20,99 +15,25 @@
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 
-<style>
-    .osc-page {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden;
-    }
 
-        .osc-page .mud-expand-panel {
-            box-shadow: none !important;
-            border: none !important;
-        }
+@if (_isDeleted)
+{
+    <DeletedDomainObjectPage />
+}
+else
+{
+    <DomainObjectPageLayout>
+        @RenderContent()
+    </DomainObjectPageLayout>
 
-    .osc-page-content {
-        flex: 1 1 auto;
-        overflow-y: auto;
-        height: 0;
-    }
-
-        .osc-page-content > div {
-            height: 100%;
-        }
-</style>
-
-<div class="osc-page">
-
-    @if (_isDeleted)
-    {
-        <MudStack Style="height:100%;"
-                  AlignItems="AlignItems.Center"
-                  Justify="Justify.Center">
-
-            <MudPaper Class="px-4 py-2"
-                      Elevation="6"
-                      Style="border-radius:12px;">
-                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-                    <MudIcon Icon="@Icons.Material.Filled.Done"
-                             Size="Size.Medium"
-                             Color="Color.Primary" />
-
-                    <MudText Typo="Typo.subtitle1">
-                        @LocalizedStringService.Get(StringKeys.DeletedKey)
-                    </MudText>
-                </MudStack>
-
-            </MudPaper>
-
-        </MudStack>
-    }
-    else
-    {
-        <DomainObjectPageLayout>
-            <CascadingValue Value="this">
-                <CascadingValue Value="DomainObject">
-                    <CascadingValue Value="@Descriptor.WorkspaceKey.Key">
-                        <div class="osc-page-content">
-                            <DynamicComponent Type="@Descriptor.ContentComponentType" />
-                        </div>
-                    </CascadingValue>
-                </CascadingValue>
-            </CascadingValue>
-        </DomainObjectPageLayout>
-
-        <MudPopover Open="@IsDirty"
-                    AnchorOrigin="Origin.TopRight"
-                    TransformOrigin="Origin.TopRight"
-                    OverflowBehavior="OverflowBehavior.FlipNever"
-                    Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
-            <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
-                <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
-                    <MudIconButton Icon="@Icons.Material.Filled.Save"
-                                   OnClick="SaveAsync"
-                                   Style="color:white"
-                                   Size="Size.Large" />
-                </MudTooltip>
-
-
-                <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
-                    <MudIconButton Icon="@Icons.Material.Filled.Undo"
-                                   OnClick="UndoAsync"
-                                   Style="color:white"
-                                   Size="Size.Large" />
-                </MudTooltip>
-            </MudButtonGroup>
-        </MudPopover>
-    }
-
-
-</div>
+    <ChangesPopover IsDirty="@IsDirty"
+                    SaveAsync="SaveAsync"
+                    UndoAsync="UndoAsync" />
+}
 
 
 @code {
-    [Parameter] public DomainObjectPageDescriptor<TDomainObject> Descriptor { get; set; } = default!;
+    [Parameter] public WorkspaceDescriptor Descriptor { get; set; } = default!;
     [Parameter, SupplyParameterFromQuery]
     public int? Id
     {
@@ -134,6 +55,8 @@
     public event Func<Task>? DomainObjectSet;
     public event Func<Task>? PageTreeLoaded;
     public event Func<ApplicationActionExecutedPayload, Task>? ApplicationActionExecuted;
+
+    protected virtual RenderFragment? RenderContent() => null;
 
     protected Tree? _tree;
 
@@ -219,7 +142,7 @@
         if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction && Id != null)
         {
             domainObjectApplicationAction.DomainObjectId = Id.Value;
-        }        
+        }
 
         var payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
 

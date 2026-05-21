@@ -1,58 +1,44 @@
-﻿@using BusinessAppFramework.Application.Interfaces
-@using BaseData.Contracts
-@using BaseData.Domain.DomainObjects
-@using BusinessAppFramework.Contracts
+﻿@using BusinessAppFramework.Contracts
 @using BusinessAppFramework.Domain
 @using BusinessAppFramework.WebUI.Components.Browser
 @using MudBlazor
 @using BusinessAppFramework.Domain.DomainObjects
-@using BusinessAppFramework.WebUI.Components.General
-@using BusinessAppFramework.WebUI.Components.Header
-@using BusinessAppFramework.WebUI.Components.Pages
 @using BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
-@using BusinessAppFramework.WebUI.Interfaces
 @using BusinessAppFramework.WebUI.Components.Editor
-@using Search.Contracts.SearchResults
-
-@inject ILocalizedStringService LocalizedStringService
 
 @typeparam T where T : DomainObject, new()
 
-<MudStack Spacing="4" Style="height: 100% !important;">
+@inherits DomainObjectPageBase<T>
 
-    <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-       
-        <DefaultDomainObjectPageTitle DomainObject="@DomainObjectPage?.DomainObject" DescriptorKey="@DescriptorKey" />
+<DomainObjectPageLayout IsDeleted="_isDeleted"
+                        IsDirty="IsDirty"
+                        OnSave="SaveAsync"
+                        OnUndo="UndoAsync">
+    <MudStack Spacing="4" Style="height: 100% !important;">
 
-        <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
+        <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 
-            <ActionButton OnClick="() => DeleteAsync()"
-                          ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+            <DefaultDomainObjectPageTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey.Key" />
+
+            <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
+
+                <ActionButton OnClick="() => DeleteAsync()"
+                              ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+
+            </MudStack>
 
         </MudStack>
 
+        <DomainObjectPageTabs>
+            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
+                <ObjectProperties OnChanged="() => MarkDirty()" Columns="4" Target="@DomainObject" />
+            </MudTabPanel>
+        </DomainObjectPageTabs>
+
     </MudStack>
-
-    <DomainObjectPageTabs>
-        <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
-            <CascadingValue Value="@DomainObjectPage?.DomainObject">
-                <ObjectProperties OnChanged="() => DomainObjectPage?.MarkDirty()" Columns="4" />
-            </CascadingValue>
-        </MudTabPanel>
-    </DomainObjectPageTabs>
-
-</MudStack>
+</DomainObjectPageLayout>
 
 @code {
-    [CascadingParameter] public DomainObjectPage<T>? DomainObjectPage { get; set; }
-    [CascadingParameter] public string? DescriptorKey { get; set; }
-
-    private async Task DeleteAsync()
-    {
-        if (DomainObjectPage != null)
-        {
-            await DomainObjectPage.DeleteAsync();
-        }
-    }
+    protected override string PageTreeKey => "";
 }
 

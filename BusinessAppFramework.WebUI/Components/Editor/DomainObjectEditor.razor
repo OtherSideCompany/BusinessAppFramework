@@ -48,15 +48,13 @@
 
 <div class="osc-editor">
 
-    <CascadingValue Value="DomainObject">
-        <div class="osc-editor-content">
-            <MudStack Spacing="3">
-                <ObjectProperties OnChanged="() => MarkDirty()" />
-                <MudDivider Class="my-2" />
-                <DomainObjectHistory />
-            </MudStack>
-        </div>
-    </CascadingValue>
+    <div class="osc-editor-content">
+        <MudStack Spacing="3">
+            <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
+            <MudDivider Class="my-2" />
+            <DomainObjectHistory DomainObject="@DomainObject" />
+        </MudStack>
+    </div>
 
     <MudPopover Open="@IsDirty"
                 AnchorOrigin="Origin.TopRight"

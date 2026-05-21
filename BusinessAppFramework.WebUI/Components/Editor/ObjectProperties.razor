@@ -58,7 +58,7 @@
 </MudGrid>
 
 @code {
-    [CascadingParameter] public object? Target { get; set; }
+    [Parameter] public object? Target { get; set; }
     [Parameter] public EventCallback OnChanged { get; set; }
     [Parameter] public int Columns { get; set; } = 1;
 

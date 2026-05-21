@@ -4,7 +4,6 @@
 @using Domain.DomainObjects
 @using MudBlazor
 @using WebUI.Interfaces
-@using WebUI.Services
 
 @inject ITreeGateway TreeGateway
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
@@ -32,10 +31,10 @@
         border-radius: 8px;
     }
 
-    .osc-tile:hover {
-        border-color: var(--mud-palette-primary) !important;
-        background: var(--mud-palette-background-gray) !important;
-    }
+        .osc-tile:hover {
+            border-color: var(--mud-palette-primary) !important;
+            background: var(--mud-palette-background-gray) !important;
+        }
 </style>
 
 <MudCard Class="pa-2 osc-tile" Elevation="0" Outlined="false">
@@ -82,9 +81,7 @@
 
     @if (_isEditing)
     {
-        <CascadingValue Value="_editedObject">
-            <ObjectProperties OnChanged="() => MarkDirty()" />
-        </CascadingValue>
+        <ObjectProperties OnChanged="() => MarkDirty()" Target="@_editedObject" />
 
         @if (IsDirty)
         {
@@ -111,7 +108,7 @@
     public bool IsDirty { get; set; }
 
     private bool _isEditing;
-    private TDomainObject? _editedObject;    
+    private TDomainObject? _editedObject;
 
     public void MarkDirty()
     {
