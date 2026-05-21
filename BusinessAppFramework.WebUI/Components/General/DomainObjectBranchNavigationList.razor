@@ -1,0 +1,68 @@
+﻿@using BusinessAppFramework.Application.Actions
+@using BusinessAppFramework.Application.Interfaces
+
+@using BusinessAppFramework.Application.Trees
+@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Interfaces
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+@inject IApplicationActionExecutionService ApplicationActionExecutionService
+@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyResolver
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+
+<MudStack Spacing="4">
+
+    @if (Branch != null)
+    {
+        @foreach (var node in Branch.Nodes)
+        {
+            <MudButton Class="pa-4"
+                       FullWidth="true"
+                       Variant="Variant.Outlined"
+                       Style="border-color: var(--mud-palette-lines-default)"
+                       OnClick="() => NavigateToAsync(node.Id)">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="6" Style="width: 100%">
+
+                    <MudIcon Icon="@Icon" />
+
+                    <MudStack Spacing="0" AlignItems="AlignItems.Start">
+
+                        <MudText>@node?.Summary?.ReferenceNumber</MudText>
+                        <MudText Typo="Typo.caption">@(node?.Summary?.Title) - @(node?.Summary?.SubTitle)</MudText>
+
+                    </MudStack>
+
+                    <MudIcon Icon="@Icons.Material.Outlined.TrendingFlat" Class="ml-auto" />
+
+                </MudStack>
+            </MudButton>
+        }
+    }
+
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public Branch? Branch { get; set; }
+    [Parameter] public string Icon { get; set; } = default!;
+
+    private DomainObjectNavigationApplicationAction<TDomainObject>? _navigationApplicationAction;
+
+    protected override void OnParametersSet()
+    {
+        if (_navigationApplicationAction == null)
+        {
+            _navigationApplicationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(DomainObjectPageWorkspaceKeyResolver);
+        }
+    }
+
+    private async Task NavigateToAsync(int domainObjectId)
+    {
+        if (_navigationApplicationAction != null)
+        {
+            _navigationApplicationAction.DomainObjectId = domainObjectId;
+            await ApplicationActionExecutionService.ExecuteApplicationActionAsync(_navigationApplicationAction);
+        }
+    }
+}

@@ -1,6 +1,7 @@
 ﻿@using Application.Descriptors
-@using BusinessAppFramework.Application.Interfaces
 @using Application.Trees
+@using BusinessAppFramework.Application.Actions
+@using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Application.Services
 @using BusinessAppFramework.WebUI.Components.Browser
 @using BusinessAppFramework.WebUI.Components.Editor
@@ -15,6 +16,7 @@
 @inject IWorkspaceDescriptorFactory DescriptorFactory
 @inject ITreeGateway TreeGateway
 @inject IUserDialogService UserDialogService
+@inject IApplicationActionExecutionService ApplicationActionExecutionService
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 
@@ -131,6 +133,7 @@
     public event Func<Task>? ChangesCancelled;
     public event Func<Task>? DomainObjectSet;
     public event Func<Task>? PageTreeLoaded;
+    public event Func<ApplicationActionExecutedPayload, Task>? ApplicationActionExecuted;
 
     protected Tree? _tree;
 
@@ -211,6 +214,23 @@
         StateHasChanged();
     }
 
+    public async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
+    {
+        if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction && Id != null)
+        {
+            domainObjectApplicationAction.DomainObjectId = Id.Value;
+        }        
+
+        var payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+
+        if (payload?.ErrorMessageKey != null)
+        {
+            UserDialogService.SnackError(LocalizedStringService.Get(payload?.ErrorMessageKey!));
+        }
+
+        await RaiseAsync(ApplicationActionExecuted, new ApplicationActionExecutedPayload() { ActionKey = applicationAction.ActionKey, ActionResult = payload });
+    }
+
     private async Task OnIdSetAsync()
     {
         if (Id.HasValue)
@@ -269,5 +289,13 @@
 
         foreach (var handler in @event.GetInvocationList().Cast<Func<Task>>())
             await handler();
+    }
+
+    private async Task RaiseAsync<T>(Func<T, Task>? @event, T arg)
+    {
+        if (@event is null) return;
+
+        foreach (var handler in @event.GetInvocationList().Cast<Func<T, Task>>())
+            await handler(arg);
     }
 }

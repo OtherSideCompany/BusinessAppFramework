@@ -1,7 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using ImageMagick;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -105,45 +103,34 @@ namespace BusinessAppFramework.Infrastructure.ImageCompression
 
         public async Task<byte[]> CompressPngImageAsync(Stream inputPng, int maxWidth, int maxHeight)
         {
-            using var image = await SixLabors.ImageSharp.Image.LoadAsync(inputPng);
+            using var image = new MagickImage();
+            await Task.Run(() => image.Read(inputPng));
 
-            if (image.Width > maxWidth || image.Height > maxHeight)
+            if (image.Width > (uint)maxWidth || image.Height > (uint)maxHeight)
             {
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max,
-                    Size = new SixLabors.ImageSharp.Size(maxWidth, maxHeight)
-                }));
+                image.Resize(new MagickGeometry((uint)maxWidth, (uint)maxHeight) { Greater = true });
             }
 
+            image.Format = MagickFormat.Png;
+            image.Quality = 100;
+            image.SetCompression(CompressionMethod.Zip);
+
             using var output = new MemoryStream();
-
-            var encoder = new PngEncoder
-            {
-                CompressionLevel = PngCompressionLevel.BestCompression
-            };
-
-            await image.SaveAsync(output, encoder);
+            await Task.Run(() => image.Write(output));
             return output.ToArray();
         }
 
         public byte[] CompressToJpeg(byte[] input, int maxSize = 256, int quality = 80)
         {
-            using var image = SixLabors.ImageSharp.Image.Load(input);
+            using var image = new MagickImage(input);
 
-            image.Mutate(x => x.Resize(new ResizeOptions
-            {
-                Mode = ResizeMode.Max,
-                Size = new SixLabors.ImageSharp.Size(maxSize, maxSize)
-            }));
+            image.Resize(new MagickGeometry((uint)maxSize, (uint)maxSize) { Greater = true });
+
+            image.Format = MagickFormat.Jpeg;
+            image.Quality = (uint)quality;
 
             using var output = new MemoryStream();
-            var encoder = new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
-            {
-                Quality = quality
-            };
-
-            image.Save(output, encoder);
+            image.Write(output);
             return output.ToArray();
         }
 

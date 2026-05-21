@@ -1,5 +1,4 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Actions
 {
