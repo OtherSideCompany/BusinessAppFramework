@@ -1,0 +1,20 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+@{
+    var label = LocalizedStringService.Get(StatusKey);
+}
+
+<MudChip T="string" Color="_color" Variant="_variant" Size="Size.Medium">
+    @label
+</MudChip>
+
+@code {
+    [EditorRequired, Parameter] public string StatusKey { get; set; }
+    [Parameter] public bool IsDraft { get; set; }
+
+    private Color _color => IsDraft ? Color.Error : Color.Primary;
+    private Variant _variant => IsDraft ? Variant.Outlined : Variant.Filled;
+}

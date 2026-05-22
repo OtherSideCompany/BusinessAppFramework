@@ -13,7 +13,6 @@ namespace BusinessAppFramework.Application.Workflows
         #region Properties
 
         public List<Step> Steps { get; set; } = new();
-        public List<Transition> Transitions { get; set; } = new();
 
         #endregion
 
