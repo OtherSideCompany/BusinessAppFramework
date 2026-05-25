@@ -21,12 +21,11 @@
         foreach (var reference in DomainObjectReferenceList.Items)
         {
             <MudChip T="DomainObjectReferenceListItem"
-                     Color="Color.Primary"
-                     Size="Size.Medium"
-                     Variant="Variant.Filled"
+                     Size="Size.Small"
+                     Variant="Variant.Text"
                      CloseIcon="@Icons.Material.Filled.Close"
                      OnClose="(() => RemoveReference(reference))">
-                @reference.DisplayValue
+                <MudText Typo="Typo.body2">@reference.DisplayValue</MudText>
             </MudChip>
         }
     }
@@ -68,8 +67,7 @@
 
         var parameters = new DialogParameters
         {
-            { nameof(SelectorDialog.Descriptor), _domainObjectSelectorDescriptor },
-            { nameof(SelectorDialog.InitialSearch), _value ?? string.Empty }
+            { nameof(SelectorDialog.Descriptor), _domainObjectSelectorDescriptor }
         };
 
         var options = new DialogOptions

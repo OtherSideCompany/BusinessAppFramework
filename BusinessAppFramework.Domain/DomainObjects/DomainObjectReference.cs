@@ -1,51 +1,57 @@
 ﻿namespace BusinessAppFramework.Domain.DomainObjects
 {
-   public class DomainObjectReference
-   {
-      #region Fields
+    public class DomainObjectReference
+    {
+        #region Fields
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
+        #region Properties
 
-      public string RelationKey { get; set; }
-      public int? DomainObjectId { get; set; }
-      public string DisplayValue { get; set; }
+        public string RelationKey { get; set; }
+        public int? DomainObjectId { get; set; }
+        public string DisplayValue { get; set; }
 
-      #endregion
+        #endregion
 
-      #region Commands
-
-
-
-      #endregion
-
-      #region Constructor
-
-      public DomainObjectReference()
-      {
-         RelationKey = string.Empty;
-      }
-
-      public DomainObjectReference(string relationKey, int? domainObjectId)
-      {
-         DomainObjectId = domainObjectId;
-         RelationKey = relationKey;
-      }
-
-      #endregion
-
-      #region Public Methods
-
-
-      #endregion
-
-      #region Private Methods
+        #region Commands
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Constructor
+
+        public DomainObjectReference()
+        {
+            RelationKey = string.Empty;
+        }
+
+        public DomainObjectReference(string relationKey, int? domainObjectId)
+        {
+            DomainObjectId = domainObjectId;
+            RelationKey = relationKey;
+        }
+
+        public void Clear()
+        {
+            DomainObjectId = null;
+            DisplayValue = string.Empty;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

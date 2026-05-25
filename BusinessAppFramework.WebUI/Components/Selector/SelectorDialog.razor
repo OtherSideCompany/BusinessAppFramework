@@ -14,7 +14,6 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public IDomainObjectSelectorDescriptor Descriptor { get; set; } = default!;
-    [Parameter] public string? InitialSearch { get; set; }
 
     private IDomainObjectSelector? _domainObjectSelector;
     private RenderFragment? _domainObjectSelectorRenderFragment;
@@ -45,7 +44,7 @@
         if (firstRender && _needsLoad && _domainObjectSelector != null)
         {
             _needsLoad = false;
-            await _domainObjectSelector.Load(InitialSearch ?? string.Empty);
+            await _domainObjectSelector.Load(string.Empty);
             StateHasChanged();
         }
     }

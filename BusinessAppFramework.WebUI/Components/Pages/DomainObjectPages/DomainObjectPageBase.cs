@@ -20,6 +20,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         [Inject] protected IApplicationActionExecutionService ApplicationActionExecutionService { get; set; } = default!;
         [Inject] protected IDialogService DialogService { get; set; } = default!;
         [Inject] protected IIconFactory IconFactory { get; set; } = default!;
+        [Inject] protected IRelationServiceGateway RelationServiceGateway { get; set; } = default!;
 
         protected virtual string? PageTreeKey { get; }
 

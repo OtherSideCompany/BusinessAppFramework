@@ -24,5 +24,7 @@
         public const string Logout = "logout";
 
         public const string GetMailInfo = $"get-mail-info";
+        public const string GetMostUsedContactId = $"get-most-used-contact-id";
+        public const string GetMostUsedAddressId = $"get-most-used-address-id";
     }
 }

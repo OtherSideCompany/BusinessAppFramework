@@ -66,7 +66,7 @@
                     <ObjectProperty PropertyInfo="@prop"
                                     PropertyValue="@value"
                                     Target="@Target"
-                                    OnChanged="async() => await OnChanged.InvokeAsync()" />
+                                    OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
                 </div>
             </div>
         }
@@ -75,7 +75,7 @@
 
 @code {
     [Parameter] public object? Target { get; set; }
-    [Parameter] public EventCallback OnChanged { get; set; }
+    [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
 
     public void Refresh() => StateHasChanged();
 

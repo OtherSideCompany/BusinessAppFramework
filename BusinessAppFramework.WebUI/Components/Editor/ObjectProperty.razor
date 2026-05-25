@@ -13,7 +13,7 @@
                   Immediate="true"
                   Value="@(PropertyValue?.ToString())"
                   Variant="@Variant"
-                  ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }" />
+                  ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
 }
 else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
 {
@@ -23,14 +23,14 @@ else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType =
                      Immediate="true"
                      Value="@(PropertyValue as int?)"
                      Variant="@Variant"
-                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
+                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                      HideSpinButtons="true" />
 }
 else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
 {
     <MudSwitch T="bool?"
                Value="@(PropertyValue as bool?)"
-               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
+               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                Color="Color.Primary"
                Style="margin-left:-4px !important" />
 }
@@ -41,7 +41,7 @@ else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyTy
                      Typo="Typo.body2"
                      Immediate="true"
                      Value="@(PropertyValue as decimal?)"
-                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
+                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                      Variant="@Variant"
                      HideSpinButtons="true" 
                      Culture="System.Globalization.CultureInfo.InvariantCulture" />
@@ -60,7 +60,13 @@ else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
 {
     var domainObjectReference = PropertyValue as DomainObjectReference;
     <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
-                                OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(); }" />
+                                OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
+}
+else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
+{
+    var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
+    <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
+                                    OnDomainObjectReferenceListChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
 }
 else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
 {
@@ -76,7 +82,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
                Value="@PropertyValue"
                Variant="@Variant"
                Clearable="isNullable"
-               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }">
+               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
         @foreach (var enumValue in enumValues)
         {
             <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(enumValue.ToString()!)</MudSelectItem>
@@ -89,7 +95,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
     [Parameter, EditorRequired] public object PropertyValue { get; init; }
     [Parameter, EditorRequired] public object Target { get; init; }
     [Parameter] public Variant Variant { get; set; } = Variant.Text;
-    [Parameter] public EventCallback OnChanged { get; set; }
+    [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
 
     private async Task OnDateChanged(DateTime? v)
     {
@@ -99,6 +105,6 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
             return;
     
         PropertyInfo.SetValue(Target, v);
-        await OnChanged.InvokeAsync();
+        await OnChanged.InvokeAsync(PropertyInfo);
     }
 }
