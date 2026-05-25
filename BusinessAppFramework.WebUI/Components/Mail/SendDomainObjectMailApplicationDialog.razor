@@ -1,0 +1,73 @@
+@using System.Globalization
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Mail
+@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Interfaces
+@using MudBlazor
+
+@implements IApplicationDialog
+
+@inject IMailService MailService
+@inject ILocalizedStringService LocalizedStringService
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+
+@inject IMailInfoServiceGateway<TDomainObject> MailInfoServiceGateway
+
+<MudStack Spacing="2" Class="ma-4">
+
+    <MudTextField @bind-Value="_mailInfo?.To"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailToKey)"
+                  Variant="Variant.Outlined" />
+
+
+    <MudTextField @bind-Value="_mailInfo?.Object"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailObjectKey)"
+                  Variant="Variant.Outlined" />
+
+    @* <MudTextField @bind-Value="Object"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailAttachmentsKey)"
+                  Variant="Variant.Outlined" /> *@
+
+    <MudTextField @bind-Value="_mailInfo?.Body"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailBodyKey)"
+                  Variant="Variant.Outlined"
+                  Lines="12" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Send"
+               OnClick="OnSend"
+               Class="mt-2 align-self-end">
+        @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailSendKey)
+    </MudButton>
+
+</MudStack>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string? ExecuteRoute { get; set; }
+    [Parameter] public int? DomainObjectId { get; set; }
+
+    private bool _isLoaded;
+    private MailInfo? _mailInfo;    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (DomainObjectId != null && !_isLoaded)
+        {
+            _mailInfo = await MailInfoServiceGateway.GetMailInfoAsync(DomainObjectId.Value, CultureInfo.CurrentUICulture.Name);
+            _isLoaded = true;
+
+            StateHasChanged();
+        }
+    }
+
+    private void OnSend()
+    {
+        if (_mailInfo == null)
+            return;
+
+        MailService.Send(_mailInfo);
+    }
+}

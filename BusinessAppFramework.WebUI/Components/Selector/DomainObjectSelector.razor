@@ -45,7 +45,7 @@
 
     .osc-search .mud-input-outlined {
         border-radius: 8px !important;
-    }    
+    }
 </style>
 
 <DomainObjectSelectorLayout>
@@ -53,7 +53,7 @@
     <Header>
         <MudStack Row="false">
 
-            <MudText Typo="Typo.subtitle2">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
+            <MudText Typo="Typo.h4">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
 
             <MudStack Row="true" AlignItems="AlignItems.Center">
 
@@ -93,7 +93,8 @@
                      RowsPerPage="@_pageSize"
                      SelectedItemChanged="OnSelectedItemChangedAsync"
                      ReadOnly="true"
-                     ColumnResizeMode="ResizeMode.Column">
+                     ColumnResizeMode="ResizeMode.Column"
+                     Class="osc-datagrid">
 
             <Columns>
                 @_searchListTemplateProvider?.Template?.DataGridColumns
@@ -104,16 +105,14 @@
     </Results>
 
     <Footer>
-
-        <MudTooltip Text="@LocalizedStringService.Get(Contracts.StringKeys.NewKey)">
-            <MudIconButton Icon="@Icons.Material.Sharp.Add"
-                           Color="Color.Primary"
-                           Variant="Variant.Text"
-                           Size="Size.Small"
-                           OnClick="OpenModuleInNewTab" 
-                           Class="ml-2"/>
-        </MudTooltip>
-
+        <MudButton StartIcon="@Icons.Material.Sharp.Add"
+                   IconColor="Color.Primary"
+                   Variant="Variant.Text"
+                   Size="Size.Small"
+                   OnClick="OpenModuleInNewTab"
+                   Class="mt-2">
+            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
+        </MudButton>
     </Footer>
 
 </DomainObjectSelectorLayout>

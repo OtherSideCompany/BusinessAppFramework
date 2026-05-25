@@ -36,14 +36,14 @@ namespace BusinessAppFramework.Infrastructure.Mail
 
       #region Public Methods
 
-      public void Send(Application.Mail.Mail mail)
+      public void Send(Application.Mail.MailInfo mail)
       {
          string mailtoUri = "";
 
          try
          {
             string to = WebUtility.UrlEncode(mail.To);
-            string subject = Uri.EscapeDataString(mail.Subject);
+            string subject = Uri.EscapeDataString(mail.Object);
             string body = Uri.EscapeDataString(mail.Body.Replace("\n", "\r\n"));
 
             mailtoUri = $"mailto:{to}?subject={subject}&body={body}";
@@ -54,12 +54,8 @@ namespace BusinessAppFramework.Infrastructure.Mail
          {
             string message = "Tentative d'envoi du mail:\n\n";
             message += $"A : {mail.To}\n";
-            message += $"Sujet : {mail.Subject}\n";
-            message += $"Mail : {mail.Body}\n";
-            foreach (var attachment in mail.Attachments)
-            {
-               message += $"Pièce jointe : {attachment.FullName}\n";
-            }
+            message += $"Sujet : {mail.Object}\n";
+            message += $"Mail : {mail.Body}\n";            
             message += $"\n\nProblème lors de l'ouverture du mail. Vérifiez que votre client mail est bien configuré.\n\n{mailtoUri}";
 
             throw new InvalidOperationException(message, e);

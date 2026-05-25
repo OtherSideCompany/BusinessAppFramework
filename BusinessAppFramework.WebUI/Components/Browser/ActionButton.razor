@@ -8,30 +8,78 @@
 @inject ILocalizedStringService LocalizedStringService
 
 <style>
-    .osc-action-button {
+    .osc-btn {
         font-weight: normal;
-        background: var(--mud-palette-surface);
-        border-color: var(--mud-palette-divider);
         border-radius: 16px;
-        padding: 4px 14px;
         text-transform: none;
+        border: 1px solid var(--mud-palette-lines-inputs);
+        transition: background-color .15s, border-color .15s;
+        height: 32px; 
+        min-height: 32px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-        .osc-action-button:hover {
-            background: var(--mud-palette-background-grey) !important;
-            border-color: var(--mud-palette-divider) !important;
-        }
-
-
-        .osc-action-button.mud-icon-button {
+        .osc-btn.mud-icon-button {
             border-radius: 16px !important;
-            border-color: var(--mud-palette-divider) !important;
+            height: 32px;
+            width: 32px; 
+            min-width: 32px;
+            padding: 0;
         }
 
-            .osc-action-button.mud-icon-button:hover {
-                background: var(--mud-palette-background-grey) !important;
-                border-color: var(--mud-palette-divider) !important;
-            }
+    .osc-btn--neutral {
+        background: var(--mud-palette-surface);
+        color: var(--mud-palette-text-primary);
+    }
+
+        .osc-btn--neutral:hover:not(:disabled) {
+            background: #e4e6e9;
+        }
+
+        .osc-btn--neutral:active:not(:disabled) {
+            background: #d6d9dd;
+        }
+
+    .osc-btn--create {
+        background: var(--mud-palette-primary);
+        color: #fff;
+        border-color: var(--mud-palette-primary);
+    }
+
+        .osc-btn--create:hover:not(:disabled) {
+            background: var(--mud-palette-primary-darken);
+        }
+
+        .osc-btn--create:active:not(:disabled) {
+            background: var(--mud-palette-primary-darken);
+        }
+
+    .osc-btn--delete {
+        background: var(--mud-palette-surface);
+        color: var(--mud-palette-error);
+        border-color: var(--mud-palette-divider);
+    }
+
+        .osc-btn--delete:hover:not(:disabled) {
+            background: var(--mud-palette-error);
+            color: #fff;
+            border-color: var(--mud-palette-error);
+        }
+
+        .osc-btn--delete:active:not(:disabled) {
+            background: var(--mud-palette-error-darken);
+            color: #fff;
+            border-color: var(--mud-palette-error-darken);
+        }
+
+    .osc-btn:disabled,
+    .osc-btn.mud-disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
 </style>
 
 @if (Shrink)
@@ -40,10 +88,9 @@
         <MudIconButton Variant="Variant.Outlined"
                        Size="Size.Small"
                        Icon="@IconFactory.CreateIcon(ActionKey)"
-                       Color="@_color"
                        OnClick="OnClickInternal"
                        Disabled="@Disabled"
-                       Class="osc-action-button">        
+                       Class="@_class">
         </MudIconButton>
     </MudTooltip>
 }
@@ -52,10 +99,9 @@ else
     <MudButton Variant="Variant.Outlined"
                Size="Size.Small"
                StartIcon="@IconFactory.CreateIcon(ActionKey)"
-               IconColor="@_color"
                OnClick="OnClickInternal"
                Disabled="@Disabled"
-               Class="osc-action-button">
+               Class="@_class">
         @LocalizedStringService.Get(ActionKey.Key)
     </MudButton>
 }
@@ -66,7 +112,19 @@ else
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public bool Shrink { get; set; }
 
-    private Color _color { get; set; }
+    private string _class
+    {
+        get
+        {
+            var role = ActionKey.Key switch
+            {
+                ActionKeys.CreateActionKey => "osc-btn--create",
+                ActionKeys.DeleteActionKey => "osc-btn--delete",
+                _ => "osc-btn--neutral"
+            };
+            return $"osc-btn {role}";
+        }
+    }
 
     private async Task OnClickInternal(MouseEventArgs e)
     {
@@ -75,23 +133,5 @@ else
 
         if (OnClick.HasDelegate)
             await OnClick.InvokeAsync(e);
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        if (ActionKey.Equals(StringKey.From(ActionKeys.CreateActionKey)))
-        {
-            _color = Color.Primary;
-        }
-        else if (ActionKey.Equals(StringKey.From(ActionKeys.DeleteActionKey)))
-        {
-            _color = Color.Error;
-        }
-        else
-        {
-            _color = Color.Dark;
-        }        
     }
 }

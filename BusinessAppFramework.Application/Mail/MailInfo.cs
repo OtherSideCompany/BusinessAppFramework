@@ -1,6 +1,6 @@
 ﻿namespace BusinessAppFramework.Application.Mail
 {
-   public class Mail
+   public class MailInfo
    {
       #region Fields
 
@@ -10,11 +10,9 @@
 
       #region Properties
 
-      public string From { get; set; }
       public string To { get; set; }
-      public string Subject { get; set; }
+      public string Object { get; set; }
       public string Body { get; set; }
-      public List<FileInfo> Attachments { get; set; }
 
       #endregion
 
@@ -26,9 +24,9 @@
 
       #region Constructor
 
-      public Mail()
+      public MailInfo()
       {
-         Attachments = new List<FileInfo>();
+         
       }
 
       #endregion

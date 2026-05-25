@@ -2,6 +2,6 @@
 {
    public interface IMailService
    {
-      void Send(Mail mail);
+      void Send(MailInfo mail);
    }
 }

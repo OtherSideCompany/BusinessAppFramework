@@ -14,5 +14,6 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string ParentDomainObjectId = "parentDomainObjectId";
         public const string Type = "type";
         public const string DocumentId = "documentId";
+        public const string CultureInfo = "cultureInfo";
     }
 }

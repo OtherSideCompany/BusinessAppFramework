@@ -4,12 +4,7 @@
 @using Domain
 @using Domain.DomainObjects
 @using Microsoft.Extensions.DependencyInjection
-@using Microsoft.JSInterop
 @using MudBlazor
-@using Application
-@using Application.Search
-@using WebUI.Components.Pages
-@using WebUI.Components.SearchList
 @using WebUI.Components.Selector
 @using WebUI.Interfaces
 
@@ -36,7 +31,7 @@
 
 <MudField Label="@Label"
           Typo="Typo.body2"
-          Variant="Variant.Outlined"
+          Variant="@Variant"
           Margin="Margin.Dense"
           @onclick="OpenSelector"
           AdornmentIcon="@Icons.Material.Outlined.Search"
@@ -46,15 +41,15 @@
     <MudStack Row="true" AlignItems="AlignItems.Center">
         @if (!string.IsNullOrEmpty(_value))
         {            
-            <MudChip T="string" Size="Size.Medium" Variant="Variant.Filled"
-                     Color="Color.Primary" CloseIcon="@Icons.Material.Filled.Close" OnClose="ClearSelectionAsync"
+            <MudChip T="string" Size="Size.Small" Variant="@Variant"
+                     CloseIcon="@Icons.Material.Filled.Close" OnClose="ClearSelectionAsync"
                      Style="margin: 0;">
-                @_value
+                <MudText Typo="Typo.body2">@_value</MudText>
             </MudChip>           
         }
         else
         {
-            <MudText Typo="Typo.body2" Style="color: var(--mud-palette-text-disabled);">
+            <MudText Style="color: var(--mud-palette-text-disabled);">
                 @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SelectToSearchKey)
             </MudText>
         }        
@@ -76,6 +71,7 @@
         }
     }
     [Parameter] public string Label { get; set; } = default!;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
 
     private DomainObjectReference? _domainObjectReference;

@@ -12,7 +12,7 @@
                   Margin="Margin.Dense"
                   Immediate="true"
                   Value="@(PropertyValue?.ToString())"
-                  Variant="Variant.Outlined"
+                  Variant="@Variant"
                   ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }" />
 }
 else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
@@ -22,7 +22,7 @@ else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType =
                      Margin="Margin.Dense"
                      Immediate="true"
                      Value="@(PropertyValue as int?)"
-                     Variant="Variant.Outlined"
+                     Variant="@Variant"
                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
                      HideSpinButtons="true" />
 }
@@ -42,7 +42,7 @@ else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyTy
                      Immediate="true"
                      Value="@(PropertyValue as decimal?)"
                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }"
-                     Variant="Variant.Outlined" 
+                     Variant="@Variant"
                      HideSpinButtons="true" 
                      Culture="System.Globalization.CultureInfo.InvariantCulture" />
 }
@@ -52,7 +52,7 @@ else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyT
                    Style="font-size: var(--mud-typography-body2-size);"
                    Margin="Margin.Dense"
                    DateChanged="OnDateChanged"
-                   Variant="Variant.Outlined" 
+                   Variant="@Variant"
                    Editable="true"
                    Clearable="PropertyInfo.PropertyType == typeof(DateTime?)" />
 }
@@ -74,7 +74,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
                Margin="Margin.Dense"
                Typo="Typo.body2"
                Value="@PropertyValue"
-               Variant="Variant.Outlined"
+               Variant="@Variant"
                Clearable="isNullable"
                ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(); }">
         @foreach (var enumValue in enumValues)
@@ -88,6 +88,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
     [Parameter, EditorRequired] public PropertyInfo PropertyInfo { get; init; }
     [Parameter, EditorRequired] public object PropertyValue { get; init; }
     [Parameter, EditorRequired] public object Target { get; init; }
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public EventCallback OnChanged { get; set; }
 
     private async Task OnDateChanged(DateTime? v)

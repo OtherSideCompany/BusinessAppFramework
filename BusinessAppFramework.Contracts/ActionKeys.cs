@@ -2,14 +2,14 @@
 {
     public static class ActionKeys
     {
-        public static string CreateActionKey => "Create";
-        public static string DeleteActionKey => "Delete";
-        public static string EditActionKey => "Edit";
-        public static string VisualiseFileActionKey => "VisualiseFile";
-        public static string DownloadFileActionKey => "DownloadFileAction";
-        public static string CancelActionKey => "CancelAction";
-        public static string ImportExportDataActionKey => "ImportExportDataAction";
-        public static string LogOutActionKey => "LogOutActionKey";
-        public static string ChangePasswordActionKey => "ResetPasswordActionKey";
+        public const string CreateActionKey = "Create";
+        public const string DeleteActionKey = "Delete";
+        public const string EditActionKey = "Edit";
+        public const string VisualiseFileActionKey = "VisualiseFile";
+        public const string DownloadFileActionKey = "DownloadFileAction";
+        public const string CancelActionKey = "CancelAction";
+        public const string ImportExportDataActionKey = "ImportExportDataAction";
+        public const string LogOutActionKey = "LogOutActionKey";
+        public const string ChangePasswordActionKey = "ResetPasswordActionKey";
     }
 }

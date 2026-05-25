@@ -30,5 +30,10 @@
         public static string SelectToSearchKey => "SelectToSearch";
         public static string StatusKey => "Status";
         public static string ProgressionKey => "Progression";
+        public static string MailToKey => "MailToKey";
+        public static string MailObjectKey => "MailObjectKey";
+        public static string MailBodyKey => "MailBodyKey";
+        public static string MailAttachmentsKey => "MailAttachmentsKey";
+        public static string MailSendKey => "MailSendKey";
     }
 }

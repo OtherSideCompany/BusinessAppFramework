@@ -2,11 +2,7 @@
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Relations
 @using Domain.Attributes
-@using Domain.DomainObjects
 @using MudBlazor
-@using Domain
-@using WebUI.Components.Browser
-@using WebUI.Components.Pages
 @using WebUI.Interfaces
 
 @inject ILocalizedStringService LocalizedStringService
@@ -15,76 +11,73 @@
 @inject IRelationResolver RelationResolver
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 
-<MudGrid Spacing="2">
-    @if (Target != null)
-    {
-        var props = GetEditableProperties().ToList();
+<style>
+    .osc-fiche-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        align-items: center;
+        gap: 16px;
+        padding: 6px 0;
+        border-bottom: 1px solid #f0f0f2;
+    }
 
-        for (int i = 0; i < props.Count; i++)
+        .osc-fiche-row:last-child {
+            border-bottom: none;
+        }
+
+    .osc-fiche-label {
+        color: var(--mud-palette-text-secondary);
+        font-size: 12px;
+    }
+
+    .osc-fiche-value {
+        min-width: 0;
+    }
+
+        .osc-fiche-value .mud-input.mud-input-text:before {
+            border-bottom-color: transparent;
+        }
+
+        .osc-fiche-value:hover .mud-input.mud-input-text:before {
+            border-bottom-color: var(--mud-palette-lines-inputs);
+            opacity: 0.3;
+        }
+
+        .osc-fiche-value .mud-input.mud-input-text:after {
+            border-bottom-color: var(--mud-palette-primary);
+        }
+</style>
+
+@if (Target != null)
+{
+    var props = GetEditableProperties().ToList();
+
+    <div class="osc-fiche">
+        @foreach (var prop in props)
         {
-            var prop = props[i];
             var propKey = $"{prop.DeclaringType?.Name}_{prop.Name}";
             var label = LocalizedStringService.Get(propKey);
             var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
             var value = concreteProperty?.GetValue(Target);
 
-            if (Columns == 1)
-            {
-                <MudItem xs="@_labelXs" Class="d-flex align-center">
-                    <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">@label</MudText>
-                </MudItem>
-
-                <MudItem xs="@_valueXs">
-
+            <div class="osc-fiche-row">
+                <div class="osc-fiche-label">@label</div>
+                <div class="osc-fiche-value">
                     <ObjectProperty PropertyInfo="@prop"
                                     PropertyValue="@value"
                                     Target="@Target"
                                     OnChanged="async() => await OnChanged.InvokeAsync()" />
-                </MudItem>
-            }
-            else
-            {
-                <MudItem xs="@_valueXs">
-                    <MudText Typo="Typo.caption" Style="color: var(--mud-palette-text-secondary);">@label</MudText>
-
-                    <ObjectProperty PropertyInfo="@prop"
-                                    PropertyValue="@value"
-                                    Target="@Target"
-                                    OnChanged="async() => await OnChanged.InvokeAsync()" />
-                </MudItem>
-            }
+                </div>
+            </div>
         }
-    }
-</MudGrid>
+    </div>
+}
 
 @code {
     [Parameter] public object? Target { get; set; }
     [Parameter] public EventCallback OnChanged { get; set; }
-    [Parameter] public int Columns { get; set; } = 1;
 
-    private int _labelXs = 4;
-    private int _valueXs = 8;
-
-    public void Refresh()
-    {
-        StateHasChanged();
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        if (Columns == 1)
-        {
-            _labelXs = 4;
-            _valueXs = 8;
-        }
-        else
-        {
-            _labelXs = 0;
-            _valueXs = 12 / Columns;
-        }
-    }
+    public void Refresh() => StateHasChanged();
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
     {
@@ -108,16 +101,9 @@
     private int GetInheritanceDepth(Type? type)
     {
         if (type == null) return int.MaxValue;
-
         int depth = 0;
         var current = type;
-
-        while (current.BaseType != null)
-        {
-            depth++;
-            current = current.BaseType;
-        }
-
+        while (current.BaseType != null) { depth++; current = current.BaseType; }
         return depth;
     }
 }

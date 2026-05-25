@@ -22,5 +22,7 @@
         public const string Authentication = "authentication";
         public const string Login = "login";
         public const string Logout = "logout";
+
+        public const string GetMailInfo = $"get-mail-info";
     }
 }

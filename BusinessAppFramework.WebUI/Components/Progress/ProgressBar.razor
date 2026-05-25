@@ -1,8 +1,22 @@
 ﻿@using MudBlazor
 
+<style>
+
+    .osc-progress {
+        height: 6px !important;
+        border-radius: 999px;
+        background-color: #E8E8EB;
+    }
+
+        .osc-progress .mud-progress-linear-bar {
+            border-radius: 999px;
+        }
+
+</style>
+
 <MudStack Spacing="1" Style="min-width: 100px;">
     <MudStack Row="true" Justify="Justify.SpaceBetween">
-        <MudText Typo="Typo.caption" Align="Align.Right" Style="color: var(--mud-palette-text-secondary)">
+        <MudText Typo="Typo.caption" Align="Align.Right">
             @Current.ToString("0.##") / @Total.ToString("0.##")
         </MudText>
         <MudText Typo="Typo.caption" Align="Align.Right" Style="color: var(--mud-palette-text-secondary)">
@@ -14,7 +28,8 @@
                        Min="0"
                        Max="100"
                        Size="Size.Large"
-                       Rounded="true" />
+                       Rounded="true" 
+                       Class="osc-progress"/>
 
 </MudStack>
 

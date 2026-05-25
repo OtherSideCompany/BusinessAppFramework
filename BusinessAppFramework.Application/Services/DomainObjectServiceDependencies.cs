@@ -20,7 +20,6 @@ namespace BusinessAppFramework.Application.Services
         public ICurrentUserService CurrentUserService { get; set; }
         public IReferenceHydrator ReferenceHydrator { get; set; }
         public IPasswordService PasswordService { get; }
-        public IMailService MailService { get; }
         public IDomainObjectEventBus DomainObjectEventBus { get; }
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
         public IRelationResolver RelationResolver { get; }
@@ -39,7 +38,6 @@ namespace BusinessAppFramework.Application.Services
         public DomainObjectServiceDependencies(
             ICurrentUserService currentUserService,
             IPasswordService passwordService,
-            IMailService mailService,
             IDomainObjectEventBus domainObjectEventBus,
             IUserPermissionResolverService userPermissionResolverService,
             IRelationResolver relationResolver,
@@ -48,7 +46,6 @@ namespace BusinessAppFramework.Application.Services
         {
             CurrentUserService = currentUserService;
             PasswordService = passwordService;
-            MailService = mailService;
             DomainObjectEventBus = domainObjectEventBus;
             UserPermissionResolverService = userPermissionResolverService;
             RelationResolver = relationResolver;
