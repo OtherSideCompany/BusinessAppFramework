@@ -35,5 +35,6 @@
         public static string MailBodyKey => "MailBodyKey";
         public static string MailAttachmentsKey => "MailAttachmentsKey";
         public static string MailSendKey => "MailSendKey";
+        public static string ExtendedSearchKey => "ExtendedSearchKey";
     }
 }

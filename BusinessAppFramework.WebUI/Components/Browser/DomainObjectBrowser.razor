@@ -54,7 +54,7 @@
 
     .osc-search .mud-input-outlined {
         border-radius: 8px !important;
-    }     
+    }
 
     .editor-drawer {
         background-color: #FAFAFC;
@@ -129,6 +129,12 @@
             <MudText Typo="Typo.caption" Align="Align.Start" Style="margin-top:4px; color:gray">
                 @_startIndex - @_endIndex / @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
             </MudText>
+
+            <MudLink Typo="Typo.caption"
+                     Style="margin-left:4px;margin-top:4px; cursor:pointer"
+                     OnClick="async () => await FireSearchAsync(true)">
+                @LocalizedStringService.Get(Contracts.StringKeys.ExtendedSearchKey)
+            </MudLink>
 
             <MudSpacer />
 
@@ -259,9 +265,11 @@
     private int _totalItems;
     private int _pageSize = 20;
     private int _currentPage = 0;
-    private int _startIndex => (_currentPage * _pageSize) + 1;
+    private int _startIndex => TotalPages == 0 ? 0 : (_currentPage * _pageSize) + 1;
     private int _endIndex => Math.Min((_currentPage + 1) * _pageSize, _totalItems);
     private int TotalPages => (int)Math.Ceiling(_totalItems / (double)_pageSize);
+
+    private bool _extendedSearch;
 
     private string _selectedConstraintKey { get; set; } = default!;
 
@@ -275,7 +283,8 @@
         {
             PageIndex = _currentPage,
             PageSize = _pageSize,
-            ConstraintKey = _selectedConstraintKey
+            ConstraintKey = _selectedConstraintKey,
+            ExtendedSearch = _extendedSearch
         };
 
         if (!string.IsNullOrEmpty(_searchText))
@@ -430,10 +439,16 @@
     {
         if ((e.Key == "Enter" || e.Key == "NumpadEnter") && _grid != null)
         {
-            _currentPage = 0;
-            UpdateUrl();
-            await _grid.ReloadServerData();
+            await FireSearchAsync(false);
         }
+    }
+
+    private async Task FireSearchAsync(bool extended)
+    {
+        _currentPage = 0;
+        _extendedSearch = extended;
+        UpdateUrl();
+        await _grid.ReloadServerData();
     }
 
     private async Task HandleEditorDirtyChanged(bool isDirty)
