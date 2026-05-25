@@ -405,11 +405,11 @@
 
         if (args.MouseEventArgs.Detail >= 2)
         {
-            var editionAction = Descriptor.DomainObjectApplicationActions.FirstOrDefault(a => a.ActionKey.Equals(ActionKeys.EditActionKey));
+            var openAction = Descriptor.DomainObjectApplicationActions.FirstOrDefault(a => a.ActionKey.Equals(ActionKeys.OpenActionKey));
 
-            if (editionAction != null)
+            if (openAction != null)
             {
-                await ExecuteDomainObjectApplicationActionAsync(editionAction);
+                await ExecuteDomainObjectApplicationActionAsync(openAction);
             }
         }
 

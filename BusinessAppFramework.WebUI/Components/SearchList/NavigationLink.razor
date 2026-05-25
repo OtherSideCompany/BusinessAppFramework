@@ -1,0 +1,30 @@
+﻿@using BusinessAppFramework.Application.Actions
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.Domain.DomainObjects
+@using MudBlazor
+
+@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyRegistry
+
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+
+<MudLink Href="@_pageNavigationAction?.BuildRoute(Id)">
+    @Text
+</MudLink>
+
+@code {
+    [Parameter, EditorRequired] public int Id { get; set; }
+    [Parameter, EditorRequired] public string Text { get; set; }
+
+    private DomainObjectNavigationApplicationAction<TDomainObject>? _pageNavigationAction;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(DomainObjectPageWorkspaceKeyRegistry)
+        {
+            ActionKey = ActionKeys.OpenActionKey
+        };
+    }
+}

@@ -4,7 +4,7 @@
     {
         public const string CreateActionKey = "Create";
         public const string DeleteActionKey = "Delete";
-        public const string EditActionKey = "Edit";
+        public const string OpenActionKey = "Open";
         public const string VisualiseFileActionKey = "VisualiseFile";
         public const string DownloadFileActionKey = "DownloadFileAction";
         public const string CancelActionKey = "CancelAction";

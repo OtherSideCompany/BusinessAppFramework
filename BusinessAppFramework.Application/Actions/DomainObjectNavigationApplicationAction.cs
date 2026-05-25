@@ -4,48 +4,53 @@ using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Actions
 {
-   public class DomainObjectNavigationApplicationAction<TDomainObject> : DomainObjectApplicationAction, IDomainObjectNavigationApplicationAction where TDomainObject : DomainObject, new()
-   {
-      #region Fields
+    public class DomainObjectNavigationApplicationAction<TDomainObject> : DomainObjectApplicationAction, IDomainObjectNavigationApplicationAction where TDomainObject : DomainObject, new()
+    {
+        #region Fields
 
-      private IDomainObjectPageWorkspaceKeyRegistry _domainObjectPageWorkspaceKeyResolver;
+        private IDomainObjectPageWorkspaceKeyRegistry _domainObjectPageWorkspaceKeyResolver;
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
-
-      public DomainObjectNavigationApplicationAction(IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver)
-      {
-         _domainObjectPageWorkspaceKeyResolver = domainObjectPageWorkspaceKeyResolver;
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      public override string BuildRoute()
-      {
-         return $"/{ApiRouteSegments.Workspace}/{_domainObjectPageWorkspaceKeyResolver.GetPageWorkspaceKey<TDomainObject>()}?id={DomainObjectId}";
-      }
-
-      #endregion
-
-      #region Private Methods
+        #region Events
 
 
 
-      #endregion
-   }
+        #endregion
+
+        #region Constructor
+
+        public DomainObjectNavigationApplicationAction(IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver)
+        {
+            _domainObjectPageWorkspaceKeyResolver = domainObjectPageWorkspaceKeyResolver;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public override string BuildRoute()
+        {
+            return $"/{ApiRouteSegments.Workspace}/{_domainObjectPageWorkspaceKeyResolver.GetPageWorkspaceKey<TDomainObject>()}?id={DomainObjectId}";
+        }
+
+        public string BuildRoute(int domainObjectId)
+        {
+            return $"/{ApiRouteSegments.Workspace}/{_domainObjectPageWorkspaceKeyResolver.GetPageWorkspaceKey<TDomainObject>()}?id={domainObjectId}";
+        }
+
+        #endregion
+
+        #region Private Methods
+
+
+
+        #endregion
+    }
 }

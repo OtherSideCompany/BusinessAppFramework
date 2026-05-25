@@ -66,7 +66,7 @@ namespace BusinessAppFramework.Application.Descriptors
 
             var pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
             {
-                ActionKey = ActionKeys.EditActionKey
+                ActionKey = ActionKeys.OpenActionKey
             };
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
