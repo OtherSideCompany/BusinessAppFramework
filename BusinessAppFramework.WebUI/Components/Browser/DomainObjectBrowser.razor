@@ -30,10 +30,6 @@
         background-color: color-mix(in srgb, var(--mud-palette-primary) 20%, transparent) !important;
     }
 
-    .selected-blocked {
-        background-color: color-mix(in srgb, var(--mud-palette-error) 20%, transparent) !important;
-    }
-
     .mud-drawer-content {
         padding: 0 !important;
     }
@@ -182,11 +178,10 @@
                      ServerData="LoadGridData"
                      RowsPerPage="@_pageSize"
                      SelectedItem="@_selectedItem"
-                     SelectOnRowClick="true"
-                     SelectedItemChanged="OnSelectedItemChangedAsync"
                      RowClassFunc="GridRowClassFunc"
                      ReadOnly="true"
                      ColumnResizeMode="ResizeMode.Column"
+                     RowClick="OnSearchTableRowClick"
                      @bind-CurrentPage="_currentPage">
 
             <Columns>
@@ -210,36 +205,6 @@
         </MudStack>
     </Pagination>
 
-    @* Editor *@
-    <Drawer>
-        <MudDrawer Open="_editorOpen"
-                   Anchor="Anchor.Right"
-                   Elevation="2"
-                   ClipMode="DrawerClipMode.Docked"
-                   Variant="DrawerVariant.Persistent"
-                   Overlay="false"
-                   Class="editor-drawer">
-
-            <div style="display:flex; align-items:center; justify-content:space-between; margin:16px 8px 8px 16px">
-
-                <MudStack Row="true" Style="ma-2" AlignItems="AlignItems.Center" Spacing="2">
-                    <MudIcon Icon="@Icons.Material.Outlined.Edit" />
-                    <MudText Typo="Typo.h6">@LocalizedStringService.Get(Contracts.StringKeys.QuickEditKey)</MudText>
-                </MudStack>
-
-                <MudIconButton Icon="@Icons.Material.Outlined.Close"
-                               Size="Size.Small"
-                               OnClick="CloseDrawerAsync"
-                               Style="color: #000000 !important;" />
-            </div>
-
-            <DomainObjectEditor TDomainObject="TDomainObject"
-                                DomainObject="@_currentEditedObject"
-                                OnDirtyChanged="HandleEditorDirtyChanged"
-                                @ref="_editor" />
-        </MudDrawer>
-    </Drawer>
-
 </DomainObjectBrowserLayout>
 
 
@@ -254,13 +219,9 @@
 
     private DynamicComponent? _templateComponent;
     private ISearchListTemplateProvider<TSearchResult>? _searchListTemplateProvider => _templateComponent?.Instance as ISearchListTemplateProvider<TSearchResult>;
-    private bool _editorOpen;
+
     private string _searchText = default!;
-    private TDomainObject? _currentEditedObject;
-    private bool _isLoadingDomainObject;
-    private DomainObjectEditor<TDomainObject>? _editor;
-    private bool _isEditing => _editor != null && _editor.IsDirty;
-    private bool _hasSelection => _grid?.SelectedItem != null;
+    private bool _hasSelection => _selectedItem != null;
 
     private int _totalItems;
     private int _pageSize = 20;
@@ -295,9 +256,6 @@
         var items = result?.Items?.ToList() ?? new List<TSearchResult>();
         _totalItems = result?.Count ?? 0;
 
-        if (_selectedItem != null && !items.Contains(_selectedItem))
-            await OnSelectedItemChangedAsync(null);
-
         StateHasChanged();
 
         return new GridData<TSearchResult>
@@ -307,24 +265,7 @@
         };
     }
 
-    private string GridRowClassFunc(TSearchResult item, int rowIndex)
-    {
-        var isSelected = _grid?.SelectedItem?.Equals(item) ?? false;
-        var isEditing = _editor != null && _editor.IsDirty && item.DomainObjectId == _editor.DomainObject?.Id;
-
-        if (isEditing)
-        {
-            return "selected-blocked";
-        }
-        else if (isSelected)
-        {
-            return "selected";
-        }
-        else
-        {
-            return String.Empty;
-        }
-    }
+    private string GridRowClassFunc(TSearchResult item, int rowIndex) => (_selectedItem?.Equals(item) ?? false) ? "selected" : string.Empty;
 
     protected override void OnParametersSet()
     {
@@ -377,13 +318,13 @@
     {
         if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction)
         {
-            domainObjectApplicationAction.DomainObjectId = _currentEditedObject?.Id ?? 0;
+            domainObjectApplicationAction.DomainObjectId = _selectedItem?.DomainObjectId ?? 0;
             var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
             await RefreshServerDataAsync(payload);
         }
         else if (applicationAction is IOpenDialogApplicationAction openDialogApplicationAction)
         {
-            openDialogApplicationAction.DomainObjectId = _currentEditedObject?.Id;
+            openDialogApplicationAction.DomainObjectId = _selectedItem?.DomainObjectId ?? 0;
             var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
             await RefreshServerDataAsync(payload);
         }
@@ -406,35 +347,6 @@
         }
     }
 
-    private async Task OnSelectedItemChangedAsync(TSearchResult? item)
-    {
-        _selectedItem = item;
-        _editorOpen = item != null || _isEditing;
-
-        if (item == null && !_isEditing)
-        {
-            _currentEditedObject = null;
-            StateHasChanged();
-            return;
-        }
-
-        if (_isLoadingDomainObject || _isEditing)
-            return;
-
-        _isLoadingDomainObject = true;
-
-        try
-        {
-            _currentEditedObject = await DomainObjectServiceGateway.GetHydratedAsync(item.DomainObjectId);
-
-            StateHasChanged();
-        }
-        finally
-        {
-            _isLoadingDomainObject = false;
-        }
-    }
-
     private async Task HandleKeyUp(KeyboardEventArgs e)
     {
         if ((e.Key == "Enter" || e.Key == "NumpadEnter") && _grid != null)
@@ -449,18 +361,6 @@
         _extendedSearch = extended;
         UpdateUrl();
         await _grid.ReloadServerData();
-    }
-
-    private async Task HandleEditorDirtyChanged(bool isDirty)
-    {
-        if (!isDirty && _grid != null)
-        {
-            var selectedItem = _grid.SelectedItem;
-            await _grid.ReloadServerData();
-            await OnSelectedItemChangedAsync(selectedItem);
-        }
-
-        StateHasChanged();
     }
 
     private async Task HandlePageChangedAsync(int selectedPage)
@@ -487,24 +387,6 @@
         }
     }
 
-    private async Task CloseDrawerAsync()
-    {
-        var proceed = true;
-
-        if (_isEditing)
-        {
-            proceed = await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.AbordChangesMessage) ?? "");
-        }
-
-        if (proceed)
-        {
-            _editor = null;
-            await OnSelectedItemChangedAsync(null);
-
-            StateHasChanged();
-        }
-    }
-
     private void UpdateUrl(bool replace = false)
     {
         var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
@@ -515,6 +397,23 @@
         });
 
         NavigationManager.NavigateTo(uri, replace: replace);
+    }
+
+    private async Task OnSearchTableRowClick(DataGridRowClickEventArgs<TSearchResult> args)
+    {
+        _selectedItem = args.Item;
+
+        if (args.MouseEventArgs.Detail >= 2)
+        {
+            var editionAction = Descriptor.DomainObjectApplicationActions.FirstOrDefault(a => a.ActionKey.Equals(ActionKeys.EditActionKey));
+
+            if (editionAction != null)
+            {
+                await ExecuteDomainObjectApplicationActionAsync(editionAction);
+            }
+        }
+
+        StateHasChanged();
     }
 }
 
