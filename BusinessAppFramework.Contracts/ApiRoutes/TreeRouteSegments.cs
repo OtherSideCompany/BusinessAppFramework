@@ -8,6 +8,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
     {
         public const string CreateNode = $"create-node";
         public const string DeleteNode = $"delete-node";
+        public const string GetNode = $"get-node";
         public const string GetTree = $"get-tree";
         public const string GetTreeBranch = $"get-tree-branch";
     }

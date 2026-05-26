@@ -190,6 +190,12 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
         }
 
+        protected int? CountBranchItemsForTabBadge(string relationKey)
+        {
+            var branch = GetTreeBranch(relationKey);
+            return branch?.Nodes.Count != 0 ? branch?.Nodes.Count : null;
+        }
+
         private void SetDirtyState(bool isDirty)
         {
             IsDirty = isDirty;

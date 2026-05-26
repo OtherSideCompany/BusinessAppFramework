@@ -7,6 +7,7 @@ namespace BusinessAppFramework.WebUI.Interfaces
         Task<Tree?> GetTreeAsync(int domainObjectId, string pageTreeKey);
         Task<Branch?> GetTreeBranchAsync(int domainObjectId, string pageTreeKey, string relationKey);
         Task<Node?> CreateNode(int parentId, string parentChildRelationKey);
+        Task<Node?> GetNode(int parentId, int childId, string parentChildRelationKey);
         Task<bool> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey);
     }
 }

@@ -76,6 +76,12 @@ namespace BusinessAppFramework.WebUI.Services
             return (await PostAsync<Node>(route, null)).Data;
         }
 
+        public async Task<Node?> GetNode(int parentDomainObjectId, int childId, string parentChildRelationKey)
+        {
+            var route = $"{_baseUrl}/{TreeRouteSegments.GetNode}/{parentDomainObjectId}/{childId}/{parentChildRelationKey}";
+            return (await GetAsync<Node>(route)).Data;
+        }
+
         public async Task<bool> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey)
         {
             var route = $"{_baseUrl}/{TreeRouteSegments.DeleteNode}/{parentId}/{childId}/{parentChildRelationKey}";

@@ -1,0 +1,19 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Trees
+@using BusinessAppFramework.WebUI.Components.General
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+    <MudText Style="font-size:12px;">@LocalizedStringService.Get(RelationKey)</MudText>
+    @if (Count != null && Count != 0)
+    {
+        <CountBadge Count="@Count.ToString()" />
+    }
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public string RelationKey { get; set; }
+    [Parameter, EditorRequired] public int? Count { get; set; }
+}

@@ -73,6 +73,7 @@
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
     [Parameter] public RenderFragment? ItemActions { get; set; }
+    [Parameter] public EventCallback OnBranchChanged { get; set; }
 
     [Parameter, EditorRequired] public int? ParentId { get; set; }
     [Parameter, EditorRequired] public Branch? Branch { get; set; }
@@ -156,6 +157,7 @@
         {
             Branch.AddNode(node);
             await AddItemFromNodeAsync(node);
+            await OnBranchChanged.InvokeAsync();
         }
 
         StateHasChanged();
@@ -171,6 +173,7 @@
                 {
                     Items.Remove(domainObject);
                     Branch?.RemoveNode(domainObject.Id);
+                    await OnBranchChanged.InvokeAsync();
                 }
             }
         }

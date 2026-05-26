@@ -1,0 +1,47 @@
+﻿@using MudBlazor
+
+<style>
+
+    .count-badge {
+        min-width: 18px;
+        min-height: 18px;
+        background: var(--mud-palette-action-default-hover);
+        border-width:1px;
+        border-color: var(--mud-palette-divider);
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0px;
+        padding:4px;
+    }
+
+    .count-badge--selected {
+        background: var(--mud-palette-primary-lighten);
+    }
+
+    .count-badge-text{
+        line-height: 1;
+        font-size: 0.7rem;
+        color: var(--mud-palette-text-primary);
+        margin-top: 1px;
+    }
+
+    .count-badge-text--selected {
+        color: white;
+        font-weight:700;
+    }
+
+</style>
+
+<MudPaper Elevation="0" Class="@_paperClass">
+    <MudText Typo="Typo.caption" Class="@_textClass">@Count</MudText>
+</MudPaper>
+
+@code {
+    [Parameter, EditorRequired] public string Count { get; set; }
+    [Parameter] public bool IsSelected { get; set; }
+
+    private string _paperClass => IsSelected ? "count-badge count-badge--selected" : "count-badge";
+    private string _textClass => IsSelected ? "count-badge-text count-badge-text--selected" : "count-badge-text";
+}

@@ -134,6 +134,30 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(node);
         }
 
+        [HttpGet($"{TreeRouteSegments.GetNode}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
+        public async Task<ActionResult<Node?>> GetNode(
+             [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,
+             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int childDomainObjectId,
+             [FromRoute(Name = ApiRouteParams.Key)] string key)
+        {
+            Node? node = null;
+
+            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(key), out var parentChildRelation))
+            {
+                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+
+                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+                var domainObject = await domainObjectService.GetAsync(childDomainObjectId);
+                node = new Node(domainObject.Id);
+
+                var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+                dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
+                node.Summary = await searchService.GetSummaryAsync(domainObject.Id);
+            }
+
+            return Ok(node);
+        }
+
         [HttpDelete($"{TreeRouteSegments.DeleteNode}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
         public async Task<ActionResult<bool>> DeleteNode(
             [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,

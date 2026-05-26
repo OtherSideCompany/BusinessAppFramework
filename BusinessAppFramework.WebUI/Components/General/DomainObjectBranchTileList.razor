@@ -52,6 +52,7 @@
     [Parameter] public string? TilesIcon { get; set; }
     [Parameter] public int? ParentId { get; set; }
     [Parameter] public Branch? Branch { get; set; }
+    [Parameter] public EventCallback OnBranchChanged { get; set; }
 
     public void RaiseStateChanged()
     {
@@ -70,6 +71,7 @@
         if (node != null)
         {
             Branch.AddNode(node);
+            await OnBranchChanged.InvokeAsync();
         }
     }    
 
@@ -82,6 +84,7 @@
                 if (await TreeGateway.DeleteNodeAsync(ParentId.Value, node.Id, Branch.ParentChildRelationKey))
                 {
                     Branch?.RemoveNode(node.Id);
+                    await OnBranchChanged.InvokeAsync();
                 }
             }
         }

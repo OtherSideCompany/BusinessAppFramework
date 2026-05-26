@@ -1,10 +1,12 @@
-﻿using BusinessAppFramework.Application.Interfaces;
+﻿using BusinessAppFramework.Adapter.Responses;
+using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PuppeteerSharp;
 
 namespace BusinessAppFramework.WebUI.Services
 {
@@ -59,6 +61,13 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var route = $"{_baseUrl}/{SearchRouteSegments.Summary}/{domainObjectId}";
             return (await GetAsync<NodeSummary>(route)).Data;
+        }
+
+        public async Task<int> CountAsync(SearchRequest searchRequest)
+        {
+            var route = $"{_baseUrl}/{SearchRouteSegments.Count}";
+            var result = await PostAsync<int>(route, searchRequest);
+            return result.Data;
         }
 
         #endregion

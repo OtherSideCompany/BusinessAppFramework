@@ -78,6 +78,32 @@
             padding-top: 0;
             padding-bottom: 0;
         }
+
+    .constraint-chip {
+        border: 1px solid;
+        border-color: var(--mud-palette-lines-inputs);
+    }
+
+    .constraint-chip--active {
+        border-color: var(--mud-palette-primary);
+    }
+
+    .view-chip__count {
+        background-color: var(--mud-palette-action-default-hover);
+        color: var(--mud-palette-text-primary);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 1px 7px;
+        border-radius: 999px;
+        margin-left: 4px;
+        font-weight:400;
+    }
+
+    .view-chip__count--active {
+        background-color: var(--mud-palette-primary);
+        color: white;
+        font-weight: 600;
+    }
 </style>
 
 <DomainObjectBrowserLayout>
@@ -111,12 +137,19 @@
 
                 @foreach (var constraintKey in Descriptor.ConstraintKeys)
                 {
+                    var count = _constraintCounts.ContainsKey(constraintKey) ? _constraintCounts[constraintKey] : (int?)null;
+                    var isActive = _selectedConstraintKey == constraintKey;
                     <MudChip Value="@constraintKey"
-                             Variant="Variant.Outlined"
+                             Variant="Variant.Filled"
                              Color="Color.Default"
                              SelectedColor="Color.Primary"
-                             Style="@($"background-color: var(--mud-palette-surface); font-weight: {(_selectedConstraintKey == constraintKey ? "600" : "400")};")">
+                             Class="@($"constraint-chip {(isActive ? "constraint-chip--active" : "")}")"
+                             Style="@($"background-color: var(--mud-palette-surface); font-weight: {(isActive ? "600" : "400")};")">
                         @LocalizedStringService.Get(constraintKey)
+                        @if (count != null && count > 0)
+                        {
+                            <div class="@($"view-chip__count {(isActive ? "view-chip__count--active" : "")}")">@count</div>
+                        }
                     </MudChip>
                 }
 
@@ -237,6 +270,8 @@
     private MudDataGrid<TSearchResult>? _grid;
     private TSearchResult? _selectedItem;
 
+    private Dictionary<string, int> _constraintCounts = new();
+
 
     private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state, CancellationToken cancellationToken)
     {
@@ -256,6 +291,8 @@
         var items = result?.Items?.ToList() ?? new List<TSearchResult>();
         _totalItems = result?.Count ?? 0;
 
+        await RefreshConstraintCountsAsync();
+
         StateHasChanged();
 
         return new GridData<TSearchResult>
@@ -263,6 +300,16 @@
             Items = items,
             TotalItems = _totalItems
         };
+    }
+
+    private async Task RefreshConstraintCountsAsync()
+    {
+        _constraintCounts.Clear();
+
+        foreach (var constraint in Descriptor.ConstraintKeys)
+        {
+            _constraintCounts[constraint] = await SearchGateway.CountAsync(new SearchRequest() { ConstraintKey = constraint });
+        }
     }
 
     private string GridRowClassFunc(TSearchResult item, int rowIndex) => (_selectedItem?.Equals(item) ?? false) ? "selected" : string.Empty;
