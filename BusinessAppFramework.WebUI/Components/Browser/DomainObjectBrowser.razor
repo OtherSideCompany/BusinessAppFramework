@@ -3,7 +3,6 @@
 @using Application.Descriptors
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Search
-@using BusinessAppFramework.WebUI.Components.Editor
 @using Contracts
 @using Domain.DomainObjects
 @using Microsoft.AspNetCore.Components.Web;
@@ -91,16 +90,18 @@
     .view-chip__count {
         background-color: var(--mud-palette-action-default-hover);
         color: var(--mud-palette-text-primary);
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
-        padding: 1px 7px;
+        padding: 2px;
         border-radius: 999px;
         margin-left: 4px;
-        font-weight:400;
+        font-weight: 400;
+        min-width: 16px;
     }
 
     .view-chip__count--active {
         background-color: var(--mud-palette-primary);
+        border: 0px;
         color: white;
         font-weight: 600;
     }
@@ -135,22 +136,25 @@
                         SelectedValue="_selectedConstraintKey"
                         SelectedValueChanged="OnConstraintChanged">
 
-                @foreach (var constraintKey in Descriptor.ConstraintKeys)
+                @if (Descriptor.ConstraintKeys.Count > 1)
                 {
-                    var count = _constraintCounts.ContainsKey(constraintKey) ? _constraintCounts[constraintKey] : (int?)null;
-                    var isActive = _selectedConstraintKey == constraintKey;
-                    <MudChip Value="@constraintKey"
-                             Variant="Variant.Filled"
-                             Color="Color.Default"
-                             SelectedColor="Color.Primary"
-                             Class="@($"constraint-chip {(isActive ? "constraint-chip--active" : "")}")"
-                             Style="@($"background-color: var(--mud-palette-surface); font-weight: {(isActive ? "600" : "400")};")">
-                        @LocalizedStringService.Get(constraintKey)
-                        @if (count != null && count > 0)
-                        {
-                            <div class="@($"view-chip__count {(isActive ? "view-chip__count--active" : "")}")">@count</div>
-                        }
-                    </MudChip>
+                    @foreach (var constraintKey in Descriptor.ConstraintKeys)
+                    {
+                        var count = _constraintCounts.ContainsKey(constraintKey) ? _constraintCounts[constraintKey] : (int?)null;
+                        var isActive = _selectedConstraintKey == constraintKey;
+                        <MudChip Value="@constraintKey"
+                                 Variant="Variant.Filled"
+                                 Color="Color.Default"
+                                 SelectedColor="Color.Primary"
+                                 Class="@($"constraint-chip {(isActive ? "constraint-chip--active" : "")}")"
+                                 Style="@($"background-color: var(--mud-palette-surface); font-weight: {(isActive ? "600" : "400")};")">
+                            @LocalizedStringService.Get(constraintKey)
+                            @if (count != null && count > 0)
+                            {
+                                <div class="@($"view-chip__count {(isActive ? "view-chip__count--active" : "")}")">@count</div>
+                            }
+                        </MudChip>
+                    }
                 }
 
             </MudChipSet>
