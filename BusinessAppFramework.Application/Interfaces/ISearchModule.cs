@@ -4,7 +4,8 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface ISearchModule
     {
-        void RegisterServices(IServiceCollection services);
+        void RegisterBackendServices(IServiceCollection services);
+        void RegisterFrontendServices(IServiceCollection services);
         void RegisterSearchRouteKeys(IServiceProvider serviceProvider);
 
     }

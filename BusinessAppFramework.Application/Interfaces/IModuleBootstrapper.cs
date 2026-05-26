@@ -5,7 +5,8 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IModuleBootstrapper
     {
-        void RegisterServices(IServiceCollection services);
+        void RegisterBackendServices(IServiceCollection services);
+        void RegisterFrontendServices(IServiceCollection services);
         void RegisterLocalizedStrings(IServiceProvider serviceProvider);
         void RegisterBrowserDescriptors(IServiceProvider serviceProvider);
         void RegisterSelectorDescriptors(IServiceProvider serviceProvider);
