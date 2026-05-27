@@ -53,13 +53,13 @@
                 @ColumnsContent
                 <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
                     <EditTemplate>
-                        <MudButtonGroup Size="Size.Small" Color="Color.Primary">
+                        <MudStack Row="true" Spacing="0">
                             @ItemActions
                             <MudIconButton Icon="@Icons.Material.Outlined.Delete"
                                            Size="Size.Small"
                                            Color="Color.Error"
                                            OnClick="async () => await DeleteItemAsync(context.Item)" />
-                        </MudButtonGroup>
+                        </MudStack>
                     </EditTemplate>
                 </TemplateColumn>
             </Columns>

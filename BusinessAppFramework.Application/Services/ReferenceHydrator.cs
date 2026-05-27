@@ -9,7 +9,7 @@ namespace BusinessAppFramework.Application.Services
    {
       #region Fields
 
-      private readonly IRelationResolver _relationResolver;
+      private readonly IReferenceResolver _relationResolver;
       private readonly IRelationService _relationService;
 
       #endregion
@@ -29,7 +29,7 @@ namespace BusinessAppFramework.Application.Services
       #region Constructor
 
       public ReferenceHydrator(
-          IRelationResolver relationResolver,
+          IReferenceResolver relationResolver,
           IRelationService relationService)
       {
          _relationResolver = relationResolver;

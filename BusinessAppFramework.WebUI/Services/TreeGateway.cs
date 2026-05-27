@@ -17,7 +17,7 @@ namespace BusinessAppFramework.WebUI.Services
 
         private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Tree}";
 
-        private IRelationResolver _relationResolver;
+        private IReferenceResolver _relationResolver;
         private IDomainObjectTypeMap _domainObjectTypeMap;
         
         #endregion
@@ -39,7 +39,7 @@ namespace BusinessAppFramework.WebUI.Services
         public TreeGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
-            IRelationResolver relationResolver,
+            IReferenceResolver relationResolver,
             IDomainObjectTypeMap domainObjectTypeMap,
             ILogger<TreeGateway> logger,
             ILocalizedStringService localizedStringService,

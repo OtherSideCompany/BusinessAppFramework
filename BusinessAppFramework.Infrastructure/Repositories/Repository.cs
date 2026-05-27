@@ -29,7 +29,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
         protected ILoggerFactory _loggerFactory;
         protected ILogger<Repository<TDomainObject, TEntity>> _logger;
         protected IMapper _mapper;
-        protected IRelationResolver _relationResolver;
+        protected IReferenceResolver _relationResolver;
         protected IRelationService _relationService;
 
         protected bool _canUseExecuteDelete = true;

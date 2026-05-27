@@ -18,7 +18,7 @@ namespace BusinessAppFramework.Infrastructure.Factories
         public IDbContextFactory<DbContext> DbContextFactory { get; }
         public IMapper Mapper { get; }
         public ILoggerFactory LoggerFactory { get; }
-        public IRelationResolver RelationResolver { get; }
+        public IReferenceResolver RelationResolver { get; }
         public IRelationService RelationService { get; }
 
         #endregion
@@ -35,7 +35,7 @@ namespace BusinessAppFramework.Infrastructure.Factories
            IDbContextFactory<DbContext> dbContextFactory,
            IMapper mapper,
            ILoggerFactory loggerFactory,
-           IRelationResolver parentChildRelationResolver)
+           IReferenceResolver parentChildRelationResolver)
         {
             DbContextFactory = dbContextFactory;
             Mapper = mapper;

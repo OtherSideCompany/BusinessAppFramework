@@ -19,7 +19,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         private ITreeFactory _treeFactory;
         private IDomainObjectServiceFactory _domainObjectServiceFactory;
-        private IRelationResolver _relationResolver;
+        private IParentChildRelationResolver _relationResolver;
         private IDomainObjectTypeMap _domainObjectTypeMap;
         private IRelationService _relationService;
         private ISearchServiceFactory _searchServiceFactory;
@@ -43,7 +43,7 @@ namespace BusinessAppFramework.Adapter.Controllers
         public TreeController(
             ITreeFactory treeFactory,
             IDomainObjectServiceFactory domainObjectServiceFactory,
-            IRelationResolver relationResolver,
+            IParentChildRelationResolver relationResolver,
             IDomainObjectTypeMap domainObjectTypeMap,
             IRelationService relationService,
             ISearchServiceFactory searchServiceFactory)

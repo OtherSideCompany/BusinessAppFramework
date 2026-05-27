@@ -22,7 +22,7 @@ namespace BusinessAppFramework.Application.Services
         public IPasswordService PasswordService { get; }
         public IDomainObjectEventBus DomainObjectEventBus { get; }
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
-        public IRelationResolver RelationResolver { get; }
+        public IReferenceResolver RelationResolver { get; }
         public IRelationService RelationService { get; }
 
         #endregion
@@ -40,7 +40,7 @@ namespace BusinessAppFramework.Application.Services
             IPasswordService passwordService,
             IDomainObjectEventBus domainObjectEventBus,
             IUserPermissionResolverService userPermissionResolverService,
-            IRelationResolver relationResolver,
+            IReferenceResolver relationResolver,
             IReferenceHydrator referenceHydrator,
             IRelationService relationService)
         {

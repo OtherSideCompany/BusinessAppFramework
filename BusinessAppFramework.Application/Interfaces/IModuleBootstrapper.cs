@@ -19,6 +19,9 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterWorkflowContextLoader(IServiceProvider serviceProvider);
         void RegisterDomainObjectRouteKeys(IServiceProvider serviceProvider);
         void RegisterComponents(IServiceProvider serviceProvider);
+        void RegisterTrees(IServiceProvider serviceProvider);
+        void RegisterReferences(IServiceProvider serviceProvider);
+        void RegisterParentChildRelations(IServiceProvider serviceProvider);
         StringKey? GetModuleWorkspaceKey();
         List<StringKey> GetWorkspacesKeys();
     }

@@ -24,7 +24,8 @@ namespace BusinessAppFramework.Infrastructure.Services
         private IDbContextFactory<DbContext> _dbContextFactory;
         private IMapper _mapper;
         protected ILogger<RelationService> _logger;
-        private IRelationResolver _relationResolver;
+        private IReferenceResolver _relationResolver;
+        private IParentChildRelationResolver _parentChildRelationResolver;
         private IDomainObjectTypeMap _domainObjectTypeMap;
         private IDomainObjectServiceFactory _domainObjectServiceFactory;
 
@@ -48,16 +49,18 @@ namespace BusinessAppFramework.Infrastructure.Services
             IDbContextFactory<DbContext> dbContextFactory,
             IMapper mapper,
             ILoggerFactory loggerFactory,
-            IRelationResolver relationResolver,
+            IReferenceResolver referenceResolver,
+            IParentChildRelationResolver parentChildRelationResolver,
             IDomainObjectTypeMap domainObjectTypeMap,
             IDomainObjectServiceFactory domainObjectServiceFactory)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
             _logger = loggerFactory.CreateLogger<RelationService>();
-            _relationResolver = relationResolver;
+            _relationResolver = referenceResolver;
             _domainObjectTypeMap = domainObjectTypeMap;
             _domainObjectServiceFactory = domainObjectServiceFactory;
+            _parentChildRelationResolver = parentChildRelationResolver;
         }
 
         #endregion
@@ -166,7 +169,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
             {
                 var query = ((IInfrastructureParentChildRelation)relationEntry).GetChildrenIds(context, parentId);
 
@@ -182,7 +185,7 @@ namespace BusinessAppFramework.Infrastructure.Services
         {
             var children = new List<TChild>();
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
             {
                 var childrendIds = await GetChildrenIdsAsync(parentId, relationKey);
 
@@ -201,7 +204,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         public async Task<int?> GetMaxChildIndexAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
         {           
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
             {
                 var childrendIds = await GetChildrenIdsAsync(parentId, relationKey);
 
@@ -237,7 +240,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
             {
                 var entity = context.Find(relationEntry.ChildEntityType, childId);
                 relationEntry.ParentEntityIdProperty.SetValue(entity, parentId);
@@ -251,7 +254,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
             {
                 var entity = context.Find(relationEntry.ChildEntityType, childId);
                 return (int?)relationEntry.ParentEntityIdProperty.GetValue(entity);
