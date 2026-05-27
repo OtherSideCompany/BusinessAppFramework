@@ -14,7 +14,6 @@ namespace BusinessAppFramework.Application.Workflows
 
         public DomainObjectHttpApplicationAction? DomainObjectHttpApplicationAction { get; set; }
         public OpenDialogApplicationAction? OpenDialogApplicationAction { get; set; }
-        public bool IsExecuted { get; set; }
         public bool IsExecutable { get; set; }
         public List<Condition> Conditions { get; set; } = new();     
 
