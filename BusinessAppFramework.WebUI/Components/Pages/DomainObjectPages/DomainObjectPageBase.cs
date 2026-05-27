@@ -28,7 +28,6 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         protected Tree? _tree;
         protected int? _loadedId;
         protected Workflow.Workflow? _workflow;
-
         private List<IEditable> _editableComponents { get; set; } = new();
 
         #endregion

@@ -12,6 +12,7 @@
 
         public List<DomainObjectChange> Changes { get; set; } = new();
         public string? ErrorMessageKey { get; set; }
+        public string? ConfirmationMessageKey { get; set; }
 
         #endregion
 

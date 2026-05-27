@@ -14,6 +14,7 @@ namespace BusinessAppFramework.Application.Workflows
 
         public string Key { get; set; }
         public bool IsCompleted { get; set; }
+        public bool IsBlocking { get; set; } = true;
 
         #endregion
 

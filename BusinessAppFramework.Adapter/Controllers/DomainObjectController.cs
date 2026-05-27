@@ -140,6 +140,16 @@ namespace BusinessAppFramework.Adapter.Controllers
             return applicationActionResultPayload;
         }
 
+        protected DomainObjectApplicationActionResultPayload CreateErrorPayload(string errorMessageKey)
+        {
+            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload()
+            {
+                ErrorMessageKey = errorMessageKey
+            };
+
+            return applicationActionResultPayload;
+        }
+
         #endregion
     }
 }

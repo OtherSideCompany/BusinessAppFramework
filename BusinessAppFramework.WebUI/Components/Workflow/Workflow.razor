@@ -80,17 +80,24 @@
                             <MudTooltip Placement="Placement.Bottom" Arrow="true" Color="Color.Surface">
                                 <TooltipContent>
 
-                                    <MudPaper Class="pa-2" Elevation="2">
+                                    <MudPaper Class="pa-3" Elevation="2">
 
                                         @if (transition.Conditions.Any())
                                         {
-                                            <MudStack Spacing="1" Style="padding:4px;min-width:200px;">
+                                            <MudStack Spacing="1" Style="min-width:200px;">
                                                 @foreach (var condition in transition.Conditions)
                                                 {
-                                                    var style = condition.IsCompleted ? "color:var(--mud-palette-success-darken)" : "color:var(--mud-palette-error)";
+                                                    var style = !condition.IsCompleted && condition.IsBlocking ? "color:var(--mud-palette-error)" : "";
 
                                                     <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
-                                                        <BoolIndicator Value="condition.IsCompleted" />
+                                                        @if (condition.IsBlocking)
+                                                        {
+                                                            <BoolIndicator Value="condition.IsCompleted" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudIcon Icon="@Icons.Material.Outlined.Lightbulb" Color="Color.Warning" />
+                                                        }
                                                         <MudText Typo="Typo.caption" Style="@style">
                                                             @LocalizedStringService.Get(condition.Key)
                                                         </MudText>
@@ -170,14 +177,19 @@
             {
                 transition.OpenDialogApplicationAction.DialogTitle = LocalizedStringService.Get(transition.OpenDialogApplicationAction.ComponentKey);
                 transition.OpenDialogApplicationAction.DomainObjectId = DomainObjectId.Value;
-                payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(transition.OpenDialogApplicationAction);
+                payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(transition.OpenDialogApplicationAction);                
             }
 
             await RefreshWorkflowAsync();
 
-            if (transition.ExecutionConfirmationMessageKey != null)
+            if (payload?.ConfirmationMessageKey != null)
             {
-                UserDialogService.SnackShow(LocalizedStringService.Get(transition.ExecutionConfirmationMessageKey)!);
+                UserDialogService.SnackShow(LocalizedStringService.Get(payload.ConfirmationMessageKey)!);
+            }
+
+            if (payload?.ErrorMessageKey != null)
+            {
+                UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey)!);
             }
 
             if (OnTransitionExecuted.HasDelegate)

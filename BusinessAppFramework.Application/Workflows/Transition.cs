@@ -17,8 +17,6 @@ namespace BusinessAppFramework.Application.Workflows
         public bool IsExecuted { get; set; }
         public bool IsExecutable { get; set; }
         public List<Condition> Conditions { get; set; } = new();     
-        public string? ExecutionConfirmationMessageKey { get; set; }
-        public string ExecutionErrorMessageKey { get; set; } = BusinessAppFramework.Contracts.MessageKeys.CannotExecuteAction;
 
         #endregion
 
@@ -43,6 +41,11 @@ namespace BusinessAppFramework.Application.Workflows
         {
             return DomainObjectHttpApplicationAction != null ? DomainObjectHttpApplicationAction.ActionKey :
                     OpenDialogApplicationAction != null ? OpenDialogApplicationAction.ActionKey : "";
+        }
+
+        public bool AreConditionsVerified()
+        {
+            return Conditions.Where(c => c.IsBlocking).All(c => c.IsCompleted);
         }
 
         #endregion
