@@ -1,5 +1,6 @@
-﻿@using BusinessAppFramework.Application.Interfaces
-@using Application.Trees
+﻿@using Application.Trees
+@using BusinessAppFramework.Application.Actions
+@using BusinessAppFramework.Application.Interfaces
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
@@ -87,12 +88,16 @@
     private int? _loadedParentId;
     private Branch? _loadedBranch;
 
-    public async Task SaveChangesAsync()
+    public async Task<List<DomainObjectApplicationActionResultPayload>> SaveChangesAsync()
     {
+        var results = new List<DomainObjectApplicationActionResultPayload>();
+
         foreach (var item in Items)
         {
-            await DomainObjectServiceGateway.SaveAsync(item);
+            results.Add(await DomainObjectServiceGateway.SaveAsync(item));
         }
+
+        return results;
     }
 
     public async Task CancelChangesAsync()

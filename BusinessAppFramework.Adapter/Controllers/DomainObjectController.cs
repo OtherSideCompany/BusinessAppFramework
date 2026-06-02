@@ -103,6 +103,17 @@ namespace BusinessAppFramework.Adapter.Controllers
         public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> SaveAsync(
             [FromBody] TDomainObject domainObject)
         {
+            var (isValid, validationError) = await _service.ValidateSaveAsync(domainObject);
+
+            if (!isValid)
+            {
+                var payload = new DomainObjectApplicationActionResultPayload()
+                {
+                    ErrorMessageKey = validationError
+                };
+                return Ok(payload);
+            }
+
             await _service.SaveAsync(domainObject);
             return Ok(CreateModifiedPayload(domainObject.Id));
         }

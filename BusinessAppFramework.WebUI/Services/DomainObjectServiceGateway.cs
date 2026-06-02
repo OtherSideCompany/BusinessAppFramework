@@ -1,11 +1,8 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -37,7 +34,7 @@ namespace BusinessAppFramework.WebUI.Services
         #region Constructor
 
         public DomainObjectServiceGateway(
-            IHttpClientFactory clientFactory, 
+            IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
             IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
             ILogger<DomainObjectServiceGateway<T>> logger,
@@ -91,10 +88,11 @@ namespace BusinessAppFramework.WebUI.Services
             return (await GetAsync<DomainObjectReferenceListItem>(route)).Data;
         }
 
-        public async Task SaveAsync(T domainObject, CancellationToken cancellationToken = default)
+        public async Task<DomainObjectApplicationActionResultPayload> SaveAsync(T domainObject, CancellationToken cancellationToken = default)
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.Save}";
-            await PutAsync<T>(route, domainObject);
+            var result = await PutAsync<DomainObjectApplicationActionResultPayload>(route, domainObject);
+            return result?.Data ?? new DomainObjectApplicationActionResultPayload() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
         }
 
         public async Task DeleteAsync(int domainObjectId)

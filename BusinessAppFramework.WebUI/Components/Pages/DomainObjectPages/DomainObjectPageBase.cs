@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Application.Descriptors;
+﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Application.Descriptors;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
@@ -157,13 +158,20 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
         protected async Task SaveAsync()
         {
+            var results = new List<DomainObjectApplicationActionResultPayload>();
+
             if (DomainObject != null)
             {
-                await DomainObjectServiceGateway.SaveAsync(DomainObject);
+                results.Add(await DomainObjectServiceGateway.SaveAsync(DomainObject));
 
                 foreach (var editableComponent in _editableComponents)
                 {
-                    await editableComponent.SaveChangesAsync();
+                    results.AddRange(await editableComponent.SaveChangesAsync());
+                }
+
+                foreach (var result in results.Where(r => r.ErrorMessageKey != null))
+                {
+                    UserDialogService.SnackError(LocalizedStringService.Get(result.ErrorMessageKey!));
                 }
 
                 SetDirtyState(false);

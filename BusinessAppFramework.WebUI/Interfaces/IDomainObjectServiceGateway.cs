@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Domain.DomainObjects;
+﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.WebUI.Interfaces
 {
@@ -9,7 +10,7 @@ namespace BusinessAppFramework.WebUI.Interfaces
       Task<DomainObjectReference?> GetHydratedDomainObjectReference(int domainObjectReference, string key);
       Task<DomainObjectReferenceListItem?> GetHydratedDomainObjectReferenceListItem(int domainObjectReferenceListItemId, string key);
       Task<T?> CreateAsync();
-      Task SaveAsync(T domainObject, CancellationToken cancellationToken = default);
+      Task<DomainObjectApplicationActionResultPayload> SaveAsync(T domainObject, CancellationToken cancellationToken = default);
       Task DeleteAsync(int domainObjectId);
    }
 }

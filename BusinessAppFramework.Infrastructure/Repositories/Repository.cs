@@ -221,7 +221,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
         {
             _logger.LogInformation($"{GetType()}, {nameof(IsSystemObjectAsync)}, domainObjectId : {domainObjectId}");
 
-            if (!typeof(TEntity).IsAssignableFrom(typeof(ISystemObject)))
+            if (!typeof(ISystemObject).IsAssignableFrom(typeof(TEntity)))
                 return false;
 
             using var context = _dbContextFactory.CreateDbContext();

@@ -163,6 +163,11 @@ namespace BusinessAppFramework.Application.Services
             return domainObject;
         }
 
+        public virtual async Task<(bool isValid, string? validationErrorKey)> ValidateSaveAsync(T domainObject)
+        {
+            return await Task.FromResult((true, (string?)null));
+        }
+
         public virtual async Task SaveAsync(T domainObject)
         {
             if (domainObject is ISystemObject systemObject && !string.IsNullOrEmpty(systemObject.SystemCode))
@@ -230,7 +235,7 @@ namespace BusinessAppFramework.Application.Services
 
         private async Task<bool> IsSystemObjectAsync(int domainObjectId)
         {
-            return typeof(T).IsAssignableFrom(typeof(ISystemObject)) && await _repository.IsSystemObjectAsync(domainObjectId);
+            return typeof(ISystemObject).IsAssignableFrom(typeof(T)) && await _repository.IsSystemObjectAsync(domainObjectId);
         }
 
         private async Task CreateWithoutRightsCheckAsync(T domainObject)
