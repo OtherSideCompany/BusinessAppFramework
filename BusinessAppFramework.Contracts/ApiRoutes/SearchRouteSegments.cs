@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BusinessAppFramework.Contracts.ApiRoutes
+﻿namespace BusinessAppFramework.Contracts.ApiRoutes
 {
     public static class SearchRouteSegments
     {
@@ -11,5 +7,6 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string Summary = $"summary";
 
         public const string StockMovementPaginated = $"stock-movement-paginated";
+        public const string PricingLinePaginated = $"pricing-line-paginated";
     }
 }

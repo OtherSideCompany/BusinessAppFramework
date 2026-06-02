@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 
@@ -29,6 +30,8 @@ namespace BusinessAppFramework.Application.Actions
         public DomainObjectNavigationApplicationAction(IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver)
         {
             _domainObjectPageWorkspaceKeyResolver = domainObjectPageWorkspaceKeyResolver;
+
+            ActionKey = ActionKeys.OpenActionKey;
         }
 
         #endregion

@@ -18,7 +18,7 @@
                  Class="align-right-input" 
                  AdornmentText="@AdornmentText"
                  Adornment="@Adornment"
-                 ReadOnly="false"
+                 ReadOnly="@ReadOnly"
                  Variant="Variant.Text"
                  Underline="false"
                  Typo="Typo.body2"
@@ -31,6 +31,9 @@
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
     [Parameter] public string? AdornmentText { get; set; }
     [Parameter] public string? Style { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+
+
     private Adornment Adornment => String.IsNullOrEmpty(AdornmentText) ? Adornment.None : Adornment.End;
 
     private async Task OnValueChangedInternal(TValue v)

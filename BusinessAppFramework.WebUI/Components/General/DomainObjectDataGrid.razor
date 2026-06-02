@@ -54,7 +54,7 @@
                 <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
                     <EditTemplate>
                         <MudStack Row="true" Spacing="0">
-                            @ItemActions
+                            @ItemActions?.Invoke(context.Item)
                             <MudIconButton Icon="@Icons.Material.Outlined.Delete"
                                            Size="Size.Small"
                                            Color="Color.Error"
@@ -72,7 +72,7 @@
 @code {
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
-    [Parameter] public RenderFragment? ItemActions { get; set; }
+    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }
     [Parameter] public EventCallback OnBranchChanged { get; set; }
 
     [Parameter, EditorRequired] public int? ParentId { get; set; }

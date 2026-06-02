@@ -1,16 +1,13 @@
-﻿@using BusinessAppFramework.Application.Actions
+﻿@using BusinessAppFramework.Application.Factories
 @using BusinessAppFramework.Application.Interfaces
-
 @using BusinessAppFramework.Application.Trees
-@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.Domain
 @using BusinessAppFramework.WebUI.Interfaces
 @using MudBlazor
 
 @inject ILocalizedStringService LocalizedStringService
 @inject IApplicationActionExecutionService ApplicationActionExecutionService
-@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyResolver
-
-@typeparam TDomainObject where TDomainObject : DomainObject, new()
+@inject IDomainObjectNavigationApplicationActionFactory DomainObjectNavigationApplicationActionFactory
 
 <MudStack Spacing="4">
 
@@ -45,15 +42,16 @@
 
 @code {
     [Parameter, EditorRequired] public Branch? Branch { get; set; }
+    [Parameter, EditorRequired] public string NavigationApplicationActionKey { get; set; }
     [Parameter] public string Icon { get; set; } = default!;
 
-    private DomainObjectNavigationApplicationAction<TDomainObject>? _navigationApplicationAction;
+    private IDomainObjectNavigationApplicationAction? _navigationApplicationAction;
 
     protected override void OnParametersSet()
     {
         if (_navigationApplicationAction == null)
         {
-            _navigationApplicationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(DomainObjectPageWorkspaceKeyResolver);
+            _navigationApplicationAction = DomainObjectNavigationApplicationActionFactory.Get(StringKey.From(NavigationApplicationActionKey));
         }
     }
 

@@ -1,8 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Domain.DomainObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BusinessAppFramework.Application.Factories
 {

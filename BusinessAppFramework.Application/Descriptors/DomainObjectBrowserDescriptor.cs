@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts;
@@ -21,12 +22,16 @@ namespace BusinessAppFramework.Application.Descriptors
         public List<IApplicationAction> DomainObjectApplicationActions { get; init; } = new();
         public List<string> ConstraintKeys { get; init; } = new();
         public string DefaultConstraintKey { get; init; }
+        public string PageNavigationApplicationActionKey { get; set; }
 
         public DomainObjectBrowserDescriptor(
-            IDomainObjectPageWorkspaceKeyRegistry domainObjectPageWorkspaceKeyResolver,
             IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
+            IDomainObjectNavigationApplicationActionFactory domainObjectNavigationApplicationActionFactory,
+            string pageNavigationApplicationActionKey,
             List<string>? constraintKeys = null)
         {
+            PageNavigationApplicationActionKey = pageNavigationApplicationActionKey;
+
             ApplicationActions = new List<IApplicationAction>();
             DomainObjectApplicationActions = new List<IApplicationAction>();
 
@@ -64,10 +69,7 @@ namespace BusinessAppFramework.Application.Descriptors
                 $"{ApiRouteSegments.Delete}/" +
                 $"{ApiRouteParams.DomainObjectId}";
 
-            var pageNavigationAction = new DomainObjectNavigationApplicationAction<TDomainObject>(domainObjectPageWorkspaceKeyResolver)
-            {
-                ActionKey = ActionKeys.OpenActionKey
-            };
+            var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(StringKey.From(PageNavigationApplicationActionKey));
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
             DomainObjectApplicationActions.Add(deleteAction);

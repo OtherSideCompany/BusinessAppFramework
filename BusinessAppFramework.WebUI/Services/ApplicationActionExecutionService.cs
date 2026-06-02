@@ -114,8 +114,8 @@ namespace BusinessAppFramework.WebUI.Services
 
                 var dialogOptions = new DialogOptions
                 {
-                    MaxWidth = MaxWidth.Medium,
-                    FullWidth = true
+                    MaxWidth = MaxWidth.False,
+                    FullWidth = false
                 };
 
                 var componentType = _componentRegistry.Resolve(StringKey.From(openDialogApplicationAction.ComponentKey));

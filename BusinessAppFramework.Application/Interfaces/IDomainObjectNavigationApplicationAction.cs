@@ -2,5 +2,6 @@
 {
    public interface IDomainObjectNavigationApplicationAction : IDomainObjectApplicationAction
    {
-   }
+        string BuildRoute(int domainObjectId);
+    }
 }
