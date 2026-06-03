@@ -156,7 +156,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             StateHasChanged();
         }
 
-        protected async Task SaveAsync()
+        protected virtual async Task SaveAsync()
         {
             var results = new List<DomainObjectApplicationActionResultPayload>();
 
@@ -180,7 +180,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
         }
 
-        protected async Task UndoAsync()
+        protected virtual async Task UndoAsync()
         {
             if (DomainObject != null)
             {

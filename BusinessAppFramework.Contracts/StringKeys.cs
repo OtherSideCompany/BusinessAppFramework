@@ -37,5 +37,6 @@
         public static string MailSendKey => "MailSendKey";
         public static string ExtendedSearchKey => "ExtendedSearchKey";
         public static string HelloKey = "HelloKey";
+        public static string UndefinedKey = "UndefinedKey";       
     }
 }

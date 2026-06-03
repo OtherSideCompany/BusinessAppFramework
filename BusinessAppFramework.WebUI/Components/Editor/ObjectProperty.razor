@@ -24,7 +24,9 @@ else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType =
                      Value="@(PropertyValue as int?)"
                      Variant="@Variant"
                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
-                     HideSpinButtons="true" />
+                     HideSpinButtons="true"
+                     Clearable="@(PropertyInfo.PropertyType == typeof(int?))"
+                     Placeholder="@(PropertyInfo.PropertyType == typeof(int?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
 }
 else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
 {
@@ -44,7 +46,9 @@ else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyTy
                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                      Variant="@Variant"
                      HideSpinButtons="true" 
-                     Culture="System.Globalization.CultureInfo.InvariantCulture" />
+                     Culture="System.Globalization.CultureInfo.InvariantCulture" 
+                     Clearable="@(PropertyInfo.PropertyType == typeof(decimal?))"
+                     Placeholder="@(PropertyInfo.PropertyType == typeof(decimal?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
 }
 else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyType == typeof(DateTime?))
 {
@@ -54,7 +58,8 @@ else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyT
                    DateChanged="OnDateChanged"
                    Variant="@Variant"
                    Editable="true"
-                   Clearable="PropertyInfo.PropertyType == typeof(DateTime?)" />
+                   Clearable="PropertyInfo.PropertyType == typeof(DateTime?)" 
+                   Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
 }
 else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
 {
