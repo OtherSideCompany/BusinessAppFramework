@@ -6,7 +6,6 @@ using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
-using PuppeteerSharp;
 
 namespace BusinessAppFramework.Application.Descriptors
 {
@@ -84,7 +83,7 @@ namespace BusinessAppFramework.Application.Descriptors
             if (constraintKeys != null)
             {
                 ConstraintKeys.AddRange(constraintKeys);
-            }
+            }            
         }
 
         public void RemoveDefaultApplicationAction(string actionKey)

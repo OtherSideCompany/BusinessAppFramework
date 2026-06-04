@@ -4,6 +4,7 @@
 @using Domain.Attributes
 @using MudBlazor
 @using WebUI.Interfaces
+@using BusinessAppFramework.Contracts
 
 @inject ILocalizedStringService LocalizedStringService
 @inject IDialogService DialogService
@@ -55,7 +56,7 @@
     <div class="osc-fiche">
         @foreach (var prop in props)
         {
-            var propKey = $"{prop.DeclaringType?.Name}_{prop.Name}";
+            var propKey = AggregateKeys.Property(prop.DeclaringType!, prop.Name);
             var label = LocalizedStringService.Get(propKey);
             var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
             var value = concreteProperty?.GetValue(Target);
