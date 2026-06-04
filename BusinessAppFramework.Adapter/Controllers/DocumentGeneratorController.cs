@@ -45,7 +45,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.Key)] string documentKey,
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
-            var htmlDocument = await _documentGenerator.GetHtmlDocumentAsync(StringKey.From(documentKey), domainObjectId);
+            var htmlDocument = await _documentGenerator.GetHtmlDocumentAsync(documentKey, domainObjectId);
 
             return Ok(new DocumentHtmlResponse() { HtmlContent = htmlDocument });
         }
@@ -55,7 +55,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.Key)] string documentKey,
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
-            var pdfDocumentBytes = await _documentGenerator.GetPdfDocumentAsync(StringKey.From(documentKey), domainObjectId);
+            var pdfDocumentBytes = await _documentGenerator.GetPdfDocumentAsync(documentKey, domainObjectId);
 
             if (pdfDocumentBytes is null || pdfDocumentBytes.Length == 0)
                 return NotFound();

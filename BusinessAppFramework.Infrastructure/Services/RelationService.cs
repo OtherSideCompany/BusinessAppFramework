@@ -90,7 +90,7 @@ namespace BusinessAppFramework.Infrastructure.Services
                 var entities = ((System.Collections.IEnumerable)collectionObject).Cast<IEntity>().ToList();
                 var relatedIds = entities.Select(e => e.Id).ToList();
 
-                domainObjectReferenceLists.Add(new DomainObjectReferenceList(relationEntry.RelationKey.Key, relatedIds));
+                domainObjectReferenceLists.Add(new DomainObjectReferenceList(relationEntry.RelationKey, relatedIds));
             }
 
             return domainObjectReferenceLists;
@@ -112,7 +112,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
                 var relatedId = (int?)relationEntry.EntityIdProperty.GetValue(entity);
 
-                domainObjectReferences.Add(new DomainObjectReference(relationEntry.RelationKey.Key, relatedId));
+                domainObjectReferences.Add(new DomainObjectReference(relationEntry.RelationKey, relatedId));
             }
 
             return domainObjectReferences;
@@ -124,7 +124,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(domainObjectReference.RelationKey, out var relationEntry))
             {
                 var entity = await context.FindAsync(relationEntry.TargetEntityType, domainObjectReference.DomainObjectId);
                 domainObjectReference.DisplayValue = entity?.ToString();
@@ -138,7 +138,7 @@ namespace BusinessAppFramework.Infrastructure.Services
             var domainObjectReferenceListById = domainObjectReferenceList.Items.ToDictionary(i => i.DomainObjectId);
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
+            if (_relationResolver.TryGetReferenceListRelationEntry(domainObjectReferenceList.RelationKey, out var relationListEntry))
             {
                 var ids = domainObjectReferenceList.Items.Select(r => r.DomainObjectId).ToList();
 
@@ -156,7 +156,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(relationKey), out var relationListEntry))
+            if (_relationResolver.TryGetReferenceListRelationEntry(relationKey, out var relationListEntry))
             {
                 var entity = await context.FindAsync(relationListEntry.TargetEntityType, domainObjectReferenceListItem.DomainObjectId);
                 domainObjectReferenceListItem.DisplayValue = entity?.ToString();
@@ -169,7 +169,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var relationEntry))
             {
                 var query = ((IInfrastructureParentChildRelation)relationEntry).GetChildrenIds(context, parentId);
 
@@ -185,7 +185,7 @@ namespace BusinessAppFramework.Infrastructure.Services
         {
             var children = new List<TChild>();
 
-            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var parentChildRelation))
             {
                 var childrendIds = await GetChildrenIdsAsync(parentId, relationKey);
 
@@ -204,7 +204,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         public async Task<int?> GetMaxChildIndexAsync(int parentId, string relationKey, CancellationToken cancellationToken = default)
         {           
-            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var parentChildRelation))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var parentChildRelation))
             {
                 var childrendIds = await GetChildrenIdsAsync(parentId, relationKey);
 
@@ -240,7 +240,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var relationEntry))
             {
                 var entity = context.Find(relationEntry.ChildEntityType, childId);
                 relationEntry.ParentEntityIdProperty.SetValue(entity, parentId);
@@ -254,7 +254,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var relationEntry))
             {
                 var entity = context.Find(relationEntry.ChildEntityType, childId);
                 return (int?)relationEntry.ParentEntityIdProperty.GetValue(entity);
@@ -269,7 +269,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using var context = _dbContextFactory.CreateDbContext();
 
-            if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(relationKey), out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(relationKey, out var relationEntry))
             {
                 var entity = (IEntity)context.Find(relationEntry.TargetEntityType, childId);
 

@@ -86,7 +86,7 @@
                     <MudStack Row="true" Spacing="0" Style="background:rgba(51, 234, 81, 0.1);">
                         <div style="width: 3px; background: #33EA51; border-radius: 0 2px 2px 0;" />
                         <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:13px;">
-                            <MudIcon Icon="@IconFactory.CreateIcon(StringKey.From(workspaceKey))" Class="nav-menu-icon" Style="color:#33EA51" />
+                            <MudIcon Icon="@IconFactory.CreateIcon(workspaceKey)" Class="nav-menu-icon" Style="color:#33EA51" />
                             <MudButton Href="@href"
                                        Style="text-transform: none;">
                                 <MudText Class="nav-menu-button-text" Style="color:#33EA51">@LocalizedStringService.Get(workspaceKey)</MudText>
@@ -97,7 +97,7 @@
                 else
                 {
                     <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:16px;" Class="nav-item">
-                        <MudIcon Icon="@IconFactory.CreateIcon(StringKey.From(workspaceKey))" Class="nav-menu-icon" />
+                        <MudIcon Icon="@IconFactory.CreateIcon(workspaceKey)" Class="nav-menu-icon" />
                         <MudButton Href="@href"
                                    FullWidth="true"
                                    Style="text-transform: none; justify-content: flex-start;">

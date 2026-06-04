@@ -1,6 +1,6 @@
 ﻿namespace BusinessAppFramework.Contracts
 {
-    public static class StringKeys
+    public static class strings
     {
         public static string InfosKey => "Infos";
         public static string HistoryKey => "History";

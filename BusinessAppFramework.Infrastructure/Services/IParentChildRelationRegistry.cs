@@ -10,7 +10,7 @@ namespace BusinessAppFramework.Infrastructure.Services
     public interface IParentChildRelationRegistry
     {        
         void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
-              StringKey relationKey,
+              string relationKey,
               Expression<Func<TChildEntity, int?>> parentEntityIdExpression,
               Func<DbContext, int, IQueryable<int>> childrenIdsGetter)
                where TChildEntity : class, IEntity

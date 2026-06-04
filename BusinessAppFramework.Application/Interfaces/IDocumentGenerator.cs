@@ -7,7 +7,7 @@ namespace BusinessAppFramework.Application.Interfaces
 {
    public interface IDocumentGenerator
    {
-      Task<string> GetHtmlDocumentAsync(StringKey key, int objectId);
-      Task<byte[]> GetPdfDocumentAsync(StringKey key, int objectId);
+      Task<string> GetHtmlDocumentAsync(string key, int objectId);
+      Task<byte[]> GetPdfDocumentAsync(string key, int objectId);
    }
 }

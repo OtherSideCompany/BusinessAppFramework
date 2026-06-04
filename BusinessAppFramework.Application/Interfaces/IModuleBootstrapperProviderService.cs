@@ -6,6 +6,6 @@ namespace BusinessAppFramework.Application.Interfaces
    {
       List<IModuleBootstrapper> GetModules();
       List<ISearchModuleBootstrapper> GetSearchModules();
-      IModuleBootstrapper? GetModuleByKey(StringKey key);
+      IModuleBootstrapper? GetModuleByKey(string key);
    }
 }

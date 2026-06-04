@@ -18,19 +18,19 @@
 
         <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 
-            <DefaultDomainObjectPageTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey.Key" />
+            <DefaultDomainObjectPageTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey" />
 
             <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
 
                 <ActionButton OnClick="() => DeleteAsync()"
-                              ActionKey="@StringKey.From(ActionKeys.DeleteActionKey)" />
+                              ActionKey="@ActionKeys.DeleteActionKey" />
 
             </MudStack>
 
         </MudStack>
 
         <DomainObjectPageTabs>
-            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
+            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.InfosKey)">
                 <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
             </MudTabPanel>
         </DomainObjectPageTabs>

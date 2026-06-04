@@ -4,7 +4,7 @@ namespace BusinessAppFramework.WebUI.Interfaces
 {
    public interface IIconFactory
    {
-      void RegisterIcon(StringKey key, string icon);
-      string CreateIcon(StringKey key);
+      void RegisterIcon(string key, string icon);
+      string CreateIcon(string key);
    }
 }

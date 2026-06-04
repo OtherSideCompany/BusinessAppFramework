@@ -68,7 +68,7 @@ namespace BusinessAppFramework.Application.Descriptors
                 $"{ApiRouteSegments.Delete}/" +
                 $"{ApiRouteParams.DomainObjectId}";
 
-            var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(StringKey.From(PageNavigationApplicationActionKey));
+            var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(PageNavigationApplicationActionKey);
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
             DomainObjectApplicationActions.Add(deleteAction);

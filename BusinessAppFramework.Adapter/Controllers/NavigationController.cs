@@ -37,9 +37,9 @@ namespace BusinessAppFramework.Adapter.Controllers
 
                     if (key != null)
                     {
-                        if (await _userPermissionResolverService.CanAccessAsync(key.Value.Key, _currentUserService.UserId.Value))
+                        if (await _userPermissionResolverService.CanAccessAsync(key, _currentUserService.UserId.Value))
                         {
-                            workspaceKeys.Add(key.Value.Key);
+                            workspaceKeys.Add(key);
                         }
                     }
                 }
@@ -56,15 +56,15 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             if (_currentUserService.UserId.HasValue)
             {
-                var module = _moduleProviderService.GetModuleByKey(StringKey.From(moduleKey));
+                var module = _moduleProviderService.GetModuleByKey(moduleKey);
 
                 if (module != null)
                 {
                     foreach (var key in module.GetWorkspacesKeys())
                     {
-                        if (await _userPermissionResolverService.CanAccessAsync(key.Key, _currentUserService.UserId.Value))
+                        if (await _userPermissionResolverService.CanAccessAsync(key, _currentUserService.UserId.Value))
                         {
-                            workspaceKeys.Add(key.Key);
+                            workspaceKeys.Add(key);
                         }
                     }
                 }

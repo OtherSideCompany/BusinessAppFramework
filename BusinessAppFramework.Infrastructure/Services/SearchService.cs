@@ -148,7 +148,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             if (!constraintKey.Equals(ConstraintKeys.AllConstraintKey))
             {
-                var constraint = _constraintFactory.GetConstraint<TSearchResult>(StringKey.From(constraintKey));
+                var constraint = _constraintFactory.GetConstraint<TSearchResult>(constraintKey);
                 query = query.Where(constraint);
             }
 

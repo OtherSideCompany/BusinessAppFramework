@@ -46,7 +46,7 @@ namespace BusinessAppFramework.Application.Services
          {
             if (domainObjectReference != null && domainObjectReference.DomainObjectId != null && domainObjectReference.DomainObjectId > 0)
             {
-               if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(domainObjectReference.RelationKey), out var relationEntry))
+               if (_relationResolver.TryGetReferenceRelationEntry(domainObjectReference.RelationKey, out var relationEntry))
                {
                   await _relationService.HydrateDomainObjectReferenceAsync(domainObjectReference);
                }
@@ -55,7 +55,7 @@ namespace BusinessAppFramework.Application.Services
 
          foreach (var domainObjectReferenceList in domainObject.GetReferenceLists())
          {
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(domainObjectReferenceList.RelationKey), out var relationListEntry))
+            if (_relationResolver.TryGetReferenceListRelationEntry(domainObjectReferenceList.RelationKey, out var relationListEntry))
             {
                await _relationService.HydrateDomainObjectReferenceListAsync(domainObjectReferenceList);
 

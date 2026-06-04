@@ -11,16 +11,16 @@ namespace BusinessAppFramework.Infrastructure.Entities
        where TChildEntity : IEntity
        where TParentEntity : class, IEntity
    {
-      private StringKey _relationKey;
+      private string _relationKey;
       private readonly Func<DbContext, int, IQueryable<int>> _childrenIdsGetter;
 
-      public StringKey RelationKey => _relationKey;
+      public string RelationKey => _relationKey;
       public Type ChildEntityType => typeof(TChildEntity);
       public Type ParentEntityType => typeof(TParentEntity);
       public PropertyInfo ParentEntityIdProperty { get; }
 
       public ParentChildRelationEntry(
-         StringKey key,
+         string key,
          PropertyInfo parentEntityIdProperty,
          Func<DbContext, int, IQueryable<int>> childrenIdsGetter)
       {

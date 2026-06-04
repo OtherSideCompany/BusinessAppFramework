@@ -93,7 +93,7 @@
         if (DomainObjectReferenceList == null)
             return;
 
-        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(StringKey.From(DomainObjectReferenceList.RelationKey));
+        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(DomainObjectReferenceList.RelationKey);
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
 
         var selectorType = _domainObjectSelectorDescriptor.ComponentType;
@@ -108,7 +108,7 @@
 
         await OnDomainObjectReferenceListChanged.InvokeAsync(DomainObjectReferenceList);
 
-        if (RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(DomainObjectReferenceList.RelationKey), out var relationListEntry))
+        if (RelationResolver.TryGetReferenceListRelationEntry(DomainObjectReferenceList.RelationKey, out var relationListEntry))
         {
             var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationListEntry.SourceDomainObjectType);
             dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);

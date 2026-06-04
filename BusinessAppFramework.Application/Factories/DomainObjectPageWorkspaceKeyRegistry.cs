@@ -6,9 +6,9 @@ namespace BusinessAppFramework.Application.Factories
 {
    public class DomainObjectPageWorkspaceKeyRegistry : IDomainObjectPageWorkspaceKeyRegistry
    {
-      private readonly Dictionary<Type, StringKey> _map = new();
+      private readonly Dictionary<Type, string> _map = new();
 
-      public void Register<T>(StringKey workspaceKey) where T : DomainObject
+      public void Register<T>(string workspaceKey) where T : DomainObject
       {
          if (_map.ContainsKey(typeof(T)))
             throw new InvalidOperationException($"Page workspace already registered for {typeof(T).Name}.");
@@ -16,7 +16,7 @@ namespace BusinessAppFramework.Application.Factories
          _map[typeof(T)] = workspaceKey;
       }
 
-      public StringKey GetPageWorkspaceKey(Type domainObjectType)
+      public string GetPageWorkspaceKey(Type domainObjectType)
       {
          if (_map.TryGetValue(domainObjectType, out var key))
             return key;
@@ -24,6 +24,6 @@ namespace BusinessAppFramework.Application.Factories
          throw new InvalidOperationException($"No page workspace registered for {domainObjectType.Name}.");
       }
 
-      public StringKey GetPageWorkspaceKey<TDomainObject>() => GetPageWorkspaceKey(typeof(TDomainObject));
+      public string GetPageWorkspaceKey<TDomainObject>() => GetPageWorkspaceKey(typeof(TDomainObject));
    }
 }

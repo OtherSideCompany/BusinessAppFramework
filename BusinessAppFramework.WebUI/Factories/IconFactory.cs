@@ -5,7 +5,7 @@ using MudBlazor;
 
 namespace BusinessAppFramework.WebUI.Factories
 {
-   public class IconFactory : StringKeyBasedFactory, IIconFactory
+   public class IconFactory : stringBasedFactory, IIconFactory
    {
       #region Fields
 
@@ -32,12 +32,12 @@ namespace BusinessAppFramework.WebUI.Factories
          SetFallbackFactory(key => Icons.Material.Sharp.Cancel);
       }
 
-      public string CreateIcon(StringKey key)
+      public string CreateIcon(string key)
       {
          return (string)Create(key);
       }
 
-      public void RegisterIcon(StringKey key, string icon)
+      public void RegisterIcon(string key, string icon)
       {
          Register(key, () => icon);
       }

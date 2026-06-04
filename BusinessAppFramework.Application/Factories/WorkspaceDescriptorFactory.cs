@@ -5,14 +5,14 @@ using PuppeteerSharp.Input;
 
 namespace BusinessAppFramework.Application.Factories
 {
-    public class WorkspaceDescriptorFactory : StringKeyBasedFactory, IWorkspaceDescriptorFactory
+    public class WorkspaceDescriptorFactory : stringBasedFactory, IWorkspaceDescriptorFactory
     {
-        public WorkspaceDescriptor GetWorkspaceDescriptor(StringKey key)
+        public WorkspaceDescriptor GetWorkspaceDescriptor(string key)
         {
             return (WorkspaceDescriptor)Create(key);
         }
 
-        public void RegisterWorkspaceDescriptor(StringKey key, Func<WorkspaceDescriptor> workspaceDescriptorFactory)
+        public void RegisterWorkspaceDescriptor(string key, Func<WorkspaceDescriptor> workspaceDescriptorFactory)
         {
             Register(key, workspaceDescriptorFactory);
         }

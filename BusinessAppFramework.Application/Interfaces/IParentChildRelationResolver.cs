@@ -6,6 +6,6 @@ namespace BusinessAppFramework.Application.Interfaces
     public interface IParentChildRelationResolver
     {
         bool ContainsParentChildRelationByChildType(Type sourceType, Type relatedType);
-        bool TryGetParentChildRelationEntry(StringKey key, out IParentChildRelationEntry relationEntry);
+        bool TryGetParentChildRelationEntry(string key, out IParentChildRelationEntry relationEntry);
     }
 }

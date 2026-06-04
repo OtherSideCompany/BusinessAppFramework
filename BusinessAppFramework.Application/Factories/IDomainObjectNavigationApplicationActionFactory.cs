@@ -6,7 +6,7 @@ namespace BusinessAppFramework.Application.Factories
 {
     public interface IDomainObjectNavigationApplicationActionFactory
     {
-        void Register(StringKey key, Func<IDomainObjectNavigationApplicationAction> constraint);
-        IDomainObjectNavigationApplicationAction Get(StringKey key);
+        void Register(string key, Func<IDomainObjectNavigationApplicationAction> constraint);
+        IDomainObjectNavigationApplicationAction Get(string key);
     }
 }

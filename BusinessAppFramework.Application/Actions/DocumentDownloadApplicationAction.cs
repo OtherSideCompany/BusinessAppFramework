@@ -7,7 +7,7 @@ namespace BusinessAppFramework.Application.Actions
     {        
         public override string BuildRoute()
         {
-            return $"{ApiRouteSegments.Root}/{ApiRouteSegments.Documents}/{DocumentRouteSegments.DownloadPdf}/{DocumentKey.Key}/{DomainObjectId}";
+            return $"{ApiRouteSegments.Root}/{ApiRouteSegments.Documents}/{DocumentRouteSegments.DownloadPdf}/{DocumentKey}/{DomainObjectId}";
         }
     }
 }

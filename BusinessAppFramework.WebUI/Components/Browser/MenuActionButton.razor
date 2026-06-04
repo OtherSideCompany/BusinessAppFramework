@@ -22,7 +22,7 @@
     }
 </style>
 
-<MudMenu Label="@LocalizedStringService.Get(ActionKey.Key)"
+<MudMenu Label="@LocalizedStringService.Get(ActionKey)"
          Variant="Variant.Outlined"
          Size="Size.Small"
          EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
@@ -35,7 +35,7 @@
 </MudMenu>
 
 @code {
-    [Parameter] public StringKey ActionKey { get; set; } = StringKey.From("");
+    [Parameter] public string ActionKey { get; set; } = "";
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public RenderFragment? MenuItems { get; set; }
 

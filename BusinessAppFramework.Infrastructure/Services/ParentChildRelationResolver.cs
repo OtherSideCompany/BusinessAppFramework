@@ -46,7 +46,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         
 
-        public bool TryGetParentChildRelationEntry(StringKey key, out IParentChildRelationEntry relationEntry)
+        public bool TryGetParentChildRelationEntry(string key, out IParentChildRelationEntry relationEntry)
         {
             relationEntry = _parentChildRelationEntries.FirstOrDefault(r => r.RelationKey.Equals(key));
             return relationEntry != null;
@@ -55,7 +55,7 @@ namespace BusinessAppFramework.Infrastructure.Services
        
 
         public void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
-              StringKey relationKey,
+              string relationKey,
               Expression<Func<TChildEntity, int?>> parentEntityIdExpression,
               Func<DbContext, int, IQueryable<int>> childrenIdsGetter)
                where TChildEntity : class, IEntity

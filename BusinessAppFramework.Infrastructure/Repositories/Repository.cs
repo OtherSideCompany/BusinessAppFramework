@@ -321,7 +321,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
         {
             var reference = (DomainObjectReference)domainObjectReferencePropertyValue;
 
-            if (_relationResolver.TryGetReferenceRelationEntry(StringKey.From(reference.RelationKey), out var relationEntry))
+            if (_relationResolver.TryGetReferenceRelationEntry(reference.RelationKey, out var relationEntry))
             {
                 relationEntry.EntityIdProperty.SetValue(entity, reference.DomainObjectId);
             }
@@ -336,7 +336,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
         {
             var referenceList = (DomainObjectReferenceList)domainObjectReferencePropertyValue;
 
-            if (_relationResolver.TryGetReferenceListRelationEntry(StringKey.From(referenceList.RelationKey), out var relationEntry))
+            if (_relationResolver.TryGetReferenceListRelationEntry(referenceList.RelationKey, out var relationEntry))
             {
                 var desiredIds = referenceList.Items.Select(r => r.DomainObjectId).ToHashSet();
 

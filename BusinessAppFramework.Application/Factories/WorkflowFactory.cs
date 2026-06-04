@@ -4,7 +4,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class WorkflowFactory : StringKeyBasedFactory, IWorkflowFactory
+   public class WorkflowFactory : stringBasedFactory, IWorkflowFactory
    {
       #region Fields
 
@@ -35,12 +35,12 @@ namespace BusinessAppFramework.Application.Factories
 
       #region Public Methods
 
-      public ProcessWorkflow CreateWorkflow(StringKey key)
+      public ProcessWorkflow CreateWorkflow(string key)
       {
          return (ProcessWorkflow)Create(key);
       }
 
-      public void RegisterWorkflow(StringKey key, Func<ProcessWorkflow> tree)
+      public void RegisterWorkflow(string key, Func<ProcessWorkflow> tree)
       {
          Register(key, tree);
       }

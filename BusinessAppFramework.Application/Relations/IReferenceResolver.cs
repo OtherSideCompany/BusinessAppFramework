@@ -7,8 +7,8 @@ namespace BusinessAppFramework.Application.Relations
 {
     public interface IReferenceResolver
     {
-        bool TryGetReferenceRelationEntry(StringKey key, out IReferenceRelationEntry relationEntry);
-        bool TryGetReferenceListRelationEntry(StringKey key, out IReferenceListRelationEntry relationEntry);
+        bool TryGetReferenceRelationEntry(string key, out IReferenceRelationEntry relationEntry);
+        bool TryGetReferenceListRelationEntry(string key, out IReferenceListRelationEntry relationEntry);
         IEnumerable<IReferenceRelationEntry> GetReferenceRelationEntriesBySourceType(Type sourceType);
         IEnumerable<IReferenceListRelationEntry> GetReferenceListRelationEntriesBySourceType(Type sourceType);
         public void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
@@ -20,7 +20,7 @@ namespace BusinessAppFramework.Application.Relations
             where TTargetEntity : class, IEntity;
 
         public void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-           StringKey relationKey,
+           string relationKey,
            Expression<Func<TSourceDomainObject, DomainObjectReference>> domainExpression,
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
@@ -37,7 +37,7 @@ namespace BusinessAppFramework.Application.Relations
                where TTargetEntity : class, IEntity;
 
         public void RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-              StringKey relationKey,
+              string relationKey,
               Expression<Func<TSourceDomainObject, DomainObjectReferenceList>> domainExpression,
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject

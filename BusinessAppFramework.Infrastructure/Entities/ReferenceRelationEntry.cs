@@ -13,9 +13,9 @@ namespace BusinessAppFramework.Infrastructure.Entities
        where TSourceEntity : IEntity
        where TTargetEntity : class, IEntity
    {
-      private StringKey _relationKey;
+      private string _relationKey;
 
-      public StringKey RelationKey => _relationKey;
+      public string RelationKey => _relationKey;
       public Type SourceDomainObjectType => typeof(TSourceDomainObject);
       public Type TargetDomainObjectType => typeof(TTargetDomainObject);
       public Type SourceEntityType => typeof(TSourceEntity);
@@ -24,7 +24,7 @@ namespace BusinessAppFramework.Infrastructure.Entities
       public PropertyInfo EntityIdProperty { get; }
 
       public ReferenceRelationEntry(
-         StringKey key,
+         string key,
          PropertyInfo domainProperty,
          PropertyInfo entityIdProperty)
       {

@@ -4,7 +4,7 @@ using BusinessAppFramework.WebUI.Interfaces;
 
 namespace BusinessAppFramework.WebUI.Factories
 {
-   public class RelationSelectorRegistry : Registry<StringKey, StringKey>, IRelationSelectorRegistry
+   public class RelationSelectorRegistry : Registry<string, string>, IRelationSelectorRegistry
    {
       #region Fields
 

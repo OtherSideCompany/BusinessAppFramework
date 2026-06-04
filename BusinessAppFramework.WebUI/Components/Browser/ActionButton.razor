@@ -84,7 +84,7 @@
 
 @if (Shrink)
 {
-    <MudTooltip Text="@LocalizedStringService.Get(ActionKey.Key)">
+    <MudTooltip Text="@LocalizedStringService.Get(ActionKey)">
         <MudIconButton Variant="Variant.Outlined"
                        Size="Size.Small"
                        Icon="@IconFactory.CreateIcon(ActionKey)"
@@ -102,12 +102,12 @@ else
                OnClick="OnClickInternal"
                Disabled="@Disabled"
                Class="@_class">
-        @LocalizedStringService.Get(ActionKey.Key)
+        @LocalizedStringService.Get(ActionKey)
     </MudButton>
 }
 
 @code {
-    [Parameter] public StringKey ActionKey { get; set; } = StringKey.From("");
+    [Parameter] public string ActionKey { get; set; } = "";
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public bool Shrink { get; set; }
@@ -116,7 +116,7 @@ else
     {
         get
         {
-            var role = ActionKey.Key switch
+            var role = ActionKey switch
             {
                 ActionKeys.CreateActionKey => "osc-btn--create",
                 ActionKeys.DeleteActionKey => "osc-btn--delete",

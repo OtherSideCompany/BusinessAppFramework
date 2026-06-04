@@ -2,12 +2,12 @@
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class StringKeyBasedFactory
+   public class stringBasedFactory
    {
       #region Fields
 
-      protected readonly Dictionary<StringKey, Func<object[], object>> _factories = new();
-      protected Func<StringKey, object[], object>? _fallbackFactory = null;
+      protected readonly Dictionary<string, Func<object[], object>> _factories = new();
+      protected Func<string, object[], object>? _fallbackFactory = null;
 
       #endregion
 
@@ -25,7 +25,7 @@ namespace BusinessAppFramework.Application.Factories
 
       #region Constructor
 
-      public StringKeyBasedFactory()
+      public stringBasedFactory()
       {
 
       }
@@ -34,7 +34,7 @@ namespace BusinessAppFramework.Application.Factories
 
       #region Public Methods
 
-      public object Create(StringKey key, params object[] args)
+      public object Create(string key, params object[] args)
       {
          if (_factories.TryGetValue(key, out var factory))
          {
@@ -49,12 +49,12 @@ namespace BusinessAppFramework.Application.Factories
          throw new InvalidOperationException($"No factory registered for key {key}.");
       }
 
-      public void Register(StringKey key, Func<object> factory)
+      public void Register(string key, Func<object> factory)
       {
          Register(key, _ => factory());
       }
 
-      public void Register(StringKey key, Func<object[], object> factory)
+      public void Register(string key, Func<object[], object> factory)
       {
          if (_factories.ContainsKey(key))
          {
@@ -64,12 +64,12 @@ namespace BusinessAppFramework.Application.Factories
          _factories[key] = factory;
       }
 
-      public void SetFallbackFactory(Func<StringKey, object> fallbackFactory)
+      public void SetFallbackFactory(Func<string, object> fallbackFactory)
       {
          _fallbackFactory = (key, args) => fallbackFactory(key);
       }
 
-      public void SetFallbackFactory(Func<StringKey, object[], object> fallbackFactory)
+      public void SetFallbackFactory(Func<string, object[], object> fallbackFactory)
       {
          _fallbackFactory = fallbackFactory;
       }

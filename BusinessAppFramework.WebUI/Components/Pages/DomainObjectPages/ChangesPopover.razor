@@ -10,7 +10,7 @@
             OverflowBehavior="OverflowBehavior.FlipNever"
             Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
     <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
-        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
+        <MudTooltip Text="@LocalizedStringService.Get(strings.SaveKey)">
             <MudIconButton Icon="@Icons.Material.Filled.Save"
                            OnClick="SaveAsync"
                            Style="color:white"
@@ -18,7 +18,7 @@
         </MudTooltip>
 
 
-        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
+        <MudTooltip Text="@LocalizedStringService.Get(strings.UndoKey)">
             <MudIconButton Icon="@Icons.Material.Filled.Undo"
                            OnClick="UndoAsync"
                            Style="color:white"

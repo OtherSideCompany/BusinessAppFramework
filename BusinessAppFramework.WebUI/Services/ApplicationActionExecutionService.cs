@@ -118,7 +118,7 @@ namespace BusinessAppFramework.WebUI.Services
                     FullWidth = false
                 };
 
-                var componentType = _componentRegistry.Resolve(StringKey.From(openDialogApplicationAction.ComponentKey));
+                var componentType = _componentRegistry.Resolve(openDialogApplicationAction.ComponentKey);
                 var dialog = await _dialogService.ShowAsync(componentType, openDialogApplicationAction.DialogTitle, parameters, dialogOptions);
                 var result = await dialog.Result;
 

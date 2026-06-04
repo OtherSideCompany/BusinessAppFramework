@@ -53,13 +53,13 @@
     <Header>
         <MudStack Row="false">
 
-            <MudText Typo="Typo.h4">@LocalizedStringService.Get(Descriptor.WorkspaceKey.Key)</MudText>
+            <MudText Typo="Typo.h4">@LocalizedStringService.Get(Descriptor.WorkspaceKey)</MudText>
 
             <MudStack Row="true" AlignItems="AlignItems.Center">
 
                 <MudTextField T="string"
                               Class="osc-search"
-                              Placeholder="@LocalizedStringService.Get(Contracts.StringKeys.SearchKey)"
+                              Placeholder="@LocalizedStringService.Get(Contracts.strings.SearchKey)"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
                               IconSize="Size.Small"
@@ -71,7 +71,7 @@
                               Style="background: var(--mud-palette-surface);" />
 
                 <MudText Typo="Typo.caption" Style="margin-top:4px; color:gray;">
-                    @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
+                    @_totalItems @LocalizedStringService.Get(Contracts.strings.ResultsKey)
                 </MudText>
 
             </MudStack>
@@ -111,7 +111,7 @@
                    Size="Size.Small"
                    OnClick="OpenModuleInNewTab"
                    Class="mt-2">
-            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
+            @LocalizedStringService.Get(Contracts.strings.NewKey)
         </MudButton>
     </Footer>
 

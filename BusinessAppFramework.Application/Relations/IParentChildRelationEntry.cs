@@ -5,7 +5,7 @@ namespace BusinessAppFramework.Application.Relations
 {
    public interface IParentChildRelationEntry
    {
-      StringKey RelationKey { get; }
+      string RelationKey { get; }
       Type ChildEntityType { get; }
       Type ParentEntityType { get; }
       PropertyInfo ParentEntityIdProperty { get; }

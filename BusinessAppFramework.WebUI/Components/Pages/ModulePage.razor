@@ -33,7 +33,7 @@
         {
             var isActive = key == _activeWorkspaceKey;
             <MudTooltip Text="@LocalizedStringService.Get(key)" Placement="Placement.Bottom">
-                <MudIconButton Icon="@IconFactory.CreateIcon(StringKey.From(key))"
+                <MudIconButton Icon="@IconFactory.CreateIcon(key)"
                                Size="Size.Small"
                                OnClick="() => OnWorkspaceChanged(key)"
                                Style="@(isActive ? "color: var(--mud-palette-primary) !important; width: 36px; height: 36px;" :

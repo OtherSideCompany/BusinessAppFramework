@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace BusinessAppFramework.Application.Factories
 {
-    public class DomainObjectNavigationApplicationActionFactory : StringKeyBasedFactory, IDomainObjectNavigationApplicationActionFactory
+    public class DomainObjectNavigationApplicationActionFactory : stringBasedFactory, IDomainObjectNavigationApplicationActionFactory
     {
         #region Fields
 
@@ -35,12 +35,12 @@ namespace BusinessAppFramework.Application.Factories
 
         #region Public Methods
 
-        public IDomainObjectNavigationApplicationAction Get(StringKey key)
+        public IDomainObjectNavigationApplicationAction Get(string key)
         {
             return (IDomainObjectNavigationApplicationAction)Create(key);
         }
 
-        public void Register(StringKey key, Func<IDomainObjectNavigationApplicationAction> navigationApplicationAction)
+        public void Register(string key, Func<IDomainObjectNavigationApplicationAction> navigationApplicationAction)
         {
             base.Register(key, navigationApplicationAction);
         }

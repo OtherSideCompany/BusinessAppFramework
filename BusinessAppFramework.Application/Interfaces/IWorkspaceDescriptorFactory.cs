@@ -5,7 +5,7 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IWorkspaceDescriptorFactory
     {
-        void RegisterWorkspaceDescriptor(StringKey key, Func<WorkspaceDescriptor> workspaceDescriptorFactory);
-        WorkspaceDescriptor GetWorkspaceDescriptor(StringKey key);
+        void RegisterWorkspaceDescriptor(string key, Func<WorkspaceDescriptor> workspaceDescriptorFactory);
+        WorkspaceDescriptor GetWorkspaceDescriptor(string key);
     }
 }

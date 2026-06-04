@@ -4,7 +4,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class TreeFactory : StringKeyBasedFactory, ITreeFactory
+   public class TreeFactory : stringBasedFactory, ITreeFactory
    {
       #region Fields
 
@@ -35,12 +35,12 @@ namespace BusinessAppFramework.Application.Factories
 
       #region Public Methods
 
-      public Tree CreateTree(StringKey key)
+      public Tree CreateTree(string key)
       {
          return (Tree)Create(key);
       }
 
-      public void RegisterTree(StringKey key, Func<Tree> tree)
+      public void RegisterTree(string key, Func<Tree> tree)
       {
          Register(key, tree);
       }

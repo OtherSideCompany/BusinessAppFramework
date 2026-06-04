@@ -7,7 +7,7 @@ namespace BusinessAppFramework.DocumentRendering
 {
    public interface IDocumentModelLoaderTypeRegistry
    {
-      void RegisterDocumentModelLoaderType(StringKey key, Type documentModelLoaderType);
-      Type GetDocumentModelLoaderType(StringKey key);
+      void RegisterDocumentModelLoaderType(string key, Type documentModelLoaderType);
+      Type GetDocumentModelLoaderType(string key);
    }
 }

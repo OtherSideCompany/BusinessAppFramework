@@ -5,7 +5,7 @@ namespace BusinessAppFramework.Application.Relations
 {
    public interface IReferenceListRelationEntry
    {
-      StringKey RelationKey { get; }
+      string RelationKey { get; }
       Type SourceDomainObjectType { get; }
       Type TargetDomainObjectType { get; }
       Type SourceEntityType { get; }

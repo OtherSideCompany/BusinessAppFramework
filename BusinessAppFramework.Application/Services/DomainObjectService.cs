@@ -219,7 +219,7 @@ namespace BusinessAppFramework.Application.Services
 
             foreach (var reference in references)
             {
-                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceRelationEntry(StringKey.From(reference.RelationKey), out var relationEntry);
+                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceRelationEntry(reference.RelationKey, out var relationEntry);
 
                 relationEntry.DomainProperty?.SetValue(domainObject, reference);
             }
@@ -228,7 +228,7 @@ namespace BusinessAppFramework.Application.Services
 
             foreach (var referenceList in referenceLists)
             {
-                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceListRelationEntry(StringKey.From(referenceList.RelationKey), out var relationEntry);
+                var entry = _domainObjectServiceDependencies.RelationResolver.TryGetReferenceListRelationEntry(referenceList.RelationKey, out var relationEntry);
 
                 relationEntry.DomainProperty?.SetValue(domainObject, referenceList);
             }

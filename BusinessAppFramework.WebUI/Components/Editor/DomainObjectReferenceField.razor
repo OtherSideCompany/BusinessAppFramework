@@ -50,7 +50,7 @@
         else
         {
             <MudText Style="color: var(--mud-palette-text-disabled);" Typo="Typo.body2">
-                @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SelectToSearchKey)
+                @LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.SelectToSearchKey)
             </MudText>
         }        
     </MudStack>
@@ -111,7 +111,7 @@
         if (DomainObjectReference == null)
             return;
 
-        if (RelationResolver.TryGetReferenceRelationEntry(StringKey.From(DomainObjectReference.RelationKey), out var relationEntry))
+        if (RelationResolver.TryGetReferenceRelationEntry(DomainObjectReference.RelationKey, out var relationEntry))
         {
             var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
             dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
@@ -146,7 +146,7 @@
 
         _value = DomainObjectReference.DisplayValue;
 
-        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(StringKey.From(DomainObjectReference.RelationKey));
+        var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(DomainObjectReference.RelationKey);
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
     }
 }

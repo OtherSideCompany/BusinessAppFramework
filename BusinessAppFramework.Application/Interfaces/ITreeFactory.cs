@@ -5,7 +5,7 @@ namespace BusinessAppFramework.Application.Interfaces
 {
    public interface ITreeFactory
    {
-      void RegisterTree(StringKey key, Func<Tree> tree);
-      Tree CreateTree(StringKey key);
+      void RegisterTree(string key, Func<Tree> tree);
+      Tree CreateTree(string key);
    }
 }

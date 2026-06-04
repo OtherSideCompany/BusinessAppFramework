@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BusinessAppFramework.DocumentRendering
 {
-   public class DocumentModelLoaderTypeRegistry : Registry<StringKey, Type>, IDocumentModelLoaderTypeRegistry
+   public class DocumentModelLoaderTypeRegistry : Registry<string, Type>, IDocumentModelLoaderTypeRegistry
    {
       #region Fields
 
@@ -38,12 +38,12 @@ namespace BusinessAppFramework.DocumentRendering
 
       #region Public Methods
 
-      public Type GetDocumentModelLoaderType(StringKey key)
+      public Type GetDocumentModelLoaderType(string key)
       {
          return Resolve(key);
       }
 
-      public void RegisterDocumentModelLoaderType(StringKey key, Type documentModelLoaderType)
+      public void RegisterDocumentModelLoaderType(string key, Type documentModelLoaderType)
       {
          Register(key, documentModelLoaderType);
       }

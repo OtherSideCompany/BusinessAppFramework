@@ -64,7 +64,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
             [FromRoute(Name = ApiRouteParams.Key)] string key)
         {
-            var tree = _treeFactory.CreateTree(StringKey.From(key));
+            var tree = _treeFactory.CreateTree(key);
             tree.RootId = domainObjectId;
 
             foreach (var branch in tree.Branches)
@@ -81,7 +81,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.Key)] string pageTreeKey,
             [FromRoute(Name = ApiRouteParams.RelationKey)] string relationKey)
         {
-            var tree = _treeFactory.CreateTree(StringKey.From(pageTreeKey));
+            var tree = _treeFactory.CreateTree(pageTreeKey);
             tree.RootId = domainObjectId;
 
             var branch = tree.GetBranch(relationKey);
@@ -101,7 +101,7 @@ namespace BusinessAppFramework.Adapter.Controllers
         {
             Node? node = null;
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(key), out var parentChildRelation))
+            if (_relationResolver.TryGetParentChildRelationEntry(key, out var parentChildRelation))
             {
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
 
@@ -141,7 +141,7 @@ namespace BusinessAppFramework.Adapter.Controllers
         {
             Node? node = null;
 
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(key), out var parentChildRelation))
+            if (_relationResolver.TryGetParentChildRelationEntry(key, out var parentChildRelation))
             {
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
 
@@ -163,7 +163,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId, 
             [FromRoute(Name = ApiRouteParams.Key)] string key)
         {
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(key), out var parentChildRelation))
+            if (_relationResolver.TryGetParentChildRelationEntry(key, out var parentChildRelation))
             {
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
                 dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
@@ -180,7 +180,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         private async Task LoadBranchAsync(Branch branch, int domainObjectId)
         {
-            if (_relationResolver.TryGetParentChildRelationEntry(StringKey.From(branch.ParentChildRelationKey), out var parentChildRelation))
+            if (_relationResolver.TryGetParentChildRelationEntry(branch.ParentChildRelationKey, out var parentChildRelation))
             {
                 var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
 

@@ -39,8 +39,8 @@ namespace BusinessAppFramework.Application.Services
 
       public async Task<ProcessWorkflow> GetWorkflowAsync(string workflowKey, int domainObjectId)
       {
-         var workflow = _workflowFactory.CreateWorkflow(StringKey.From(workflowKey));
-         var workflowContextLoader = _workflowContextLoaderFactory.Get(StringKey.From(workflowKey));
+         var workflow = _workflowFactory.CreateWorkflow(workflowKey);
+         var workflowContextLoader = _workflowContextLoaderFactory.Get(workflowKey);
          var context = await workflowContextLoader.LoadAsync(domainObjectId);
          workflow.EvaluateWorkflowSate(context);
          return workflow;

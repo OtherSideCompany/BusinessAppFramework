@@ -4,7 +4,7 @@ namespace BusinessAppFramework.Application.Descriptors
 {
    public class WorkspaceDescriptor : IWorkspaceDescriptor
    {
-      public StringKey WorkspaceKey { get; init; } = StringKey.From("")!;
+      public string WorkspaceKey { get; init; } = ""!;
       public Type ComponentType { get; init; } = default!;
    }
 }

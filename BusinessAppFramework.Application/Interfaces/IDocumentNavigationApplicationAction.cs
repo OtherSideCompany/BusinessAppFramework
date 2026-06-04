@@ -7,6 +7,6 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IDocumentNavigationApplicationAction : IDomainObjectApplicationAction
     {
-        StringKey DocumentKey { get; }
+        string DocumentKey { get; }
     }
 }

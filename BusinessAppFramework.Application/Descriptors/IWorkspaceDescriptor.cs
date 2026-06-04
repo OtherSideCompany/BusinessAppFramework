@@ -4,7 +4,7 @@ namespace BusinessAppFramework.Application.Descriptors
 {
    public interface IWorkspaceDescriptor
    {
-      StringKey WorkspaceKey { get; }
+      string WorkspaceKey { get; }
       Type ComponentType { get; }
    }
 }

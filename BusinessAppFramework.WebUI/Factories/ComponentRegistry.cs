@@ -4,7 +4,7 @@ using BusinessAppFramework.WebUI.Interfaces;
 
 namespace BusinessAppFramework.WebUI.Factories
 {
-    public class ComponentRegistry : Registry<StringKey, Type>, IComponentRegistry
+    public class ComponentRegistry : Registry<string, Type>, IComponentRegistry
     {
         #region Fields
 

@@ -40,13 +40,13 @@ namespace BusinessAppFramework.Infrastructure.Entities
 
         #region Public Methods
 
-        public bool TryGetReferenceRelationEntry(StringKey key, out IReferenceRelationEntry relationEntry)
+        public bool TryGetReferenceRelationEntry(string key, out IReferenceRelationEntry relationEntry)
         {
             relationEntry = _referenceRelationEntries.FirstOrDefault(r => r.RelationKey.Equals(key));
             return relationEntry != null;
         }
 
-        public bool TryGetReferenceListRelationEntry(StringKey key, out IReferenceListRelationEntry relationEntry)
+        public bool TryGetReferenceListRelationEntry(string key, out IReferenceListRelationEntry relationEntry)
         {
             relationEntry = _referenceListRelationEntries.FirstOrDefault(r => r.RelationKey.Equals(key));
             return relationEntry != null;
@@ -82,13 +82,13 @@ namespace BusinessAppFramework.Infrastructure.Entities
 
             var tempInstance = Activator.CreateInstance<TSourceDomainObject>();
             var reference = (DomainObjectReference)domainProperty.GetValue(tempInstance)!;
-            var relationKey = StringKey.From(reference.RelationKey);
+            var relationKey = reference.RelationKey;
 
             RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(relationKey, domainExpression, entityIdExpression);
         }
 
         public void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-           StringKey relationKey,
+           string relationKey,
            Expression<Func<TSourceDomainObject, DomainObjectReference>> domainExpression,
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
@@ -121,13 +121,13 @@ namespace BusinessAppFramework.Infrastructure.Entities
 
             var tempInstance = Activator.CreateInstance<TSourceDomainObject>();
             var reference = (DomainObjectReferenceList)domainProperty.GetValue(tempInstance)!;
-            var relationKey = StringKey.From(reference.RelationKey);
+            var relationKey = reference.RelationKey;
 
             RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(relationKey, domainExpression, entityExpression);
         }
 
         public void RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
-              StringKey relationKey,
+              string relationKey,
               Expression<Func<TSourceDomainObject, DomainObjectReferenceList>> domainExpression,
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject

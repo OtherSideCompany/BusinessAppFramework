@@ -5,8 +5,8 @@ namespace BusinessAppFramework.WebUI.Interfaces
 {
    public interface IDomainObjectBrowserWorkspaceRegistry
    {
-      void Register<T>(StringKey browserKey) where T : DomainObject;
-      StringKey Resolve<T>() where T : DomainObject;
-      bool TryResolve<T>(out StringKey browserKey) where T : DomainObject;
+      void Register<T>(string browserKey) where T : DomainObject;
+      string Resolve<T>() where T : DomainObject;
+      bool TryResolve<T>(out string browserKey) where T : DomainObject;
    }
 }

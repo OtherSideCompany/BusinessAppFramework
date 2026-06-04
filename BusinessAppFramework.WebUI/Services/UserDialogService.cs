@@ -53,7 +53,7 @@ namespace BusinessAppFramework.WebUI.Services
                 MaxWidth = MaxWidth.ExtraSmall
             };
 
-            var dialog = await _dialogService.ShowAsync<ConfirmDialog>(_localizedStringService.Get(StringKeys.ConfirmationKey), parameters, options);
+            var dialog = await _dialogService.ShowAsync<ConfirmDialog>(_localizedStringService.Get(strings.ConfirmationKey), parameters, options);
             var result = await dialog.Result;
 
             return result != null && !result.Canceled;
@@ -82,7 +82,7 @@ namespace BusinessAppFramework.WebUI.Services
                 MaxWidth = MaxWidth.ExtraSmall
             };
 
-            await _dialogService.ShowAsync<ErrorDialog>(_localizedStringService.Get(StringKeys.ConfirmationKey), parameters, options);
+            await _dialogService.ShowAsync<ErrorDialog>(_localizedStringService.Get(strings.ConfirmationKey), parameters, options);
         }
 
         #endregion

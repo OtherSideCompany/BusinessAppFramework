@@ -116,7 +116,7 @@
 
                         <ActionButton Shrink="true"
                                       OnClick="() => ExecuteTransitionAsync(transition)"
-                                      ActionKey="@StringKey.From(transition.GetActionKey())"
+                                      ActionKey="@transition.GetActionKey()"
                                       Disabled="!transition.IsExecutable" />                        
 
                     </MudStack>

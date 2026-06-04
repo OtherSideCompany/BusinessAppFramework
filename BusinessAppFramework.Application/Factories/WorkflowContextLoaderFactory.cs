@@ -3,7 +3,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class WorkflowContextLoaderFactory : StringKeyBasedFactory, IWorkflowContextLoaderFactory
+   public class WorkflowContextLoaderFactory : stringBasedFactory, IWorkflowContextLoaderFactory
    {
       #region Fields
 
@@ -34,12 +34,12 @@ namespace BusinessAppFramework.Application.Factories
 
       #region Public Methods
 
-      public IWorkflowContextLoader Get(StringKey workflowKey)
+      public IWorkflowContextLoader Get(string workflowKey)
       {
          return (IWorkflowContextLoader)Create(workflowKey);
       }
 
-      public void RegisterWorkflowContextLoader(StringKey workflowKey, Func<IWorkflowContextLoader> loader)
+      public void RegisterWorkflowContextLoader(string workflowKey, Func<IWorkflowContextLoader> loader)
       {
          Register(workflowKey, loader);
       }

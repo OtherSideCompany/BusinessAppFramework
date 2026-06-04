@@ -5,7 +5,7 @@ using BusinessAppFramework.WebUI.Interfaces;
 
 namespace BusinessAppFramework.WebUI.Factories
 {
-   public class DomainObjectBrowserWorkspaceRegistry : Registry<Type, StringKey>, IDomainObjectBrowserWorkspaceRegistry
+   public class DomainObjectBrowserWorkspaceRegistry : Registry<Type, string>, IDomainObjectBrowserWorkspaceRegistry
    {
       #region Fields
 
@@ -37,17 +37,17 @@ namespace BusinessAppFramework.WebUI.Factories
 
       #region Public Methods
 
-      public void Register<T>(StringKey browserKey) where T : DomainObject
+      public void Register<T>(string browserKey) where T : DomainObject
       {
          Register(typeof(T), browserKey);
       }
 
-      public StringKey Resolve<T>() where T : DomainObject
+      public string Resolve<T>() where T : DomainObject
       {
          return Resolve(typeof(T));
       }
 
-      public bool TryResolve<T>(out StringKey browserKey) where T : DomainObject
+      public bool TryResolve<T>(out string browserKey) where T : DomainObject
       {
          return TryResolve(typeof(T), out browserKey);
       }

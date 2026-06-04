@@ -4,8 +4,8 @@ namespace BusinessAppFramework.WebUI.Interfaces
 {
     public interface IComponentRegistry
     {
-        void Register(StringKey key, Type value);
-        Type Resolve(StringKey key);
-        bool TryResolve(StringKey key, out Type value);
+        void Register(string key, Type value);
+        Type Resolve(string key);
+        bool TryResolve(string key, out Type value);
     }
 }

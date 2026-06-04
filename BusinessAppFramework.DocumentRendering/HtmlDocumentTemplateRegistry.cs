@@ -3,7 +3,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.DocumentRendering
 {
-    public class HtmlDocumentTemplateRegistry : Registry<StringKey, HtmlDocumentTemplate>, IHtmlDocumentTemplateRegistry
+    public class HtmlDocumentTemplateRegistry : Registry<string, HtmlDocumentTemplate>, IHtmlDocumentTemplateRegistry
     {
         #region Fields
 
@@ -34,12 +34,12 @@ namespace BusinessAppFramework.DocumentRendering
 
         #region Public Methods
 
-        public void RegisterTemplate(StringKey key, HtmlDocumentTemplate template)
+        public void RegisterTemplate(string key, HtmlDocumentTemplate template)
         {
             Register(key, template);
         }
 
-        public HtmlDocumentTemplate GetTemplate(StringKey key)
+        public HtmlDocumentTemplate GetTemplate(string key)
         {
             return Resolve(key);
         }               
