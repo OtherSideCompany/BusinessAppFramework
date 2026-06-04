@@ -1,5 +1,6 @@
 ﻿@using System.Reflection
 @using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
 @using Domain.DomainObjects
 @using MudBlazor
 
@@ -90,7 +91,7 @@ else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(Property
                ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
         @foreach (var enumValue in enumValues)
         {
-            <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(enumValue.ToString()!)</MudSelectItem>
+            <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(EnumKeys.For(enumType, enumValue))</MudSelectItem>
         }
     </MudSelect>
 }

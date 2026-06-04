@@ -6,29 +6,13 @@ namespace BusinessAppFramework.Contracts
 {
     public static class AggregateKeys
     {
-        public static string Workspace(Type t) => ToKebab(t.Name) + "-workspace";
-        public static string PageWorkspace(Type t) => ToKebab(t.Name) + "-page";
-        public static string PageTree(Type t) => ToKebab(t.Name) + "-page-tree";
-        public static string PermissionKey(Type t) => ToKebab(t.Name) + "-permission-key";
+        public static string Workspace(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-workspace";
+        public static string PageWorkspace(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-page";
+        public static string PageTree(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-page-tree";
+        public static string PermissionKey(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-permission-key";
 
         public static string Property(Type t, string memberName)
-            => $"{ToKebab(t.Name)}-{ToKebab(memberName)}";
-
-        static string ToKebab(string s)
-        {
-            if (string.IsNullOrEmpty(s)) return s;
-            var sb = new StringBuilder(s.Length + 5);
-            for (int i = 0; i < s.Length; i++)
-            {
-                char c = s[i];
-                bool needsDash = char.IsUpper(c) && i > 0 &&
-                    (!char.IsUpper(s[i - 1]) ||
-                     (i + 1 < s.Length && char.IsLower(s[i + 1])));
-                if (needsDash) sb.Append('-');
-                sb.Append(char.ToLowerInvariant(c));
-            }
-            return sb.ToString();
-        }
+            => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}";        
     }
 
     public static class AggregateKeys<T>

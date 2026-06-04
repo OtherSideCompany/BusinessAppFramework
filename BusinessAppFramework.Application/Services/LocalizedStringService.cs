@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts;
 using System.Globalization;
 
 namespace BusinessAppFramework.Application.Services
@@ -43,6 +44,11 @@ namespace BusinessAppFramework.Application.Services
             {
                 Add(propertyName, culture, value);
             }
+        }
+
+        public void AddEnum<TEnum>(TEnum value, string culture, string translation) where TEnum : struct, Enum
+        { 
+            Add(EnumKeys<TEnum>.For(value), culture, translation);
         }
     }
 }
