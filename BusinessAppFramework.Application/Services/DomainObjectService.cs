@@ -93,7 +93,12 @@ namespace BusinessAppFramework.Application.Services
             }
         }
 
-        public virtual async Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
+        public virtual async Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
+        {
+            return await GetOrDefaultAsync(domainObjectId, cancellationToken) ?? throw new InvalidOperationException($"{typeof(T).Name} with id {domainObjectId} not found.");
+        }
+
+        public virtual async Task<T?> GetOrDefaultAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             var domainObject = await WithReadPermissionAsync(() => _repository.GetAsync(domainObjectId, cancellationToken));
 
@@ -114,7 +119,12 @@ namespace BusinessAppFramework.Application.Services
             return domainObjects;
         }
 
-        public virtual async Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
+        public virtual async Task<T> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
+        {
+            return await GetOrDefaultHydratedAsync(domainObjectId, cancellationToken) ?? throw new InvalidOperationException($"{typeof(T).Name} with id {domainObjectId} not found.");
+        }
+
+        public virtual async Task<T?> GetOrDefaultHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             var domainObject = await GetAsync(domainObjectId, cancellationToken);
 

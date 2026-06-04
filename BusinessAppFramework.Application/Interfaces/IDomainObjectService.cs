@@ -7,10 +7,12 @@ namespace BusinessAppFramework.Application.Interfaces
     {
         Task<bool> ExistsAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
-        Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<T?> GetOrDefaultAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<T> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<T?> GetOrDefaultHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
 
         Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey);
         Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItem(int domainObjectId, string relationKey);
