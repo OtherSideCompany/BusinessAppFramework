@@ -1,10 +1,13 @@
 ﻿using BusinessAppFramework.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IModuleBootstrapper
     {
+        IEnumerable<Assembly> GetBackendServiceAssemblies();
+        IEnumerable<Assembly> GetFrontendServiceAssemblies();
         void RegisterBackendServices(IServiceCollection services);
         void RegisterFrontendServices(IServiceCollection services);
         void RegisterLocalizedStrings(IServiceProvider serviceProvider);

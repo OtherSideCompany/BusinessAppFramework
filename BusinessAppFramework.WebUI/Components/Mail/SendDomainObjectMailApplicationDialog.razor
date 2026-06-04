@@ -14,7 +14,7 @@
 
 @inject IMailInfoServiceGateway<TDomainObject> MailInfoServiceGateway
 
-<MudStack Spacing="2" Class="ma-4">
+<MudStack Spacing="2" Class="ma-4" Style="min-width:600px;">
 
     <MudTextField @bind-Value="_mailInfo?.To"
                   Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailToKey)"
