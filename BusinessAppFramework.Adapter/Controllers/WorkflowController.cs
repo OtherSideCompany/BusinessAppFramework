@@ -8,7 +8,6 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.Workflow}")]
     public class WorkflowController : ControllerBase
     {
         #region Fields

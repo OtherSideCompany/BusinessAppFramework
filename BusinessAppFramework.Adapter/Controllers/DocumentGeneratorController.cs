@@ -9,7 +9,6 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.DocumentGenerator}")]
     public class DocumentGeneratorController : ControllerBase
     {
         #region Fields

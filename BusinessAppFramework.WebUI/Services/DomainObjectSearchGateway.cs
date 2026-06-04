@@ -47,7 +47,7 @@ namespace BusinessAppFramework.WebUI.Services
 
         public async Task<SearchResult<TSearchResult>> SearchAsync(SearchRequest searchRequest)
         {
-            var route = $"{_baseUrl}";
+            var route = $"{_baseUrl}/{SearchRouteSegments.Search}";
             return await SendSearchAsync(route, searchRequest);
         }
 

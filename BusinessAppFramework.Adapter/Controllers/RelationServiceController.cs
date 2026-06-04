@@ -9,7 +9,6 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.RelationShips}")]
     public class RelationServiceController : ControllerBase
     {
         #region Fields

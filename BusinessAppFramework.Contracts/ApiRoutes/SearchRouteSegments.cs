@@ -3,6 +3,7 @@
     public static class SearchRouteSegments
     {
         public const string Count = $"count";
+        public const string Search = $"search";
         public const string Paginated = $"paginated";
         public const string Summary = $"summary";
 

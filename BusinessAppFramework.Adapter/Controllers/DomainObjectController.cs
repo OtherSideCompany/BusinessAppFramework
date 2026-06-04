@@ -5,13 +5,12 @@ using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    public abstract class DomainObjectController<TDomainObject, TSearchResult> : ControllerBase
+    public class DomainObjectController<TDomainObject, TSearchResult> : ControllerBase
         where TDomainObject : DomainObject, new()
         where TSearchResult : DomainObjectSearchResult, new()
     {

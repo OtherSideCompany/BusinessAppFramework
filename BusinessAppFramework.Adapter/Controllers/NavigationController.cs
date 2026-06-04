@@ -8,7 +8,6 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.Navigation}")]
     public class NavigationController : ControllerBase
     {       
         protected readonly ICurrentUserService _currentUserService;

@@ -9,7 +9,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    public abstract class DomainObjectSearchController<TSearchResult> : ControllerBase
+    public class DomainObjectSearchController<TSearchResult> : ControllerBase
        where TSearchResult : DomainObjectSearchResult, new()
     {
         #region Fields
@@ -36,7 +36,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(result);
         }
 
-        [HttpPost()]
+        [HttpPost(SearchRouteSegments.Search)]
         public virtual async Task<ActionResult<SearchResult<TSearchResult>>> Search(
             [FromBody] SearchRequest searchRequest)
         {

@@ -12,7 +12,6 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.Tree}")]
     public class TreeController : ControllerBase
     {
         #region Fields

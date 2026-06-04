@@ -4,15 +4,11 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route($"{ApiRouteSegments.Root}/{ApiRouteSegments.Authentication}")]
     public class AuthenticationController : ControllerBase
     {
         #region Fields
