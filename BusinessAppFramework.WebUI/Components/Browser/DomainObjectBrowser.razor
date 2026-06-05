@@ -181,7 +181,7 @@
                 var shrink = action.ActionKey.Equals(ActionKeys.ImportExportDataActionKey);
                 <ActionButton Shrink="@shrink"
                               OnClick="() => ExecuteApplicationActionAsync(action)"
-                              ActionKey="action.ActionKey" />
+                              ActionKey="@action.ActionKey" />
             }
 
             @if (hasGlobalActions && hasSelectionActions)
@@ -194,7 +194,7 @@
                 var disabled = !_hasSelection;
 
                 <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
-                              ActionKey="action.ActionKey"
+                              ActionKey="@action.ActionKey"
                               Disabled="@disabled" />
             }
 
