@@ -12,7 +12,7 @@ namespace BusinessAppFramework.Contracts
         public static string PermissionKey(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-permission-key";
 
         public static string Property(Type t, string memberName)
-            => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}";        
+            => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}";
     }
 
     public static class AggregateKeys<T>
