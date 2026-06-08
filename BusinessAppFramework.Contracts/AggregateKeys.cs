@@ -25,7 +25,7 @@ namespace BusinessAppFramework.Contracts
         public static string Property(Expression<Func<T, object?>> prop)
         {
             var member = GetMember(prop);
-            return AggregateKeys.Property(member.DeclaringType!, member.Name);
+            return AggregateKeys.Property(typeof(T), member.Name);
         }
 
         static MemberInfo GetMember(Expression<Func<T, object?>> expr)

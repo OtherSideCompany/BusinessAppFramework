@@ -56,8 +56,7 @@
     <div class="osc-fiche">
         @foreach (var prop in props)
         {
-            var propKey = AggregateKeys.Property(prop.DeclaringType!, prop.Name);
-            var label = LocalizedStringService.Get(propKey);
+            var label = LocalizedStringService.ResolveProperty(Target.GetType(), prop.Name);
             var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
             var value = concreteProperty?.GetValue(Target);
 
