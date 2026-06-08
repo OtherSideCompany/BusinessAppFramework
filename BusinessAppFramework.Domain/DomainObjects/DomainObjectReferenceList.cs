@@ -3,55 +3,55 @@ using System.Linq;
 
 namespace BusinessAppFramework.Domain.DomainObjects
 {
-   public class DomainObjectReferenceList
-   {
-      #region Fields
+    public class DomainObjectReferenceList
+    {
+        #region Fields
 
-      public string RelationKey { get; set; }
-      public List<DomainObjectReferenceListItem> Items { get; set; } = new();
+        public string RelationKey { get; set; }
+        public List<DomainObjectReferenceListItem> Items { get; set; } = new();
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Events
 
-      public DomainObjectReferenceList()
-      {
 
-      }
 
-      public DomainObjectReferenceList(string relationKey, List<int> domainObjectIds)
-      {
-         RelationKey = relationKey;
+        #endregion
 
-         foreach (var domainObjectId in domainObjectIds)
-         {
-            Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
-         }
-      }
+        #region Constructor
 
-      #endregion
+        public DomainObjectReferenceList()
+        {
 
-      #region Public Methods
+        }
 
-      public void AddItem(int domainObjectId)
-      {
-         if (!Items.Any(i => i.DomainObjectId == domainObjectId))
-         {
-            Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
-         }
-      }
+        public DomainObjectReferenceList(string relationKey, List<int> domainObjectIds)
+        {
+            RelationKey = relationKey;
+
+            foreach (var domainObjectId in domainObjectIds)
+            {
+                Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void AddItem(int domainObjectId)
+        {
+            if (!Items.Any(i => i.DomainObjectId == domainObjectId))
+            {
+                Items.Add(new DomainObjectReferenceListItem(domainObjectId, ""));
+            }
+        }
 
         public void AddItem(int domainObjectId, string displayValue)
         {
