@@ -111,6 +111,9 @@ namespace BusinessAppFramework.WebUI.Services
                     { nameof(IOpenDialogApplicationAction.DomainObjectId), openDialogApplicationAction.DomainObjectId }
                 };
 
+                foreach (var keyValuePair in openDialogApplicationAction.AdditionalParameters)
+                    parameters.Add(keyValuePair.Key, keyValuePair.Value);
+
                 var dialogOptions = new DialogOptions
                 {
                     MaxWidth = MaxWidth.False,

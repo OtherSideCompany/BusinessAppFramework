@@ -48,6 +48,7 @@
     [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public string? ExecuteRoute { get; set; }
     [Parameter] public int? DomainObjectId { get; set; }
+    [Parameter] public MailKind MailKind { get; set; } = MailKind.Default;
 
     private bool _isLoaded;
     private MailInfo? _mailInfo;    
@@ -56,7 +57,7 @@
     {
         if (DomainObjectId != null && !_isLoaded)
         {
-            _mailInfo = await MailInfoServiceGateway.GetMailInfoAsync(DomainObjectId.Value, CultureInfo.CurrentUICulture.Name);
+            _mailInfo = await MailInfoServiceGateway.GetMailInfoAsync(DomainObjectId.Value, MailKind, CultureInfo.CurrentUICulture.Name);
             _isLoaded = true;
 
             StateHasChanged();

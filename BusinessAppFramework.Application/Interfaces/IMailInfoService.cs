@@ -7,6 +7,6 @@ namespace BusinessAppFramework.Application.Interfaces
 {
     public interface IMailInfoService
     {
-        Task<MailInfo?> GetMailInfoAsync(int domainObjectId, string cultureInfo, CancellationToken ct = default);
+        Task<MailInfo?> GetMailInfoAsync(int domainObjectId, MailKind mailKind, string cultureInfo, CancellationToken ct = default);
     }
 }

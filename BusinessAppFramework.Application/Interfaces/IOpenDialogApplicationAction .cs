@@ -7,5 +7,6 @@ namespace BusinessAppFramework.Application.Interfaces
         string ComponentKey { get; }
         string DialogTitle { get; }
         int? DomainObjectId { get; set; }
+        IDictionary<string, object?> AdditionalParameters { get; }
     }
 }

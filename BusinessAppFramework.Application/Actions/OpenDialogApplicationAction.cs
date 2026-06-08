@@ -15,6 +15,7 @@ namespace BusinessAppFramework.Application.Actions
         public string ComponentKey { get; set; }
         public string DialogTitle { get; set; }
         public int? DomainObjectId { get; set; }
+        public IDictionary<string, object?> AdditionalParameters { get; } = new Dictionary<string, object?>();
 
         #endregion
 
