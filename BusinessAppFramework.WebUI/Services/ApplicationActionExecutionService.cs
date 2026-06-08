@@ -1,7 +1,6 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts;
-using BusinessAppFramework.Domain;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
