@@ -17,12 +17,12 @@
 <MudStack Spacing="2" Class="ma-4" Style="min-width:600px;">
 
     <MudTextField @bind-Value="_mailInfo?.To"
-                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.MailToKey)"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailToKey)"
                   Variant="Variant.Outlined" />
 
 
     <MudTextField @bind-Value="_mailInfo?.Object"
-                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.MailObjectKey)"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailObjectKey)"
                   Variant="Variant.Outlined" />
 
     @* <MudTextField @bind-Value="Object"
@@ -30,7 +30,7 @@
                   Variant="Variant.Outlined" /> *@
 
     <MudTextField @bind-Value="_mailInfo?.Body"
-                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.MailBodyKey)"
+                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailBodyKey)"
                   Variant="Variant.Outlined"
                   Lines="12" />
 
@@ -39,7 +39,7 @@
                StartIcon="@Icons.Material.Filled.Send"
                OnClick="OnSend"
                Class="mt-2 align-self-end">
-        @LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.MailSendKey)
+        @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailSendKey)
     </MudButton>
 
 </MudStack>

@@ -7,13 +7,27 @@
     var label = LocalizedStringService.Get(StatusKey);
 }
 
-<MudChip T="string" Color="_color" Variant="_variant" Size="Size.Small">
-    @label
-</MudChip>
+<MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
+
+    <MudChip T="string" Color="_color" Variant="_variant" Size="Size.Small">
+        @label
+    </MudChip>
+
+    @if (IsOverdue)
+    {
+        <MudTooltip Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.OverdueKey)">
+            <MudAvatar Color="Color.Warning" Size="Size.Small">
+                <MudIcon Icon="@Icons.Material.Outlined.Alarm" Style="width:16px; height:16px;" />
+            </MudAvatar>
+        </MudTooltip>
+    }
+
+</MudStack>
 
 @code {
     [EditorRequired, Parameter] public string StatusKey { get; set; }
     [Parameter] public bool IsDraft { get; set; }
+    [Parameter] public bool IsOverdue { get; set; }
 
     private Color _color => IsDraft ? Color.Error : Color.Primary;
     private Variant _variant => IsDraft ? Variant.Outlined : Variant.Filled;

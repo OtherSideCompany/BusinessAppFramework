@@ -1,6 +1,6 @@
 ﻿namespace BusinessAppFramework.Contracts
 {
-    public static class strings
+    public static class StringKeys
     {
         public static string InfosKey => "Infos";
         public static string HistoryKey => "History";
@@ -37,6 +37,7 @@
         public static string MailSendKey => "MailSendKey";
         public static string ExtendedSearchKey => "ExtendedSearchKey";
         public static string HelloKey = "HelloKey";
-        public static string UndefinedKey = "UndefinedKey";       
+        public static string UndefinedKey = "UndefinedKey";
+        public static string OverdueKey = "OverdueKey";
     }
 }

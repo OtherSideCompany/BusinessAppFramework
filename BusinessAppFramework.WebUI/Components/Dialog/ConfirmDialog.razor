@@ -6,14 +6,14 @@
 
 <MudDialog>
     <TitleContent>
-        @LocalizedStringService.Get(strings.ConfirmationKey)
+        @LocalizedStringService.Get(StringKeys.ConfirmationKey)
     </TitleContent>
     <DialogContent>
         @Message
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="Ok">@LocalizedStringService.Get(strings.OkKey)</MudButton>
-        <MudButton OnClick="Cancel">@LocalizedStringService.Get(strings.CancelKey)</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok">@LocalizedStringService.Get(StringKeys.OkKey)</MudButton>
+        <MudButton OnClick="Cancel">@LocalizedStringService.Get(StringKeys.CancelKey)</MudButton>
     </DialogActions>
 </MudDialog>
 

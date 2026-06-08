@@ -59,7 +59,7 @@
 
                 <MudTextField T="string"
                               Class="osc-search"
-                              Placeholder="@LocalizedStringService.Get(Contracts.strings.SearchKey)"
+                              Placeholder="@LocalizedStringService.Get(Contracts.StringKeys.SearchKey)"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
                               IconSize="Size.Small"
@@ -71,7 +71,7 @@
                               Style="background: var(--mud-palette-surface);" />
 
                 <MudText Typo="Typo.caption" Style="margin-top:4px; color:gray;">
-                    @_totalItems @LocalizedStringService.Get(Contracts.strings.ResultsKey)
+                    @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
                 </MudText>
 
             </MudStack>
@@ -111,7 +111,7 @@
                    Size="Size.Small"
                    OnClick="OpenModuleInNewTab"
                    Class="mt-2">
-            @LocalizedStringService.Get(Contracts.strings.NewKey)
+            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
         </MudButton>
     </Footer>
 

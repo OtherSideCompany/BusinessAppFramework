@@ -119,7 +119,7 @@
 
             <MudTextField T="string"
                           Class="osc-search"
-                          Placeholder="@LocalizedStringService.Get(Contracts.strings.SearchKey)"
+                          Placeholder="@LocalizedStringService.Get(Contracts.StringKeys.SearchKey)"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           IconSize="Size.Small"
@@ -160,13 +160,13 @@
             </MudChipSet>
 
             <MudText Typo="Typo.caption" Align="Align.Start" Style="margin-top:4px; color:gray">
-                @_startIndex - @_endIndex / @_totalItems @LocalizedStringService.Get(Contracts.strings.ResultsKey)
+                @_startIndex - @_endIndex / @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
             </MudText>
 
             <MudLink Typo="Typo.caption"
                      Style="margin-left:4px;margin-top:4px; cursor:pointer"
                      OnClick="async () => await FireSearchAsync(true)">
-                @LocalizedStringService.Get(Contracts.strings.ExtendedSearchKey)
+                @LocalizedStringService.Get(Contracts.StringKeys.ExtendedSearchKey)
             </MudLink>
 
             <MudSpacer />

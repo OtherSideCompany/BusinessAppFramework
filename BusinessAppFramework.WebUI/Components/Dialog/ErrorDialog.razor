@@ -7,7 +7,7 @@
 <MudDialog>
     <TitleContent>
         <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Dense="true">
-            @LocalizedStringService.Get(strings.ErrorKey)
+            @LocalizedStringService.Get(StringKeys.ErrorKey)
         </MudAlert>
     </TitleContent>
     <DialogContent>        
@@ -21,7 +21,7 @@
         <MudButton Variant="Variant.Filled" 
                    Color="Color.Error" 
                    StartIcon="@Icons.Material.Filled.Check" 
-                   OnClick="Ok">@LocalizedStringService.Get(strings.OkKey)</MudButton>
+                   OnClick="Ok">@LocalizedStringService.Get(StringKeys.OkKey)</MudButton>
     </DialogActions>
 </MudDialog>
 

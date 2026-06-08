@@ -52,7 +52,7 @@
                      CommittedItemChanges="OnCommitedItemChanged">
             <Columns>
                 @ColumnsContent
-                <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(strings.ActionsKey)">
+                <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
                     <EditTemplate>
                         <MudStack Row="true" Spacing="0">
                             @ItemActions?.Invoke(context.Item)

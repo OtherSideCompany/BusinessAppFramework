@@ -30,7 +30,7 @@
         </MudStack>
 
         <DomainObjectPageTabs>
-            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.InfosKey)">
+            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
                 <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
             </MudTabPanel>
         </DomainObjectPageTabs>
