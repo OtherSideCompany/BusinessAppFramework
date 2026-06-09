@@ -165,6 +165,25 @@ namespace BusinessAppFramework.Infrastructure.ImageCompression
             return null;
         }
 
+        public byte[] ResizeJpegImage(byte[] source, int width, int height, int quality = 80)
+        {
+            if (source is not { Length: > 0 })
+                return source;
+
+            using var image = new MagickImage(source);
+
+            image.Resize(new MagickGeometry((uint)width, (uint)height) { FillArea = true });
+            image.Crop((uint)width, (uint)height, Gravity.Center);
+            image.ResetPage();
+
+            image.Format = MagickFormat.Jpeg;
+            image.Quality = (uint)quality;
+
+            using var output = new MemoryStream();
+            image.Write(output);
+            return output.ToArray();
+        }
+
         #endregion
     }
 }

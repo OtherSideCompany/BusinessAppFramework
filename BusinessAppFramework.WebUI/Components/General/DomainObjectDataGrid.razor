@@ -1,18 +1,11 @@
-﻿@using Application.Trees
-@using BusinessAppFramework.Application.Actions
-@using BusinessAppFramework.Application.Interfaces
+﻿@using BusinessAppFramework.WebUI.Components.Editor
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
-@using WebUI.Interfaces
 
 @typeparam TItem where TItem : DomainObject, new()
 
-@inject ILocalizedStringService LocalizedStringService
-@inject ITreeGateway TreeGateway
-@inject IUserDialogService UserDialogService
-@inject IDomainObjectServiceGateway<TItem> DomainObjectServiceGateway
-@implements IEditable
+@inherits DomainObjectBranchEditor<TItem>
 
 <style>
     .osc-datagrid {
@@ -73,120 +66,5 @@
 @code {
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
-    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }
-    [Parameter] public EventCallback OnBranchChanged { get; set; }
-
-    [Parameter, EditorRequired] public int? ParentId { get; set; }
-    [Parameter, EditorRequired] public Branch? Branch { get; set; }
-
-    [Parameter] public EventCallback ItemChanged { get; set; }
-    private Task NotifyItemChanged() => ItemChanged.InvokeAsync();
-
-    public List<TItem> Items { get; private set; } = new();
-    private bool _isLoaded;
-    private bool _isLoading;
-    private int? _loadedParentId;
-    private Branch? _loadedBranch;
-
-    public async Task<List<DomainObjectApplicationActionResultPayload>> SaveChangesAsync()
-    {
-        var results = new List<DomainObjectApplicationActionResultPayload>();
-
-        foreach (var item in Items)
-        {
-            results.Add(await DomainObjectServiceGateway.SaveAsync(item));
-        }
-
-        return results;
-    }
-
-    public async Task CancelChangesAsync()
-    {
-        Items.Clear();
-        await LoadAsync(true);
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        if (ParentId != _loadedParentId || Branch != _loadedBranch)
-        {
-            await LoadAsync(true);
-        }
-        else
-        {
-            await LoadAsync(false);
-        }
-    }
-
-    private async Task LoadAsync(bool refresh)
-    {
-        if ((_isLoaded && !refresh) || _isLoading || Branch is null)
-            return;
-
-        _isLoading = true;
-
-        Items.Clear();
-
-        foreach (var node in Branch.Nodes)
-        {
-            await AddItemFromNodeAsync(node);
-        }
-
-        _loadedParentId = ParentId;
-        _loadedBranch = Branch;
-
-        _isLoaded = true;
-        _isLoading = false;
-    }
-
-    private async Task AddItemFromNodeAsync(Node node)
-    {
-        var domainObject = await DomainObjectServiceGateway.GetHydratedAsync(node.Id);
-
-        if (domainObject != null)
-            Items.Add(domainObject);
-    }
-
-    private async Task CreateItemAsync()
-    {
-        if (ParentId == null || Branch == null)
-        {
-            return;
-        }
-
-        var node = await TreeGateway.CreateNode(ParentId.Value, Branch.ParentChildRelationKey);
-
-        if (node != null)
-        {
-            Branch.AddNode(node);
-            await AddItemFromNodeAsync(node);
-            await OnBranchChanged.InvokeAsync();
-        }
-
-        StateHasChanged();
-    }
-
-    private async Task DeleteItemAsync(TItem? domainObject)
-    {
-        if (domainObject != null && ParentId != null && Branch != null)
-        {
-            if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
-            {
-                if (await TreeGateway.DeleteNodeAsync(ParentId.Value, domainObject.Id, Branch.ParentChildRelationKey))
-                {
-                    Items.Remove(domainObject);
-                    Branch?.RemoveNode(domainObject.Id);
-                    await OnBranchChanged.InvokeAsync();
-                }
-            }
-        }
-    }
-
-    private async Task<DataGridEditFormAction> OnCommitedItemChanged(TItem item)
-    {
-        await ItemChanged.InvokeAsync();
-        return DataGridEditFormAction.Close;
-    }
+    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }   
 }
