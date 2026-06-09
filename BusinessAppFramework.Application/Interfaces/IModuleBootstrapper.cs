@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Domain;
+﻿using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -26,6 +27,7 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterReferences(IServiceProvider serviceProvider);
         void RegisterParentChildRelations(IServiceProvider serviceProvider);
         void RegisterDomainObjectNavigationApplicationAction(IServiceProvider serviceProvider);
+        void RegisterReferenceNavigationKeys(IServiceProvider serviceProvider);
         string? GetModuleWorkspaceKey();
         List<string> GetWorkspacesKeys();
     }

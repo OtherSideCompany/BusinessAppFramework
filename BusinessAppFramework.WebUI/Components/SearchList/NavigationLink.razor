@@ -1,12 +1,14 @@
 ﻿@using BusinessAppFramework.Application.Factories
 @using BusinessAppFramework.Application.Interfaces
-@using BusinessAppFramework.Domain
 @using MudBlazor
 
 @inject IDomainObjectNavigationApplicationActionFactory DomainObjectNavigationApplicationActionFactory
 
-<MudLink Href="@_pageNavigationAction?.BuildRoute(DomainObjectId)">
-    @Text
+<MudLink Href="@_pageNavigationAction?.BuildRoute(DomainObjectId)" 
+         Disabled="@(_pageNavigationAction == null)"
+         @onclick:stopPropagation="true"
+         Underline="Underline.Hover">
+    <MudText Style="color: var(--mud-palette-primary-darken);">@Text</MudText> 
 </MudLink>
 
 @code {
@@ -20,6 +22,9 @@
     {
         base.OnInitialized();
 
-        _pageNavigationAction = DomainObjectNavigationApplicationActionFactory.Get(NavigationApplicationActionKey);
+        if (!String.IsNullOrEmpty(NavigationApplicationActionKey))
+        {
+            _pageNavigationAction = DomainObjectNavigationApplicationActionFactory.Get(NavigationApplicationActionKey);
+        }
     }
 }

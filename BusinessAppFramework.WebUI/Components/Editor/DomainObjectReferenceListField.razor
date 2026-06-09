@@ -1,6 +1,7 @@
 ﻿@using Application.Descriptors
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Relations
+@using BusinessAppFramework.WebUI.Components.SearchList
 @using Domain
 @using Domain.DomainObjects
 @using Microsoft.Extensions.DependencyInjection
@@ -13,6 +14,7 @@
 @inject IReferenceResolver RelationResolver
 @inject IServiceProvider ServiceProvider
 @inject IDialogService DialogService
+@inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
 
 <MudChipSet T="DomainObjectReference">
 
@@ -22,10 +24,22 @@
         {
             <MudChip T="DomainObjectReferenceListItem"
                      Size="Size.Small"
-                     Variant="Variant.Text"
+                     Variant="Variant.Outlined"
                      CloseIcon="@Icons.Material.Filled.Close"
                      OnClose="(() => RemoveReference(reference))">
-                <MudText Typo="Typo.body2">@reference.DisplayValue</MudText>
+                @{
+                    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReferenceList.RelationKey ?? "");
+                }
+                @if (!String.IsNullOrEmpty(navigationKey))
+                {
+                    <NavigationLink NavigationApplicationActionKey="@navigationKey"
+                                    DomainObjectId="@reference.DomainObjectId"
+                                    Text="@reference.DisplayValue" />
+                }
+                else
+                {
+                    <MudText>@reference.DisplayValue</MudText>
+                }
             </MudChip>
         }
     }
@@ -119,7 +133,7 @@
         }
 
         StateHasChanged();
-    }    
+    }
 
     private async void RemoveReference(DomainObjectReferenceListItem item)
     {

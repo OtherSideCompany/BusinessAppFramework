@@ -1,7 +1,7 @@
 ﻿@using Application.Descriptors
-@using BusinessAppFramework.Application.Interfaces
 @using Application.Relations
-@using Domain
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.WebUI.Components.SearchList
 @using Domain.DomainObjects
 @using Microsoft.Extensions.DependencyInjection
 @using MudBlazor
@@ -14,6 +14,7 @@
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 @inject IServiceProvider ServiceProvider
 @inject IDialogService DialogService
+@inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
 
 <style>
     .mud-icon-button-size-small .mud-icon-root {
@@ -40,19 +41,34 @@
           Class="lookup-field">
     <MudStack Row="true" AlignItems="AlignItems.Center">
         @if (!string.IsNullOrEmpty(_value))
-        {            
-            <MudChip T="string" Size="Size.Small" Variant="@Variant"
-                     CloseIcon="@Icons.Material.Filled.Close" OnClose="ClearSelectionAsync"
+        {
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Variant="Variant.Outlined"
+                     CloseIcon="@Icons.Material.Filled.Close"
+                     OnClose="ClearSelectionAsync"
                      Style="margin: 0;">
-                <MudText Typo="Typo.body2">@_value</MudText>
-            </MudChip>           
+                @{
+                    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? "");
+                }
+                @if (!String.IsNullOrEmpty(navigationKey))
+                {
+                    <NavigationLink NavigationApplicationActionKey="@navigationKey"
+                                    DomainObjectId="@_id"
+                                    Text="@_value" />
+                }
+                else
+                {
+                    <MudText>@_value</MudText>
+                }
+            </MudChip>
         }
         else
         {
             <MudText Style="color: var(--mud-palette-text-disabled);" Typo="Typo.body2">
                 @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SelectToSearchKey)
             </MudText>
-        }        
+        }
     </MudStack>
 </MudField>
 
@@ -73,6 +89,8 @@
     [Parameter] public string Label { get; set; } = default!;
     [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
+
+    private int _id => DomainObjectReference?.DomainObjectId == null ? 0 : DomainObjectReference.DomainObjectId.Value;
 
     private DomainObjectReference? _domainObjectReference;
     private string? _value;
