@@ -292,7 +292,7 @@ namespace BusinessAppFramework.Application.Services
 
         private async Task<U> WithPermissionAsync<U>(UserRolePermissionType permissionType, Func<Task<U>> action)
         {
-            if (!await CheckRightAsync(AggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
+            if (!await CheckRightAsync(DomainObjectAggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
                 throw new UserPermissionException(typeof(T), permissionType);
 
             return await action();
@@ -300,7 +300,7 @@ namespace BusinessAppFramework.Application.Services
 
         private async Task WithPermissionAsync(UserRolePermissionType permissionType, Func<Task> action)
         {
-            if (!await CheckRightAsync(AggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
+            if (!await CheckRightAsync(DomainObjectAggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
                 throw new UserPermissionException(typeof(T), permissionType);
 
             await action();

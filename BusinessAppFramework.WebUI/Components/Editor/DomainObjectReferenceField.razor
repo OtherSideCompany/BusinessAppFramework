@@ -30,47 +30,44 @@
     }
 </style>
 
-<MudField Label="@Label"
-          Typo="Typo.body2"
+<MudField Typo="Typo.body2"
           Variant="@Variant"
           Margin="Margin.Dense"
           @onclick="OpenSelector"
           AdornmentIcon="@Icons.Material.Outlined.Search"
           Adornment="Adornment.End"
-          Style="cursor: pointer"
-          Class="lookup-field">
-    <MudStack Row="true" AlignItems="AlignItems.Center">
+          Class="lookup-field"
+          InnerPadding="false">
+    <div style="margin-bottom:4px;">
         @if (!string.IsNullOrEmpty(_value))
         {
-            <MudChip T="string"
-                     Size="Size.Small"
-                     Variant="Variant.Outlined"
-                     CloseIcon="@Icons.Material.Filled.Close"
-                     OnClose="ClearSelectionAsync"
-                     Style="margin: 0;">
-                @{
-                    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? "");
-                }
-                @if (!String.IsNullOrEmpty(navigationKey))
-                {
+            var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? "");
+
+            @if (!String.IsNullOrEmpty(navigationKey))
+            {
+                <MudStack Row="true">
                     <NavigationLink NavigationApplicationActionKey="@navigationKey"
                                     DomainObjectId="@_id"
                                     Text="@_value" />
-                }
-                else
-                {
-                    <MudText>@_value</MudText>
-                }
-            </MudChip>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" 
+                                   OnClick="ClearSelectionAsync" />
+                </MudStack>
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">@_value</MudText>
+            }
         }
         else
         {
-            <MudText Style="color: var(--mud-palette-text-disabled);" Typo="Typo.body2">
+            <MudText Style="color: var(--mud-palette-text-disabled);">
                 @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SelectToSearchKey)
             </MudText>
         }
-    </MudStack>
+    </div>
 </MudField>
+
 
 @code {
     [Parameter]
@@ -87,7 +84,7 @@
         }
     }
     [Parameter] public string Label { get; set; } = default!;
-    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
 
     private int _id => DomainObjectReference?.DomainObjectId == null ? 0 : DomainObjectReference.DomainObjectId.Value;

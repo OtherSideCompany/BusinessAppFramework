@@ -2,6 +2,7 @@
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Trees;
+using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
@@ -123,9 +124,10 @@ namespace BusinessAppFramework.Adapter.Controllers
                     await domainObjectService.SaveIndexAsync(domainObject);
                 }
 
-                node = new Node(domainObject.Id);
-
                 var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+
+                node = new Node(domainObject.Id) { TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType) };
+                
                 dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
                 node.Summary = await searchService.GetSummaryAsync(domainObject.Id);
             }
@@ -146,10 +148,12 @@ namespace BusinessAppFramework.Adapter.Controllers
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
 
                 dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
-                var domainObject = await domainObjectService.GetAsync(childDomainObjectId);
-                node = new Node(domainObject.Id);
+                var domainObject = await domainObjectService.GetAsync(childDomainObjectId);               
 
                 var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+
+                node = new Node(domainObject.Id) { TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType) };
+
                 dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
                 node.Summary = await searchService.GetSummaryAsync(domainObject.Id);
             }
@@ -192,7 +196,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
                 foreach (var id in nodeIds)
                 {
-                    var node = new Node(id);
+                    var node = new Node(id) { TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType) };
                     node.Summary = await searchService.GetSummaryAsync(id);
                     branch.Nodes.Add(node);
 

@@ -4,11 +4,13 @@
 
 @inject IDomainObjectNavigationApplicationActionFactory DomainObjectNavigationApplicationActionFactory
 
-<MudLink Href="@_pageNavigationAction?.BuildRoute(DomainObjectId)" 
+<MudLink Href="@_pageNavigationAction?.BuildRoute(DomainObjectId)"
          Disabled="@(_pageNavigationAction == null)"
          @onclick:stopPropagation="true"
-         Underline="Underline.Hover">
-    <MudText Style="color: var(--mud-palette-primary-darken);">@Text</MudText> 
+         Underline="Underline.Hover"
+         Typo="Typo.body2"
+         Style="color: var(--mud-palette-primary-darken) !important;">
+    @Text
 </MudLink>
 
 @code {

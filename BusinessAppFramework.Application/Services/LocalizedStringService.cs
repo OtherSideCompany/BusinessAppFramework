@@ -74,7 +74,7 @@ namespace BusinessAppFramework.Application.Services
 
             while (type is not null)
             {
-                var key = AggregateKeys.Property(type, memberName);
+                var key = DomainObjectAggregateKeys.Property(type, memberName);
 
                 if (TryGet(cultureInfo, key, out var value))
                     return value;

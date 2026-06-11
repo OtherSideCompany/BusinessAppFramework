@@ -4,7 +4,6 @@
 @using Domain.Attributes
 @using MudBlazor
 @using WebUI.Interfaces
-@using BusinessAppFramework.Contracts
 
 @inject ILocalizedStringService LocalizedStringService
 @inject IDialogService DialogService
@@ -12,72 +11,111 @@
 @inject IReferenceResolver RelationResolver
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 
-<style>
-    .osc-fiche-row {
-        display: grid;
-        grid-template-columns: 180px 1fr;
-        align-items: center;
-        gap: 16px;
-        padding: 6px 0;
-        border-bottom: 1px solid #f0f0f2;
-    }
-
-        .osc-fiche-row:last-child {
-            border-bottom: none;
-        }
-
-    .osc-fiche-label {
-        color: var(--mud-palette-text-secondary);
-        font-size: 12px;
-    }
-
-    .osc-fiche-value {
-        min-width: 0;
-    }
-
-        .osc-fiche-value .mud-input.mud-input-text:before {
-            border-bottom-color: transparent;
-        }
-
-        .osc-fiche-value:hover .mud-input.mud-input-text:before {
-            border-bottom-color: var(--mud-palette-lines-inputs);
-            opacity: 0.3;
-        }
-
-        .osc-fiche-value .mud-input.mud-input-text:after {
-            border-bottom-color: var(--mud-palette-primary);
-        }
-</style>
-
 @if (Target != null)
 {
     var props = GetEditableProperties().ToList();
 
-    <div class="osc-fiche">
-        @foreach (var prop in props)
+    <MudStack Spacing="6">
+        @foreach (var category in GetCategoriesOrDefault())
         {
-            var label = LocalizedStringService.ResolveProperty(Target.GetType(), prop.Name);
-            var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
-            var value = concreteProperty?.GetValue(Target);
+            <MudStack Spacing="3">
 
-            <div class="osc-fiche-row">
-                <div class="osc-fiche-label">@label</div>
-                <div class="osc-fiche-value">
-                    <ObjectProperty PropertyInfo="@prop"
-                                    PropertyValue="@value"
-                                    Target="@Target"
-                                    OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
-                </div>
-            </div>
+                @if (DisplayCategoryHeaders)
+                {
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@category.Icon" Size="Size.Small" />
+                        <MudText Typo="Typo.h6">@LocalizedStringService.Get(category.LabelKey)</MudText>
+                    </MudStack>
+
+                    <MudDivider />
+                }
+
+                <MudGrid Spacing="2">
+                    @foreach (var propEdition in category.PropertyEditions)
+                    {
+                        var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
+                        if (prop != null)
+                        {
+                            var label = LocalizedStringService.ResolveProperty(Target.GetType(), prop.Name);
+                            var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
+                            var value = concreteProperty?.GetValue(Target);
+                            <MudItem xs="12" md="@propEdition.Md">
+                                <ObjectProperty PropertyInfo="@prop"
+                                                PropertyValue="@value"
+                                                Target="@Target"
+                                                OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
+                            </MudItem>
+                        }
+                    }
+
+                </MudGrid>
+
+                    
+            </MudStack>
         }
-    </div>
+
+    </MudStack>
+
 }
 
 @code {
     [Parameter] public object? Target { get; set; }
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
+    [Parameter] public List<PropertyCategory> PropertyCategories { get; set; } = new();
+    [Parameter] public bool DisplayCategoryHeaders { get; set; } = true;
+
+    private PropertyCategory _uncategorizedPropertyCategory = new PropertyCategory()
+    {
+        LabelKey = BusinessAppFramework.Contracts.StringKeys.OthersKey,
+        Icon = Icons.Material.Outlined.MoreHoriz
+    };
 
     public void Refresh() => StateHasChanged();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _uncategorizedPropertyCategory.PropertyEditions = _uncategorizedProperties.Select(p => new PropertyEdition() { PropertyName = p.Name }).ToList();
+    }
+
+    private List<PropertyInfo> _uncategorizedProperties => GetEditableProperties()
+        .Where(p => !PropertyCategories.Any(c => c.PropertyEditions.Any(e => e.PropertyName == p.Name)))
+        .ToList();
+
+    private List<PropertyCategory> GetDefaultCategory()
+    {
+        var propertyCategory = new PropertyCategory()
+        {
+            LabelKey = BusinessAppFramework.Contracts.StringKeys.GeneralKey,
+            Icon = Icons.Material.Outlined.Info
+        };
+
+        propertyCategory.PropertyEditions = GetEditableProperties().Select(p => new PropertyEdition() { PropertyName = p.Name }).ToList();
+
+        return new List<PropertyCategory> { propertyCategory };
+    }
+
+    private List<PropertyCategory> GetCategoriesOrDefault()
+    {
+        List<PropertyCategory> categories;
+
+        if (PropertyCategories.Any())
+        {
+            categories = PropertyCategories;
+
+            if (_uncategorizedPropertyCategory.PropertyEditions.Any())
+            {
+                categories.Add(_uncategorizedPropertyCategory);
+            }
+        }
+        else
+        {
+            categories = GetDefaultCategory();
+        }
+
+        return categories;
+    }
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
     {

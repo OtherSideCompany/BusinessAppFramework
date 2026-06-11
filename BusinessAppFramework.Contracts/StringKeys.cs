@@ -1,4 +1,6 @@
-﻿namespace BusinessAppFramework.Contracts
+﻿using System.Data;
+
+namespace BusinessAppFramework.Contracts
 {
     public static class StringKeys
     {
@@ -39,5 +41,8 @@
         public static string HelloKey = "HelloKey";
         public static string UndefinedKey = "UndefinedKey";
         public static string OverdueKey = "OverdueKey";
+        public static string GeneralKey = "GeneralKey";
+        public static string OthersKey = "OthersKey";
+        public static string StateKey = "StatesKey";
     }
 }

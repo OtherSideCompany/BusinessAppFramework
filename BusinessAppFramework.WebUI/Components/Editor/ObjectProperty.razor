@@ -6,110 +6,126 @@
 
 @inject ILocalizedStringService LocalizedStringService
 
-@if (PropertyInfo.PropertyType == typeof(string))
-{
-    <MudTextField T="string"
-                  Typo="Typo.body2"
-                  Margin="Margin.Dense"
-                  Immediate="true"
-                  Value="@(PropertyValue?.ToString())"
-                  Variant="@Variant"
-                  ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
+@{
+    var label = LocalizedStringService.ResolveProperty(Target.GetType(), PropertyInfo.Name);
 }
-else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
-{
-    <MudNumericField T="int?"
-                     Typo="Typo.body2"
-                     Margin="Margin.Dense"
-                     Immediate="true"
-                     Value="@(PropertyValue as int?)"
-                     Variant="@Variant"
-                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
-                     HideSpinButtons="true"
-                     Clearable="@(PropertyInfo.PropertyType == typeof(int?))"
-                     Placeholder="@(PropertyInfo.PropertyType == typeof(int?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
-}
-else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
-{
-    <MudSwitch T="bool?"
-               Value="@(PropertyValue as bool?)"
-               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
-               Color="Color.Primary"
-               Style="margin-left:-4px !important" />
-}
-else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyType == typeof(decimal?))
-{
-    <MudNumericField T="decimal?"
-                     Margin="Margin.Dense"
-                     Typo="Typo.body2"
-                     Immediate="true"
-                     Value="@(PropertyValue as decimal?)"
-                     ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
-                     Variant="@Variant"
-                     HideSpinButtons="true" 
-                     Culture="System.Globalization.CultureInfo.InvariantCulture" 
-                     Clearable="@(PropertyInfo.PropertyType == typeof(decimal?))"
-                     Placeholder="@(PropertyInfo.PropertyType == typeof(decimal?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
-}
-else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyType == typeof(DateTime?))
-{
-    <MudDatePicker Date="@(PropertyValue as DateTime?)"
-                   Style="font-size: var(--mud-typography-body2-size);"
-                   Margin="Margin.Dense"
-                   DateChanged="OnDateChanged"
-                   Variant="@Variant"
-                   Editable="true"
-                   Clearable="PropertyInfo.PropertyType == typeof(DateTime?)" 
-                   Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
-}
-else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
-{
-    var domainObjectReference = PropertyValue as DomainObjectReference;
-    <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
-                                OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
-}
-else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
-{
-    var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
-    <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
-                                    OnDomainObjectReferenceListChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
-}
-else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
-{
-    var enumType = PropertyInfo.PropertyType.IsEnum
-        ? PropertyInfo.PropertyType
-        : Nullable.GetUnderlyingType(PropertyInfo.PropertyType)!;
-    var enumValues = Enum.GetValues(enumType).Cast<object>().ToList();
-    var isNullable = Nullable.GetUnderlyingType(PropertyInfo.PropertyType) is not null;
 
-    <MudSelect T="object"
-               Margin="Margin.Dense"
-               Typo="Typo.body2"
-               Value="@PropertyValue"
-               Variant="@Variant"
-               Clearable="isNullable"
-               ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
-        @foreach (var enumValue in enumValues)
-        {
-            <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(EnumKeys.For(enumType, enumValue))</MudSelectItem>
-        }
-    </MudSelect>
-}
+<MudStack Spacing="0">
+
+    <MudText Style="margin-left:4px; margin-bottom:-2px; color:var(--mud-palette-text-secondary)" Typo="Typo.caption">@label</MudText>
+
+    @if (PropertyInfo.PropertyType == typeof(string))
+    {
+        <MudTextField T="string"
+                      Typo="Typo.body2"
+                      Margin="@Margin"
+                      Immediate="true"
+                      ShrinkLabel="true"
+                      Value="@(PropertyValue?.ToString())"
+                      Variant="@Variant"
+                      Sizing="InputSizing.Auto"                      
+                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
+    {
+        <MudNumericField T="int?"
+                         Typo="Typo.body2"
+                         Margin="@Margin"
+                         Immediate="true"
+                         Value="@(PropertyValue as int?)"
+                         Variant="@Variant"
+                         ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
+                         HideSpinButtons="true"
+                         Clearable="@(PropertyInfo.PropertyType == typeof(int?))"
+                         Placeholder="@(PropertyInfo.PropertyType == typeof(int?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
+    {
+        <MudSwitch T="bool?"
+                   Value="@(PropertyValue as bool?)"
+                   ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
+                   Color="Color.Primary"
+                   Style="margin-left:-4px !important" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(decimal) || PropertyInfo.PropertyType == typeof(decimal?))
+    {
+        <MudNumericField T="decimal?"
+                         Typo="Typo.body2"
+                         Margin="@Margin"
+                         Immediate="true"
+                         Value="@(PropertyValue as decimal?)"
+                         ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
+                         Variant="@Variant"
+                         HideSpinButtons="true"
+                         Culture="System.Globalization.CultureInfo.InvariantCulture"
+                         Clearable="@(PropertyInfo.PropertyType == typeof(decimal?))"
+                         Placeholder="@(PropertyInfo.PropertyType == typeof(decimal?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyType == typeof(DateTime?))
+    {
+        <MudDatePicker Date="@(PropertyValue as DateTime?)"
+                       Style="font-size: var(--mud-typography-body2-size); font-weight: var(--mud-typography-body2-weight);"
+                       Margin="@Margin"
+                       DateChanged="OnDateChanged"
+                       Variant="@Variant"
+                       Editable="true"
+                       Clearable="PropertyInfo.PropertyType == typeof(DateTime?)"
+                       Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
+    {
+        var domainObjectReference = PropertyValue as DomainObjectReference;
+        <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
+                                    Label="@label"
+                                    OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
+    }
+    else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
+    {
+        var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
+        <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
+                                        Label="@label"
+                                        OnDomainObjectReferenceListChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
+    }
+    else if (PropertyInfo.PropertyType.IsEnum || Nullable.GetUnderlyingType(PropertyInfo.PropertyType)?.IsEnum == true)
+    {
+        var enumType = PropertyInfo.PropertyType.IsEnum
+            ? PropertyInfo.PropertyType
+            : Nullable.GetUnderlyingType(PropertyInfo.PropertyType)!;
+        var enumValues = Enum.GetValues(enumType).Cast<object>().ToList();
+        var isNullable = Nullable.GetUnderlyingType(PropertyInfo.PropertyType) is not null;
+
+        <MudSelect T="object"
+                   Typo="Typo.body2"
+                   Margin="@Margin"
+                   Value="@PropertyValue"
+                   Variant="@Variant"
+                   Clearable="isNullable"
+                   ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
+            @foreach (var enumValue in enumValues)
+            {
+                <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(EnumKeys.For(enumType, enumValue))</MudSelectItem>
+            }
+        </MudSelect>
+    }
+
+</MudStack>
+
 
 @code {
     [Parameter, EditorRequired] public PropertyInfo PropertyInfo { get; init; }
     [Parameter, EditorRequired] public object PropertyValue { get; init; }
     [Parameter, EditorRequired] public object Target { get; init; }
-    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter] public Margin Margin { get; set; } = Margin.Dense;
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
 
     private async Task OnDateChanged(DateTime? v)
     {
         var current = (DateTime?)PropertyInfo.GetValue(Target);
-    
+
         if (Nullable.Equals(current, v))
             return;
-    
+
         PropertyInfo.SetValue(Target, v);
         await OnChanged.InvokeAsync(PropertyInfo);
     }

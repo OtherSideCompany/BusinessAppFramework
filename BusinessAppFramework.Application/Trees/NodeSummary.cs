@@ -14,7 +14,7 @@ namespace BusinessAppFramework.Application.Trees
 
         public string ReferenceNumber { get; set; } = GlobalVariables.DefaultString;
         public string Title { get; set; } = GlobalVariables.DefaultString;
-        public string SubTitle { get; set; } = GlobalVariables.DefaultString;
+        public string SubTitle { get; set; } = GlobalVariables.DefaultString;        
 
         #endregion
 

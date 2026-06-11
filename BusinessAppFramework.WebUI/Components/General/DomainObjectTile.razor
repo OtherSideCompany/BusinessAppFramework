@@ -2,7 +2,7 @@
 @using Application.Trees
 @using BusinessAppFramework.Application.Actions
 @using BusinessAppFramework.Application.Interfaces
-@using BusinessAppFramework.WebUI.Components.Editor
+@using BusinessAppFramework.WebUI.Components.Dialog
 @using Domain.DomainObjects
 @using MudBlazor
 @using WebUI.Interfaces
@@ -10,11 +10,10 @@
 @inject ITreeGateway TreeGateway
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
 @inject ISearchGateway<TSearchResult> SearchGateway
+@inject IDialogService DialogService
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
-
-@implements IEditable
 
 <style>
     .osc-tile-icon-circle {
@@ -79,27 +78,7 @@
 
         </MudStack>
 
-    </MudStack>
-
-    @if (_isEditing)
-    {
-        <ObjectProperties OnChanged="() => MarkDirty()" Target="@_editedObject" />
-
-        @if (IsDirty)
-        {
-            <MudStack Spacing="0" Row="true" Justify="Justify.FlexEnd">
-
-                <MudIconButton OnClick="SaveChangesAsync"
-                               Icon="@Icons.Material.Outlined.Save"
-                               Color="Color.Primary" />
-
-                <MudIconButton OnClick="CancelChangesAsync"
-                               Icon="@Icons.Material.Outlined.Undo"
-                               Color="Color.Error" />
-
-            </MudStack>
-        }
-    }
+    </MudStack>    
 
 </MudCard>
 
@@ -107,42 +86,6 @@
     [Parameter] public Node? Node { get; set; }
     [Parameter] public string? Icon { get; set; }
     [Parameter] public EventCallback<Node?> OnDeleteRequested { get; set; }
-    public bool IsDirty { get; set; }
-
-    private bool _isEditing;
-    private TDomainObject? _editedObject;
-
-    public void MarkDirty()
-    {
-        if (!IsDirty)
-        {
-            SetDirtyState(true);
-        }
-    }
-
-    public async Task<List<DomainObjectApplicationActionResultPayload>> SaveChangesAsync()
-    {
-        var results = new List<DomainObjectApplicationActionResultPayload>();
-
-        if (_isEditing && _editedObject != null && Node != null)
-        {
-            results.Add(await DomainObjectServiceGateway.SaveAsync(_editedObject));
-            Node.Summary = await SearchGateway.GetNodeSummaryAsync(Node.Id);
-            _isEditing = false;
-            _editedObject = null;
-            SetDirtyState(false);
-
-        }
-
-        return results;
-    }
-
-    public async Task CancelChangesAsync()
-    {
-        _isEditing = false;
-        _editedObject = null;
-        SetDirtyState(false);
-    }
 
     private async Task RequestDeleteAsync()
     {
@@ -151,16 +94,32 @@
 
     private async Task EditAsync()
     {
-        if (!_isEditing && Node != null)
-        {
-            _editedObject = await DomainObjectServiceGateway.GetHydratedAsync(Node.Id);
-            _isEditing = true;
-        }
-    }
+        if (Node == null)
+            return;
 
-    private void SetDirtyState(bool isDirty)
-    {
-        IsDirty = isDirty;
-        StateHasChanged();
+        var editedObject = await DomainObjectServiceGateway.GetHydratedAsync(Node.Id);
+
+        if (editedObject == null)
+            return;
+
+        var parameters = new DialogParameters<DomainObjectDialogEditor<TDomainObject>>
+        {
+            { x => x.Target, editedObject }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Large, 
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<DomainObjectDialogEditor<TDomainObject>>("Éditer", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await DomainObjectServiceGateway.SaveAsync(editedObject);
+            Node.Summary = await SearchGateway.GetNodeSummaryAsync(Node.Id);
+        }
     }
 }

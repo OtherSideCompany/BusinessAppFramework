@@ -1,0 +1,21 @@
+﻿@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Components.Editor
+@using MudBlazor
+
+@typeparam T where T : DomainObject, new()
+
+<MudDialog>
+    <DialogContent>
+        <ObjectProperties OnChanged="StateHasChanged" Target="@Target" />
+    </DialogContent>
+    <DialogActions>
+        <MudIconButton OnClick="() => MudDialog.Close()"
+                       Icon="@Icons.Material.Outlined.Save"
+                       Color="Color.Primary" />
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public T? Target { get; set; }
+}

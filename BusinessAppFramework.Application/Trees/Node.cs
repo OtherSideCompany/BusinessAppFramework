@@ -13,6 +13,7 @@
         public int Id { get; }
         public bool IsSelected { get; set; }
         public bool IsDirty { get; set; }
+        public string TypeKey { get; set; } = default!;
         public NodeSummary? Summary { get; set; }
         public List<Branch> ChildBranches { get; set; } = new();
 

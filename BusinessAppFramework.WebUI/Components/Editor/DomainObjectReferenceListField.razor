@@ -16,43 +16,56 @@
 @inject IDialogService DialogService
 @inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
 
-<MudChipSet T="DomainObjectReference">
-
-    @if (DomainObjectReferenceList != null)
-    {
-        foreach (var reference in DomainObjectReferenceList.Items)
-        {
-            <MudChip T="DomainObjectReferenceListItem"
-                     Size="Size.Small"
-                     Variant="Variant.Outlined"
-                     CloseIcon="@Icons.Material.Filled.Close"
-                     OnClose="(() => RemoveReference(reference))">
-                @{
+<MudField Typo="Typo.body2"
+          Variant="@Variant"
+          Margin="Margin.Dense"
+          @onclick="OpenSelector"
+          AdornmentIcon="@Icons.Material.Outlined.Search"
+          Adornment="Adornment.End"
+          Class="lookup-field"
+          InnerPadding="false">
+    <div style="margin-bottom:4px;">
+        <MudStack Row="true">
+            @if (DomainObjectReferenceList != null)
+            {
+                foreach (var reference in DomainObjectReferenceList.Items)
+                {
                     var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReferenceList.RelationKey ?? "");
+                    
+                    <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+                        @if (!String.IsNullOrEmpty(navigationKey))
+                        {
+                            <NavigationLink NavigationApplicationActionKey="@navigationKey"
+                                            DomainObjectId="@reference.DomainObjectId"
+                                            Text="@reference.DisplayValue" />
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2">@reference.DisplayValue</MudText>
+                        }
+                        <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small"
+                                       OnClick="() => RemoveReference(reference)" 
+                                       Style="color: var(--mud-palette-primary-darken); width:20px; height:20px" />
+                    </MudStack>                 
                 }
-                @if (!String.IsNullOrEmpty(navigationKey))
-                {
-                    <NavigationLink NavigationApplicationActionKey="@navigationKey"
-                                    DomainObjectId="@reference.DomainObjectId"
-                                    Text="@reference.DisplayValue" />
-                }
-                else
-                {
-                    <MudText>@reference.DisplayValue</MudText>
-                }
-            </MudChip>
-        }
-    }
+            }
 
-    <MudIconButton Icon="@Icons.Material.Filled.Add"
-                   Color="Color.Primary"
-                   Size="Size.Small"
-                   OnClick="OpenSelector" />
+            <MudSpacer />
 
-</MudChipSet>
+            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           OnClick="OpenSelector" />
+        </MudStack>
+    </div>
+
+
+</MudField>
 
 
 @code {
+    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+
     [Parameter]
     public DomainObjectReferenceList? DomainObjectReferenceList
     {

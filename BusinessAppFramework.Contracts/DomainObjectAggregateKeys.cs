@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace BusinessAppFramework.Contracts
 {
-    public static class AggregateKeys
+    public static class DomainObjectAggregateKeys
     {
+        public static string Type(Type t) => KebabStringFormatter.ToKebab(t.Name);
         public static string Workspace(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-workspace";
         public static string PageWorkspace(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-page";
         public static string PageTree(Type t) => KebabStringFormatter.ToKebab(t.Name) + "-page-tree";
@@ -15,17 +15,18 @@ namespace BusinessAppFramework.Contracts
             => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}";
     }
 
-    public static class AggregateKeys<T>
+    public static class DomainObjectAggregateKeys<T>
     {
-        public static string Workspace => AggregateKeys.Workspace(typeof(T));
-        public static string PageWorkspace => AggregateKeys.PageWorkspace(typeof(T));
-        public static string PageTree => AggregateKeys.PageTree(typeof(T));
-        public static string PermissionKey => AggregateKeys.PermissionKey(typeof(T));
+        public static string Type => DomainObjectAggregateKeys.Type(typeof(T));
+        public static string Workspace => DomainObjectAggregateKeys.Workspace(typeof(T));
+        public static string PageWorkspace => DomainObjectAggregateKeys.PageWorkspace(typeof(T));
+        public static string PageTree => DomainObjectAggregateKeys.PageTree(typeof(T));
+        public static string PermissionKey => DomainObjectAggregateKeys.PermissionKey(typeof(T));
 
         public static string Property(Expression<Func<T, object?>> prop)
         {
             var member = GetMember(prop);
-            return AggregateKeys.Property(typeof(T), member.Name);
+            return DomainObjectAggregateKeys.Property(typeof(T), member.Name);
         }
 
         static MemberInfo GetMember(Expression<Func<T, object?>> expr)
