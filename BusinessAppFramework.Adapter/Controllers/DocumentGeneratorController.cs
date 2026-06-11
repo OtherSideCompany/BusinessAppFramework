@@ -1,7 +1,6 @@
 ﻿using BusinessAppFramework.Adapter.Responses;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts.ApiRoutes;
-using BusinessAppFramework.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

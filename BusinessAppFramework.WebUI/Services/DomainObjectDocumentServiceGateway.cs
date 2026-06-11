@@ -53,7 +53,9 @@ namespace BusinessAppFramework.WebUI.Services
         {
             using var form = new MultipartFormDataContent();
 
-            var fileContent = new StreamContent(fileStream);
+            using var memoryStream = new MemoryStream();
+            await fileStream.CopyToAsync(memoryStream, cancellationToken);
+            var fileContent = new ByteArrayContent(memoryStream.ToArray());
 
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType);
 

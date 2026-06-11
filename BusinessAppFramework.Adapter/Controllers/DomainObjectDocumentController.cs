@@ -9,7 +9,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    public abstract class DomainObjectDocumentController<TDomainObject> : ControllerBase where TDomainObject : DomainObject
+    public class DomainObjectDocumentController<TDomainObject> : ControllerBase where TDomainObject : DomainObject
     {
         #region Fields
 
