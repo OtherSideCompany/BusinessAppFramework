@@ -3,13 +3,13 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
-using BusinessAppFramework.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -96,7 +96,7 @@ namespace BusinessAppFramework.Infrastructure.Services
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                var query = context.Set<TSearchResult>().AsNoTracking();
+                var query = GetBaseQuery(context).AsNoTracking();
 
                 query = query.Where(e => e.DomainObjectId == domainObjectId);
 
@@ -137,12 +137,17 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
         }
 
+        protected virtual IQueryable<TSearchResult> GetBaseQuery(DbContext context)
+        {
+            return context.Set<TSearchResult>();
+        }
+
         protected IQueryable<TSearchResult> GetSearchQuery(string constraintKey,
                                                            List<string> filters,
                                                            bool extendedSearch,
                                                            DbContext context)
         {
-            var query = context.Set<TSearchResult>().AsNoTracking();
+            var query = GetBaseQuery(context).AsNoTracking();
 
             query = query.OrderByDescending(e => e.DomainObjectId);
 
@@ -181,9 +186,54 @@ namespace BusinessAppFramework.Infrastructure.Services
             return constraints;
         }
 
+        private static readonly (string Name, bool IsNullable)[] _searchableProperties = BuildSearchableProperties();
+
+        private static (string Name, bool IsNullable)[] BuildSearchableProperties()
+        {
+            var nullability = new NullabilityInfoContext();
+
+            return typeof(TSearchResult)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType == typeof(string)
+                            && p.CanRead)
+                .Select(p => (p.Name, nullability.Create(p).ReadState != NullabilityState.NotNull))
+                .ToArray();
+        }
+
         protected virtual Expression<Func<TSearchResult, bool>> GetFilterConstraint(string lowerFilter, bool extendedSearch, int maxSearchDistance)
         {
-            return x => false;
+            Expression<Func<TSearchResult, bool>> predicate = null;
+
+            foreach (var (name, isNullable) in _searchableProperties)
+            {
+                var condition = BuildPropertyFilter(name, isNullable, lowerFilter, extendedSearch, maxSearchDistance);
+                predicate = predicate == null ? condition : predicate.Or(condition);
+            }
+
+            return predicate ?? (x => false);
+        }
+
+        private static Expression<Func<TSearchResult, bool>> BuildPropertyFilter(
+            string name, bool isNullable, string lowerFilter, bool extendedSearch, int maxSearchDistance)
+        {
+            if (extendedSearch)
+            {
+                if (isNullable)
+                {
+                    return x => EF.Property<string>(x, name) != null
+                                && Utils.EditDistance(lowerFilter, EF.Property<string>(x, name).ToLower(), maxSearchDistance) <= maxSearchDistance;
+                }
+
+                return x => Utils.EditDistance(lowerFilter, EF.Property<string>(x, name).ToLower(), maxSearchDistance) <= maxSearchDistance;
+            }
+
+            if (isNullable)
+            {
+                return x => EF.Property<string>(x, name) != null
+                            && EF.Property<string>(x, name).ToLower().Contains(lowerFilter);
+            }
+
+            return x => EF.Property<string>(x, name).ToLower().Contains(lowerFilter);
         }
 
         protected void LogSearchAsync(string methodName, string constraint, List<string> filters, bool extendedSearch)
