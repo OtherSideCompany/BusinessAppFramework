@@ -7,7 +7,10 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
     public static class DomainObjectRouteSegments
     {
         public const string Create = "create";
+        public const string CreateFromDomainObject = "create-from-domain-object";
         public const string Get = $"get";
+        public const string GetAll = $"get-all";
+        public const string GetAllHydrated = $"get-all-hydrated";
         public const string GetHydrated = $"get-hydrated";
         public const string GetHydratedReference = $"get-hydrated-reference";
         public const string GetHydratedReferenceList = $"get-hydrated-reference-list";

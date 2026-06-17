@@ -11,5 +11,6 @@
         public const string ImportExportDataActionKey = "ImportExportDataAction";
         public const string LogOutActionKey = "LogOutActionKey";
         public const string ChangePasswordActionKey = "ResetPasswordActionKey";
+        public const string ReloadKey = "ReloadKey";
     }
 }

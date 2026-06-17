@@ -5,7 +5,6 @@ using BusinessAppFramework.Application.Mail;
 using BusinessAppFramework.Application.Repository;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain;
-using BusinessAppFramework.Domain.Attributes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.Domain.Services;
 
@@ -115,7 +114,22 @@ namespace BusinessAppFramework.Application.Services
         {
             var domainObjects = await WithReadPermissionAsync(() => _repository.GetAllAsync(cancellationToken));
 
-            domainObjects.ForEach(async domainObject => await LoadReferencesAsync(domainObject));
+            foreach (var domainObject in domainObjects)
+            {
+                await LoadReferencesAsync(domainObject);
+            }
+
+            return domainObjects;
+        }
+
+        public virtual async Task<List<T>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
+        {
+            var domainObjects = await WithReadPermissionAsync(() => _repository.GetAllAsync(domainObjectIds, cancellationToken));
+
+            foreach (var domainObject in domainObjects)
+            {
+                await LoadReferencesAsync(domainObject);
+            }                
 
             return domainObjects;
         }
@@ -132,9 +146,22 @@ namespace BusinessAppFramework.Application.Services
             if (domainObject != null)
             {
                 await _domainObjectServiceDependencies.ReferenceHydrator.HydrateAsync(domainObject);
+            }           
+            
+            return domainObject;
+        }
+
+        public virtual async Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
+        {
+            var domainObjects = await WithReadPermissionAsync(() => _repository.GetAllAsync(domainObjectIds, cancellationToken));
+
+            foreach (var domainObject in domainObjects)
+            {
+                await LoadReferencesAsync(domainObject);
+                await _domainObjectServiceDependencies.ReferenceHydrator.HydrateAsync(domainObject);
             }
 
-            return domainObject;
+            return domainObjects;
         }
 
         public virtual async Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey)

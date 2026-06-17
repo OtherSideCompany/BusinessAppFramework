@@ -158,9 +158,23 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                var entity = await context.Set<TEntity>().ToListAsync();
+                var entity = await context.Set<TEntity>().AsNoTracking().ToListAsync();
                 return _mapper.Map<List<TDomainObject>>(entity);
             }
+        }
+
+        public async Task<List<TDomainObject>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"{GetType()}, {nameof(GetAllAsync)}, domainObjectIds : {string.Join(", ", domainObjectIds)}");
+
+            await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+            var entities = await context.Set<TEntity>()
+                .AsNoTracking()
+                .Where(entity => domainObjectIds.Contains(entity.Id))
+                .ToListAsync(cancellationToken);
+
+            return _mapper.Map<List<TDomainObject>>(entities);
         }
 
         public virtual async Task DeleteAsync(int domainObjectId)

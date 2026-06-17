@@ -59,6 +59,22 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(applicationActionResultPayload);
         }
 
+        [HttpPost(DomainObjectRouteSegments.CreateFromDomainObject)]
+        public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> CreateAsync(
+            [FromBody] TDomainObject domainObject)
+        {
+            await _service.CreateAsync(domainObject);
+
+            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
+            applicationActionResultPayload.Changes.Add(new DomainObjectChange
+            {
+                DomainObjectId = domainObject.Id,
+                ChangeType = ChangeType.Added
+            });
+
+            return Ok(applicationActionResultPayload);
+        }
+
         [HttpGet($"{DomainObjectRouteSegments.Get}/{{{ApiRouteParams.DomainObjectId}:int}}")]
         public virtual async Task<ActionResult<TDomainObject>> GetAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
@@ -68,6 +84,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(domainObject);
         }
 
+        [HttpPost(DomainObjectRouteSegments.GetAll)]
+        public virtual async Task<ActionResult<List<TDomainObject>>> GetAllAsync(
+            [FromBody] List<int> domainObjectIds)
+        {
+            var domainObjects = await _service.GetAllAsync(domainObjectIds);
+            return Ok(domainObjects);
+        }
+
         [HttpGet($"{DomainObjectRouteSegments.GetHydrated}/{{{ApiRouteParams.DomainObjectId}:int}}")]
         public virtual async Task<ActionResult<TDomainObject>> GetHydratedAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
@@ -75,6 +99,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             var domainObject = await _service.GetHydratedAsync(domainObjectId);
 
             return Ok(domainObject);
+        }
+
+        [HttpPost(DomainObjectRouteSegments.GetAllHydrated)]
+        public virtual async Task<ActionResult<List<TDomainObject>>> GetAllHydratedAsync(
+            [FromBody] List<int> domainObjectIds)
+        {
+            var domainObjects = await _service.GetAllHydratedAsync(domainObjectIds);
+            return Ok(domainObjects);
         }
 
         [HttpGet($"{DomainObjectRouteSegments.GetHydratedReference}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]

@@ -30,7 +30,7 @@ namespace BusinessAppFramework.WebUI.Services
         #region Constructor
 
         public RelationServiceGateway(
-            IHttpClientFactory clientFactory, 
+            IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
             ILogger<RelationServiceGateway> logger,
             ILocalizedStringService localizedStringService,
@@ -59,8 +59,9 @@ namespace BusinessAppFramework.WebUI.Services
         public async Task<List<int>> GetChildrenIdsAsync(int parentId, string key)
         {
             var route = $"{_baseUrl}/{RelationshipSegments.GetChildrenIds}/{parentId}/{key}";
-            return (await GetAsync<List<int>>(route)).Data;
+            return (await GetAsync<List<int>>(route)).Data ?? new List<int>();
         }
+  
 
         #endregion
 

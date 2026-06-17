@@ -64,16 +64,41 @@ namespace BusinessAppFramework.WebUI.Services
             }
         }
 
+        public async Task<DomainObjectApplicationActionResultPayload> CreateAsync(T domainObject)
+        {
+            var route = $"{_baseUrl}/{DomainObjectRouteSegments.CreateFromDomainObject}";
+            var result = await PostAsync<DomainObjectApplicationActionResultPayload>(route, domainObject);
+
+            if (result != null && result.Data != null && result.Data.Changes.Any(c => c.ChangeType == ChangeType.Added))
+            {
+                domainObject.Id = result.Data.Changes.First(c => c.ChangeType == ChangeType.Added).DomainObjectId;
+            }
+
+            return result?.Data ?? new DomainObjectApplicationActionResultPayload() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
+        }
+
         public async Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.Get}/{domainObjectId}";
             return (await GetAsync<T>(route)).Data;
         }
 
+        public async Task<List<T>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
+        {
+            var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetAll}";
+            return (await PostAsync<List<T>>(route, domainObjectIds)).Data ?? new List<T>();
+        }
+
         public async Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetHydrated}/{domainObjectId}";
             return (await GetAsync<T>(route)).Data;
+        }
+
+        public async Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
+        {
+            var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetAllHydrated}";
+            return (await PostAsync<List<T>>(route, domainObjectIds)).Data ?? new List<T>();
         }
 
         public async Task<DomainObjectReference?> GetHydratedDomainObjectReference(int domainObjectId, string relationKeyReference)
