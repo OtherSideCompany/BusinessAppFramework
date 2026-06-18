@@ -14,7 +14,7 @@
                         IsDirty="IsDirty"
                         OnSave="SaveAsync"
                         OnUndo="UndoAsync">
-    <MudStack Spacing="4" Style="height: 100% !important;">
+    <MudStack Spacing="0">
 
         <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 
@@ -30,9 +30,11 @@
         </MudStack>
 
         <DomainObjectPageTabs>
+
             <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
                 <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
             </MudTabPanel>
+
         </DomainObjectPageTabs>
 
     </MudStack>

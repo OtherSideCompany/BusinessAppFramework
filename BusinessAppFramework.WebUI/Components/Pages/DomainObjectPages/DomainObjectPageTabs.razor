@@ -5,10 +5,6 @@
             height: 100%;
         }
 
-    .compact-tabs .mud-tabs-panels {
-        border-top: 1px solid var(--mud-palette-lines-default);
-    }
-
     .compact-tabs .mud-tab {
         text-transform: none;
         letter-spacing: normal;
@@ -29,11 +25,11 @@
 </style>
 
 <MudPaper Elevation="0"
-          Outlined="true"
           Class="d-flex flex-column"
           Style="height: 100% !important; overflow: hidden;">
 
     <MudTabs Elevation="0"
+             Border="true"
              Rounded="true"
              ApplyEffectsToContainer="true"
              TabPanelsClass="tab-panel"

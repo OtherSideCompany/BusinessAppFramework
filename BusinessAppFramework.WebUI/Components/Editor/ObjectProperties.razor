@@ -15,22 +15,20 @@
 {
     var props = GetEditableProperties().ToList();
 
-    <MudStack Spacing="6">
+    <MudStack Spacing="8">
         @foreach (var category in GetCategoriesOrDefault())
         {
-            <MudStack Spacing="3">
+            <MudStack Spacing="1">
 
                 @if (DisplayCategoryHeaders)
                 {
-                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
                         <MudIcon Icon="@category.Icon" Size="Size.Small" />
                         <MudText Typo="Typo.h6">@LocalizedStringService.Get(category.LabelKey)</MudText>
                     </MudStack>
-
-                    <MudDivider />
                 }
 
-                <MudGrid Spacing="2">
+                <MudGrid Spacing="2" Class="mt-0">
                     @foreach (var propEdition in category.PropertyEditions)
                     {
                         var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
@@ -50,8 +48,8 @@
 
                 </MudGrid>
 
-                    
             </MudStack>
+
         }
 
     </MudStack>

@@ -1,4 +1,5 @@
 ﻿@using BusinessAppFramework.WebUI.Components.Editor
+@using BusinessAppFramework.WebUI.Interfaces
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
@@ -7,26 +8,32 @@
 
 @inherits DomainObjectBranchEditor<TItem>
 
-<style>
-    .osc-datagrid {
-        border: 1px solid var(--mud-palette-lines-default);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-</style>
+@inject IIconFactory IconFactory
 
 <MudStack Spacing="2">
-    <MudButtonGroup>
-        <MudButton StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="CreateItemAsync"
-                   IconColor="@Color.Primary"
-                   Size="Size.Small"
-                   Variant="Variant.Text"
-                   Style="font-weight: normal;">
-            @LocalizedStringService.Get(ActionKeys.CreateActionKey)
-        </MudButton>
-        @ToolBarActions
-    </MudButtonGroup>
+
+    <MudStack AlignItems="AlignItems.Center" Row="true" Spacing="2">
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudIcon Icon="@IconFactory.CreateIcon(DomainObjectAggregateKeys<TItem>.Type)" Size="Size.Small" />
+            <MudText Typo="Typo.h6">@LocalizedStringService.Get(DomainObjectAggregateKeys<TItem>.Type)</MudText>
+        </MudStack>
+
+        <MudStack Row="true" Justify="Justify.FlexStart" Spacing="0">
+
+            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                           OnClick="CreateItemAsync"
+                           Color="@Color.Primary"
+                           Size="Size.Small"
+                           Variant="Variant.Text"
+                           Style="font-weight: normal;">
+            </MudIconButton>
+
+            @ToolBarActions
+
+        </MudStack>
+
+    </MudStack>
 
     <CascadingValue Value="(Func<Task>)NotifyItemChanged">
 
@@ -66,5 +73,5 @@
 @code {
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
-    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }   
+    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }
 }

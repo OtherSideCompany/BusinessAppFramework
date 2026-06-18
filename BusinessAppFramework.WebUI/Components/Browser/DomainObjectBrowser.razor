@@ -5,9 +5,9 @@
 @using Application.Search
 @using Contracts
 @using Domain.DomainObjects
+@using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Components.Web;
 @using MudBlazor
-@using Domain
 @using WebUI.Components.SearchList
 @using WebUI.Interfaces
 
@@ -34,9 +34,9 @@
     }
 
     .osc-search.mud-input-control {
-        flex: 0 0 300px;
-        max-width: 300px;
-        min-width: 200px;
+        flex: 0 0 200px;
+        max-width: 200px;
+        min-width: 150px;
     }
 
         .osc-search.mud-input-control .mud-input {
@@ -56,27 +56,16 @@
         color: #212121;
     }
 
-    .osc-table {
-        border: 1px solid var(--mud-palette-divider);
-        border-color: var(--mud-palette-lines-inputs);
-        border-radius: 8px;
-        overflow: hidden;
+    .osc-table .mud-table-head th {
+        color: #999999 !important;
+        font-weight: 600;
     }
 
-        .osc-table .mud-table-row:last-child td {
-            border-bottom: none;
-        }
-
-        .osc-table .mud-table-head th {
-            color: #999999 !important;
-            font-weight: 600;
-        }
-
-        .osc-table .mud-table-body td {
-            height: 44px;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
+    .osc-table .mud-table-body td {
+        height: 44px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
     .constraint-chip {
         border: 1px solid;
@@ -107,15 +96,17 @@
     }
 </style>
 
+<SectionContent SectionName="page-title">
+    <MudText Typo="Typo.h4">
+        @LocalizedStringService.Get(Descriptor.WorkspaceKey)
+    </MudText>
+</SectionContent>
+
 <DomainObjectBrowserLayout>
 
     <Header>
 
-        <MudText Typo="Typo.h2" Style="font-weight:500;" Class="mb-2">
-            @LocalizedStringService.Get(Descriptor.WorkspaceKey)
-        </MudText>
-
-        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="ma-4">
 
             <MudTextField T="string"
                           Class="osc-search"
@@ -145,6 +136,7 @@
                         <MudChip Value="@constraintKey"
                                  Variant="Variant.Filled"
                                  Color="Color.Default"
+                                 Size="Size.Small"
                                  SelectedColor="Color.Primary"
                                  Class="@($"constraint-chip {(isActive ? "constraint-chip--active" : "")}")"
                                  Style="@($"background-color: var(--mud-palette-surface); font-weight: {(isActive ? "600" : "400")};")">
@@ -200,6 +192,7 @@
 
         </MudStack>
 
+      
     </Header>
 
     <Results>
@@ -230,7 +223,7 @@
     </Results>
 
     <Pagination>
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="3" Row="true">
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Row="true" Class="ma-2">
 
             <MudPagination Selected="@(_currentPage + 1)"
                            Count="@TotalPages"
