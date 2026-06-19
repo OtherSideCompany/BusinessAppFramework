@@ -60,6 +60,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(result);
         }
 
+        [HttpPost($"{SearchRouteSegments.GetAll}")]
+        public async Task<ActionResult<List<TSearchResult>>> GetSearchResultsAsync(
+            [FromBody] List<int> domainObjectIds)
+        {
+            var result = await _searchService.SearchAllAsync(domainObjectIds);
+            return Ok(result);
+        }
+
         [HttpGet($"{SearchRouteSegments.Summary}/{{{ApiRouteParams.DomainObjectId}:int}}")]
         public async Task<ActionResult<NodeSummary?>> GetSummaryAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)

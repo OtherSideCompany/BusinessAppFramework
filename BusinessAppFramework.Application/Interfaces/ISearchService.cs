@@ -8,6 +8,7 @@ namespace BusinessAppFramework.Application.Interfaces
         Task<int> CountAsync(SearchRequest searchRequest, CancellationToken cancellationToken = default);
         Task<SearchResult<TSearchResult>> SearchAsync(SearchRequest searchRequest, CancellationToken cancellationToken = default);
         Task<TSearchResult> SearchAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<List<TSearchResult>> SearchAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);
         Task<SearchResult<TSearchResult>> PaginatedSearchAsync(PaginatedSearchRequest paginatedSearchRequest, CancellationToken cancellationToken = default);
         Task<NodeSummary?> GetSummaryAsync(int domainObjectId);
     }

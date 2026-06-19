@@ -104,6 +104,19 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
         }
 
+        public async Task<List<TSearchResult>> SearchAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("{Type}, {MethodName}, DomainObjectIds = {DomainObjectIds}", GetType(), nameof(SearchAllAsync), string.Join(", ", domainObjectIds));
+
+            using var context = _dbContextFactory.CreateDbContext();
+
+            var query = GetBaseQuery(context).AsNoTracking();
+
+            query = query.Where(e => domainObjectIds.Contains(e.DomainObjectId));
+
+            return await query.ToListAsync(cancellationToken);
+        }
+
         public async Task<NodeSummary> GetSummaryAsync(int domainObjectId)
         {
             var result = await SearchAsync(domainObjectId, CancellationToken.None);

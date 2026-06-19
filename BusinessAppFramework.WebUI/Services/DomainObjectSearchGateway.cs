@@ -3,6 +3,7 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
+using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -55,6 +56,13 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var route = $"{_baseUrl}/{domainObjectId}";
             return (await GetAsync<TSearchResult>(route)).Data;
+        }
+
+        public async Task<List<TSearchResult>> GetSearchResultsAsync(List<int> domainObjectIds)
+        {
+            var route = $"{_baseUrl}/{SearchRouteSegments.GetAll}";
+            var result = await PostAsync<List<TSearchResult>>(route, domainObjectIds);
+            return result.Data ?? [];
         }
 
         public async Task<NodeSummary?> GetNodeSummaryAsync(int domainObjectId)
