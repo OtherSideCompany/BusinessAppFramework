@@ -1,6 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
-using BusinessAppFramework.Domain;
 using BusinessAppFramework.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -37,22 +36,13 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         #endregion
 
-        #region Public Methods
-
-        public bool ContainsParentChildRelationByChildType(Type childType, Type parentType)
-        {
-            return _parentChildRelationEntries.Any(r => r.ChildEntityType == childType && r.ParentEntityType == parentType);
-        }
-
-        
+        #region Public Methods      
 
         public bool TryGetParentChildRelationEntry(string key, out IParentChildRelationEntry relationEntry)
         {
             relationEntry = _parentChildRelationEntries.FirstOrDefault(r => r.RelationKey.Equals(key));
             return relationEntry != null;
-        }
-
-       
+        }       
 
         public void RegisterParentChildRelationEntry<TParentEntity, TChildEntity>(
               string relationKey,
@@ -67,10 +57,6 @@ namespace BusinessAppFramework.Infrastructure.Services
             if (_parentChildRelationEntries.Any(r => r.RelationKey.Equals(relationKey)))
             {
                 throw new ArgumentException($"Cannot add several relation entries with key {relationKey}");
-            }
-            else if (ContainsParentChildRelationByChildType(typeof(TChildEntity), typeof(TParentEntity)))
-            {
-                throw new ArgumentException($"Cannot add several parent child relations entries for types <{typeof(TChildEntity)},{typeof(TParentEntity)}>");
             }
 
             _parentChildRelationEntries.Add(entry);

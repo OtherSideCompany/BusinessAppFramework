@@ -5,7 +5,6 @@ using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain;
-using BusinessAppFramework.Domain.DomainObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -70,7 +69,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             foreach (var branch in tree.Branches)
             {
-                await LoadBranchAsync(branch, domainObjectId);
+                await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<int>());
             }
 
             return tree;
@@ -79,10 +78,10 @@ namespace BusinessAppFramework.Adapter.Controllers
         [HttpGet($"{TreeRouteSegments.GetTreeBranch}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}/{{{ApiRouteParams.RelationKey}}}")]
         public async Task<ActionResult<Branch?>> GetTreeBranchAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
-            [FromRoute(Name = ApiRouteParams.Key)] string pageTreeKey,
+            [FromRoute(Name = ApiRouteParams.Key)] string treeKey,
             [FromRoute(Name = ApiRouteParams.RelationKey)] string relationKey)
         {
-            var tree = _treeFactory.CreateTree(pageTreeKey);
+            var tree = _treeFactory.CreateTree(treeKey);
             tree.RootId = domainObjectId;
 
             var branch = tree.GetBranch(relationKey);
@@ -90,7 +89,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             if (branch == null)
                 return null;
 
-            await LoadBranchAsync(branch, domainObjectId);        
+            await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<int>());        
 
             return branch;
         }
@@ -182,32 +181,55 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         #region Private Methods
 
-        private async Task LoadBranchAsync(Branch branch, int domainObjectId)
+        private async Task LoadBranchAsync(Branch branch, int domainObjectId, int depth, IReadOnlySet<int> ancestorIds)
         {
-            if (_relationResolver.TryGetParentChildRelationEntry(branch.ParentChildRelationKey, out var parentChildRelation))
+            if (!_relationResolver.TryGetParentChildRelationEntry(branch.ParentChildRelationKey, out var parentChildRelation))
+                return;
+
+            var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
+            var searchService = CreateSearchServiceFor(parentChildRelation.ChildEntityType, out var searchResultType);
+
+            foreach (var id in nodeIds)
             {
-                var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
+                var node = await BuildNodeAsync(id, searchResultType, searchService, depth, ancestorIds);
+                branch.Nodes.Add(node);
 
-                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
-                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+                if (node.IsCyclic)
+                    continue;
 
-                var searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
-                dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
-
-                foreach (var id in nodeIds)
-                {
-                    var node = new Node(id) { TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType) };
-                    node.Summary = await searchService.GetSummaryAsync(id);
-                    branch.Nodes.Add(node);
-
-                    foreach (var template in branch.ChildBranchTemplates)
-                    {
-                        var childBranch = new Branch(template);
-                        node.ChildBranches.Add(childBranch);
-                        await LoadBranchAsync(childBranch, node.Id);
-                    }
-                }
+                await LoadChildBranchesAsync(node, branch.ChildBranchTemplates, depth, ancestorIds);
             }
+        }
+
+        private async Task<Node> BuildNodeAsync(int id, Type searchResultType, dynamic searchService, int depth, IReadOnlySet<int> ancestorIds)
+        {
+            var node = new Node(id)
+            {
+                TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType),
+                Depth = depth,
+                IsCyclic = ancestorIds.Contains(id)
+            };
+            node.Summary = await searchService.GetSummaryAsync(id);
+            return node;
+        }
+
+        private async Task LoadChildBranchesAsync(Node node, IReadOnlyList<Branch> templates, int depth, IReadOnlySet<int> ancestorIds)
+        {
+            var childAncestorIds = new HashSet<int>(ancestorIds) { node.Id };
+
+            foreach (var template in templates)
+            {
+                var childBranch = new Branch(template);
+                node.ChildBranches.Add(childBranch);
+                await LoadBranchAsync(childBranch, node.Id, depth + 1, childAncestorIds);
+            }
+        }
+
+        private dynamic CreateSearchServiceFor(Type childEntityType, out Type searchResultType)
+        {
+            var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(childEntityType);
+            searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
+            return _searchServiceFactory.CreateSearchService(searchResultType);
         }
 
         #endregion

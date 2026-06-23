@@ -13,5 +13,6 @@
         public static string UserDoesNotExists = "UserDoesNotExists";
         public static string InvalidPassword = "InvalidPassword";
         public static string ServerError = "ServerError";
+        public static string CycleDetected = "CycleDetected";
     }
 }

@@ -89,7 +89,7 @@ namespace BusinessAppFramework.Application.Services
             }
             catch (Exception)
             {
-                throw new InvalidOperationException("Suppression impossible car des données sont associées");
+                throw new InvalidOperationException($"Suppression id={domainObjectId} impossible car des données sont associées");
             }
         }
 
@@ -234,7 +234,7 @@ namespace BusinessAppFramework.Application.Services
         public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             return await WithReadPermissionAsync(() => _domainObjectServiceDependencies.RelationService.GetDomainObjectReferencesAsync<T>(domainObjectId));
-        }
+        }        
 
         #endregion
 

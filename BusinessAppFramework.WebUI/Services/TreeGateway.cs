@@ -1,13 +1,9 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Application.Relations;
-using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
-using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PuppeteerSharp.Input;
 
 namespace BusinessAppFramework.WebUI.Services
 {
@@ -15,10 +11,7 @@ namespace BusinessAppFramework.WebUI.Services
     {
         #region Fields
 
-        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Tree}";
-
-        private IReferenceResolver _relationResolver;
-        private IDomainObjectTypeMap _domainObjectTypeMap;
+        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.PageTree}";
         
         #endregion
 
@@ -39,15 +32,12 @@ namespace BusinessAppFramework.WebUI.Services
         public TreeGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
-            IReferenceResolver relationResolver,
-            IDomainObjectTypeMap domainObjectTypeMap,
             ILogger<TreeGateway> logger,
             ILocalizedStringService localizedStringService,
             IUserDialogService userDialogService) : 
             base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
-            _relationResolver = relationResolver;
-            _domainObjectTypeMap = domainObjectTypeMap;
+
         }
 
         #endregion
@@ -62,9 +52,9 @@ namespace BusinessAppFramework.WebUI.Services
             return tree;
         }
 
-        public async Task<Branch?> GetTreeBranchAsync(int domainObjectId, string pageTreeKey, string relationKey)
+        public async Task<Branch?> GetTreeBranchAsync(int domainObjectId, string treeKey, string relationKey)
         {
-            var route = $"{_baseUrl}/{TreeRouteSegments.GetTreeBranch}/{domainObjectId}/{pageTreeKey}/{relationKey}";
+            var route = $"{_baseUrl}/{TreeRouteSegments.GetTreeBranch}/{domainObjectId}/{treeKey}/{relationKey}";
             var branch = (await GetAsync<Branch>(route)).Data;
 
             return branch;

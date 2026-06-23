@@ -1,6 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Trees;
-using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {

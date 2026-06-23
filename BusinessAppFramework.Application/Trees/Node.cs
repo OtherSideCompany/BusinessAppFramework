@@ -1,21 +1,26 @@
-﻿namespace BusinessAppFramework.Application.Trees
+﻿using BusinessAppFramework.Application.Interfaces;
+
+namespace BusinessAppFramework.Application.Trees
 {
     public class Node
     {
         #region Fields
 
-        private readonly List<Branch> _branches = new();
 
         #endregion
 
         #region Properties
 
-        public int Id { get; }
-        public bool IsSelected { get; set; }
-        public bool IsDirty { get; set; }
+        public int Id { get; set; }
+        public int Depth { get; set; }
+        public bool IsCyclic { get; set; }
+        public bool IsExpanded { get; set; }
         public string TypeKey { get; set; } = default!;
         public NodeSummary? Summary { get; set; }
+        public object? DomainObject { get; set; }
+        public object? DomainObjectSearchResult { get; set; }
         public List<Branch> ChildBranches { get; set; } = new();
+        public bool HasChildren { get => ChildBranches.Any(b => b.Nodes.Any()); }
 
         #endregion
 
@@ -39,6 +44,11 @@
         public Branch? GetChildBranch(string parentChildRelationKey)
         {
             return ChildBranches.FirstOrDefault(b => b.ParentChildRelationKey.Equals(parentChildRelationKey));
+        }
+
+        public void ToggleExpanded()
+        {
+            IsExpanded = !IsExpanded;
         }
 
         #endregion

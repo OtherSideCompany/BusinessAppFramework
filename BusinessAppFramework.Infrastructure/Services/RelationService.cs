@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
+using BusinessAppFramework.Application.Descriptors;
 using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
-using BusinessAppFramework.Application.Services;
-using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.Infrastructure.Entities;
@@ -234,7 +233,7 @@ namespace BusinessAppFramework.Infrastructure.Services
             }            
         }
 
-        public async Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default)
+        public async Task SetParentAsync(int? parentId, int childId, string relationKey, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation($"{GetType()}, {nameof(SetParentAsync)}, parentId : {parentId}, childId : {childId}, relationKey : {relationKey}");
 

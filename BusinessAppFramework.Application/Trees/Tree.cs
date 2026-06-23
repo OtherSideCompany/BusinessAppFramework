@@ -11,7 +11,6 @@
         #region Properties
 
         public int RootId { get; set; }
-        public object? Root { get; set; }
         public List<Branch> Branches { get; set; } = new();
 
         #endregion
@@ -53,11 +52,43 @@
             }
         }
 
+        public void ResetDepths()
+        {
+            ResetDepths(Branches, depth: 0);
+        }      
+
+        public void ExpandAll() => SetExpandedRecursive(Branches, true);
+
+        public void CollapseAll() => SetExpandedRecursive(Branches, false);
+
+
         #endregion
 
         #region Private Methods
 
+        private static void SetExpandedRecursive(IEnumerable<Branch> branches, bool isExpanded)
+        {
+            foreach (var branch in branches)
+            {
+                foreach (var node in branch.Nodes)
+                {
+                    node.IsExpanded = isExpanded;
+                    SetExpandedRecursive(node.ChildBranches, isExpanded);
+                }
+            }
+        }
 
+        private static void ResetDepths(IEnumerable<Branch> branches, int depth)
+        {
+            foreach (var branch in branches)
+            {
+                foreach (var node in branch.Nodes)
+                {
+                    node.Depth = depth;
+                    ResetDepths(node.ChildBranches, depth + 1);
+                }
+            }
+        }
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Application.Relations;
+﻿using BusinessAppFramework.Application.Descriptors;
+using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;

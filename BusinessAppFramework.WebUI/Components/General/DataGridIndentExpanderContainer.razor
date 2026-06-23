@@ -1,0 +1,34 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Trees
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1"
+          Style="@($"padding-left: {Node?.Depth * 24}px;")">
+    <div style="width: 30px; flex: 0 0 30px; display: flex; justify-content: center;">
+        @if (Node != null && Node.HasChildren)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                           Size="Size.Small"
+                           Style="@($"transition: transform .15s; transform: rotate({(Node.IsExpanded ? 90 : 0)}deg);")"
+                           OnClick="async () => {Node.ToggleExpanded(); await OnExpandedToggled.InvokeAsync();}" />
+        }
+    </div>
+
+    @ChildContent
+
+    @if (Node != null && Node.IsCyclic)
+    {
+        <MudTooltip Text="@LocalizedStringService.Get(CycleErrorMessageKey)">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Color="Color.Error" Size="Size.Small" Class="mt-1" />
+        </MudTooltip>
+    }
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public Node? Node { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string CycleErrorMessageKey { get; set; } = BusinessAppFramework.Contracts.MessageKeys.CycleDetected;
+    [Parameter] public EventCallback OnExpandedToggled { get; set; }
+}

@@ -1,4 +1,6 @@
-﻿namespace BusinessAppFramework.Application.Trees
+﻿using System.Text.Json.Serialization;
+
+namespace BusinessAppFramework.Application.Trees
 {
     public class Branch
     {
@@ -13,6 +15,8 @@
         public bool IsExpanded { get; set; }
         public List<Node> Nodes { get; set; } = new();
         public string ParentChildRelationKey { get; set; } = string.Empty;
+
+        [JsonIgnore]
         public List<Branch> ChildBranchTemplates { get; set; } = new();
 
         #endregion
@@ -43,7 +47,7 @@
 
         #endregion
 
-        #region Public Methods
+        #region Public Methods       
 
         public void AddNode(Node n) => Nodes.Add(n);
 

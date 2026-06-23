@@ -1,46 +1,52 @@
-﻿@using BusinessAppFramework.WebUI.Components.Editor
+﻿@using BusinessAppFramework.Application.Search
+@using BusinessAppFramework.Application.Trees
+@using BusinessAppFramework.WebUI.Components.Editor
 @using BusinessAppFramework.WebUI.Interfaces
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
 
-@typeparam TItem where TItem : DomainObject, new()
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+@typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
 
-@inherits DomainObjectBranchEditor<TItem>
+@inherits DomainObjectBranchEditor<TDomainObject, TSearchResult>
 
 @inject IIconFactory IconFactory
 
 <MudStack Spacing="2">
 
-    <MudStack AlignItems="AlignItems.Center" Row="true" Spacing="2">
+    @if (DisplayHeader)
+    {
+        <MudStack AlignItems="AlignItems.Center" Row="true" Spacing="2">
 
-        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-            <MudIcon Icon="@IconFactory.CreateIcon(DomainObjectAggregateKeys<TItem>.Type)" Size="Size.Small" />
-            <MudText Typo="Typo.h6">@LocalizedStringService.Get(DomainObjectAggregateKeys<TItem>.Type)</MudText>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIcon Icon="@IconFactory.CreateIcon(DomainObjectAggregateKeys<TDomainObject>.Type)" Size="Size.Small" />
+                <MudText Typo="Typo.h6">@LocalizedStringService.Get(DomainObjectAggregateKeys<TDomainObject>.Type)</MudText>
+            </MudStack>
+
+            <MudStack Row="true" Justify="Justify.FlexStart" Spacing="0">
+
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                OnClick="CreateItemAsync"
+                Color="@Color.Primary"
+                Size="Size.Small"
+                Variant="Variant.Text"
+                Style="font-weight: normal;">
+                </MudIconButton>
+
+                @ToolBarActions
+
+            </MudStack>
+
         </MudStack>
-
-        <MudStack Row="true" Justify="Justify.FlexStart" Spacing="0">
-
-            <MudIconButton Icon="@Icons.Material.Filled.Add"
-                           OnClick="CreateItemAsync"
-                           Color="@Color.Primary"
-                           Size="Size.Small"
-                           Variant="Variant.Text"
-                           Style="font-weight: normal;">
-            </MudIconButton>
-
-            @ToolBarActions
-
-        </MudStack>
-
-    </MudStack>
+    }
 
     <CascadingValue Value="(Func<Task>)NotifyItemChanged">
 
-        <MudDataGrid T="TItem"
+        <MudDataGrid T="Node"
                      EditMode="DataGridEditMode.Cell"
                      EditTrigger="DataGridEditTrigger.OnRowClick"
-                     Items="@Items"
+                     Items="@VisibleNodes"
                      SortMode="@SortMode.None"
                      ReadOnly="false"
                      Bordered="true"
@@ -52,14 +58,14 @@
                      CommittedItemChanges="OnCommitedItemChanged">
             <Columns>
                 @ColumnsContent
-                <TemplateColumn T="TItem" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
+                <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
                     <EditTemplate>
                         <MudStack Row="true" Spacing="0">
                             @ItemActions?.Invoke(context.Item)
                             <MudIconButton Icon="@Icons.Material.Outlined.Delete"
                                            Size="Size.Small"
                                            Color="Color.Error"
-                                           OnClick="async () => await DeleteItemAsync(context.Item)" />
+                                           OnClick="async () => await DeleteItemAsync(context.Item.Id)" />
                         </MudStack>
                     </EditTemplate>
                 </TemplateColumn>
@@ -73,5 +79,6 @@
 @code {
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
-    [Parameter] public RenderFragment<TItem>? ItemActions { get; set; }
+    [Parameter] public RenderFragment<Node>? ItemActions { get; set; }
+    [Parameter] public bool DisplayHeader { get; set; } = true;
 }

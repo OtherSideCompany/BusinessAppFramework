@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Domain.DomainObjects;
+﻿using BusinessAppFramework.Application.Descriptors;
+using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Relations
 {
@@ -12,7 +13,7 @@ namespace BusinessAppFramework.Application.Relations
         Task<List<int>> GetChildrenIdsAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
         Task<List<TChild>> GetChildrenAsync<TChild>(int parentId, string relationKey, CancellationToken cancellationToken = default) where TChild : DomainObject, new();
         Task<int?> GetMaxChildIndexAsync(int parentId, string relationKey, CancellationToken cancellationToken = default);
-        Task SetParentAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
+        Task SetParentAsync(int? parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
         Task<int?> GetParentIdAsync(int childId, string relationKey, CancellationToken cancellationToken = default);
         Task<DomainObjectReference?> GetHydratedReferenceAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
     }

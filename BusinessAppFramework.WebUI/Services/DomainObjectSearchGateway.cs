@@ -1,13 +1,9 @@
-﻿using BusinessAppFramework.Adapter.Responses;
-using BusinessAppFramework.Application.Interfaces;
+﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
-using BusinessAppFramework.Domain.DomainObjects;
-using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PuppeteerSharp;
 
 namespace BusinessAppFramework.WebUI.Services
 {

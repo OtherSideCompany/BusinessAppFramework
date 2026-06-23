@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Domain.DomainObjects;
+﻿using BusinessAppFramework.Application.Descriptors;
+using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.WebUI.Interfaces
 {
