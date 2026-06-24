@@ -13,20 +13,15 @@
                         IsDirty="IsDirty"
                         OnSave="SaveAsync"
                         OnUndo="UndoAsync">
+    <ChildContent>
     <MudStack Spacing="0">
 
-        <MudStack Spacing="2" Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-
-            <DomainObjectPageHeaderTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey" />
-
-            <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
-
+        <DomainObjectPageHeaderTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey">
+            <Actions>
                 <ActionButton OnClick="() => DeleteAsync()"
                               ActionKey="@ActionKeys.DeleteActionKey" />
-
-            </MudStack>
-
-        </MudStack>
+            </Actions>
+        </DomainObjectPageHeaderTitle>
 
         <DomainObjectPageTabs>
 
@@ -37,6 +32,22 @@
         </DomainObjectPageTabs>
 
     </MudStack>
+    </ChildContent>
+
+    <RightPanelContent>
+        <MudStack Spacing="8">
+
+            <MudStack Spacing="2">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                    <MudIcon Icon="@Icons.Material.Outlined.History" Size="Size.Small" />
+                    <MudText Typo="Typo.h6">@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.HistoryKey)</MudText>
+                </MudStack>
+
+                <DomainObjectHistory DomainObject="@DomainObject" />
+            </MudStack>
+
+        </MudStack>
+    </RightPanelContent>
 </DomainObjectPageLayout>
 
 @code {
