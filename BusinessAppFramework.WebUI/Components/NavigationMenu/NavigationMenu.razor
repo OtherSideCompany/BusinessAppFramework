@@ -51,21 +51,7 @@
     }
 </style>
 
-<MudNavMenu Color="Color.Dark">
-
-    <div style="height:12px;" />
-
-    @{
-        var homeRef = NavigationManager.BaseUri;
-
-        <MudStack Justify="Justify.Center" Spacing="0">
-            <MudButton Href="@homeRef"
-                       Style="text-transform: none;">
-                <MudText Color="Color.Inherit" Style="color:white" Typo="Typo.h3">@AppName</MudText>
-            </MudButton>
-        </MudStack>
-
-    }
+<MudNavMenu Color="Color.Dark">    
 
     @if (_isLoading)
     {
@@ -127,8 +113,6 @@
 </MudNavMenu>
 
 @code {
-    [Parameter, EditorRequired] public string AppName { get; set; }
-
     private List<string> _moduleKeys { get; set; } = new()!;
     private Dictionary<string, List<string>> _workspaceKeys { get; set; } = new()!;
     private Dictionary<string, bool> _expandedModules = new();

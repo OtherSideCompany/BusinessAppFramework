@@ -1,16 +1,18 @@
 ﻿@using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Domain.DomainObjects
-@using BusinessAppFramework.WebUI.Components.Editor
 @using Microsoft.AspNetCore.Components.Sections
 @using MudBlazor
 
 @inject ILocalizedStringService LocalizedStringService
 
 <SectionContent SectionName="page-title">
-    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-        <MudText Typo="Typo.h4">
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Style="width:100%;">
+
+        <MudText Typo="Typo.h3">
             @LocalizedStringService.Get(DescriptorKey)
         </MudText>
+
         <MudChip T="string"
                  Variant="Variant.Outlined"
                  Size="Size.Small"
@@ -20,17 +22,18 @@
         </MudChip>
 
         @Tags
+
+        <MudSpacer />
+
+        @Actions
+
     </MudStack>
+
 </SectionContent>
-
-<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-    <MudIcon Icon="@Icons.Material.Outlined.History" Size="Size.Small" Style="color: var(--mud-palette-text-secondary) !important;" />
-    <DomainObjectHistory DomainObject="DomainObject" />
-</MudStack>
-
 
 @code {
     [Parameter] public DomainObject? DomainObject { get; set; }
     [Parameter] public string? DescriptorKey { get; set; }
     [Parameter] public RenderFragment? Tags { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
 }

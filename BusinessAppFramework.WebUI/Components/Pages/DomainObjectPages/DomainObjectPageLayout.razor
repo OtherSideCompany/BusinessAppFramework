@@ -1,4 +1,5 @@
-﻿<style>
+﻿@using MudBlazor
+<style>
     .osc-domainobject-page {
         height: 100%;
         overflow: hidden;
@@ -11,7 +12,7 @@
         flex: 1 1 auto;
         overflow-y: auto;
         min-height: 0;
-        padding:16px;
+        padding: 0px;
     }
 </style>
 
@@ -23,7 +24,31 @@ else
 {
     <div class="osc-domainobject-page">
         <div class="osc-page-content">
-            @ChildContent
+            <MudStack Row="true" Style="width:100%; height:100%;" Spacing="0">
+                <div style="flex:1 1 0; min-width:0;">
+                    @ChildContent
+                </div>
+                <div style="flex:0 0 0; border-left:1px solid var(--mud-palette-divider);" class="pa-4">
+                    @if (_isRightPanelCollapsed)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar"
+                                       OnClick="() => SetRightPanelExpandedState(false)"
+                                       Size="Size.Small"/>
+                    }
+                    else
+                    {
+                        <MudStack Spacing="0" Style="width:400px;">
+                            <MudStack Row="true" Spacing="0">
+                                <MudSpacer />
+                                <MudIconButton Icon="@Icons.Material.Outlined.ViewSidebar"
+                                               OnClick="() => SetRightPanelExpandedState(true)"
+                                               Size="Size.Small"/>
+                            </MudStack>
+                            @RightPanelContent
+                        </MudStack>
+                    }
+                </div>
+            </MudStack>
         </div>
     </div>
 
@@ -34,8 +59,17 @@ else
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? RightPanelContent { get; set; }
     [Parameter] public bool IsDeleted { get; set; }
     [Parameter] public bool IsDirty { get; set; }
     [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnUndo { get; set; }
+
+    private bool _isRightPanelCollapsed;
+
+    private void SetRightPanelExpandedState(bool isExpanded)
+    {
+        _isRightPanelCollapsed = isExpanded;
+        StateHasChanged();
+    }
 }
