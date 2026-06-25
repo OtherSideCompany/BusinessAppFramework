@@ -30,6 +30,7 @@ namespace BusinessAppFramework.Contracts
         public static string ConnectionKey => "Connection";
         public static string ConnectKey => "Connect";
         public static string SelectToSearchKey => "SelectToSearch";
+        public static string TypeToSearchKey => "TypeToSearchKey";
         public static string StatusKey => "Status";
         public static string ProgressionKey => "Progression";
         public static string MailToKey => "MailToKey";

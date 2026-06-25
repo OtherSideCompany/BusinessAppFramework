@@ -75,6 +75,7 @@
     else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
     {
         var domainObjectReference = PropertyValue as DomainObjectReference;
+
         <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
                                     Label="@label"
                                     OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />

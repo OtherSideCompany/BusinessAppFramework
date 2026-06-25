@@ -36,6 +36,38 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Public Methods
 
+        public async Task<DomainObjectSearchResult?> GetDomainObjectSearchResultAsync(int domainObjectId)
+        {
+            var searchResult = await GetSearchResultAsync(domainObjectId);
+            return searchResult as DomainObjectSearchResult;
+        }
+
+        public async Task<List<DomainObjectSearchResult>> GetDomainObjectSearchResultsAsync(List<int> domainObjectIds)
+        {
+            var searchResult = await GetSearchResultsAsync(domainObjectIds);
+            return searchResult.Cast<DomainObjectSearchResult>().ToList();  
+        }
+
+        public async Task<SearchResult<DomainObjectSearchResult>> SearchDomainObjectsAsync(SearchRequest searchRequest)
+        {
+            var searchResult = await SearchAsync(searchRequest);
+            return new SearchResult<DomainObjectSearchResult>()
+            {
+                Items = searchResult.Items.Cast<DomainObjectSearchResult>().ToList(),
+                Count = searchResult.Count
+            };
+        }
+
+        public async Task<SearchResult<DomainObjectSearchResult>> PaginatedSearchDomainObjectsAsync(PaginatedSearchRequest paginatedSearchRequest)
+        {
+            var searchResult = await PaginatedSearchAsync(paginatedSearchRequest);
+            return new SearchResult<DomainObjectSearchResult>()
+            {
+                Items = searchResult.Items.Cast<DomainObjectSearchResult>().ToList(),
+                Count = searchResult.Count
+            };
+        }
+
         public async Task<SearchResult<TSearchResult>> PaginatedSearchAsync(PaginatedSearchRequest paginatedSearchRequest)
         {
             var route = $"{_baseUrl}/{SearchRouteSegments.Paginated}";
@@ -81,7 +113,7 @@ namespace BusinessAppFramework.WebUI.Services
         private async Task<SearchResult<TSearchResult>> SendSearchAsync<TPayload>(string searchApiRoute, TPayload payload)
         {
             return (await PostAsync<SearchResult<TSearchResult>>(searchApiRoute, payload)).Data ?? new SearchResult<TSearchResult>();
-        }
+        }        
 
         #endregion
     }

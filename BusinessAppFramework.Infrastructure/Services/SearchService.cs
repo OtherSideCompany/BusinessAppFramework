@@ -208,7 +208,8 @@ namespace BusinessAppFramework.Infrastructure.Services
             return typeof(TSearchResult)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.PropertyType == typeof(string)
-                            && p.CanRead)
+                            && p.CanRead
+                            && p.GetCustomAttribute<NotSearchableAttribute>() is null)
                 .Select(p => (p.Name, nullability.Create(p).ReadState != NullabilityState.NotNull))
                 .ToArray();
         }
