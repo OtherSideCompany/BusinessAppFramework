@@ -320,6 +320,7 @@ namespace BusinessAppFramework.Application.Services
         private async Task<U> WithPermissionAsync<U>(UserRolePermissionType permissionType, Func<Task<U>> action)
         {
             if (!await CheckRightAsync(DomainObjectAggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
+                
                 throw new UserPermissionException(typeof(T), permissionType);
 
             return await action();
