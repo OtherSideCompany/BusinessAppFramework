@@ -173,7 +173,8 @@
                 var shrink = action.ActionKey.Equals(ActionKeys.ImportExportDataActionKey);
                 <ActionButton Shrink="@shrink"
                               OnClick="() => ExecuteApplicationActionAsync(action)"
-                              ActionKey="@action.ActionKey" />
+                              ActionKey="@action.ActionKey" 
+                              Bordered="true"/>
             }
 
             @if (hasGlobalActions && hasSelectionActions)
