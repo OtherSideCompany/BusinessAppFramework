@@ -2,19 +2,17 @@
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Relations
 @using BusinessAppFramework.WebUI.Components.SearchList
-@using Domain
 @using Domain.DomainObjects
-@using Microsoft.Extensions.DependencyInjection
 @using MudBlazor
 @using WebUI.Components.Selector
 @using WebUI.Interfaces
 
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 @inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
-@inject IReferenceResolver RelationResolver
 @inject IServiceProvider ServiceProvider
 @inject IDialogService DialogService
 @inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
+@inject IRelationServiceGateway RelationServiceGateway
 
 <MudField Typo="Typo.body2"
           Variant="@Variant"
@@ -28,10 +26,10 @@
         <MudStack Row="true">
             @if (DomainObjectReferenceList != null)
             {
-                foreach (var reference in DomainObjectReferenceList.Items)
+                foreach (var reference in DomainObjectReferenceList.Items.OrderBy(i => i.DisplayValue))
                 {
                     var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReferenceList.RelationKey ?? "");
-                    
+
                     <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
                         @if (!String.IsNullOrEmpty(navigationKey))
                         {
@@ -44,9 +42,9 @@
                             <MudText Typo="Typo.body2">@reference.DisplayValue</MudText>
                         }
                         <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small"
-                                       OnClick="() => RemoveReference(reference)" 
+                                       OnClick="() => RemoveReference(reference)"
                                        Style="color: var(--mud-palette-primary-darken); width:20px; height:20px" />
-                    </MudStack>                 
+                    </MudStack>
                 }
             }
 
@@ -135,15 +133,10 @@
 
         await OnDomainObjectReferenceListChanged.InvokeAsync(DomainObjectReferenceList);
 
-        if (RelationResolver.TryGetReferenceListRelationEntry(DomainObjectReferenceList.RelationKey, out var relationListEntry))
-        {
-            var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationListEntry.SourceDomainObjectType);
-            dynamic domainObjectServiceGateway = ServiceProvider.GetRequiredService(gatewayType);
-            var domainObjectReferenceListItem = await domainObjectServiceGateway.GetHydratedDomainObjectReferenceListItem(domainObjectId, DomainObjectReferenceList.RelationKey);
+        var domainObjectReferenceListItem = await RelationServiceGateway.GetHydratedDomainObjectReferenceListItem(domainObjectId, DomainObjectReferenceList.RelationKey);
 
-            var item = DomainObjectReferenceList.Items.First(i => i.DomainObjectId == domainObjectId);
-            item.DisplayValue = domainObjectReferenceListItem.DisplayValue;
-        }
+        var item = DomainObjectReferenceList.Items.First(i => i.DomainObjectId == domainObjectId);
+        item.DisplayValue = domainObjectReferenceListItem?.DisplayValue;
 
         StateHasChanged();
     }

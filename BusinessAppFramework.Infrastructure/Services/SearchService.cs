@@ -1,8 +1,10 @@
 ﻿using BusinessAppFramework.Application;
 using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,6 +24,8 @@ namespace BusinessAppFramework.Infrastructure.Services
         protected readonly IDbContextFactory<DbContext> _dbContextFactory;
         protected ILogger<SearchService<TSearchResult>> _logger;
         protected IConstraintFactory _constraintFactory;
+        protected IParentChildRelationResolver _parentChildRelationResolver;
+        protected IReferenceResolver _referenceResolver;
 
         #endregion
 
@@ -42,11 +46,15 @@ namespace BusinessAppFramework.Infrastructure.Services
         public SearchService(
            IDbContextFactory<DbContext> dbContextFactory,
            ILoggerFactory loggerFactory,
-           IConstraintFactory constraintFactory)
+           IConstraintFactory constraintFactory,
+           IParentChildRelationResolver parentChildRelationResolver,
+           IReferenceResolver referenceResolver)
         {
             _dbContextFactory = dbContextFactory;
             _logger = loggerFactory.CreateLogger<SearchService<TSearchResult>>();
             _constraintFactory = constraintFactory;
+            _parentChildRelationResolver = parentChildRelationResolver;
+            _referenceResolver = referenceResolver;
         }
 
         #endregion
@@ -57,11 +65,11 @@ namespace BusinessAppFramework.Infrastructure.Services
            SearchRequest searchRequest,
            CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(SearchAsync), searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(SearchAsync), searchRequest.SourceId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
             return new SearchResult<TSearchResult>
             {
-                Items = await SearchAsync(searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, cancellationToken),
+                Items = await SearchAsync(searchRequest.SourceId, searchRequest.SourceRelationKey, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, cancellationToken),
                 Count = await CountAsync(searchRequest, cancellationToken)
             };
         }
@@ -70,11 +78,11 @@ namespace BusinessAppFramework.Infrastructure.Services
            PaginatedSearchRequest paginatedSearchRequest,
            CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(PaginatedSearchAsync), paginatedSearchRequest.ParentId, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(PaginatedSearchAsync), paginatedSearchRequest.SourceId, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch);
 
             return new SearchResult<TSearchResult>
             {
-                Items = await SearchAsync(paginatedSearchRequest.ParentId, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch, true, paginatedSearchRequest.PageIndex, paginatedSearchRequest.PageSize, cancellationToken),
+                Items = await SearchAsync(paginatedSearchRequest.SourceId, paginatedSearchRequest.SourceRelationKey, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch, true, paginatedSearchRequest.PageIndex, paginatedSearchRequest.PageSize, cancellationToken),
                 Count = await CountAsync(paginatedSearchRequest, cancellationToken)
             };
         }
@@ -82,11 +90,11 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         public virtual async Task<int> CountAsync(SearchRequest searchRequest, CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(CountAsync), searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(CountAsync), searchRequest.SourceId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                return await GetSearchQuery(searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, context).CountAsync(cancellationToken);
+                return await GetSearchQuery(searchRequest.SourceId, searchRequest.SourceRelationKey, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, context).CountAsync(cancellationToken);
             }
         }
 
@@ -129,7 +137,8 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         #region Private Methods
 
-        private async Task<List<TSearchResult>> SearchAsync(int? parentId,
+        private async Task<List<TSearchResult>> SearchAsync(int? sourceId,
+                                                            string sourceRelationKey,
                                                             string constraintKey,
                                                             List<string> filters,
                                                             bool extendedSearch,
@@ -140,7 +149,7 @@ namespace BusinessAppFramework.Infrastructure.Services
         {
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                var query = GetSearchQuery(parentId, constraintKey, filters, extendedSearch, context);
+                var query = GetSearchQuery(sourceId, sourceRelationKey, constraintKey, filters, extendedSearch, context);
 
                 if (paginated)
                 {
@@ -156,7 +165,8 @@ namespace BusinessAppFramework.Infrastructure.Services
             return context.Set<TSearchResult>();
         }
 
-        protected IQueryable<TSearchResult> GetSearchQuery(int? parentId, 
+        protected IQueryable<TSearchResult> GetSearchQuery(int? sourceId, 
+                                                           string sourceRelationKey,
                                                            string constraintKey,
                                                            List<string> filters,
                                                            bool extendedSearch,
@@ -165,6 +175,13 @@ namespace BusinessAppFramework.Infrastructure.Services
             var query = GetBaseQuery(context).AsNoTracking();            
 
             query = query.OrderByDescending(e => e.DomainObjectId);
+
+            if (sourceId.HasValue && !string.IsNullOrEmpty(sourceRelationKey))
+            {
+                var ids = GetRelatedDomainObjectIds(sourceRelationKey, sourceId.Value, context);
+                if (ids != null)
+                    query = query.Where(e => ids.Contains(e.DomainObjectId));
+            }
 
             if (!constraintKey.Equals(ConstraintKeys.AllConstraintKey))
             {
@@ -178,6 +195,17 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
 
             return query;
+        }
+
+        private IQueryable<int>? GetRelatedDomainObjectIds(string relationKey, int parentId, DbContext context)
+        {
+            if (_parentChildRelationResolver.TryGetParentChildRelationEntry(relationKey, out var pc))
+                return ((IInfrastructureParentChildRelation)pc).GetChildrenIds(context, parentId);
+
+            if (_referenceResolver.TryGetReferenceListRelationEntry(relationKey, out var rl))
+                return ((IInfrastructureReferenceListRelation)rl).GetTargetIds(context, parentId);
+
+            return null;
         }
 
         protected IQueryable<TSearchResult> ApplyPagination(IQueryable<TSearchResult> query, int pageIndex, int pageSize)

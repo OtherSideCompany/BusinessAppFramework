@@ -16,7 +16,7 @@ namespace BusinessAppFramework.Application.Relations
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
             where TTargetDomainObject : DomainObject
-            where TSourceEntity : IEntity
+            where TSourceEntity : class, IEntity
             where TTargetEntity : class, IEntity;
 
         public void RegisterReferenceRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
@@ -25,7 +25,7 @@ namespace BusinessAppFramework.Application.Relations
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
             where TTargetDomainObject : DomainObject
-            where TSourceEntity : IEntity
+            where TSourceEntity : class, IEntity
             where TTargetEntity : class, IEntity;
 
         public void RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
@@ -33,7 +33,7 @@ namespace BusinessAppFramework.Application.Relations
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject
                where TTargetDomainObject : DomainObject
-               where TSourceEntity : IEntity
+               where TSourceEntity : class, IEntity
                where TTargetEntity : class, IEntity;
 
         public void RegisterReferenceListRelationEntry<TSourceDomainObject, TTargetDomainObject, TSourceEntity, TTargetEntity>(
@@ -42,7 +42,7 @@ namespace BusinessAppFramework.Application.Relations
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject
                where TTargetDomainObject : DomainObject
-               where TSourceEntity : IEntity
+               where TSourceEntity : class, IEntity
                where TTargetEntity : class, IEntity;        
     }
 }

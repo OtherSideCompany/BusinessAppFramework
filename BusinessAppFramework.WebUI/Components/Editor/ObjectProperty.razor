@@ -77,7 +77,7 @@
                        Clearable="PropertyInfo.PropertyType == typeof(DateTime?)"
                        Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
     }
-    else if (PropertyInfo.PropertyType == typeof(DomainObjectReference) && string.IsNullOrEmpty(PropertyEdition.AvailableValuesRelationKey))
+    else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
     {
         var domainObjectReference = _propertyValue as DomainObjectReference;
 

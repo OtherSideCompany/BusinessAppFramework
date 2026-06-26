@@ -9,14 +9,13 @@
 @using WebUI.Components.Selector
 @using WebUI.Interfaces
 
-@inject IReferenceResolver RelationResolver
-@inject IRelationService RelationService
 @inject ILocalizedStringService LocalizedStringService
 @inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 @inject IServiceProvider ServiceProvider
 @inject IDialogService DialogService
 @inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
+@inject IRelationServiceGateway RelationServiceGateway
 
 <style>
     .mud-icon-button-size-small .mud-icon-root {
@@ -191,14 +190,11 @@ else
 
     private async Task<string?> ResolveDisplayValueAsync(int domainObjectId)
     {
-        if (DomainObjectReference == null
-            || !RelationResolver.TryGetReferenceRelationEntry(DomainObjectReference.RelationKey, out var relationEntry))
+        if (DomainObjectReference == null)
             return null;
 
-        var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
-        dynamic gateway = ServiceProvider.GetRequiredService(gatewayType);
-        var hydrated = await gateway.GetHydratedDomainObjectReference(domainObjectId, DomainObjectReference.RelationKey);
-        return hydrated.DisplayValue;
+        var hydrated = await RelationServiceGateway.GetHydratedDomainObjectReference(domainObjectId, DomainObjectReference.RelationKey);
+        return hydrated?.DisplayValue;
     }
 
     private async Task<IEnumerable<DomainObjectSearchResult>> SearchAsync(string searchText, CancellationToken token)
@@ -213,12 +209,13 @@ else
         {
             var searchRequest = new SearchRequest()
             {
-                ParentId = PropertyEdition.AvailableValuesParentId.Value,
+                SourceId = PropertyEdition.AvailableValuesParentId.Value,
+                SourceRelationKey = PropertyEdition.AvailableValuesRelationKey
             };
 
             var result = await searchGateway.SearchDomainObjectsAsync(searchRequest);
 
-            return result.Items;
+            return result.Items.OrderBy(i => i.DisplayValue);
         }
         else
         {
@@ -234,7 +231,7 @@ else
             }
 
             var result = await searchGateway.PaginatedSearchDomainObjectsAsync(paginatedSearchRequest);
-            return result.Items;
+            return result.Items.OrderBy(i => i.DisplayValue);
         }       
     }
 }

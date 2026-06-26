@@ -75,7 +75,7 @@ namespace BusinessAppFramework.Infrastructure.Entities
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
             where TTargetDomainObject : DomainObject
-            where TSourceEntity : IEntity
+            where TSourceEntity : class, IEntity
             where TTargetEntity : class, IEntity
         {
             var domainProperty = ExtractProperty(domainExpression);
@@ -93,7 +93,7 @@ namespace BusinessAppFramework.Infrastructure.Entities
            Expression<Func<TSourceEntity, int?>> entityIdExpression)
             where TSourceDomainObject : DomainObject
             where TTargetDomainObject : DomainObject
-            where TSourceEntity : IEntity
+            where TSourceEntity : class, IEntity
             where TTargetEntity : class, IEntity
         {
             var domainProperty = ExtractProperty(domainExpression);
@@ -114,7 +114,7 @@ namespace BusinessAppFramework.Infrastructure.Entities
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject
                where TTargetDomainObject : DomainObject
-               where TSourceEntity : IEntity
+               where TSourceEntity : class, IEntity
                where TTargetEntity : class, IEntity
         {
             var domainProperty = ExtractProperty(domainExpression);
@@ -132,7 +132,7 @@ namespace BusinessAppFramework.Infrastructure.Entities
               Expression<Func<TSourceEntity, ICollection<TTargetEntity>>> entityExpression)
                where TSourceDomainObject : DomainObject
                where TTargetDomainObject : DomainObject
-               where TSourceEntity : IEntity
+               where TSourceEntity : class, IEntity
                where TTargetEntity : class, IEntity
         {
             var domainProperty = ExtractProperty(domainExpression);
