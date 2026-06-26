@@ -13,6 +13,9 @@ namespace BusinessAppFramework.Contracts
 
         public static string Property(Type t, string memberName)
             => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}";
+
+        public static string PropertyHelper(Type t, string memberName)
+            => $"{KebabStringFormatter.ToKebab(t.Name)}-{KebabStringFormatter.ToKebab(memberName)}-helper";
     }
 
     public static class DomainObjectAggregateKeys<T>
@@ -27,6 +30,11 @@ namespace BusinessAppFramework.Contracts
         {
             var member = GetMember(prop);
             return DomainObjectAggregateKeys.Property(typeof(T), member.Name);
+        }
+        public static string PropertyHelper(Expression<Func<T, object?>> prop)
+        {
+            var member = GetMember(prop);
+            return DomainObjectAggregateKeys.PropertyHelper(typeof(T), member.Name);
         }
 
         static MemberInfo GetMember(Expression<Func<T, object?>> expr)

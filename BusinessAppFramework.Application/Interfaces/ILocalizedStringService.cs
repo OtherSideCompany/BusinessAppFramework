@@ -7,8 +7,13 @@
         string Get(string key, string culture);
         void AddAggregate<T>(string cultureInfo, Dictionary<string, string> translations);
         string ResolveProperty<T>(string memberName);
+        string ResolvePropertyHelper<T>(string memberName);
         string ResolveProperty<T>(string memberName, string cultureInfo);
+        string ResolvePropertyHelper<T>(string memberName, string cultureInfo);
         string ResolveProperty(Type propertyType, string memberName);
+        string ResolvePropertyHelper(Type propertyType, string memberName);
         string ResolveProperty(Type propertyType, string memberName, string cultureInfo);
+        string ResolvePropertyHelper(Type propertyType, string memberName, string cultureInfo);
+
     }
 }

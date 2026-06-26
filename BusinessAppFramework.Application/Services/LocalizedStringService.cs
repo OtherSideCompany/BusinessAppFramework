@@ -85,6 +85,40 @@ namespace BusinessAppFramework.Application.Services
             return memberName;
         }
 
+        public string ResolvePropertyHelper<T>(string memberName)
+        {
+            var cultureInfo = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            return ResolvePropertyHelper<T>(memberName, cultureInfo);
+        }
+
+        public string ResolvePropertyHelper<T>(string memberName, string cultureInfo)
+        {
+            return ResolvePropertyHelper(typeof(T), memberName, cultureInfo);
+        }
+
+        public string ResolvePropertyHelper(Type propertyType, string memberName)
+        {
+            var cultureInfo = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            return ResolvePropertyHelper(propertyType, memberName, cultureInfo);
+        }
+
+        public string ResolvePropertyHelper(Type propertyType, string memberName, string cultureInfo)
+        {
+            var type = propertyType;
+
+            while (type is not null)
+            {
+                var key = DomainObjectAggregateKeys.PropertyHelper(type, memberName);
+
+                if (TryGet(cultureInfo, key, out var value))
+                    return value;
+
+                type = type.BaseType;
+            }
+
+            return string.Empty;
+        }
+
         #region Private Methods
 
         private bool TryGet(string culture, string key, out string value)
