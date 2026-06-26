@@ -1,13 +1,18 @@
 ﻿@using System.Reflection
 @using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Search
 @using BusinessAppFramework.Contracts
+@using BusinessAppFramework.WebUI.Interfaces
 @using Domain.DomainObjects
 @using MudBlazor
 
 @inject ILocalizedStringService LocalizedStringService
+@inject IRelationServiceGateway RelationServiceGateway
 
 @{
     var label = LocalizedStringService.ResolveProperty(Target.GetType(), PropertyInfo.Name);
+    var concreteProperty = Target.GetType().GetProperty(PropertyInfo.Name, BindingFlags.Public | BindingFlags.Instance);
+    var _propertyValue = concreteProperty?.GetValue(Target);
 }
 
 <MudStack Spacing="0">
@@ -21,9 +26,9 @@
                       Margin="@Margin"
                       Immediate="true"
                       ShrinkLabel="true"
-                      Value="@(PropertyValue?.ToString())"
+                      Value="@(_propertyValue?.ToString())"
                       Variant="@Variant"
-                      Sizing="InputSizing.Auto"                      
+                      Sizing="InputSizing.Auto"
                       ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
     }
     else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
@@ -32,7 +37,7 @@
                          Typo="Typo.body2"
                          Margin="@Margin"
                          Immediate="true"
-                         Value="@(PropertyValue as int?)"
+                         Value="@(_propertyValue as int?)"
                          Variant="@Variant"
                          ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                          HideSpinButtons="true"
@@ -42,7 +47,7 @@
     else if (PropertyInfo.PropertyType == typeof(bool) || PropertyInfo.PropertyType == typeof(bool?))
     {
         <MudSwitch T="bool?"
-                   Value="@(PropertyValue as bool?)"
+                   Value="@(_propertyValue as bool?)"
                    ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                    Color="Color.Primary"
                    Style="margin-left:-4px !important" />
@@ -53,7 +58,7 @@
                          Typo="Typo.body2"
                          Margin="@Margin"
                          Immediate="true"
-                         Value="@(PropertyValue as decimal?)"
+                         Value="@(_propertyValue as decimal?)"
                          ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                          Variant="@Variant"
                          HideSpinButtons="true"
@@ -63,7 +68,7 @@
     }
     else if (PropertyInfo.PropertyType == typeof(DateTime) || PropertyInfo.PropertyType == typeof(DateTime?))
     {
-        <MudDatePicker Date="@(PropertyValue as DateTime?)"
+        <MudDatePicker Date="@(_propertyValue as DateTime?)"
                        Style="font-size: var(--mud-typography-body2-size); font-weight: var(--mud-typography-body2-weight);"
                        Margin="@Margin"
                        DateChanged="OnDateChanged"
@@ -72,17 +77,18 @@
                        Clearable="PropertyInfo.PropertyType == typeof(DateTime?)"
                        Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
     }
-    else if (PropertyInfo.PropertyType == typeof(DomainObjectReference))
+    else if (PropertyInfo.PropertyType == typeof(DomainObjectReference) && string.IsNullOrEmpty(PropertyEdition.AvailableValuesRelationKey))
     {
-        var domainObjectReference = PropertyValue as DomainObjectReference;
+        var domainObjectReference = _propertyValue as DomainObjectReference;
 
         <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
                                     Label="@label"
-                                    OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
+                                    OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" 
+                                    PropertyEdition="@PropertyEdition"/>
     }
     else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
     {
-        var domainObjectReferenceList = PropertyValue as DomainObjectReferenceList;
+        var domainObjectReferenceList = _propertyValue as DomainObjectReferenceList;
         <DomainObjectReferenceListField DomainObjectReferenceList="@domainObjectReferenceList"
                                         Label="@label"
                                         OnDomainObjectReferenceListChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" />
@@ -98,7 +104,7 @@
         <MudSelect T="object"
                    Typo="Typo.body2"
                    Margin="@Margin"
-                   Value="@PropertyValue"
+                   Value="@_propertyValue"
                    Variant="@Variant"
                    Clearable="isNullable"
                    ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
@@ -114,11 +120,13 @@
 
 @code {
     [Parameter, EditorRequired] public PropertyInfo PropertyInfo { get; init; }
-    [Parameter, EditorRequired] public object PropertyValue { get; init; }
+    [Parameter, EditorRequired] public PropertyEdition PropertyEdition { get; init; }
     [Parameter, EditorRequired] public object Target { get; init; }
     [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
     [Parameter] public Margin Margin { get; set; } = Margin.Dense;
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
+
+    private object? _propertyValue;
 
     private async Task OnDateChanged(DateTime? v)
     {

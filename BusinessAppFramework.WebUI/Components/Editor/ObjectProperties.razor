@@ -34,12 +34,9 @@
                         var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
                         if (prop != null)
                         {
-                            var label = LocalizedStringService.ResolveProperty(Target.GetType(), prop.Name);
-                            var concreteProperty = Target.GetType().GetProperty(prop.Name, BindingFlags.Public | BindingFlags.Instance);
-                            var value = concreteProperty?.GetValue(Target);
                             <MudItem xs="12" md="@propEdition.Md">
-                                <ObjectProperty PropertyInfo="@prop"
-                                                PropertyValue="@value"
+                                <ObjectProperty PropertyEdition="propEdition"
+                                                PropertyInfo="@prop"
                                                 Target="@Target"
                                                 OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
                             </MudItem>

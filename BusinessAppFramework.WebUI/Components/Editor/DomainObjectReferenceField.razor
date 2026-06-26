@@ -1,4 +1,4 @@
-﻿@using Application.Descriptors
+@using Application.Descriptors
 @using Application.Relations
 @using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Application.Search
@@ -10,6 +10,7 @@
 @using WebUI.Interfaces
 
 @inject IReferenceResolver RelationResolver
+@inject IRelationService RelationService
 @inject ILocalizedStringService LocalizedStringService
 @inject IWorkspaceDescriptorFactory WorkspaceDescriptorFactory
 @inject IRelationSelectorRegistry RelationSelectorRegistry
@@ -31,9 +32,9 @@
     }
 </style>
 
-@if (_selectedResult is not null)
+@if (HasSelection)
 {
-    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? "");
+    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference!.RelationKey ?? "");
 
     <MudField Typo="Typo.body2"
               Variant="@Variant"
@@ -44,21 +45,18 @@
               InnerPadding="false">
 
         <div style="margin-bottom:4px;">
-            @if (!string.IsNullOrEmpty(_selectedResult?.DisplayValue))
+            @if (!string.IsNullOrEmpty(DomainObjectReference.DisplayValue))
             {
-                var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? "");
-
                 <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
                     @if (!String.IsNullOrEmpty(navigationKey))
                     {
-
                         <NavigationLink NavigationApplicationActionKey="@navigationKey"
-                                        DomainObjectId="@_id"
-                                        Text="@_selectedResult.DisplayValue" />
+                                        DomainObjectId="@DomainObjectReference.DomainObjectId!.Value"
+                                        Text="@DomainObjectReference.DisplayValue" />
                     }
                     else
                     {
-                        <MudText Typo="Typo.body2">@_selectedResult.DisplayValue</MudText>
+                        <MudText Typo="Typo.body2">@DomainObjectReference.DisplayValue</MudText>
                     }
                     <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small"
                                    OnClick="ClearSelectionAsync" />
@@ -79,7 +77,6 @@ else
     <MudAutocomplete T="DomainObjectSearchResult"
                      Variant="@Variant"
                      Margin="Margin.Dense"
-                     Value="@_selectedResult"
                      ValueChanged="OnResultSelected"
                      SearchFunc="SearchAsync"
                      ToStringFunc="@(r => r?.DisplayValue ?? string.Empty)"
@@ -88,13 +85,6 @@ else
                      Adornment="Adornment.End"
                      OnAdornmentClick="OpenSelector"
                      Placeholder="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.TypeToSearchKey)">
-        <MoreItemsTemplate>
-            <MudButton FullWidth="true"
-                       StartIcon="@Icons.Material.Outlined.Search"
-                       OnClick="OpenSelector">
-                @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
-            </MudButton>
-        </MoreItemsTemplate>
         <NoItemsTemplate>
             <MudStack>
                 <MudButton FullWidth="true"
@@ -102,11 +92,6 @@ else
                            OnClick="OpenSelector">
                     @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
                 </MudButton>
-                @* <MudButton FullWidth="true"
-                           StartIcon="@Icons.Material.Outlined.Add"
-                           OnClick="CreateNewAsync">
-                    @LocalizedStringService.Get(StringKeys.CreateNewKey)
-                </MudButton> *@
             </MudStack>
         </NoItemsTemplate>
     </MudAutocomplete>
@@ -123,23 +108,24 @@ else
                 return;
 
             _domainObjectReference = value;
-            HandleDomainObjectReferenceChanged();
+            ResolveSelectorDescriptor();
         }
     }
     [Parameter] public string Label { get; set; } = default!;
     [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
-
-    private int _id => DomainObjectReference?.DomainObjectId == null ? 0 : DomainObjectReference.DomainObjectId.Value;
+    [Parameter] public PropertyEdition? PropertyEdition { get; set; }
 
     private DomainObjectReference? _domainObjectReference;
     private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor;
 
-    private DomainObjectSearchResult? _selectedResult;
+    private bool HasSelection => DomainObjectReference?.DomainObjectId is not null;
+
+    private int _pageSize = 10;
 
     private async Task OpenSelector()
     {
-        if (_domainObjectSelectorDescriptor == null)
+        if (_domainObjectSelectorDescriptor == null || DomainObjectReference == null)
             return;
 
         var parameters = new DialogParameters
@@ -158,44 +144,32 @@ else
         var dialog = await DialogService.ShowAsync<SelectorDialog>(string.Empty, parameters, options);
         var result = await dialog.Result;
 
-        if (result != null && !result.Canceled)
+        if (result is { Canceled: false })
         {
             var selectedId = (int)result.Data;
-            await OnItemSelected(selectedId, false);
+            await SelectAsync(selectedId, await ResolveDisplayValueAsync(selectedId));
         }
     }
 
-    private async Task OnItemSelected(int itemId, bool init)
+    private Task OnResultSelected(DomainObjectSearchResult? result)
+        => result is null
+            ? ClearSelectionAsync()
+            : SelectAsync(result.DomainObjectId, result.DisplayValue);
+
+    private async Task SelectAsync(int domainObjectId, string? displayValue)
     {
         if (DomainObjectReference == null)
             return;
 
-        DomainObjectReference.DomainObjectId = itemId;
+        DomainObjectReference.DomainObjectId = domainObjectId;
+        DomainObjectReference.DisplayValue = displayValue;
 
-        if (RelationResolver.TryGetReferenceRelationEntry(DomainObjectReference.RelationKey, out var relationEntry))
-        {
-            var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
-            dynamic gateway = ServiceProvider.GetRequiredService(gatewayType);
-            var hydrated = await gateway.GetHydratedDomainObjectReference(itemId, DomainObjectReference.RelationKey);
-            DomainObjectReference.DisplayValue = hydrated.DisplayValue;
-        }
-
-        _selectedResult = new DomainObjectSearchResult
-        {
-            DomainObjectId = itemId,
-            DisplayValue = DomainObjectReference.DisplayValue
-        };
-
-        if (!init)
-            await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
-
+        await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
         StateHasChanged();
     }
 
     private async Task ClearSelectionAsync()
     {
-        _selectedResult = null;
-
         if (DomainObjectReference is not null)
         {
             DomainObjectReference.DomainObjectId = null;
@@ -206,32 +180,25 @@ else
         StateHasChanged();
     }
 
-    private async Task HandleDomainObjectReferenceChanged()
+    private void ResolveSelectorDescriptor()
     {
         if (DomainObjectReference == null)
             return;
-
-        if (DomainObjectReference.DomainObjectId is int id)
-            await OnItemSelected(id, true);
-        else
-            _selectedResult = null;
 
         var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(DomainObjectReference.RelationKey);
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
     }
 
-    private async Task OnResultSelected(DomainObjectSearchResult? result)
+    private async Task<string?> ResolveDisplayValueAsync(int domainObjectId)
     {
-        _selectedResult = result;
+        if (DomainObjectReference == null
+            || !RelationResolver.TryGetReferenceRelationEntry(DomainObjectReference.RelationKey, out var relationEntry))
+            return null;
 
-        if (result != null)
-        {
-            await OnItemSelected(result.DomainObjectId, false);
-        }
-        else
-        {
-            await ClearSelectionAsync();
-        }
+        var gatewayType = typeof(IDomainObjectServiceGateway<>).MakeGenericType(relationEntry.TargetDomainObjectType);
+        dynamic gateway = ServiceProvider.GetRequiredService(gatewayType);
+        var hydrated = await gateway.GetHydratedDomainObjectReference(domainObjectId, DomainObjectReference.RelationKey);
+        return hydrated.DisplayValue;
     }
 
     private async Task<IEnumerable<DomainObjectSearchResult>> SearchAsync(string searchText, CancellationToken token)
@@ -242,19 +209,32 @@ else
         var gatewayType = typeof(ISearchGateway<>).MakeGenericType(_domainObjectSelectorDescriptor.SearchResultType);
         var searchGateway = (ISearchGatewayBase)ServiceProvider.GetRequiredService(gatewayType);
 
-        var paginatedSearchRequest = new PaginatedSearchRequest
+        if (PropertyEdition != null && PropertyEdition.AvailableValuesParentId != null && !String.IsNullOrEmpty(PropertyEdition.AvailableValuesRelationKey))
         {
-            PageIndex = 0,
-            PageSize = 10
-        };
+            var searchRequest = new SearchRequest()
+            {
+                ParentId = PropertyEdition.AvailableValuesParentId.Value,
+            };
 
-        if (!String.IsNullOrEmpty(searchText))
-        {
-            paginatedSearchRequest.Filters.Add(searchText);
+            var result = await searchGateway.SearchDomainObjectsAsync(searchRequest);
+
+            return result.Items;
         }
+        else
+        {
+            var paginatedSearchRequest = new PaginatedSearchRequest
+            {
+                PageIndex = 0,
+                PageSize = _pageSize * 2
+            };
 
-        var result = await searchGateway.PaginatedSearchDomainObjectsAsync(paginatedSearchRequest);
+            if (!String.IsNullOrEmpty(searchText))
+            {
+                paginatedSearchRequest.Filters.Add(searchText);
+            }
 
-        return result.Items;
+            var result = await searchGateway.PaginatedSearchDomainObjectsAsync(paginatedSearchRequest);
+            return result.Items;
+        }       
     }
 }

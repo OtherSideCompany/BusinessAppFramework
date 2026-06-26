@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BusinessAppFramework.Application.Descriptors;
 using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
@@ -279,6 +278,31 @@ namespace BusinessAppFramework.Infrastructure.Services
             }
 
             return null;
+        }
+
+        public virtual async Task<DomainObjectReference> GetHydratedDomainObjectReferenceAsync(int domainObjectId, string relationKey)
+        {
+            var domainObjectReference = new DomainObjectReference
+            {
+                DomainObjectId = domainObjectId,
+                RelationKey = relationKey
+            };
+
+            await HydrateDomainObjectReferenceAsync(domainObjectReference);
+
+            return domainObjectReference;
+        }        
+
+        public async Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItemAsync(int domainObjectId, string relationKey)
+        {
+            var domainObjectReferenceListItem = new DomainObjectReferenceListItem
+            {
+                DomainObjectId = domainObjectId
+            };
+
+            await HydrateDomainObjectReferenceListItemAsync(domainObjectReferenceListItem, relationKey);
+
+            return domainObjectReferenceListItem;
         }
 
         #endregion

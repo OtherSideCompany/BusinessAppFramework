@@ -57,11 +57,11 @@ namespace BusinessAppFramework.Infrastructure.Services
            SearchRequest searchRequest,
            CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(SearchAsync), searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(SearchAsync), searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
             return new SearchResult<TSearchResult>
             {
-                Items = await SearchAsync(searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, cancellationToken),
+                Items = await SearchAsync(searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, false, 0, 0, cancellationToken),
                 Count = await CountAsync(searchRequest, cancellationToken)
             };
         }
@@ -70,11 +70,11 @@ namespace BusinessAppFramework.Infrastructure.Services
            PaginatedSearchRequest paginatedSearchRequest,
            CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(PaginatedSearchAsync), paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(PaginatedSearchAsync), paginatedSearchRequest.ParentId, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch);
 
             return new SearchResult<TSearchResult>
             {
-                Items = await SearchAsync(paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch, true, paginatedSearchRequest.PageIndex, paginatedSearchRequest.PageSize, cancellationToken),
+                Items = await SearchAsync(paginatedSearchRequest.ParentId, paginatedSearchRequest.ConstraintKey, paginatedSearchRequest.Filters, paginatedSearchRequest.ExtendedSearch, true, paginatedSearchRequest.PageIndex, paginatedSearchRequest.PageSize, cancellationToken),
                 Count = await CountAsync(paginatedSearchRequest, cancellationToken)
             };
         }
@@ -82,11 +82,11 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         public virtual async Task<int> CountAsync(SearchRequest searchRequest, CancellationToken cancellationToken)
         {
-            LogSearchAsync(nameof(CountAsync), searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
+            LogSearchAsync(nameof(CountAsync), searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch);
 
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                return await GetSearchQuery(searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, context).CountAsync(cancellationToken);
+                return await GetSearchQuery(searchRequest.ParentId, searchRequest.ConstraintKey, searchRequest.Filters, searchRequest.ExtendedSearch, context).CountAsync(cancellationToken);
             }
         }
 
@@ -129,7 +129,8 @@ namespace BusinessAppFramework.Infrastructure.Services
 
         #region Private Methods
 
-        private async Task<List<TSearchResult>> SearchAsync(string constraintKey,
+        private async Task<List<TSearchResult>> SearchAsync(int? parentId,
+                                                            string constraintKey,
                                                             List<string> filters,
                                                             bool extendedSearch,
                                                             bool paginated,
@@ -139,7 +140,7 @@ namespace BusinessAppFramework.Infrastructure.Services
         {
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                var query = GetSearchQuery(constraintKey, filters, extendedSearch, context);
+                var query = GetSearchQuery(parentId, constraintKey, filters, extendedSearch, context);
 
                 if (paginated)
                 {
@@ -155,12 +156,13 @@ namespace BusinessAppFramework.Infrastructure.Services
             return context.Set<TSearchResult>();
         }
 
-        protected IQueryable<TSearchResult> GetSearchQuery(string constraintKey,
+        protected IQueryable<TSearchResult> GetSearchQuery(int? parentId, 
+                                                           string constraintKey,
                                                            List<string> filters,
                                                            bool extendedSearch,
                                                            DbContext context)
         {
-            var query = GetBaseQuery(context).AsNoTracking();
+            var query = GetBaseQuery(context).AsNoTracking();            
 
             query = query.OrderByDescending(e => e.DomainObjectId);
 
@@ -250,12 +252,13 @@ namespace BusinessAppFramework.Infrastructure.Services
             return x => EF.Property<string>(x, name).ToLower().Contains(lowerFilter);
         }
 
-        protected void LogSearchAsync(string methodName, string constraint, List<string> filters, bool extendedSearch)
+        protected void LogSearchAsync(string methodName, int? parentId, string constraint, List<string> filters, bool extendedSearch)
         {
             var filterString = filters == null || !filters.Any() ? "none" : string.Join(',', filters);
             var constraintString = string.IsNullOrEmpty(constraint) ? "none" : constraint;
+            var parentIdString = parentId.HasValue ? parentId.Value.ToString() : "none";
 
-            var msg = $"{GetType()}, {methodName}, constraint : {constraintString}, filters : {filterString}, extendedSearch : {extendedSearch}";
+            var msg = $"{GetType()}, {methodName}, parentId : {parentIdString}, constraint : {constraintString}, filters : {filterString}, extendedSearch : {extendedSearch}";
             _logger.LogInformation(msg);
         }
 

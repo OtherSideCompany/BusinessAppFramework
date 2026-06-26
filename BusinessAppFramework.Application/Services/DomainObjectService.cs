@@ -162,32 +162,7 @@ namespace BusinessAppFramework.Application.Services
             }
 
             return domainObjects;
-        }
-
-        public virtual async Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey)
-        {
-            var domainObjectReference = new DomainObjectReference
-            {
-                DomainObjectId = domainObjectId,
-                RelationKey = relationKey
-            };
-
-            await _domainObjectServiceDependencies.RelationService.HydrateDomainObjectReferenceAsync(domainObjectReference);
-
-            return domainObjectReference;
-        }
-
-        public async Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItem(int domainObjectId, string relationKey)
-        {
-            var domainObjectReferenceListItem = new DomainObjectReferenceListItem
-            {
-                DomainObjectId = domainObjectId
-            };
-
-            await _domainObjectServiceDependencies.RelationService.HydrateDomainObjectReferenceListItemAsync(domainObjectReferenceListItem, relationKey);
-
-            return domainObjectReferenceListItem;
-        }
+        }        
 
         public async Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
         {

@@ -16,5 +16,7 @@ namespace BusinessAppFramework.Application.Relations
         Task SetParentAsync(int? parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
         Task<int?> GetParentIdAsync(int childId, string relationKey, CancellationToken cancellationToken = default);
         Task<DomainObjectReference?> GetHydratedReferenceAsync(int parentId, int childId, string relationKey, CancellationToken cancellationToken = default);
+        Task<DomainObjectReference> GetHydratedDomainObjectReferenceAsync(int domainObjectId, string relationKey);
+        Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItemAsync(int domainObjectId, string relationKey);
     }
 }

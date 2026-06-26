@@ -99,19 +99,7 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetAllHydrated}";
             return (await PostAsync<List<T>>(route, domainObjectIds)).Data ?? new List<T>();
-        }
-
-        public async Task<DomainObjectReference?> GetHydratedDomainObjectReference(int domainObjectId, string relationKeyReference)
-        {
-            var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetHydratedReference}/{domainObjectId}/{relationKeyReference}";
-            return (await GetAsync<DomainObjectReference>(route)).Data;
-        }
-
-        public async Task<DomainObjectReferenceListItem?> GetHydratedDomainObjectReferenceListItem(int domainObjectReferenceListItemId, string relationKeyReference)
-        {
-            var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetHydratedReferenceList}/{domainObjectReferenceListItemId}/{relationKeyReference}";
-            return (await GetAsync<DomainObjectReferenceListItem>(route)).Data;
-        }
+        }        
 
         public async Task<DomainObjectApplicationActionResultPayload> SaveAsync(T domainObject, CancellationToken cancellationToken = default)
         {

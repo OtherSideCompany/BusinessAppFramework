@@ -13,10 +13,7 @@ namespace BusinessAppFramework.Application.Interfaces
         Task<List<T>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);
         Task<T> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<T?> GetOrDefaultHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
-        Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);
-
-        Task<DomainObjectReference> GetHydratedDomainObjectReference(int domainObjectId, string relationKey);
-        Task<DomainObjectReferenceListItem> GetHydratedDomainObjectReferenceListItem(int domainObjectId, string relationKey);
+        Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);        
 
         Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
 

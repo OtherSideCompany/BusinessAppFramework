@@ -123,7 +123,12 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
         #endregion
 
-        #region Private Methods        
+        #region Private Methods 
+
+        protected virtual void UpdatePropertiesEditorAvailableValuesParentIds()
+        {
+            
+        }
 
         protected override async Task OnParametersSetAsync()
         {
@@ -152,6 +157,8 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             {
                 await _workflow.RefreshWorkflowAsync();
             }
+
+            UpdatePropertiesEditorAvailableValuesParentIds();
 
             StateHasChanged();
         }

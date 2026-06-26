@@ -107,27 +107,7 @@ namespace BusinessAppFramework.Adapter.Controllers
         {
             var domainObjects = await _service.GetAllHydratedAsync(domainObjectIds);
             return Ok(domainObjects);
-        }
-
-        [HttpGet($"{DomainObjectRouteSegments.GetHydratedReference}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
-        public virtual async Task<ActionResult<DomainObjectReference>> GetHydratedDomainObjectReferenceAsync(
-            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
-            [FromRoute(Name = ApiRouteParams.Key)] string relationKey)
-        {
-            var domainObjectReference = await _service.GetHydratedDomainObjectReference(domainObjectId, relationKey);
-
-            return Ok(domainObjectReference);
-        }
-
-        [HttpGet($"{DomainObjectRouteSegments.GetHydratedReferenceList}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
-        public virtual async Task<ActionResult<DomainObjectReferenceListItem>> GetHydratedDomainObjectReferenceListItemAsync(
-            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
-            [FromRoute(Name = ApiRouteParams.Key)] string key)
-        {
-            var domainObjectReferenceListItem = await _service.GetHydratedDomainObjectReferenceListItem(domainObjectId, key);
-
-            return Ok(domainObjectReferenceListItem);
-        }
+        }        
 
 
         [HttpPut(DomainObjectRouteSegments.Save)]
