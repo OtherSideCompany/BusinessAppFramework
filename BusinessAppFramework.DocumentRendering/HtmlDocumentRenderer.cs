@@ -1,93 +1,127 @@
 ﻿using PuppeteerSharp;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Media;
 using Scriban;
 using Scriban.Runtime;
 
 namespace BusinessAppFramework.DocumentRendering
 {
-   public class HtmlDocumentRenderer : IHtmlDocumentRenderer
-   {
-      #region Fields
+    public class HtmlDocumentRenderer : IHtmlDocumentRenderer
+    {
+        #region Fields
+
+        private static readonly SemaphoreSlim _downloadSemaphore = new(1, 1);
+        private static bool _browserReady = false;  
+
+        #endregion
+
+        #region Properties
 
 
 
-      #endregion
+        #endregion
 
-      #region Properties
-
-
-
-      #endregion
-
-      #region Events
+        #region Events
 
 
 
-      #endregion
+        #endregion
 
-      #region Constructor
+        #region Constructor
 
-      public HtmlDocumentRenderer()
-      {
+        public HtmlDocumentRenderer()
+        {
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      #region Public Methods
+        #region Public Methods
 
-      public string RenderDocument(string htmlTemplate, List<object> models)
-      {
-         var template = TryParseTemplate(htmlTemplate);
+        public string RenderDocument(string htmlTemplate, List<object> models)
+        {
+            var template = TryParseTemplate(htmlTemplate);
 
-         var globalScriptObject = new ScriptObject();
+            var globalScriptObject = new ScriptObject();
 
-         foreach (var model in models)
-         {
-            globalScriptObject.Import(model);
-         }
+            foreach (var model in models)
+            {
+                globalScriptObject.Import(model);
+            }
 
-         var ctx = new TemplateContext();
-         ctx.PushGlobal(globalScriptObject);
+            var ctx = new TemplateContext();
+            ctx.PushGlobal(globalScriptObject);
 
-         return template.Render(ctx);
-      }
+            return template.Render(ctx);
+        }
 
-      public async Task<byte[]> RenderPdfDocumentAsync(string htmlContent)
-      {
-         var fetcher = new BrowserFetcher();
-         await fetcher.DownloadAsync();
+        public async Task<byte[]> RenderPdfDocumentAsync(string htmlContent)
+        {
+            await EnsureBrowserAsync();
 
-         using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
-         using var page = await browser.NewPageAsync();
+            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            using var page = await browser.NewPageAsync();
 
-         await page.EmulateMediaTypeAsync(MediaType.Print);
+            await page.EmulateMediaTypeAsync(MediaType.Print);
+            await page.SetContentAsync(htmlContent, new SetContentOptions
+            {
+                WaitUntil = [WaitUntilNavigation.Networkidle0]
+            });
 
-         await page.SetContentAsync(htmlContent);
+            return await page.PdfDataAsync(new PdfOptions
+            {
+                PreferCSSPageSize = true,
+                PrintBackground = true
+            });
+        }
 
-         return await page.PdfDataAsync(new PdfOptions
-         {
-            PreferCSSPageSize = true,
-            PrintBackground = true
-         });
-      }
+        private async Task EnsureBrowserAsync()
+        {
+            if (_browserReady)
+            {
+                return;
+            }
 
-      #endregion
+            await _downloadSemaphore.WaitAsync();
+            try
+            {
+                if (_browserReady)
+                {
+                    return;
+                }
 
-      #region Private Methods        
+                var fetcher = new BrowserFetcher();
+                var buildId = Chrome.DefaultBuildId;
 
-      private Template TryParseTemplate(string templateString)
-      {
-         var template = Template.Parse(templateString);
+                if (fetcher.GetInstalledBrowsers().All(b => b.BuildId != buildId))
+                {
+                    await fetcher.DownloadAsync(buildId);
+                }
 
-         if (template.HasErrors)
-         {
-            throw new InvalidOperationException("Erreur de parsing Scriban : " + string.Join(", ", template.Messages.Select(m => m.Message)));
-         }
+                _browserReady = true;
+            }
+            finally
+            {
+                _downloadSemaphore.Release();
+            }
+        }
 
-         return template;
-      }
+        #endregion
 
-      #endregion
-   }
+        #region Private Methods        
+
+        private Template TryParseTemplate(string templateString)
+        {
+            var template = Template.Parse(templateString);
+
+            if (template.HasErrors)
+            {
+                throw new InvalidOperationException("Erreur de parsing Scriban : " + string.Join(", ", template.Messages.Select(m => m.Message)));
+            }
+
+            return template;
+        }
+
+        #endregion
+    }
 }

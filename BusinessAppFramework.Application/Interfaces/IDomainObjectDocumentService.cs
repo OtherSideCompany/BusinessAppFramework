@@ -2,7 +2,7 @@
 
 namespace BusinessAppFramework.Application.Interfaces
 {
-   public interface IDomainObjectDocumentService<T> where T : DomainObject
+   public interface IDomainObjectDocumentService
    {
       Task<int> AttachAsync(int parentId, string relationKey, string fileName, string contentType, long size, Stream content, CancellationToken ct = default);
       Task<(Stream stream, string contentType, string fileName)?> OpenReadAsync(int documentId, CancellationToken ct = default);

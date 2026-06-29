@@ -1,25 +1,24 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
+using BusinessAppFramework.WebUI.Documents;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace BusinessAppFramework.WebUI.Services
 {
-    public class DomainObjectDocumentServiceGateway<T> : HttpService, IDomainObjectDocumentServiceGateway<T> where T : DomainObject
+    public class DocumentServiceGateway : HttpService, IDocumentServiceGateway
     {
         #region Fields
 
         private readonly IConfiguration _configuration;
 
-        private string _controllerKey => _domainObjectRouteKeyRegistry.GetRouteKey<T>();
-        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Documents}/{_controllerKey}";
-
-        private IDomainObjectRouteKeyRegistry _domainObjectRouteKeyRegistry;
+        private string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Documents}";
 
         #endregion
 
@@ -31,18 +30,17 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Constructor
 
-        public DomainObjectDocumentServiceGateway(
+        public DocumentServiceGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
             IConfiguration configuration,
             IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
-            ILogger<DomainObjectDocumentServiceGateway<T>> logger,
+            ILogger<DocumentServiceGateway> logger,
             ILocalizedStringService localizedStringService,
             IUserDialogService userDialogService) :
          base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _configuration = configuration;
-            _domainObjectRouteKeyRegistry = domainObjectRouteKeyRegistry;
         }
 
         #endregion
@@ -88,11 +86,23 @@ namespace BusinessAppFramework.WebUI.Services
             return await response.Content.ReadFromJsonAsync<bool>(cancellationToken);
         }
 
-        public string GetDownloadDocumentUrl(int documentId, CancellationToken cancellationToken = default)
+        public async Task<DocumentDownloadResult?> DownloadDocumentAsync(int documentId, CancellationToken cancellationToken = default)
         {
-            var apiBaseUrl = _configuration["ApiBaseUrl"];
-            var route = $"{_baseUrl}/{DocumentRouteSegments.GetDownloadUrl}/{documentId}";
-            return $"{apiBaseUrl}/{route}";
+            var route = $"{_baseUrl}/{DocumentRouteSegments.Download}/{documentId}";
+            var response = await CreateClient().GetAsync(route, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
+
+            response.EnsureSuccessStatusCode();
+
+            var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+            var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
+                ?? response.Content.Headers.ContentDisposition?.FileName?.Trim('"')
+                ?? $"document-{documentId}";
+
+            return new DocumentDownloadResult(bytes, contentType, fileName);
         }
 
         #endregion

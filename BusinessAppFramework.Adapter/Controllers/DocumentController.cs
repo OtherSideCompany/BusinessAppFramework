@@ -9,11 +9,11 @@ namespace BusinessAppFramework.Adapter.Controllers
 {
     [ApiController]
     [Authorize]
-    public class DomainObjectDocumentController<TDomainObject> : ControllerBase where TDomainObject : DomainObject
+    public class DocumentController : ControllerBase
     {
         #region Fields
 
-        private readonly IDomainObjectDocumentService<TDomainObject> _domainObjectDocumentService;
+        private readonly IDomainObjectDocumentService _domainObjectDocumentService;
 
         #endregion
 
@@ -25,8 +25,8 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         #region Constructor
 
-        public DomainObjectDocumentController(
-           IDomainObjectDocumentService<TDomainObject> domainObjectDocumentService)
+        public DocumentController(
+           IDomainObjectDocumentService domainObjectDocumentService)
         {
             _domainObjectDocumentService = domainObjectDocumentService;
         }
@@ -69,7 +69,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(exists);
         }
 
-        [HttpGet($"{DocumentRouteSegments.GetDownloadUrl}/{{{ApiRouteParams.DocumentId}:int}}")]
+        [HttpGet($"{DocumentRouteSegments.Download}/{{{ApiRouteParams.DocumentId}:int}}")]
         public async Task<ActionResult> DownloadAsync(
             [FromRoute(Name = ApiRouteParams.DocumentId)] int documentId, CancellationToken ct)
         {

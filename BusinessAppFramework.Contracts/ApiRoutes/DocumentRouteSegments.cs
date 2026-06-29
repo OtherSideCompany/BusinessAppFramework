@@ -9,7 +9,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string Upload = $"upload";
         public const string Delete = $"delete";
         public const string Exists = $"exists";
-        public const string GetDownloadUrl = $"get-download-url";
+        public const string Download = $"download";
         public const string GetHtml = $"html";
         public const string DownloadPdf = $"download-pdf";
     }

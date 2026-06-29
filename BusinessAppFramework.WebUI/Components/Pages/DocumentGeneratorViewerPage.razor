@@ -3,14 +3,13 @@
 @using BusinessAppFramework.Contracts.ApiRoutes
 @using BusinessAppFramework.WebUI.Interfaces
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.Extensions.Configuration
+@using Microsoft.JSInterop
 @using MudBlazor
 
 @attribute [Authorize]
 
 @inject IDocumentGeneratorGateway DocumentGeneratorGateway
-@inject NavigationManager Nav
-@inject IConfiguration Configuration
+@inject IJSRuntime JS
 
 <div style="margin: 8px auto; padding-bottom: 16px">
 
@@ -55,10 +54,14 @@
         _isLoading = false;
     }
 
-    private void DownloadPdfDocument(MouseEventArgs args)
+    private async Task DownloadPdfDocument()
     {
-        var route = $"{ApiRouteSegments.Root}/{ApiRouteSegments.DocumentGenerator}/{DocumentRouteSegments.DownloadPdf}/{DocumentKey}/{Id}";
-        var fullUrl = $"{Configuration["ApiBaseUrl"]}/{route}";
-        Nav.NavigateTo(fullUrl, forceLoad: true);
+        var result = await DocumentGeneratorGateway.DownloadPdfAsync(DocumentKey, Id);
+
+        if (result is null)
+            return;
+
+        var base64 = Convert.ToBase64String(result.Content);
+        await JS.InvokeVoidAsync("oscDownload", result.FileName, result.ContentType, base64);
     }
 }
