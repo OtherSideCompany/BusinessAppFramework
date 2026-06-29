@@ -26,7 +26,6 @@ namespace BusinessAppFramework.WebUI.Components.Editor
         protected bool _isLoading;
         protected int? _loadedParentId;
         protected Branch? _loadedBranch;
-
         protected Task NotifyItemChanged() => ItemChanged.InvokeAsync();
 
         #endregion

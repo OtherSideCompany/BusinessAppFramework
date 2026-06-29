@@ -5,6 +5,7 @@
 @using Contracts
 @using Domain.DomainObjects
 @using MudBlazor
+@using MudBlazor.Utilities
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
@@ -43,34 +44,75 @@
 
     <CascadingValue Value="(Func<Task>)NotifyItemChanged">
 
-        <MudDataGrid T="Node"
-                     EditMode="DataGridEditMode.Cell"
-                     EditTrigger="DataGridEditTrigger.OnRowClick"
-                     Items="@VisibleNodes"
-                     SortMode="@SortMode.None"
-                     ReadOnly="false"
-                     Bordered="true"
-                     Dense="true"
-                     ColumnResizeMode="ResizeMode.Column"
-                     Elevation="0"
-                     Class="osc-datagrid"
-                     Virtualize="false"
-                     CommittedItemChanges="OnCommitedItemChanged">
-            <Columns>
-                @ColumnsContent
-                <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
-                    <EditTemplate>
-                        <MudStack Row="true" Spacing="0">
-                            @ItemActions?.Invoke(context.Item)
-                            <MudIconButton Icon="@Icons.Material.Outlined.Delete"
-                                           Size="Size.Small"
-                                           Color="Color.Error"
-                                           OnClick="async () => await DeleteItemAsync(context.Item.Id)" />
-                        </MudStack>
-                    </EditTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid>
+        @if (RowDetailContent != null)
+        {
+            <MudDataGrid T="Node"
+                         EditMode="DataGridEditMode.Cell"
+                         EditTrigger="DataGridEditTrigger.OnRowClick"
+                         Items="@VisibleNodes"
+                         SortMode="@SortMode.None"
+                         ReadOnly="false"
+                         Bordered="true"
+                         Dense="true"
+                         ColumnResizeMode="ResizeMode.Column"
+                         Elevation="0"
+                         Class="osc-datagrid"
+                         Virtualize="false"
+                         CommittedItemChanges="OnCommitedItemChanged">
+                <Columns>
+                    <HierarchyColumn T="Node" EnableHeaderToggle="true" />
+                    @ColumnsContent
+                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
+                        <EditTemplate>
+                            <MudStack Row="true" Spacing="0">
+                                @ItemActions?.Invoke(context.Item)
+                                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                               Size="Size.Small"
+                                               Color="Color.Error"
+                                               OnClick="async () => await DeleteItemAsync(context.Item.Id)" />
+                            </MudStack>
+                        </EditTemplate>
+                    </TemplateColumn>
+                </Columns>
+
+                <ChildRowContent Context="rowContext">
+                    @RowDetailContent?.Invoke(rowContext.Item)
+                </ChildRowContent>
+
+            </MudDataGrid>
+        }
+        else
+        {
+            <MudDataGrid T="Node"
+                         EditMode="DataGridEditMode.Cell"
+                         EditTrigger="DataGridEditTrigger.OnRowClick"
+                         Items="@VisibleNodes"
+                         SortMode="@SortMode.None"
+                         ReadOnly="false"
+                         Bordered="true"
+                         Dense="true"
+                         ColumnResizeMode="ResizeMode.Column"
+                         Elevation="0"
+                         Class="osc-datagrid"
+                         Virtualize="false"
+                         CommittedItemChanges="OnCommitedItemChanged">
+                <Columns>
+                    @ColumnsContent
+                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
+                        <EditTemplate>
+                            <MudStack Row="true" Spacing="0">
+                                @ItemActions?.Invoke(context.Item)
+                                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                               Size="Size.Small"
+                                               Color="Color.Error"
+                                               OnClick="async () => await DeleteItemAsync(context.Item.Id)" />
+                            </MudStack>
+                        </EditTemplate>
+                    </TemplateColumn>
+                </Columns>
+
+            </MudDataGrid>
+        }
 
     </CascadingValue>
 
@@ -79,6 +121,7 @@
 @code {
     [Parameter] public RenderFragment? ToolBarActions { get; set; }
     [Parameter] public RenderFragment? ColumnsContent { get; set; }
+    [Parameter] public RenderFragment<Node>? RowDetailContent { get; set; }
     [Parameter] public RenderFragment<Node>? ItemActions { get; set; }
     [Parameter] public bool DisplayHeader { get; set; } = true;
 }
