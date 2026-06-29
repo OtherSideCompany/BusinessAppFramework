@@ -89,7 +89,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             }
         }
 
-        protected async Task LoadAsync(bool refresh)
+        protected virtual async Task LoadAsync(bool refresh)
         {
             if ((_isLoaded && !refresh) || _isLoading || Branch is null)
                 return;
@@ -108,8 +108,15 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             _loadedParentId = ParentId;
             _loadedBranch = Branch;
 
+            await SpecificLoadAsync(refresh);
+
             _isLoaded = true;
             _isLoading = false;
+        }
+
+        protected virtual async Task SpecificLoadAsync(bool refresh)
+        {
+            
         }
 
         private async Task AddItemFromNodeAsync(Node node)
@@ -118,11 +125,11 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             node.DomainObject = domainObject;
         }
 
-        protected async virtual Task CreateItemAsync()
+        protected async virtual Task<Node?> CreateItemAsync()
         {
             if (ParentId == null || Branch == null)
             {
-                return;
+                return null;
             }
 
             var node = await TreeGateway.CreateNode(ParentId.Value, Branch.ParentChildRelationKey);
@@ -133,6 +140,8 @@ namespace BusinessAppFramework.WebUI.Components.Editor
                 await AddItemFromNodeAsync(node);
                 await OnBranchChanged.InvokeAsync();
             }
+
+            return node;
         }
 
         protected async Task DeleteItemAsync(int id)
@@ -157,7 +166,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             return DataGridEditFormAction.Close;
         }
 
-        private static IEnumerable<Node> FlattenNodes(IEnumerable<Node>? nodes)
+        protected static IEnumerable<Node> FlattenNodes(IEnumerable<Node>? nodes)
         {
             if (nodes == null)
                 yield break;
