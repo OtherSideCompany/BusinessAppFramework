@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens.Experimental;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -167,8 +168,17 @@ namespace BusinessAppFramework.WebUI.Services
 
         private async Task<HttpResult<T>> CreateHttpResultAsync<T>(HttpResponseMessage httpResponseMessage)
         {
-            var data = await ReadFromJsonAsync<T>(httpResponseMessage);
+            if (HasEmptyBody(httpResponseMessage))
+                return new HttpResult<T>(true, default, null, (int)httpResponseMessage.StatusCode);
+
+            var data = await ReadFromJsonAsync<T>(httpResponseMessage);         
             return new HttpResult<T>(true, data, null, (int)httpResponseMessage.StatusCode);
+        }
+
+        private static bool HasEmptyBody(HttpResponseMessage httpResponseMessage)
+        {
+            return httpResponseMessage.StatusCode == HttpStatusCode.NoContent
+                || httpResponseMessage.Content.Headers.ContentLength is null or 0;
         }
 
         private async Task<HttpResult> CreateFailureHttpResultAsync(HttpResponseMessage response)

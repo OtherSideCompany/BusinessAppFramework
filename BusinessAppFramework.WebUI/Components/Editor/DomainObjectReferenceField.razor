@@ -1,5 +1,4 @@
 @using Application.Descriptors
-@using Application.Relations
 @using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Application.Search
 @using BusinessAppFramework.WebUI.Components.SearchList
@@ -84,7 +83,7 @@ else
                      Adornment="Adornment.End"
                      OnAdornmentClick="OpenSelector"
                      Placeholder="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.TypeToSearchKey)">
-        <NoItemsTemplate>
+        <AfterItemsTemplate>
             <MudStack>
                 <MudButton FullWidth="true"
                            StartIcon="@Icons.Material.Outlined.Search"
@@ -92,7 +91,7 @@ else
                     @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
                 </MudButton>
             </MudStack>
-        </NoItemsTemplate>
+        </AfterItemsTemplate>
     </MudAutocomplete>
 }
 

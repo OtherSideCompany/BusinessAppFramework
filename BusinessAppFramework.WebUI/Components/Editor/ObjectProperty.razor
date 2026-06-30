@@ -1,6 +1,5 @@
 ﻿@using System.Reflection
 @using BusinessAppFramework.Application.Interfaces
-@using BusinessAppFramework.Application.Search
 @using BusinessAppFramework.Contracts
 @using BusinessAppFramework.WebUI.Interfaces
 @using Domain.DomainObjects
@@ -52,7 +51,7 @@
                       Value="@(_propertyValue?.ToString())"
                       Variant="@Variant"
                       Sizing="InputSizing.Auto"
-                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
+                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"/>
     }
     else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
     {

@@ -87,7 +87,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             var branch = tree.GetBranch(relationKey);
 
             if (branch == null)
-                return null;
+                return NoContent();
 
             await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<int>());        
 
@@ -131,6 +131,9 @@ namespace BusinessAppFramework.Adapter.Controllers
                 node.Summary = await searchService.GetSummaryAsync(domainObject.Id);
             }
 
+            if (node == null)
+                return NoContent();
+
             return Ok(node);
         }
 
@@ -156,6 +159,9 @@ namespace BusinessAppFramework.Adapter.Controllers
                 dynamic searchService = _searchServiceFactory.CreateSearchService(searchResultType);
                 node.Summary = await searchService.GetSummaryAsync(domainObject.Id);
             }
+
+            if (node == null)
+                return NoContent();
 
             return Ok(node);
         }

@@ -58,6 +58,9 @@ namespace BusinessAppFramework.Adapter.Controllers
         {
             var reference = await _relationService.GetHydratedReferenceAsync(parentDomainObjectId, domainObjectId, key);
 
+            if (reference == null)
+                return NoContent();
+
             return Ok(reference);
         }
 

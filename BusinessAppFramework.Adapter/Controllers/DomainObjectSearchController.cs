@@ -73,6 +73,10 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
             var result = await _searchService.GetSummaryAsync(domainObjectId);
+
+            if (result == null)
+                return NoContent();
+
             return Ok(result);
         }
 
