@@ -1,4 +1,4 @@
-﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Interfaces
 @using Contracts
 @using Domain
 @using MudBlazor
@@ -8,36 +8,77 @@
 @inject ILocalizedStringService LocalizedStringService
 
 <style>
-    .menu-action-button .mud-button-root {
-        background-color: var(--mud-palette-surface);
-        border-color: var(--mud-palette-divider);
+    .osc-btn {
+        font-weight: normal;
         border-radius: 16px;
-        padding: 4px 14px;
-        font-weight: 400;
+        text-transform: none;
+        border: 0px;
+        transition: background-color .15s, border-color .15s;
+        height: 32px;
+        min-height: 32px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .menu-action-button .mud-button-root:hover {
-        background: var(--mud-palette-background-grey) !important;
-        border-color: var(--mud-palette-divider) !important;
+    .osc-btn-bordered {
+        border: 1px solid var(--mud-palette-lines-inputs);
     }
+
+    .osc-btn.mud-icon-button {
+        border-radius: 16px !important;
+        height: 32px;
+        width: 32px;
+        min-width: 32px;
+        padding: 0;
+    }
+
+    .osc-btn--neutral {
+        background: var(--mud-palette-surface);
+        color: var(--mud-palette-text-primary);
+    }
+
+        .osc-btn--neutral:hover:not(:disabled) {
+            background: #e4e6e9;
+        }
+
+        .osc-btn--neutral:active:not(:disabled) {
+            background: #d6d9dd;
+        }
 </style>
 
-<MudMenu Label="@LocalizedStringService.Get(ActionKey)"
-         Variant="Variant.Outlined"
-         Size="Size.Small"
-         EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
-         StartIcon="@IconFactory.CreateIcon(ActionKey)"
-         IconColor="@_color"
-         Disabled="@Disabled"
-         Dense="true"
-         Class="menu-action-button">
-    @MenuItems
+<MudMenu Dense="true"
+         Disabled="@Disabled">
+    <ActivatorContent Context="context">
+        <MudButton Variant="Variant.Outlined"
+                   Size="Size.Small"
+                   StartIcon="@IconFactory.CreateIcon(ActionKey)"
+                   EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                   Disabled="@Disabled"
+                   Ripple="false"
+                   OnClick="@context.ToggleAsync"
+                   Class="@_class">
+            @LocalizedStringService.Get(ActionKey)
+        </MudButton>
+    </ActivatorContent>
+    <ChildContent>
+        @MenuItems
+    </ChildContent>
 </MudMenu>
 
 @code {
     [Parameter] public string ActionKey { get; set; } = "";
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public RenderFragment? MenuItems { get; set; }
+    [Parameter] public bool Bordered { get; set; }
 
-    private Color _color { get; set; } = Color.Dark;
+    private string _class
+    {
+        get
+        {
+            var borderedClass = Bordered ? "osc-btn-bordered" : String.Empty;
+            return $"osc-btn osc-btn--neutral {borderedClass}";
+        }
+    }
 }

@@ -46,11 +46,9 @@
                 </MudGrid>
 
             </MudStack>
-
         }
 
     </MudStack>
-
 }
 
 @code {
@@ -93,24 +91,16 @@
 
     private List<PropertyCategory> GetCategoriesOrDefault()
     {
-        List<PropertyCategory> categories;
+        if (!PropertyCategories.Any())
+            return GetDefaultCategory();
 
-        if (PropertyCategories.Any())
-        {
-            categories = PropertyCategories;
+        var categories = new List<PropertyCategory>(PropertyCategories);
 
-            if (_uncategorizedPropertyCategory.PropertyEditions.Any())
-            {
-                categories.Add(_uncategorizedPropertyCategory);
-            }
-        }
-        else
-        {
-            categories = GetDefaultCategory();
-        }
+        if (_uncategorizedPropertyCategory.PropertyEditions.Any())
+            categories.Add(_uncategorizedPropertyCategory);
 
         return categories;
-    }
+    }    
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
     {
