@@ -61,13 +61,13 @@ namespace BusinessAppFramework.WebUI.Services
 
         public void SnackError(string message)
         {
-            _snackbar.Add(message, Severity.Error);
+            _snackbar.Add(message, Severity.Error, ConfigureTransition);
         }
 
         public void SnackShow(string message)
         {
-            _snackbar.Add(message, Severity.Info);
-        }
+            _snackbar.Add(message, Severity.Info, ConfigureTransition);
+        }        
 
         public async Task DialogErrorAsync(string message)
         {
@@ -89,7 +89,11 @@ namespace BusinessAppFramework.WebUI.Services
 
         #region Private Methods
 
-
+        private void ConfigureTransition(SnackbarOptions options)
+        {
+            options.HideTransitionDuration = 200;
+            options.ShowTransitionDuration = 200;
+        }
 
         #endregion
     }

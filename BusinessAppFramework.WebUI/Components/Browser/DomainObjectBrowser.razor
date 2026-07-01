@@ -188,7 +188,8 @@
 
                 <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
                               ActionKey="@action.ActionKey"
-                              Disabled="@disabled" />
+                              Disabled="@disabled" 
+                              Bordered="true" />
             }
 
         </MudStack>
@@ -220,6 +221,17 @@
             </Columns>
 
         </MudDataGrid>
+
+        @if (!_pendingGridReload && _totalItems == 0)
+        {
+            <MudAlert Severity="Severity.Normal" Variant="Variant.Text" Dense="true">
+                @LocalizedStringService.Get(MessageKeys.NoResultsFound)
+                @if (!string.IsNullOrEmpty(_searchText))
+                {
+                    @($" : {LocalizedStringService.Get(MessageKeys.PreciseSearchOrRunExtendedSearch)}".ToLower())
+                }
+            </MudAlert>
+        }
 
     </Results>
 

@@ -14,5 +14,7 @@
         public static string InvalidPassword = "InvalidPassword";
         public static string ServerError = "ServerError";
         public static string CycleDetected = "CycleDetected";
+        public static string NoResultsFound = "NoResultsFound";
+        public static string PreciseSearchOrRunExtendedSearch = "PreciseSearchOrRunExtendedSearch";
     }
 }
