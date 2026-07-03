@@ -11,10 +11,7 @@ namespace BusinessAppFramework.WebUI.Services
     {
         #region Fields
 
-        private string _controllerKey => _searchRouteKeyRegistry.GetRouteKey<TSearchResult>();
-        protected string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.Search}/{_controllerKey}";
-
-        private ISearchRouteKeyRegistry _searchRouteKeyRegistry;
+        protected string _baseUrl => ApiRoute.SearchControllerRoute<TSearchResult>();
 
         #endregion
 
@@ -23,13 +20,12 @@ namespace BusinessAppFramework.WebUI.Services
         public DomainObjectSearchGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
-            ISearchRouteKeyRegistry searchRouteKeyRegistry,
             ILogger<DomainObjectSearchGateway<TSearchResult>> logger,
             ILocalizedStringService localizedStringService,
             IUserDialogService userDialogService)
             : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
-            _searchRouteKeyRegistry = searchRouteKeyRegistry;
+            
         }
 
         #endregion

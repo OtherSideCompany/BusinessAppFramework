@@ -34,7 +34,6 @@ namespace BusinessAppFramework.WebUI.Services
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
             IConfiguration configuration,
-            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
             ILogger<DocumentServiceGateway> logger,
             ILocalizedStringService localizedStringService,
             IUserDialogService userDialogService) :

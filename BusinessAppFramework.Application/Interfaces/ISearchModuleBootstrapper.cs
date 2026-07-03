@@ -9,7 +9,5 @@ namespace BusinessAppFramework.Application.Interfaces
         IEnumerable<Assembly> GetFrontendServiceAssemblies();
         void RegisterBackendServices(IServiceCollection services);
         void RegisterFrontendServices(IServiceCollection services);
-        void RegisterSearchRouteKeys(IServiceProvider serviceProvider);
-
     }
 }

@@ -11,11 +11,7 @@ namespace BusinessAppFramework.WebUI.Services
     public class DomainObjectServiceGateway<T> : HttpService, IDomainObjectServiceGateway<T> where T : DomainObject, new()
     {
         #region Fields
-
-        protected string _controllerKey => _domainObjectRouteKeyRegistry.GetRouteKey<T>();
-        protected string _baseUrl => $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{_controllerKey}";
-
-        private IDomainObjectRouteKeyRegistry _domainObjectRouteKeyRegistry;
+        protected string _baseUrl => ApiRoute.DomainObjectControllerRoute<T>();
 
         #endregion
 
@@ -36,13 +32,12 @@ namespace BusinessAppFramework.WebUI.Services
         public DomainObjectServiceGateway(
             IHttpClientFactory clientFactory,
             IOptions<ApiClientOptions> apiClientOptions,
-            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
             ILogger<DomainObjectServiceGateway<T>> logger,
             ILocalizedStringService localizedStringService,
             IUserDialogService userDialogService)
           : base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
-            _domainObjectRouteKeyRegistry = domainObjectRouteKeyRegistry;
+            
         }
 
         #endregion

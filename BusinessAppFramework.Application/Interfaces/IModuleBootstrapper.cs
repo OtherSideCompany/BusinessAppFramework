@@ -21,7 +21,6 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterDomainObjectTypesMapping(IServiceProvider serviceProvider);
         void RegisterWorkflows(IServiceProvider serviceProvider);
         void RegisterWorkflowContextLoader(IServiceProvider serviceProvider);
-        void RegisterDomainObjectRouteKeys(IServiceProvider serviceProvider);
         void RegisterComponents(IServiceProvider serviceProvider);
         void RegisterTrees(IServiceProvider serviceProvider);
         void RegisterReferences(IServiceProvider serviceProvider);

@@ -24,7 +24,6 @@ namespace BusinessAppFramework.Application.Descriptors
         public string PageNavigationApplicationActionKey { get; set; }
 
         public DomainObjectBrowserDescriptor(
-            IDomainObjectRouteKeyRegistry domainObjectRouteKeyRegistry,
             IDomainObjectNavigationApplicationActionFactory domainObjectNavigationApplicationActionFactory,
             string pageNavigationApplicationActionKey,
             List<string>? constraintKeys = null)
@@ -43,7 +42,7 @@ namespace BusinessAppFramework.Application.Descriptors
             createAction.ExecuteRoute =
                 $"{ApiRouteSegments.Root}/" +
                 $"{ApiRouteSegments.DomainObjects}/" +
-                $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
+                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/" +
                 $"{ApiRouteSegments.Create}";
 
             var importExportAction = new DomainObjectHttpApplicationAction
@@ -64,7 +63,7 @@ namespace BusinessAppFramework.Application.Descriptors
             deleteAction.ExecuteRoute =
                 $"{ApiRouteSegments.Root}/" +
                 $"{ApiRouteSegments.DomainObjects}/" +
-                $"{domainObjectRouteKeyRegistry.GetRouteKey<TDomainObject>()}/" +
+                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/" +
                 $"{ApiRouteSegments.Delete}/" +
                 $"{ApiRouteParams.DomainObjectId}";
 
