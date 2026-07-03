@@ -16,5 +16,6 @@
         public static string CycleDetected = "CycleDetected";
         public static string NoResultsFound = "NoResultsFound";
         public static string PreciseSearchOrRunExtendedSearch = "PreciseSearchOrRunExtendedSearch";
+        public static string UnsavedChangedDetectedProceed = "UnsavedChangedDetectedProceed";
     }
 }

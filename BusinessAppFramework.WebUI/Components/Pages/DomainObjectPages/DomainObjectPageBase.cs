@@ -6,11 +6,12 @@ using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
 
 namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 {
-    public abstract class DomainObjectPageBase<TDomainObject> : ComponentBase where TDomainObject : DomainObject, new()
+    public abstract class DomainObjectPageBase<TDomainObject> : ComponentBase, IDisposable where TDomainObject : DomainObject, new()
     {
         #region Fields
 
@@ -22,6 +23,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         [Inject] protected IDialogService DialogService { get; set; } = default!;
         [Inject] protected IIconFactory IconFactory { get; set; } = default!;
         [Inject] protected IRelationServiceGateway RelationServiceGateway { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         protected virtual string? PageTreeKey { get; }
 
@@ -30,6 +32,8 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         protected int? _loadedId;
         protected Workflow.Workflow? _workflow;
         private List<IEditable> _editableComponents { get; set; } = new();
+
+        private IDisposable? _locationChangingRegistration;
 
         #endregion
 
@@ -121,9 +125,28 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             await ExecuteApplicationActionAsync(applicationAction, Id);
         }
 
+        public void Dispose()
+        {
+            _locationChangingRegistration?.Dispose();
+        }
+
         #endregion
 
         #region Private Methods 
+
+        protected override void OnInitialized()
+        {
+            _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(HandleLocationChanging);
+        }
+
+        private async ValueTask HandleLocationChanging(LocationChangingContext context)
+        {
+            if (!IsDirty)
+                return;
+
+            if (!await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.UnsavedChangedDetectedProceed)))
+                context.PreventNavigation();
+        }
 
         private void DisplayPayloadMessage(DomainObjectApplicationActionResultPayload? payload)
         {
