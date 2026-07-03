@@ -112,7 +112,12 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
             if (payload?.ErrorMessageKey != null)
             {
-                UserDialogService.SnackError(LocalizedStringService.Get(payload?.ErrorMessageKey!));
+                UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
+            }
+
+            if (payload?.ConfirmationMessageKey != null)
+            {
+                UserDialogService.SnackShow(LocalizedStringService.Get(payload.ConfirmationMessageKey));
             }
         }
 
