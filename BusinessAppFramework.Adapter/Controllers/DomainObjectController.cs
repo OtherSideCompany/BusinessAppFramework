@@ -169,7 +169,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             }
             catch (DomainException exception)
             {
-                return BuildErrorPayload(exception);
+                return Ok(BuildErrorPayload(exception));
             }
         }
 
@@ -190,14 +190,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             return applicationActionResultPayload;
         }
 
-        private ActionResult<DomainObjectApplicationActionResultPayload> BuildErrorPayload(DomainException exception)
+        private DomainObjectApplicationActionResultPayload BuildErrorPayload(DomainException exception)
         {
             var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload()
             {
                 ErrorMessageKey = exception.ErrorKey
             };
 
-            return Ok(applicationActionResultPayload);
+            return applicationActionResultPayload;
         }
 
         #endregion
