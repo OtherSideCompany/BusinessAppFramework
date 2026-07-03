@@ -12,6 +12,6 @@ namespace BusinessAppFramework.WebUI.Interfaces
         Task<T?> CreateAsync();
         Task<DomainObjectApplicationActionResultPayload> CreateAsync(T domainobject);
         Task<DomainObjectApplicationActionResultPayload> SaveAsync(T domainObject, CancellationToken cancellationToken = default);
-        Task DeleteAsync(int domainObjectId);
+        Task<DomainObjectApplicationActionResultPayload> DeleteAsync(int domainObjectId);
     }
 }

@@ -27,6 +27,6 @@ namespace BusinessAppFramework.Application.Interfaces
 
         Task SaveIndexAsync(IIndexable domainObject);
 
-        Task<bool> DeleteAsync(int domainObjectId);
+        Task DeleteAsync(int domainObjectId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Application.Exceptions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts.ApiRoutes;
@@ -47,40 +48,54 @@ namespace BusinessAppFramework.Adapter.Controllers
         [HttpPost(DomainObjectRouteSegments.Create)]
         public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> CreateAsync()
         {
-            var domainObject = await _service.CreateAsync();
-
-            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
-            applicationActionResultPayload.Changes.Add(new DomainObjectChange
+            try
             {
-                DomainObjectId = domainObject.Id,
-                ChangeType = ChangeType.Added
-            });
+                var domainObject = await _service.CreateAsync();
 
-            return Ok(applicationActionResultPayload);
+                var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
+                applicationActionResultPayload.Changes.Add(new DomainObjectChange
+                {
+                    DomainObjectId = domainObject.Id,
+                    ChangeType = ChangeType.Added
+                });
+
+                return Ok(applicationActionResultPayload);
+            }
+            catch (DomainException exception)
+            {
+                return Ok(BuildErrorPayload(exception));
+            }
         }
 
         [HttpPost(DomainObjectRouteSegments.CreateFromDomainObject)]
         public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> CreateAsync(
             [FromBody] TDomainObject domainObject)
         {
-            await _service.CreateAsync(domainObject);
-
-            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
-            applicationActionResultPayload.Changes.Add(new DomainObjectChange
+            try
             {
-                DomainObjectId = domainObject.Id,
-                ChangeType = ChangeType.Added
-            });
+                await _service.CreateAsync(domainObject);
 
-            return Ok(applicationActionResultPayload);
+                var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
+                applicationActionResultPayload.Changes.Add(new DomainObjectChange
+                {
+                    DomainObjectId = domainObject.Id,
+                    ChangeType = ChangeType.Added
+                });
+
+                return Ok(applicationActionResultPayload);
+            }
+            catch (DomainException exception)
+            {
+                return Ok(BuildErrorPayload(exception));
+            }
         }
 
         [HttpGet($"{DomainObjectRouteSegments.Get}/{{{ApiRouteParams.DomainObjectId}:int}}")]
         public virtual async Task<ActionResult<TDomainObject>> GetAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
-            var domainObject = await _service.GetAsync(domainObjectId);
 
+            var domainObject = await _service.GetAsync(domainObjectId);
             return Ok(domainObject);
         }
 
@@ -97,7 +112,6 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
             var domainObject = await _service.GetHydratedAsync(domainObjectId);
-
             return Ok(domainObject);
         }
 
@@ -107,42 +121,56 @@ namespace BusinessAppFramework.Adapter.Controllers
         {
             var domainObjects = await _service.GetAllHydratedAsync(domainObjectIds);
             return Ok(domainObjects);
-        }        
+        }
 
 
         [HttpPut(DomainObjectRouteSegments.Save)]
         public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> SaveAsync(
             [FromBody] TDomainObject domainObject)
         {
-            var (isValid, validationError) = await _service.ValidateSaveAsync(domainObject);
-
-            if (!isValid)
+            try
             {
-                var payload = new DomainObjectApplicationActionResultPayload()
-                {
-                    ErrorMessageKey = validationError
-                };
-                return Ok(payload);
-            }
+                var (isValid, validationError) = await _service.ValidateSaveAsync(domainObject);
 
-            await _service.SaveAsync(domainObject);
-            return Ok(CreateModifiedPayload(domainObject.Id));
+                if (!isValid)
+                {
+                    var payload = new DomainObjectApplicationActionResultPayload()
+                    {
+                        ErrorMessageKey = validationError
+                    };
+                    return Ok(payload);
+                }
+
+                await _service.SaveAsync(domainObject);
+                return Ok(CreateModifiedPayload(domainObject.Id));
+            }
+            catch (DomainException exception)
+            {
+                return Ok(BuildErrorPayload(exception));
+            }
         }
 
         [HttpDelete($"{DomainObjectRouteSegments.Delete}/{{{ApiRouteParams.DomainObjectId}:int}}")]
         public virtual async Task<ActionResult<DomainObjectApplicationActionResultPayload>> DeleteAsync(
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
-            await _service.DeleteAsync(domainObjectId);
-
-            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
-            applicationActionResultPayload.Changes.Add(new DomainObjectChange
+            try
             {
-                DomainObjectId = domainObjectId,
-                ChangeType = ChangeType.Deleted
-            });
+                await _service.DeleteAsync(domainObjectId);
 
-            return Ok(applicationActionResultPayload);
+                var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
+                applicationActionResultPayload.Changes.Add(new DomainObjectChange
+                {
+                    DomainObjectId = domainObjectId,
+                    ChangeType = ChangeType.Deleted
+                });
+
+                return Ok(applicationActionResultPayload);
+            }
+            catch (DomainException exception)
+            {
+                return BuildErrorPayload(exception);
+            }
         }
 
         #endregion
@@ -162,14 +190,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             return applicationActionResultPayload;
         }
 
-        protected DomainObjectApplicationActionResultPayload CreateErrorPayload(string errorMessageKey)
+        private ActionResult<DomainObjectApplicationActionResultPayload> BuildErrorPayload(DomainException exception)
         {
             var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload()
             {
-                ErrorMessageKey = errorMessageKey
+                ErrorMessageKey = exception.ErrorKey
             };
 
-            return applicationActionResultPayload;
+            return Ok(applicationActionResultPayload);
         }
 
         #endregion

@@ -3,6 +3,7 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -100,14 +101,18 @@ namespace BusinessAppFramework.WebUI.Services
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.Save}";
             var result = await PutAsync<DomainObjectApplicationActionResultPayload>(route, domainObject);
-            return result?.Data ?? new DomainObjectApplicationActionResultPayload() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
+            return result?.Data ?? BuildServerErrorPayload();
         }
 
-        public async Task DeleteAsync(int domainObjectId)
+        public async Task<DomainObjectApplicationActionResultPayload> DeleteAsync(int domainObjectId)
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.Delete}/{domainObjectId}";
-            await DeleteAsync<T>(route);
+            var result = await DeleteAsync<DomainObjectApplicationActionResultPayload>(route);
+            return result?.Data ?? BuildServerErrorPayload();
         }
+
+        private static DomainObjectApplicationActionResultPayload BuildServerErrorPayload()
+            => new() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
 
         #endregion
 

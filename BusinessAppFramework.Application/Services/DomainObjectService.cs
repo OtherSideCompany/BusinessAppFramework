@@ -70,27 +70,16 @@ namespace BusinessAppFramework.Application.Services
             return domainObject;
         }
 
-        public virtual async Task<bool> DeleteAsync(int domainObjectId)
+        public virtual async Task DeleteAsync(int domainObjectId)
         {
             if (await IsSystemObjectAsync(domainObjectId))
             {
-                throw new InvalidOperationException("Impossible de supprimer l'objet sélectionné car il est nécéssaire au fonctionnement du système.");
+                throw new DomainException(DomainErrorKeys.SystemObjectModification);
             }
 
-            try
-            {
-                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(typeof(T), domainObjectId));
-
-                await WithDeletePermissionAsync(() => _repository.DeleteAsync(domainObjectId));
-
-                await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(typeof(T), domainObjectId));
-
-                return true;
-            }
-            catch (Exception)
-            {
-                throw new InvalidOperationException($"Suppression id={domainObjectId} impossible car des données sont associées");
-            }
+            await _domainObjectEventBus.PublishAsync(new DomainObjectDeletingEvent(typeof(T), domainObjectId));
+            await WithDeletePermissionAsync(() => _repository.DeleteAsync(domainObjectId));
+            await _domainObjectEventBus.PublishAsync(new DomainObjectDeletedEvent(typeof(T), domainObjectId));
         }
 
         public virtual async Task<T> GetAsync(int domainObjectId, CancellationToken cancellationToken = default)
@@ -129,7 +118,7 @@ namespace BusinessAppFramework.Application.Services
             foreach (var domainObject in domainObjects)
             {
                 await LoadReferencesAsync(domainObject);
-            }                
+            }
 
             return domainObjects;
         }
@@ -146,8 +135,8 @@ namespace BusinessAppFramework.Application.Services
             if (domainObject != null)
             {
                 await _domainObjectServiceDependencies.ReferenceHydrator.HydrateAsync(domainObject);
-            }           
-            
+            }
+
             return domainObject;
         }
 
@@ -162,7 +151,7 @@ namespace BusinessAppFramework.Application.Services
             }
 
             return domainObjects;
-        }        
+        }
 
         public async Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default)
         {
@@ -185,7 +174,7 @@ namespace BusinessAppFramework.Application.Services
         {
             if (domainObject is ISystemObject systemObject && !string.IsNullOrEmpty(systemObject.SystemCode))
             {
-                throw new SystemObjectModificationException();
+                throw new DomainException(DomainErrorKeys.SystemObjectModification);
             }
 
             domainObject.LastModifiedDateTime = DateTime.Now;
@@ -209,7 +198,7 @@ namespace BusinessAppFramework.Application.Services
         public async Task<List<DomainObjectReference>> GetDomainObjectReferencesAsync(int domainObjectId, CancellationToken cancellationToken = default)
         {
             return await WithReadPermissionAsync(() => _domainObjectServiceDependencies.RelationService.GetDomainObjectReferencesAsync<T>(domainObjectId));
-        }        
+        }
 
         #endregion
 
@@ -295,8 +284,7 @@ namespace BusinessAppFramework.Application.Services
         private async Task<U> WithPermissionAsync<U>(UserRolePermissionType permissionType, Func<Task<U>> action)
         {
             if (!await CheckRightAsync(DomainObjectAggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
-                
-                throw new UserPermissionException(typeof(T), permissionType);
+                throw new DomainException(DomainErrorKeys.Permission);
 
             return await action();
         }
@@ -304,7 +292,7 @@ namespace BusinessAppFramework.Application.Services
         private async Task WithPermissionAsync(UserRolePermissionType permissionType, Func<Task> action)
         {
             if (!await CheckRightAsync(DomainObjectAggregateKeys<T>.PermissionKey, _currentUserService.UserId!.Value, permissionType))
-                throw new UserPermissionException(typeof(T), permissionType);
+                throw new DomainException(DomainErrorKeys.Permission);
 
             await action();
         }

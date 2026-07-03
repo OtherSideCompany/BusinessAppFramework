@@ -87,8 +87,11 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
             if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
             {
-                await DomainObjectServiceGateway.DeleteAsync(Id.Value);
-                _isDeleted = true;
+                var payload = await DomainObjectServiceGateway.DeleteAsync(Id.Value);
+
+                DisplayPayloadMessage(payload);
+
+                _isDeleted = payload.Changes.Any(c => c.ChangeType == ChangeType.Deleted);
 
                 StateHasChanged();
             }
@@ -110,15 +113,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
             var payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
 
-            if (payload?.ErrorMessageKey != null)
-            {
-                UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
-            }
-
-            if (payload?.ConfirmationMessageKey != null)
-            {
-                UserDialogService.SnackShow(LocalizedStringService.Get(payload.ConfirmationMessageKey));
-            }
+            DisplayPayloadMessage(payload);
         }
 
         public virtual async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
@@ -129,6 +124,22 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         #endregion
 
         #region Private Methods 
+
+        private void DisplayPayloadMessage(DomainObjectApplicationActionResultPayload? payload)
+        {
+            if (payload == null)
+                return;
+
+            if (payload?.ErrorMessageKey != null)
+            {
+                UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
+            }
+
+            if (payload?.ConfirmationMessageKey != null)
+            {
+                UserDialogService.SnackShow(LocalizedStringService.Get(payload.ConfirmationMessageKey));
+            }
+        }
 
         protected virtual void UpdatePropertiesEditorAvailableValuesParentIds()
         {

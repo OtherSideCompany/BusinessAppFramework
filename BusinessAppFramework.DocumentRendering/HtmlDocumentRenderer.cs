@@ -116,7 +116,7 @@ namespace BusinessAppFramework.DocumentRendering
 
             if (template.HasErrors)
             {
-                throw new InvalidOperationException("Erreur de parsing Scriban : " + string.Join(", ", template.Messages.Select(m => m.Message)));
+                throw new InvalidOperationException("Scriban parsing error : " + string.Join(", ", template.Messages.Select(m => m.Message)));
             }
 
             return template;

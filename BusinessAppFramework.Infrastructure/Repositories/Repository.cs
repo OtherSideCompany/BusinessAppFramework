@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessAppFramework.Application.Exceptions;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Repository;
@@ -188,6 +189,11 @@ namespace BusinessAppFramework.Infrastructure.Repositories
                 if (_canUseExecuteDelete)
                 {
                     affectedRows = await context.Set<TEntity>().Where(e => e.Id == domainObjectId).ExecuteDeleteAsync();
+
+                    if (affectedRows == 0)
+                    {
+                        throw new DomainException(Contracts.DomainErrorKeys.DbUpdateException);
+                    }
                 }
                 else
                 {
@@ -199,12 +205,14 @@ namespace BusinessAppFramework.Infrastructure.Repositories
                         affectedRows = 1;
                     }
 
-                    await context.SaveChangesAsync();
-                }
-
-                if (affectedRows == 0)
-                {
-                    throw new ArgumentNullException($"Entity with Id {domainObjectId} not found in data repository {nameof(TEntity).ToString()}");
+                    try
+                    {
+                        await context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException exception)
+                    {
+                        throw new DomainException(Contracts.DomainErrorKeys.DbUpdateException);
+                    }
                 }
             }
         }

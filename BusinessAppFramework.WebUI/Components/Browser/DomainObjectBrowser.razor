@@ -173,8 +173,8 @@
                 var shrink = action.ActionKey.Equals(ActionKeys.ImportExportDataActionKey);
                 <ActionButton Shrink="@shrink"
                               OnClick="() => ExecuteApplicationActionAsync(action)"
-                              ActionKey="@action.ActionKey" 
-                              Bordered="true"/>
+                              ActionKey="@action.ActionKey"
+                              Bordered="true" />
             }
 
             @if (hasGlobalActions && hasSelectionActions)
@@ -188,7 +188,7 @@
 
                 <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
                               ActionKey="@action.ActionKey"
-                              Disabled="@disabled" 
+                              Disabled="@disabled"
                               Bordered="true" />
             }
 
@@ -373,21 +373,40 @@
 
     private async Task ExecuteDomainObjectApplicationActionAsync(IApplicationAction applicationAction)
     {
+        DomainObjectApplicationActionResultPayload? payload = null;
+
         if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction)
         {
             domainObjectApplicationAction.DomainObjectId = _selectedItem?.DomainObjectId ?? 0;
-            var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
-            await RefreshServerDataAsync(payload);
+            payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);            
         }
         else if (applicationAction is IOpenDialogApplicationAction openDialogApplicationAction)
         {
             openDialogApplicationAction.DomainObjectId = _selectedItem?.DomainObjectId ?? 0;
-            var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
-            await RefreshServerDataAsync(payload);
+            payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
         }
         else
         {
-            await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+            payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+        }
+
+        DisplayPayLoadUserMessage(payload);
+        await RefreshServerDataAsync(payload);
+    }
+
+    private void DisplayPayLoadUserMessage(DomainObjectApplicationActionResultPayload? payload)
+    {
+        if (payload == null)
+            return;
+
+        if (!string.IsNullOrEmpty(payload?.ErrorMessageKey))
+        {
+            UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
+        }
+
+        if (!string.IsNullOrEmpty(payload?.ConfirmationMessageKey))
+        {
+            UserDialogService.SnackShow(LocalizedStringService.Get(payload.ConfirmationMessageKey));
         }
     }
 

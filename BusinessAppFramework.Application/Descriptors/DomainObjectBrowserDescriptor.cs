@@ -39,11 +39,7 @@ namespace BusinessAppFramework.Application.Descriptors
                 HttpMethod = HttpMethod.Post,
             };
 
-            createAction.ExecuteRoute =
-                $"{ApiRouteSegments.Root}/" +
-                $"{ApiRouteSegments.DomainObjects}/" +
-                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/" +
-                $"{ApiRouteSegments.Create}";
+            createAction.ExecuteRoute = $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/{ApiRouteSegments.Create}";
 
             var importExportAction = new DomainObjectHttpApplicationAction
             {
@@ -61,11 +57,7 @@ namespace BusinessAppFramework.Application.Descriptors
             };
 
             deleteAction.ExecuteRoute =
-                $"{ApiRouteSegments.Root}/" +
-                $"{ApiRouteSegments.DomainObjects}/" +
-                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/" +
-                $"{ApiRouteSegments.Delete}/" +
-                $"{ApiRouteParams.DomainObjectId}";
+                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/{ApiRouteSegments.Delete}/{ApiRouteParams.DomainObjectId}";
 
             var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(PageNavigationApplicationActionKey);
 
