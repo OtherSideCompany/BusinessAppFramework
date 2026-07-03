@@ -1,0 +1,45 @@
+﻿@using BusinessAppFramework.WebUI.Components.SearchList
+@using MudBlazor
+
+<style>
+    .stat-nav-link,
+    .stat-nav-link * {
+        cursor: pointer;
+    }
+</style>
+
+<MudStack Spacing="2">
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+        <MudIcon Icon="@Icon" Size="Size.Small" Style="color:var(--mud-palette-text-secondary);" />
+        <MudText Typo="Typo.body1" Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+    </MudStack>
+
+    <MudText Typo="Typo.h3">@Value</MudText>
+
+    @if (!string.IsNullOrEmpty(NavigationRoute))
+    {
+        <MudLink Href="@NavigationRoute"
+                 Underline="Underline.Hover"
+                 Typo="Typo.body2"
+                 @onclick:stopPropagation="true"
+                 Class="stat-nav-link"
+                 Style="color: var(--mud-palette-primary-darken) !important;">
+
+            <MudStack Row="true" Spacing="1">
+                <MudText Typo="Typo.caption">@NavigationLabel</MudText>
+                <MudIcon Icon="@Icons.Material.Outlined.ArrowForward" Size="Size.Small" Style="width:16px; height:16px;" />
+            </MudStack>
+
+        </MudLink>
+    }
+</MudStack>
+
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public string Icon { get; set; } = string.Empty;
+    [Parameter] public string? NavigationLabel { get; set; }
+    [Parameter] public string? NavigationRoute { get; set; }
+}

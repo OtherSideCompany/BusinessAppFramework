@@ -221,6 +221,18 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             StateHasChanged();
         }
 
+        protected string GetDomainObjectBrowserWorkspaceLink(string workspaceKey, string? filter)
+        {
+            var href = "/workspace/" + workspaceKey;
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                href += $"?search={filter}";
+            }
+
+            return href;
+        }
+
         #endregion
     }
 }
