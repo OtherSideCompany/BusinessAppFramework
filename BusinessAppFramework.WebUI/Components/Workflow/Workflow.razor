@@ -16,35 +16,29 @@
 <style>
     .wf-step {
         flex: 1;
-        padding: 8px;
         transition: border-color 0.15s ease;
         border-radius: 12px;
     }
 
     .wf-step-completed {
         background-color: var(--mud-palette-success-hover) !important;
-        border-color: var(--mud-palette-success) !important;
         color: var(--mud-palette-success-darken) !important;
     }
 
     .wf-step-active {
         background-color: var(--mud-palette-info-hover) !important;
-        border-color: var(--mud-palette-info) !important;
-        border-width: 2px !important;
-        padding: 7px !important;
         color: var(--mud-palette-info-darken) !important;
     }
 
     .wf-step-pending {
-        background-color: var(--mud-palette-surface) !important;
-        border-color: var(--mud-palette-lines-default) !important;
+        background-color: color-mix(in srgb, var(--mud-palette-text-disabled) 10%, transparent) !important;
         color: var(--mud-palette-text-disabled) !important;
     }
 </style>
 
 @if (_processWorkflow != null)
 {
-    <MudStack Row="true" Spacing="4">
+    <MudStack Row="true" Spacing="2">
    
         @foreach (var step in _processWorkflow.Steps)
         {
@@ -52,18 +46,9 @@
 
             <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
 
-                <MudPaper Outlined="true" Class="@($"wf-step {GetStepCssClass(step)}")" Style="width:200px;">
+                <MudPaper Outlined="false" Elevation="0" Class="@($"wf-step px-8 py-2 {GetStepCssClass(step)}")">
 
                     <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
-
-                        @if (step.IsCompleted)
-                        {
-                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" />
-                        }
-                        else if (step.IsActive)
-                        {
-                            <MudIcon Icon="@Icons.Material.Outlined.Pending" />
-                        }
 
                         <MudText Typo="Typo.body2" Style="font-size:12px;">@LocalizedStringService.Get(@step.Key)</MudText>
 
@@ -73,7 +58,7 @@
 
                 @if (transition != null)
                 {
-                    <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
 
                         @if (transition.Conditions.Any())
                         {
@@ -117,8 +102,7 @@
                         <ActionButton Shrink="true"
                                       OnClick="() => ExecuteTransitionAsync(transition)"
                                       ActionKey="@transition.GetActionKey()"
-                                      Disabled="!transition.IsExecutable" 
-                                      Bordered="true"/>                        
+                                      Disabled="!transition.IsExecutable" />                        
 
                     </MudStack>
                 }

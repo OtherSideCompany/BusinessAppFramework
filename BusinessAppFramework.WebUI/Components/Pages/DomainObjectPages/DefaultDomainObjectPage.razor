@@ -1,13 +1,15 @@
-﻿@using BusinessAppFramework.Contracts
-@using BusinessAppFramework.WebUI.Components.Browser
-@using MudBlazor
+﻿@using BusinessAppFramework.Application.Search
+@using BusinessAppFramework.Contracts
 @using BusinessAppFramework.Domain.DomainObjects
-@using BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
+@using BusinessAppFramework.WebUI.Components.Browser
 @using BusinessAppFramework.WebUI.Components.Editor
+@using BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
+@using MudBlazor
 
-@typeparam T where T : DomainObject, new()
+@typeparam TDomainObject where TDomainObject : DomainObject, new()
+@typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
 
-@inherits DomainObjectPageBase<T>
+@inherits DomainObjectPageBase<TDomainObject, TSearchResult>
 
 <DomainObjectPageLayout IsDeleted="_isDeleted"
                         IsDirty="IsDirty"

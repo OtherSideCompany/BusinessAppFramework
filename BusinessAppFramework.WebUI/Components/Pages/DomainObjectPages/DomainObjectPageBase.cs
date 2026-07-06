@@ -1,6 +1,7 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Descriptors;
 using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain.DomainObjects;
@@ -8,10 +9,14 @@ using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
+using Search.Contracts.SearchResults;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 {
-    public abstract class DomainObjectPageBase<TDomainObject> : ComponentBase, IDisposable where TDomainObject : DomainObject, new()
+    public abstract class DomainObjectPageBase<TDomainObject, TSearchResult> : ComponentBase, IDisposable 
+        where TDomainObject : DomainObject, new()
+        where TSearchResult : DomainObjectSearchResult, new()
     {
         #region Fields
 
@@ -24,6 +29,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         [Inject] protected IIconFactory IconFactory { get; set; } = default!;
         [Inject] protected IRelationServiceGateway RelationServiceGateway { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] protected ISearchGateway<TSearchResult> SearchGateway { get; set; } = default!;
 
         protected virtual string? PageTreeKey { get; }
 
@@ -34,6 +40,8 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         private List<IEditable> _editableComponents { get; set; } = new();
 
         private IDisposable? _locationChangingRegistration;
+
+        protected TSearchResult? _searchResult;
 
         #endregion
 
@@ -184,6 +192,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
                 return;
 
             DomainObject = await DomainObjectServiceGateway.GetHydratedAsync(Id.Value);
+            _searchResult = await SearchGateway.GetSearchResultAsync(Id.Value);
 
             if (!string.IsNullOrEmpty(PageTreeKey))
             {

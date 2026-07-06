@@ -1,0 +1,59 @@
+﻿@using BusinessAppFramework.WebUI.Components.SearchList
+@using MudBlazor
+
+<style>
+    .stat-nav-link,
+    .stat-nav-link * {
+        cursor: pointer;
+    }
+</style>
+
+<MudStack Spacing="1" Row="true">
+
+    <MudIcon Icon="@Icon" Size="Size.Small" Style="color:var(--mud-palette-text-secondary);" />
+
+    <MudText Typo="Typo.body1" Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+
+    @if (_isTargetSet)
+    {
+        @if (ProgressionDisplayType == ProgressionDisplayType.Values)
+        {
+            <MudText Typo="Typo.body1" Style="font-weight:500;" Class="ml-1" Color="@_textColor">@_displayValue</MudText>
+        }
+        else if (ProgressionDisplayType == ProgressionDisplayType.Percent)
+        {
+            <MudText Typo="Typo.body1" Style="font-weight:500;" Class="ml-1" Color="@_textColor">@_percentProgressionDisplayValue</MudText>
+        }
+    }
+    else
+    {
+        <NullIndicator />
+    }
+
+</MudStack>
+
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public decimal? CurrentValue { get; set; }
+    [Parameter] public decimal? TargetValue { get; set; }
+    [Parameter] public string Unit { get; set; } = string.Empty;
+    [Parameter] public string Icon { get; set; } = string.Empty;
+    [Parameter] public string? NavigationRoute { get; set; }
+    [Parameter] public ProgressionDisplayType ProgressionDisplayType { get; set; } = ProgressionDisplayType.Values;
+
+    private string _currentDisplayValue => CurrentValue?.ToString("0.##") ?? "";
+    private string _targetDisplayValue => TargetValue?.ToString("0.##") ?? "";
+    private string _displayValue => string.IsNullOrEmpty(Unit) ? $"{_currentDisplayValue} / {_targetDisplayValue}" :
+                                                                 $"{_currentDisplayValue} / {_targetDisplayValue} {Unit}";
+
+    private decimal? _percentProgression => TargetValue == null ? null :
+                                            CurrentValue == null ? 0 :
+                                            TargetValue == 0 ? 0 :
+                                            CurrentValue / TargetValue * 100;
+
+    private string _percentProgressionDisplayValue => _percentProgression != null ? _percentProgression.Value.ToString("0.##") + " %" : "";
+    private bool _isTargetSet => TargetValue != null && TargetValue != 0;
+    private bool _isComplete => CurrentValue != null && _isTargetSet && CurrentValue >= TargetValue;
+    private Color _textColor => _isComplete ? Color.Success : Color.Warning;
+}
