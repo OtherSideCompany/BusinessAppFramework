@@ -176,7 +176,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             {
                 var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
                 dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
-                var domainObject = await domainObjectService.DeleteAsync(domainObjectId);
+                await domainObjectService.DeleteAsync(domainObjectId);
                 return Ok(true);
             }
 

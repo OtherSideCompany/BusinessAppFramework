@@ -9,5 +9,17 @@
     }
 
     .osc-table .mud-table-head .mud-table-cell {
-        background: var(--mud-palette-background-gray);
+        background: var(--mud-palette-background-gray) !important;
+    }
+
+    .osc-table .mud-table-head th {
+        color: #6B7280 !important;
+        font-weight: 600;
+        background: var(--mud-palette-background-gray) !important;
+    }
+
+    .osc-table .mud-table-body td {
+        height: 44px;
+        padding-top: 0;
+        padding-bottom: 0;
     }

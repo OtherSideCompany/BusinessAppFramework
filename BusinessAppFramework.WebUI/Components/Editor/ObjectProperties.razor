@@ -11,39 +11,62 @@
 @inject IReferenceResolver RelationResolver
 @inject IRelationSelectorRegistry RelationSelectorRegistry
 
+<style>
+    .category-header {
+        cursor: pointer;
+        user-select: none;
+        border-radius: 6px;
+        padding: 4px 6px;
+        transition: background-color 120ms ease;
+    }
+
+        .category-header:hover {
+            background-color: var(--mud-palette-action-default-hover);
+        }
+</style>
+
 @if (Target != null)
 {
     var props = GetEditableProperties().ToList();
 
-    <MudStack Spacing="6">
+    <MudStack Spacing="2">
         @foreach (var category in GetCategoriesOrDefault())
         {
             <MudStack Spacing="2">
 
-                @if (DisplayCategoryHeaders)
-                {
-                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-                        <MudIcon Icon="@category.Icon" Size="Size.Small" />
-                        <MudText Typo="Typo.h6">@LocalizedStringService.Get(category.LabelKey)</MudText>
-                    </MudStack>
-                }
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1"
+                          Class="category-header"
+                          @onclick="() => ToggleCategory(category)">
+                    <MudIcon Icon="@(category.IsExpanded ? Icons.Material.Rounded.ExpandMore : Icons.Material.Rounded.ChevronRight)"
+                             Size="Size.Small" />
+                    <MudIcon Icon="@category.Icon" Size="Size.Small" Style="width:16px; height:16px;" />
+                    <MudText Typo="Typo.body2">@LocalizedStringService.Get(category.LabelKey)</MudText>
+                </MudStack>
 
-                <MudGrid Spacing="1">
-                    @foreach (var propEdition in category.PropertyEditions)
-                    {
-                        var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
-                        if (prop != null)
+                <MudCollapse Expanded="(category.IsExpanded)" Style="width:100%;" Class="px-4">
+                    <MudGrid Spacing="1">
+
+                        @foreach (var propEdition in category.PropertyEditions)
                         {
-                            <MudItem xs="12" md="@propEdition.Md">
-                                <ObjectProperty PropertyEdition="propEdition"
-                                                PropertyInfo="@prop"
-                                                Target="@Target"
-                                                OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
-                            </MudItem>
-                        }
-                    }
+                            var label = LocalizedStringService.ResolveProperty(Target.GetType(), propEdition.PropertyName);
 
-                </MudGrid>
+                            var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
+                            if (prop != null)
+                            {
+                                <MudItem xs="12" md="6">
+                                    <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary)">@label</MudText>
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <ObjectProperty PropertyEdition="propEdition"
+                                                    PropertyInfo="@prop"
+                                                    Target="@Target"
+                                                    OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
+                                </MudItem>
+                            }
+                        }
+
+                    </MudGrid>
+                </MudCollapse>
 
             </MudStack>
         }
@@ -55,7 +78,6 @@
     [Parameter] public object? Target { get; set; }
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
     [Parameter] public List<PropertyCategory> PropertyCategories { get; set; } = new();
-    [Parameter] public bool DisplayCategoryHeaders { get; set; } = true;
 
     private PropertyCategory _uncategorizedPropertyCategory = new PropertyCategory()
     {
@@ -100,7 +122,7 @@
             categories.Add(_uncategorizedPropertyCategory);
 
         return categories;
-    }    
+    }
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
     {
@@ -128,5 +150,10 @@
         var current = type;
         while (current.BaseType != null) { depth++; current = current.BaseType; }
         return depth;
+    }
+
+    private void ToggleCategory(PropertyCategory category)
+    {
+        category.IsExpanded = !category.IsExpanded;
     }
 }

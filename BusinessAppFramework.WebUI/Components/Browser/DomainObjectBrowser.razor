@@ -33,32 +33,43 @@
         padding: 0 !important;
     }
 
-    .osc-search.mud-input-control {
-        flex: 0 0 200px;
-        max-width: 200px;
-        min-width: 150px;
+    .osc-search .mud-input-slot {
+        height: 24px;
+        padding-top: 0;
+        padding-bottom: 0;
     }
+
+    .osc-search {
+        flex: 0 1 auto;
+        width: auto;
+    }
+
+        .osc-search input.mud-input-root {
+            width: 20ch;
+        }
+
+        .osc-search .mud-input-slot {
+            height: 24px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
 
         .osc-search.mud-input-control .mud-input {
             width: 100%;
         }
 
-    .osc-search .mud-input-outlined-border {
-        border-radius: 8px !important;
-    }
+        .osc-search .mud-input-outlined-border {
+            border-radius: 8px !important;
+        }
 
-    .osc-search .mud-input-outlined {
-        border-radius: 8px !important;
-    }
-
-    .editor-drawer {
-        background-color: #FAFAFC;
-        color: #212121;
-    }
+        .osc-search .mud-input-outlined {
+            border-radius: 8px !important;
+        }
 
     .osc-table .mud-table-head th {
-        color: #999999 !important;
+        color: #6B7280 !important;
         font-weight: 600;
+        background: var(--mud-palette-background-gray) !important;
     }
 
     .osc-table .mud-table-body td {
@@ -94,19 +105,59 @@
         color: white;
         font-weight: 600;
     }
+
+    .mud-pagination-item .mud-selected {
+        background-color: transparent !important;
+        color: var(--mud-palette-text-primary) !important;
+        font-weight: 600;
+    }
 </style>
 
 <SectionContent SectionName="page-title">
-    <MudText Typo="Typo.h2">
-        @LocalizedStringService.Get(Descriptor.WorkspaceKey)
-    </MudText>
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Style="width:100%;" Spacing="2">
+
+        <MudText Typo="Typo.h6" Class="mx-1">
+            @LocalizedStringService.Get(Descriptor.WorkspaceKey)
+        </MudText>
+
+        <MudSpacer />
+
+        @{
+            var hasGlobalActions = Descriptor.ApplicationActions?.Any() == true;
+            var hasSelectionActions = Descriptor.DomainObjectApplicationActions?.Any() == true;
+        }
+
+        @foreach (var action in Descriptor.ApplicationActions)
+        {
+            <ActionButton OnClick="() => ExecuteApplicationActionAsync(action)"
+                          ActionKey="@action.ActionKey"
+                          Shrink="@(action.ActionKey == ActionKeys.CreateActionKey || action.ActionKey == ActionKeys.ImportExportDataActionKey)" />
+        }
+
+        @if (hasGlobalActions && hasSelectionActions)
+        {
+            <MudDivider Vertical="true" Class="mx-2" Style="height:24px; width:1px;" />
+        }
+
+        @foreach (var action in Descriptor.DomainObjectApplicationActions)
+        {
+            var disabled = !_hasSelection;
+
+            <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
+                          ActionKey="@action.ActionKey"
+                          Disabled="@disabled"
+                          Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
+        }
+
+    </MudStack>
 </SectionContent>
 
 <DomainObjectBrowserLayout>
 
     <Header>
 
-        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="ma-4">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="mx-4" Style="height:48px;">
 
             <MudTextField T="string"
                           Class="osc-search"
@@ -114,21 +165,24 @@
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           IconSize="Size.Small"
-                          Variant="Variant.Outlined"
+                          Variant="Variant.Text"
                           Underline="false"
                           @bind-Value="_searchText"
                           OnKeyUp="HandleKeyUp"
                           Margin="Margin.Dense"
                           Style="background: var(--mud-palette-surface);" />
 
-            <MudChipSet T="string"
-                        CheckMark SelectionMode="SelectionMode.SingleSelection"
-                        Color="Color.Primary"
-                        SelectedValue="_selectedConstraintKey"
-                        SelectedValueChanged="OnConstraintChanged">
+            <MudDivider Vertical="true" FlexItem="true" />
 
-                @if (Descriptor.ConstraintKeys.Count > 1)
-                {
+            @if (Descriptor.ConstraintKeys.Count > 1)
+            {                
+                <MudChipSet T="string"
+                            CheckMark SelectionMode="SelectionMode.SingleSelection"
+                            Color="Color.Primary"
+                            SelectedValue="_selectedConstraintKey"
+                            SelectedValueChanged="OnConstraintChanged">
+
+
                     @foreach (var constraintKey in Descriptor.ConstraintKeys)
                     {
                         var count = _constraintCounts.ContainsKey(constraintKey) ? _constraintCounts[constraintKey] : (int?)null;
@@ -147,9 +201,9 @@
                             }
                         </MudChip>
                     }
-                }
 
-            </MudChipSet>
+                </MudChipSet>
+            }
 
             <MudText Typo="Typo.caption" Align="Align.Start" Style="margin-top:4px; color:gray">
                 @_startIndex - @_endIndex / @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
@@ -161,36 +215,9 @@
                 @LocalizedStringService.Get(Contracts.StringKeys.ExtendedSearchKey)
             </MudLink>
 
-            <MudSpacer />
-
-            @{
-                var hasGlobalActions = Descriptor.ApplicationActions?.Any() == true;
-                var hasSelectionActions = Descriptor.DomainObjectApplicationActions?.Any() == true;
-            }
-
-            @foreach (var action in Descriptor.ApplicationActions)
-            {
-                <ActionButton OnClick="() => ExecuteApplicationActionAsync(action)"
-                              ActionKey="@action.ActionKey"
-                              Shrink="@(action.ActionKey == ActionKeys.CreateActionKey || action.ActionKey == ActionKeys.ImportExportDataActionKey)" />
-            }
-
-            @if (hasGlobalActions && hasSelectionActions)
-            {
-                <MudDivider Vertical="true" Class="mx-2" Style="height:24px; width:1px;" />
-            }
-
-            @foreach (var action in Descriptor.DomainObjectApplicationActions)
-            {
-                var disabled = !_hasSelection;
-
-                <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
-                              ActionKey="@action.ActionKey"
-                              Disabled="@disabled"
-                              Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
-            }
-
         </MudStack>
+
+        <MudDivider />
 
       
     </Header>
@@ -242,7 +269,10 @@
                            ShowLastButton="true"
                            SelectedChanged="HandlePageChangedAsync"
                            BoundaryCount="1"
-                           MiddleCount="3" />
+                           MiddleCount="3" 
+                           Size="Size.Small"
+                           Color="Color.Transparent"
+                           DropShadow="false"/>
         </MudStack>
     </Pagination>
 
@@ -376,7 +406,7 @@
         if (applicationAction is IDomainObjectApplicationAction domainObjectApplicationAction)
         {
             domainObjectApplicationAction.DomainObjectId = _selectedItem?.DomainObjectId ?? 0;
-            payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);            
+            payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
         }
         else if (applicationAction is IOpenDialogApplicationAction openDialogApplicationAction)
         {

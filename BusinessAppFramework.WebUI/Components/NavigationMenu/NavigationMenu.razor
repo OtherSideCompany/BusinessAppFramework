@@ -17,24 +17,28 @@
         height: 16px;
     }
 
-    .nav-menu-button-text {
-        color: white;
-        font-size: 12px;
-    }
-
     .module-text {
-        font-size: 14px;
-        color: #7A7E92;
+        color: #6B7280;
     }
 
     .nav-item {
         cursor: pointer;
         border-radius: 4px;
         transition: background 0.15s ease;
+        color: #6B7280;
     }
 
         .nav-item:hover {
-            background: rgba(139, 128, 255, 0.08);
+            color: var(--mud-palette-primary);
+        }
+
+            .nav-item:hover .mud-icon-root,
+            .nav-item:hover .mud-button-label {
+                color: var(--mud-palette-primary);
+            }
+
+        .nav-item .mud-button-root:hover {
+            background-color: transparent;
         }
 
     .module-header {
@@ -51,7 +55,7 @@
     }
 </style>
 
-<MudNavMenu Color="Color.Dark">    
+<MudNavMenu>
 
     @if (_isLoading)
     {
@@ -66,11 +70,10 @@
     {
         @foreach (var moduleKey in _moduleKeys)
         {
-            <div class="module-header" style="display: flex; align-items: center; justify-content: space-between; padding-right: 8px; cursor: pointer; height:40px;"
-                 @onclick="() => ToggleModule(moduleKey)">
-                <MudText Class="module-text" Style="padding-left:16px;">@LocalizedStringService.Get(moduleKey)</MudText>
-                <MudIcon Icon="@(IsExpanded(moduleKey) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
-                         Style="color: #4A4D5E; width: 14px; height: 14px;" />
+            <div class="module-header" style="display: flex; align-items: center; padding-right: 8px; cursor: pointer; height:40px;" @onclick="() => ToggleModule(moduleKey)">
+                <MudIcon Icon="@(IsExpanded(moduleKey) ? Icons.Material.Filled.ArrowDropDown : Icons.Material.Filled.ArrowRight)"
+                         Style="color: #4A4D5E; margin-left:12px" />
+                <MudText Class="module-text" Typo="Typo.body1">@LocalizedStringService.Get(moduleKey)</MudText>
             </div>
 
             @if (IsExpanded(moduleKey))
@@ -80,30 +83,22 @@
                     var href = GetWorkspaceLink(workspaceKey);
                     var isActive = NavigationManager.Uri.Contains(href);
 
-                    if (isActive)
-                    {
-                        <MudStack Row="true" Spacing="0" Style="background: color-mix(in srgb, var(--mud-palette-primary-darken) 20%, transparent);">
-                            <div style="width: 3px; background: var(--mud-palette-primary-lighten); border-radius: 0 2px 2px 0;" />
-                            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:13px;">
-                                <MudIcon Icon="@IconFactory.CreateIcon(workspaceKey)" Class="nav-menu-icon" Style="color:var(--mud-palette-primary-lighten)" />
-                                <MudButton Href="@href"
-                                           Style="text-transform: none;">
-                                    <MudText Class="nav-menu-button-text" Style="color:var(--mud-palette-primary-lighten)">@LocalizedStringService.Get(workspaceKey)</MudText>
-                                </MudButton>
-                            </MudStack>
-                        </MudStack>
-                    }
-                    else
-                    {
-                        <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Style="padding-left:16px;" Class="nav-item">
-                            <MudIcon Icon="@IconFactory.CreateIcon(workspaceKey)" Class="nav-menu-icon" />
-                            <MudButton Href="@href"
-                                       FullWidth="true"
-                                       Style="text-transform: none; justify-content: flex-start;">
-                                <MudText Class="nav-menu-button-text">@LocalizedStringService.Get(workspaceKey)</MudText>
-                            </MudButton>
-                        </MudStack>
-                    }
+                    <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center" Style="padding-left:36px;" Class="nav-item">
+                        <MudIcon Icon="@IconFactory.CreateIcon(workspaceKey)"
+                                 Class="nav-menu-icon"
+                                 Color="@(isActive ? Color.Primary : Color.Inherit)" />
+                        <MudButton Href="@href"
+                                   FullWidth="true"
+                                   Ripple="false"
+                                   Style="text-transform: none; justify-content: flex-start;"
+                                   Color="Color.Transparent">
+                            <MudText Typo="Typo.body2"
+                                     Style="@(isActive ? "font-weight:600;" : "")"
+                                     Color="@(isActive ? Color.Primary : Color.Inherit)">
+                                @LocalizedStringService.Get(workspaceKey)
+                            </MudText>
+                        </MudButton>
+                    </MudStack>
                 }
             }
         }

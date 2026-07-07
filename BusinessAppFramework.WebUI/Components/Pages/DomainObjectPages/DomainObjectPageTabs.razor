@@ -1,27 +1,92 @@
 ﻿@using MudBlazor
 
 <style>
-    .compact-tabs.mud-tabs {
-            height: 100%;
-        }
+    .linear-tabs-header.mud-tabs-tabbar {
+        padding: 8px;
+    }
 
-    .compact-tabs .mud-tab {
+    .linear-tabs .mud-tabs-tabbar-wrapper {
+        gap: 4px;
+    }
+
+    .linear-tabs-header.mud-tabs-tabbar,
+    .linear-tabs-header .mud-tabs-tabbar,
+    .linear-tabs-header .mud-tabs-tabbar-inner,
+    .linear-tabs-header .mud-tabs-tabbar-content,
+    .linear-tabs-header .mud-tabs-tabbar-wrapper {
+        min-height: unset;
+        height: auto;
+        background: transparent;
+        align-items: center;
+    }
+
+    .linear-tabs .mud-tab {
+        min-height: unset;
+        min-width: unset;
+        height: auto;
+        width: auto;
+        padding: 4px 10px;
+        margin: 0;
         text-transform: none;
         letter-spacing: normal;
+        line-height: 1.4;
+        border-radius: 6px;
         color: var(--mud-palette-text-secondary);
+        transition: color 120ms ease, background-color 120ms ease;
     }
 
-        .compact-tabs .mud-tab.mud-tab-active {
-            color: var(--mud-palette-text-primary);
-            font-weight: 700;
+        .linear-tabs .mud-tab.mud-tab-panel {
+            min-width: unset !important;
         }
 
-    .compact-tabs .mud-badge {
-        background-color: var(--mud-palette-background) !important;
-        border-width: 1px;
-        border-color: var(--mud-palette-divider) !important;
-        color: var(--mud-palette-text-primary) !important;
-    }
+        .linear-tabs .mud-tab .mud-tab-content {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .linear-tabs .mud-tab:hover {
+            background-color: var(--mud-palette-action-default-hover);
+            color: var(--mud-palette-text-primary);
+        }
+
+        .linear-tabs .mud-tab.mud-tab-active {
+            color: var(--mud-palette-text-primary);
+            font-weight: 700;
+            background-color: var(--mud-palette-background-gray);
+            border: 1px solid var(--mud-palette-lines-default);
+        }
+
+            .linear-tabs .mud-tab.mud-tab-active:hover {
+                background-color: var(--mud-palette-surface);
+            }
+
+        .linear-tabs .mud-tab .mud-badge-wrapper {
+            position: static;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .linear-tabs .mud-tab .mud-badge {
+            position: static;
+            transform: none;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            font-size: 10px;
+            font-weight: 500;
+            border-radius: 9px;
+            background-color: var(--mud-palette-action-default-hover) !important;
+            color: var(--mud-palette-text-secondary) !important;
+            border: 1px solid var(--mud-palette-lines-default);
+        }
+
+        .linear-tabs .mud-tab.mud-tab-active .mud-badge {
+            background-color: var(--mud-palette-surface) !important;
+            color: var(--mud-palette-text-primary) !important;
+        }
 </style>
 
 <MudPaper Elevation="0"
@@ -29,11 +94,14 @@
           Style="height: 100% !important; width: 100% !important; overflow: hidden;">
 
     <MudTabs Elevation="0"
-             Border="true"
-             Rounded="true"
+             Border="false"
+             Rounded="false"
              ApplyEffectsToContainer="true"
-             Class="compact-tabs">
-        <div class="my-4 mx-4">
+             KeepPanelsAlive="true"
+             Class="linear-tabs"
+             HideSlider="true"
+             TabHeaderClass="linear-tabs-header">
+        <div class="ma-4">
             @ChildContent
         </div>
     </MudTabs>
