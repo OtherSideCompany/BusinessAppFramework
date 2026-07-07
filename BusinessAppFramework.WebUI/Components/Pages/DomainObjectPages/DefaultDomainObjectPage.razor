@@ -26,16 +26,12 @@
             </Actions>
         </DomainObjectPageHeaderTitle>
 
-        <DomainObjectPageTabs>
-
-            <MudTabPanel Text="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.InfosKey)">
-                <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
-            </MudTabPanel>
-
-        </DomainObjectPageTabs>
-
     </MudStack>
     </ChildContent>
+
+    <LeftPanelContent>
+        <ObjectProperties OnChanged="() => MarkDirty()" Target="@DomainObject" />
+    </LeftPanelContent>
 
     <RightPanelContent>
         <MudStack Spacing="8">

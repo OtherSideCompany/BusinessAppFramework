@@ -16,20 +16,33 @@
         cursor: pointer;
         user-select: none;
         border-radius: 6px;
-        padding: 4px 6px;
+        padding: 8px 4px;
         transition: background-color 120ms ease;
+        background-color: var(--mud-palette-background-gray);
     }
 
         .category-header:hover {
             background-color: var(--mud-palette-action-default-hover);
         }
+
+    .property-grid {
+        display: grid;
+        grid-template-columns: minmax(120px, 150px) minmax(0, 1fr);
+        align-items: center;
+    }
+
+    .property-grid-label {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
 </style>
 
 @if (Target != null)
 {
     var props = GetEditableProperties().ToList();
 
-    <MudStack Spacing="2">
+    <MudStack Spacing="0">
         @foreach (var category in GetCategoriesOrDefault())
         {
             <MudStack Spacing="2">
@@ -37,35 +50,51 @@
                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1"
                           Class="category-header"
                           @onclick="() => ToggleCategory(category)">
-                    <MudIcon Icon="@(category.IsExpanded ? Icons.Material.Rounded.ExpandMore : Icons.Material.Rounded.ChevronRight)"
-                             Size="Size.Small" />
                     <MudIcon Icon="@category.Icon" Size="Size.Small" Style="width:16px; height:16px;" />
                     <MudText Typo="Typo.body2">@LocalizedStringService.Get(category.LabelKey)</MudText>
+                    <MudSpacer />
+                    <MudIcon Icon="@(category.IsExpanded ? Icons.Material.Rounded.ExpandMore : Icons.Material.Rounded.ChevronRight)"
+                             Size="Size.Small" />
                 </MudStack>
 
-                <MudCollapse Expanded="(category.IsExpanded)" Style="width:100%;" Class="px-4">
-                    <MudGrid Spacing="1">
-
+                <MudCollapse Expanded="(category.IsExpanded)" Style="width:100%;">
+                    <div class="property-grid mx-1">
                         @foreach (var propEdition in category.PropertyEditions)
                         {
                             var label = LocalizedStringService.ResolveProperty(Target.GetType(), propEdition.PropertyName);
-
+                            var propertyHelper = LocalizedStringService.ResolvePropertyHelper(Target.GetType(), propEdition.PropertyName);
                             var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
                             if (prop != null)
                             {
-                                <MudItem xs="12" md="6">
-                                    <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary)">@label</MudText>
-                                </MudItem>
-                                <MudItem xs="12" md="6">
-                                    <ObjectProperty PropertyEdition="propEdition"
-                                                    PropertyInfo="@prop"
-                                                    Target="@Target"
-                                                    OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
-                                </MudItem>
+                                <div class="property-grid-label">
+                                    @if (string.IsNullOrEmpty(propertyHelper))
+                                    {
+                                        <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudTooltip>
+                                            <TooltipContent>
+                                                <MudText Typo="Typo.caption" Style="max-width:240px; white-space:normal; text-align:left;">
+                                                    @propertyHelper
+                                                </MudText>
+                                            </TooltipContent>
+                                            <ChildContent>
+                                                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                                    <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>
+                                                    <MudIcon Icon="@Icons.Material.Outlined.Info" Style="color:var(--mud-palette-text-secondary); width:16px; height:16px;" />
+                                                </MudStack>
+                                            </ChildContent>
+                                        </MudTooltip>
+                                    }
+                                </div>
+                                <ObjectProperty PropertyEdition="propEdition"
+                                                PropertyInfo="@prop"
+                                                Target="@Target"
+                                                OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
                             }
                         }
-
-                    </MudGrid>
+                    </div>
                 </MudCollapse>
 
             </MudStack>
@@ -85,6 +114,8 @@
         Icon = Icons.Material.Outlined.MoreHoriz
     };
 
+    private PropertyCategory? _defaultPropertyCategory;
+
     public void Refresh() => StateHasChanged();
 
     protected override void OnParametersSet()
@@ -100,15 +131,18 @@
 
     private List<PropertyCategory> GetDefaultCategory()
     {
-        var propertyCategory = new PropertyCategory()
+        if (_defaultPropertyCategory == null)
         {
-            LabelKey = BusinessAppFramework.Contracts.StringKeys.GeneralKey,
-            Icon = Icons.Material.Outlined.Info
-        };
+            _defaultPropertyCategory = new PropertyCategory()
+            {
+                LabelKey = BusinessAppFramework.Contracts.StringKeys.GeneralKey,
+                Icon = Icons.Material.Outlined.Info
+            };
 
-        propertyCategory.PropertyEditions = GetEditableProperties().Select(p => new PropertyEdition() { PropertyName = p.Name }).ToList();
+            _defaultPropertyCategory.PropertyEditions = GetEditableProperties().Select(p => new PropertyEdition() { PropertyName = p.Name }).ToList();
+        }
 
-        return new List<PropertyCategory> { propertyCategory };
+        return new List<PropertyCategory> { _defaultPropertyCategory };
     }
 
     private List<PropertyCategory> GetCategoriesOrDefault()

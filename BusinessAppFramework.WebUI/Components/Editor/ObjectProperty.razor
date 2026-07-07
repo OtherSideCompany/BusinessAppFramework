@@ -22,31 +22,6 @@
 
 <MudStack Spacing="0">
 
-    @{
-        var propertyHelper = LocalizedStringService.ResolvePropertyHelper(Target.GetType(), PropertyInfo.Name);
-    }
-
-    @if(string.IsNullOrEmpty(propertyHelper))
-    {
-        @* <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText> *@        
-    }
-    else
-    {
-        <MudTooltip >
-            <TooltipContent>
-                <MudText Typo="Typo.caption" Style="max-width:240px; white-space:normal; text-align:left;">
-                    @propertyHelper
-                </MudText>
-            </TooltipContent>
-             <ChildContent>
-                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                    <MudText Style="margin-left:4px; margin-bottom:-2px; color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>
-                    <MudIcon Icon="@Icons.Material.Outlined.Info" Style="color:var(--mud-palette-text-secondary); width:16px; height:16px;" />
-                </MudStack>
-            </ChildContent>
-        </MudTooltip>
-    }    
-
     @if (PropertyInfo.PropertyType == typeof(string))
     {
         <MudTextField T="string"
@@ -117,7 +92,6 @@
         var domainObjectReference = _propertyValue as DomainObjectReference;
 
         <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
-                                    Label="@label"
                                     OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" 
                                     PropertyEdition="@PropertyEdition"/>
     }
@@ -142,7 +116,7 @@
                    Value="@_propertyValue"
                    Variant="@Variant"
                    Underline="false"
-                   Adornment="Adornment.Start"
+                   Adornment="Adornment.End"
                    Clearable="isNullable"
                    ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
             @foreach (var enumValue in enumValues)
