@@ -17,7 +17,7 @@
 <MudStack Spacing="1" Style="min-width: 100px;">
     <MudStack Row="true" Justify="Justify.SpaceBetween">
         <MudText Typo="Typo.caption" Align="Align.Right">
-            @Current.ToString("0.##") / @Total.ToString("0.##")
+            @Current.ToString("0.##") / @Total.ToString("0.##") @Unit
         </MudText>
         <MudText Typo="Typo.caption" Align="Align.Right" Style="color: var(--mud-palette-text-secondary)">
             @_clampedPercentage.ToString("0")%
@@ -36,6 +36,7 @@
 @code {
     [Parameter, EditorRequired] public decimal Total { get; set; }
     [Parameter, EditorRequired] public decimal Current { get; set; }
+    [Parameter] public string Unit { get; set; } = "";
 
     private double _percentage => Total > 0 ? (double)(Current / Total * 100m) : 0d;
     private double _clampedPercentage;

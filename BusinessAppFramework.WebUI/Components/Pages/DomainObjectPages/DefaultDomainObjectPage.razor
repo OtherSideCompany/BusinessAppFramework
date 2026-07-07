@@ -21,7 +21,8 @@
         <DomainObjectPageHeaderTitle DomainObject="@DomainObject" DescriptorKey="@Descriptor.WorkspaceKey">
             <Actions>
                 <ActionButton OnClick="() => DeleteAsync()"
-                              ActionKey="@ActionKeys.DeleteActionKey" />
+                              ActionKey="@ActionKeys.DeleteActionKey" 
+                                  Shrink="true" />
             </Actions>
         </DomainObjectPageHeaderTitle>
 

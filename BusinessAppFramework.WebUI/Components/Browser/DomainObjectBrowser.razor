@@ -170,11 +170,9 @@
 
             @foreach (var action in Descriptor.ApplicationActions)
             {
-                var shrink = action.ActionKey.Equals(ActionKeys.ImportExportDataActionKey);
-                <ActionButton Shrink="@shrink"
-                              OnClick="() => ExecuteApplicationActionAsync(action)"
+                <ActionButton OnClick="() => ExecuteApplicationActionAsync(action)"
                               ActionKey="@action.ActionKey"
-                              Bordered="true" />
+                              Shrink="@(action.ActionKey == ActionKeys.CreateActionKey || action.ActionKey == ActionKeys.ImportExportDataActionKey)" />
             }
 
             @if (hasGlobalActions && hasSelectionActions)
@@ -189,7 +187,7 @@
                 <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
                               ActionKey="@action.ActionKey"
                               Disabled="@disabled"
-                              Bordered="true" />
+                              Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
             }
 
         </MudStack>

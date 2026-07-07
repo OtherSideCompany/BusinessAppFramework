@@ -1,7 +1,6 @@
 ﻿@using BusinessAppFramework.Application.Actions
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Workflows
-@using BusinessAppFramework.Domain
 @using BusinessAppFramework.WebUI.Components.Browser
 @using BusinessAppFramework.WebUI.Components.SearchList
 @using BusinessAppFramework.WebUI.Interfaces
@@ -17,21 +16,22 @@
     .wf-step {
         flex: 1;
         transition: border-color 0.15s ease;
-        border-radius: 12px;
+        border-radius: 16px;
+        border: solid 1px;
     }
 
     .wf-step-completed {
-        background-color: var(--mud-palette-success-hover) !important;
+        border-color: var(--mud-palette-success) !important;
         color: var(--mud-palette-success-darken) !important;
     }
 
     .wf-step-active {
-        background-color: var(--mud-palette-info-hover) !important;
-        color: var(--mud-palette-info-darken) !important;
+        border-color: var(--mud-palette-default) !important;
+        color: var(--mud-palette-default-darken) !important;
     }
 
     .wf-step-pending {
-        background-color: color-mix(in srgb, var(--mud-palette-text-disabled) 10%, transparent) !important;
+        border-color: color-mix(in srgb, var(--mud-palette-text-disabled) 10%, transparent) !important;
         color: var(--mud-palette-text-disabled) !important;
     }
 </style>
@@ -46,7 +46,7 @@
 
             <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
 
-                <MudPaper Outlined="false" Elevation="0" Class="@($"wf-step px-8 py-2 {GetStepCssClass(step)}")">
+                <MudPaper Outlined="false" Elevation="0" Class="@($"wf-step px-4 py-1 {GetStepCssClass(step)}")">
 
                     <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
 
@@ -58,7 +58,7 @@
 
                 @if (transition != null)
                 {
-                    <MudStack Spacing="0" Row="true" AlignItems="AlignItems.Center">
+                    <MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
 
                         @if (transition.Conditions.Any())
                         {

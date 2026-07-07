@@ -36,9 +36,8 @@
 
     <MudField Typo="Typo.body2"
               Variant="@Variant"
+              Underline="false"
               Margin="Margin.Dense"
-              AdornmentIcon="@Icons.Material.Outlined.Search"
-              Adornment="Adornment.End"
               Class="lookup-field"
               InnerPadding="false">
 
@@ -75,12 +74,14 @@ else
     <MudAutocomplete T="DomainObjectSearchResult"
                      Variant="@Variant"
                      Margin="Margin.Dense"
+                     Underline="false"
                      ValueChanged="OnResultSelected"
                      SearchFunc="SearchAsync"
                      ToStringFunc="@(r => r?.DisplayValue ?? string.Empty)"
                      ResetValueOnEmptyText="false"
                      AdornmentIcon="@Icons.Material.Outlined.Search"
-                     Adornment="Adornment.End"
+                     Adornment="Adornment.Start"
+                     IconSize="Size.Small"
                      OnAdornmentClick="OpenSelector"
                      Placeholder="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.TypeToSearchKey)">
         <AfterItemsTemplate>
@@ -110,7 +111,7 @@ else
         }
     }
     [Parameter] public string Label { get; set; } = default!;
-    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
     [Parameter] public PropertyEdition? PropertyEdition { get; set; }
 

@@ -15,10 +15,10 @@
 {
     var props = GetEditableProperties().ToList();
 
-    <MudStack Spacing="8">
+    <MudStack Spacing="6">
         @foreach (var category in GetCategoriesOrDefault())
         {
-            <MudStack Spacing="1">
+            <MudStack Spacing="2">
 
                 @if (DisplayCategoryHeaders)
                 {
@@ -28,7 +28,7 @@
                     </MudStack>
                 }
 
-                <MudGrid Spacing="2" Class="mt-0">
+                <MudGrid Spacing="1">
                     @foreach (var propEdition in category.PropertyEditions)
                     {
                         var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);

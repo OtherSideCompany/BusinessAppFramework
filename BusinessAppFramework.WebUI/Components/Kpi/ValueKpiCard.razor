@@ -7,28 +7,26 @@
     }
 </style>
 
-<MudStack Spacing="1" Row="true">
+<MudStack Spacing="1" Row="true" AlignItems="AlignItems.Center">
 
-    <MudIcon Icon="@Icon" Size="Size.Small" Style="color:var(--mud-palette-text-secondary);" />
+    <MudIcon Icon="@Icon" Size="Size.Small" Style="width:16px; height:16px;" />
 
-    <MudText Typo="Typo.body1" Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+    <MudText Typo="Typo.body1">@Label</MudText>
 
-    <div class="ml-1">
-        @if (!string.IsNullOrEmpty(NavigationRoute))
-        {
-            <MudLink Href="@NavigationRoute"
-                     @onclick:stopPropagation="true"
-                     Class="stat-nav-link"
-                     Style="color: var(--mud-palette-primary-darken) !important; font-weight:500;"
-                     Typo="Typo.h5">
-                @_displayValue
-            </MudLink>
-        }
-        else
-        {
-            <MudText Typo="Typo.body1" Style="font-weight:500;">@_displayValue</MudText>
-        }
-    </div>
+    @if (!string.IsNullOrEmpty(NavigationRoute))
+    {
+        <MudLink Href="@NavigationRoute"
+                 @onclick:stopPropagation="true"
+                 Class="stat-nav-link"
+                 Style="color: var(--mud-palette-primary-darken) !important; font-weight:700;"
+                 Typo="Typo.h5">
+            @_displayValue
+        </MudLink>
+    }
+    else
+    {
+        <MudText Typo="Typo.h5" Style="font-weight:700;">@_displayValue</MudText>
+    }
 
 </MudStack>
 

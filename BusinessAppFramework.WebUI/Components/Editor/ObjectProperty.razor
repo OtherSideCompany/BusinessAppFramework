@@ -8,6 +8,12 @@
 @inject ILocalizedStringService LocalizedStringService
 @inject IRelationServiceGateway RelationServiceGateway
 
+<style>
+    .pg-field .mud-input-outlined-border {
+        border-color: transparent !important;
+    }
+</style>
+
 @{
     var label = LocalizedStringService.ResolveProperty(Target.GetType(), PropertyInfo.Name);
     var concreteProperty = Target.GetType().GetProperty(PropertyInfo.Name, BindingFlags.Public | BindingFlags.Instance);
@@ -22,7 +28,7 @@
 
     @if(string.IsNullOrEmpty(propertyHelper))
     {
-        <MudText Style="margin-left:4px; margin-bottom:-2px; color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>        
+        <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>        
     }
     else
     {
@@ -50,6 +56,8 @@
                       ShrinkLabel="true"
                       Value="@(_propertyValue?.ToString())"
                       Variant="@Variant"
+                      Underline="false"
+                      Class="pg-field"
                       Sizing="InputSizing.Auto"
                       ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"/>
     }
@@ -61,6 +69,7 @@
                          Immediate="true"
                          Value="@(_propertyValue as int?)"
                          Variant="@Variant"
+                         Underline="false"
                          ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                          HideSpinButtons="true"
                          Clearable="@(PropertyInfo.PropertyType == typeof(int?))"
@@ -83,6 +92,7 @@
                          Value="@(_propertyValue as decimal?)"
                          ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
                          Variant="@Variant"
+                         Underline="false"
                          HideSpinButtons="true"
                          Culture="System.Globalization.CultureInfo.InvariantCulture"
                          Clearable="@(PropertyInfo.PropertyType == typeof(decimal?))"
@@ -92,9 +102,12 @@
     {
         <MudDatePicker Date="@(_propertyValue as DateTime?)"
                        Style="font-size: var(--mud-typography-body2-size); font-weight: var(--mud-typography-body2-weight);"
+                       IconSize="Size.Small"
                        Margin="@Margin"
                        DateChanged="OnDateChanged"
+                       Adornment="Adornment.Start"
                        Variant="@Variant"
+                       Underline="false"
                        Editable="true"
                        Clearable="PropertyInfo.PropertyType == typeof(DateTime?)"
                        Placeholder="@(PropertyInfo.PropertyType == typeof(DateTime?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
@@ -128,6 +141,8 @@
                    Margin="@Margin"
                    Value="@_propertyValue"
                    Variant="@Variant"
+                   Underline="false"
+                   Adornment="Adornment.Start"
                    Clearable="isNullable"
                    ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
             @foreach (var enumValue in enumValues)
@@ -144,7 +159,7 @@
     [Parameter, EditorRequired] public PropertyInfo PropertyInfo { get; init; }
     [Parameter, EditorRequired] public PropertyEdition PropertyEdition { get; init; }
     [Parameter, EditorRequired] public object Target { get; init; }
-    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public Margin Margin { get; set; } = Margin.Dense;
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
 

@@ -33,7 +33,10 @@ else
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.ViewSidebar"
                                        OnClick="() => SetRightPanelExpandedState(false)"
-                                       Size="Size.Small"/>
+                                       Size="Size.Small"
+                                       Variant="Variant.Filled"
+                                       DropShadow="false"
+                                       Style="border-radius:16px; width:32px; height:32px;" />
                     }
                     else
                     {
@@ -42,7 +45,10 @@ else
                                 <MudSpacer />
                                 <MudIconButton Icon="@Icons.Material.Outlined.ViewSidebar"
                                                OnClick="() => SetRightPanelExpandedState(true)"
-                                               Size="Size.Small"/>
+                                               Size="Size.Small"
+                                               Variant="Variant.Filled"
+                                               DropShadow="false"
+                                               Style="border-radius:16px; width:32px; height:32px;" />
                             </MudStack>
                             @RightPanelContent
                         </MudStack>

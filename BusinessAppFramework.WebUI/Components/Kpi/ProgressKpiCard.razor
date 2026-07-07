@@ -10,19 +10,19 @@
 
 <MudStack Spacing="1" Row="true">
 
-    <MudIcon Icon="@Icon" Size="Size.Small" Style="color:var(--mud-palette-text-secondary);" />
+    <MudIcon Icon="@Icon" Size="Size.Small"/>
 
-    <MudText Typo="Typo.body1" Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+    <MudText Typo="Typo.body1">@Label</MudText>
 
     @if (_isTargetSet)
     {
         @if (ProgressionDisplayType == ProgressionDisplayType.Values)
         {
-            <MudText Typo="Typo.body1" Style="font-weight:500;" Class="ml-1" Color="@_textColor">@_displayValue</MudText>
+            <MudText Typo="Typo.h5" Style="font-weight:700;" Color="@_textColor">@_displayValue</MudText>
         }
         else if (ProgressionDisplayType == ProgressionDisplayType.Percent)
         {
-            <MudText Typo="Typo.body1" Style="font-weight:500;" Class="ml-1" Color="@_textColor">@_percentProgressionDisplayValue</MudText>
+            <MudText Typo="Typo.h5" Style="font-weight:700;" Color="@_textColor">@_percentProgressionDisplayValue</MudText>
         }
     }
     else

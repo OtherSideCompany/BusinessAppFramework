@@ -19,7 +19,8 @@
           Margin="Margin.Dense"
           @onclick="OpenSelector"
           AdornmentIcon="@Icons.Material.Outlined.Search"
-          Adornment="Adornment.End"
+          Adornment="Adornment.Start"
+          IconSize="Size.Small"
           Class="lookup-field"
           InnerPadding="false">
     <div style="margin-bottom:4px;">
@@ -62,7 +63,7 @@
 
 
 @code {
-    [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
 
     [Parameter]
     public DomainObjectReferenceList? DomainObjectReferenceList
