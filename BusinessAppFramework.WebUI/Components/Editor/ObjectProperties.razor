@@ -115,6 +115,7 @@
     };
 
     private PropertyCategory? _defaultPropertyCategory;
+    private List<PropertyCategory>? _categories;
 
     public void Refresh() => StateHasChanged();
 
@@ -150,12 +151,15 @@
         if (!PropertyCategories.Any())
             return GetDefaultCategory();
 
-        var categories = new List<PropertyCategory>(PropertyCategories);
+        if (_categories == null)
+        {
+            _categories = new List<PropertyCategory>(PropertyCategories);
 
-        if (_uncategorizedPropertyCategory.PropertyEditions.Any())
-            categories.Add(_uncategorizedPropertyCategory);
+            if (_uncategorizedPropertyCategory.PropertyEditions.Any())
+                _categories.Add(_uncategorizedPropertyCategory);
+        }
 
-        return categories;
+        return _categories;
     }
 
     private IEnumerable<PropertyInfo> GetEditableProperties()
