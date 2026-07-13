@@ -5,6 +5,7 @@ using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Repository;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
+using BusinessAppFramework.Domain.LocalizedTexts;
 using BusinessAppFramework.Infrastructure.Factories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -311,7 +312,11 @@ namespace BusinessAppFramework.Infrastructure.Repositories
             {
                 var domainObjectPropertyValue = domainObjectProperty.GetValue(domainObject);
 
-                if (IsValueTypeOrString(domainObjectProperty.PropertyType))
+                if (IsLocalizedText(domainObjectProperty.PropertyType))
+                {
+                    MapLocalizedTextProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
+                }
+                else if (IsValueTypeOrString(domainObjectProperty.PropertyType))
                 {
                     MapProperty(domainObjectProperty.Name, domainObjectPropertyValue, entity, entityProps);
                 }
@@ -410,6 +415,21 @@ namespace BusinessAppFramework.Infrastructure.Repositories
                 throw new ArgumentException($"Property '{domainObjectPropertyName}' not found in target type {typeof(TEntity).Name}");
             }
         }
+
+        private void MapLocalizedTextProperty(
+            string domainObjectPropertyName,
+            object domainObjectPropertyValue,
+            TEntity entity,
+            Dictionary<string, PropertyInfo> entityProperties)
+        {
+            if (!entityProperties.TryGetValue(domainObjectPropertyName, out var targetProperty))
+                throw new ArgumentException($"Property '{domainObjectPropertyName}' not found in target type {typeof(TEntity).Name}");
+
+            var localizedText = domainObjectPropertyValue as LocalizedText ?? LocalizedText.Empty;
+            targetProperty.SetValue(entity, LocalizedTextJson.Serialize(localizedText));
+        }
+
+        private static bool IsLocalizedText(Type type) => type == typeof(LocalizedText);
 
         private bool IsValueTypeOrString(Type type)
         {

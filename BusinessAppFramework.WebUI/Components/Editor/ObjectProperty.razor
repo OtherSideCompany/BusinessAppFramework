@@ -1,6 +1,9 @@
 ﻿@using System.Reflection
 @using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Contracts
+@using BusinessAppFramework.Contracts.Enums
+@using BusinessAppFramework.Domain
+@using BusinessAppFramework.Domain.LocalizedTexts
 @using BusinessAppFramework.WebUI.Interfaces
 @using Domain.DomainObjects
 @using MudBlazor
@@ -34,7 +37,7 @@
                       Underline="false"
                       Class="pg-field"
                       Sizing="InputSizing.Auto"
-                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"/>
+                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
     }
     else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
     {
@@ -92,8 +95,8 @@
         var domainObjectReference = _propertyValue as DomainObjectReference;
 
         <DomainObjectReferenceField DomainObjectReference="@domainObjectReference"
-                                    OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }" 
-                                    PropertyEdition="@PropertyEdition"/>
+                                    OnDomainObjectReferenceChanged="async doref => { PropertyInfo.SetValue(Target, doref); await OnChanged.InvokeAsync(PropertyInfo); }"
+                                    PropertyEdition="@PropertyEdition" />
     }
     else if (PropertyInfo.PropertyType == typeof(DomainObjectReferenceList))
     {
@@ -125,7 +128,56 @@
             }
         </MudSelect>
     }
+    else if (PropertyInfo.PropertyType == typeof(LocalizedText))
+    {
+        var localizedText = _propertyValue as LocalizedText ?? LocalizedText.Empty;
+        var currentCulture = Language.fr.ToCultureCode();
+        var otherCultures = Enum.GetValues<Language>()
+            .Select(language => language.ToCultureCode())
+            .Where(culture => culture != currentCulture)
+            .ToList();
 
+        <MudStack Row="true" AlignItems="AlignItems.Baseline" Style="padding-top:4px;">
+            <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary)">@currentCulture.ToUpperInvariant()</MudText>
+            <MudTextField T="string"
+                          Typo="Typo.body2"
+                          Margin="@Margin"
+                          Immediate="true"
+                          ShrinkLabel="true"
+                          Value="@localizedText.Resolve(currentCulture, currentCulture)"
+                          Variant="@Variant"
+                          Underline="false"
+                          Class="pg-field"
+                          Sizing="InputSizing.Auto"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@(_localizedTextExpanded ? Icons.Material.Rounded.ExpandLess : Icons.Material.Rounded.Translate)"
+                          OnAdornmentClick="@(() => _localizedTextExpanded = !_localizedTextExpanded)"
+                          IconSize="Size.Small"
+                          Placeholder="@GlobalVariables.DefaultString"
+                          ValueChanged="async value => await SetLocalizedValue(localizedText, currentCulture, value)" />
+        </MudStack>
+
+        <MudCollapse Expanded="_localizedTextExpanded">
+            @foreach (var culture in otherCultures)
+            {
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary)">@culture.ToUpperInvariant()</MudText>
+                    <MudTextField T="string"
+                                  Typo="Typo.body2"
+                                  Margin="@Margin"
+                                  Immediate="true"
+                                  ShrinkLabel="true"
+                                  Value="@localizedText.Resolve(culture, culture)"
+                                  Variant="@Variant"
+                                  Underline="false"
+                                  Class="pg-field"
+                                  Sizing="InputSizing.Auto"
+                                  Placeholder="@GlobalVariables.DefaultString"
+                                  ValueChanged="async value => await SetLocalizedValue(localizedText, culture, value)" />
+                </MudStack>
+            }
+        </MudCollapse>
+    }
 </MudStack>
 
 
@@ -138,6 +190,15 @@
     [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
 
     private object? _propertyValue;
+
+    private bool _localizedTextExpanded;
+
+    private async Task SetLocalizedValue(LocalizedText current, string culture, string value)
+    {
+        var updated = current.With(culture, value);
+        PropertyInfo.SetValue(Target, updated);
+        await OnChanged.InvokeAsync(PropertyInfo);
+    }
 
     private async Task OnDateChanged(DateTime? v)
     {
