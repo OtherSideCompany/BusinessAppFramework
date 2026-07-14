@@ -3,17 +3,9 @@
 @using Application.Search
 @using Domain.DomainObjects
 @using Microsoft.AspNetCore.Components.Web;
-@using Microsoft.Extensions.Localization
 @using Microsoft.JSInterop
 @using MudBlazor
-@using Application.Actions
-@using Application.Browser
-@using Domain
-@using WebUI.Components.Editor
-@using WebUI.Components.Header
-@using WebUI.Components.Pages
 @using WebUI.Components.SearchList
-@using WebUI.Factories
 @using WebUI.Interfaces
 
 @inject ILocalizedStringService LocalizedStringService
@@ -21,7 +13,7 @@
 @inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
 @inject IIconFactory IconFactory
 @inject IJSRuntime JS
-@inject IDomainObjectBrowserWorkspaceRegistry DomainObjectBrowserWorkspaceRegistry
+@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyRegistry
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
@@ -109,7 +101,7 @@
                    IconColor="Color.Primary"
                    Variant="Variant.Text"
                    Size="Size.Small"
-                   OnClick="OpenModuleInNewTab"
+                   OnClick="OpenNewDomainObjectInNewTab"
                    Class="mt-2">
             @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
         </MudButton>
@@ -221,12 +213,17 @@
         }
     }
 
-    private async Task OpenModuleInNewTab()
+    private async Task OpenNewDomainObjectInNewTab()
     {
-        var workspaceKey = DomainObjectBrowserWorkspaceRegistry.Resolve<TDomainObject>();
+        var domainObject = await DomainObjectServiceGateway.CreateAsync();
 
-        var url = $"/workspace/{workspaceKey}";
-        await JS.InvokeVoidAsync("open", url, "_blank");
+        if (domainObject != null)
+        {
+            var workspaceKey = DomainObjectPageWorkspaceKeyRegistry.GetPageWorkspaceKey<TDomainObject>();
+
+            var url = $"/workspace/{workspaceKey}?id={domainObject.Id}";
+            await JS.InvokeVoidAsync("open", url, "_blank");
+        }
     }
 }
 
