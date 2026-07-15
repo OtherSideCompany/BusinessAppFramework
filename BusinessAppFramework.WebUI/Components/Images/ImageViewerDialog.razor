@@ -1,0 +1,15 @@
+﻿@using BusinessAppFramework.Application.Interfaces
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<MudDialog>
+    <TitleContent>@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.ImageZoom)</TitleContent>
+    <DialogContent>
+        <MudImage Src="@ImageUrl" ObjectFit="ObjectFit.Contain" Style="max-width: 100%; max-height: 100%;" />
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter] public string ImageUrl { get; set; } = string.Empty;
+}

@@ -1,13 +1,17 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 
+@inject IDialogService DialogService
+
 <MudStack Spacing="4">
 
     @if (_imageData != null && _imageData.Length > 0)
     {
         <MudImage Src="@GetImageDataUrl()"
                   ObjectFit="ObjectFit.Contain"
-                  Height="200" />
+                  Height="200"
+                  @onclick="OpenFullSize" 
+                  Style="cursor:pointer;"/>
     }
 
     <MudFileUpload T="IBrowserFile"
@@ -17,8 +21,6 @@
                    FilesChanged="(file) => ImageFileSelected(file)">
         <SelectedTemplate />
     </MudFileUpload>
-
-
 
 </MudStack>
 
@@ -62,5 +64,20 @@
             return $"data:{DisplayedImageFormat};base64,{base64}";
         }
         return string.Empty;
+    }
+
+    private async Task OpenFullSize()
+    {
+        var parameters = new DialogParameters<ImageViewerDialog>
+        {
+            { x => x.ImageUrl, GetImageDataUrl() }
+        };
+
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.ExtraExtraLarge,
+        };
+
+        await DialogService.ShowAsync<ImageViewerDialog>(null, parameters, options);
     }
 }

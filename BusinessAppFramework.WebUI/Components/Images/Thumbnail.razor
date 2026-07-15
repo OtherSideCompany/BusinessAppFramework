@@ -1,0 +1,56 @@
+﻿@using BusinessAppFramework.WebUI.Components.SearchList
+@using BusinessAppFramework.WebUI.Interfaces
+@using MudBlazor
+
+@inject IDialogService DialogService
+
+<MudPaper Width="@_width"
+          Height="@_height"
+          Elevation="0"
+          Class="d-flex align-center justify-center cursor-pointer overflow-hidden"
+          Style="background-color:transparent;"
+          @onclick="async () => await OpenFullSizeAsync()">
+    <NullableValue T="byte[]?" Value="@ImageData">
+        <DisplayValue>
+            <MudImage Src="@ToImageDataUrl(ImageData)"
+                      ObjectFit="ObjectFit.Contain"
+                      Style="max-width: 100%; max-height: 100%;" />
+        </DisplayValue>
+    </NullableValue>
+</MudPaper>
+
+@code {
+    [Parameter] public int Width { get; set; } = 64;
+    [Parameter] public int Height { get; set; } = 64;
+    [Parameter] public byte[]? ImageData { get; set; }
+    [Parameter] public string ImageFormat { get; set; } = "jpeg";
+    [Parameter] public IPictureProviderServiceGateway? PictureProviderServiceGateway { get; set; }
+    [Parameter] public int? DomainObjectId { get; set; }
+
+    private string _width => $"{Width}px";
+    private string _height => $"{Height}px";
+
+    private string ToImageDataUrl(byte[]? imageData) => imageData == null ? String.Empty : $"data:image/{ImageFormat};base64,{Convert.ToBase64String(imageData)}";
+
+    private bool CanDisplayZoomedPicture => PictureProviderServiceGateway != null && DomainObjectId != null;
+
+    private async Task OpenFullSizeAsync()
+    {
+        if (CanDisplayZoomedPicture)
+        {
+            var imageBytes = await PictureProviderServiceGateway!.GetPictureAsync(DomainObjectId!.Value);
+
+            var parameters = new DialogParameters<BusinessAppFramework.WebUI.Components.Images.ImageViewerDialog>
+            {
+                { x => x.ImageUrl, ToImageDataUrl(imageBytes) }
+            };
+
+            var options = new DialogOptions
+            {
+                MaxWidth = MaxWidth.ExtraExtraLarge,
+            };
+
+            await DialogService.ShowAsync<BusinessAppFramework.WebUI.Components.Images.ImageViewerDialog>(null, parameters, options);
+        }
+    }
+}

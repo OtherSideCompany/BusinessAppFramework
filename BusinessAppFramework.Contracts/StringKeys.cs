@@ -46,5 +46,6 @@ namespace BusinessAppFramework.Contracts
         public static string OthersKey = "OthersKey";
         public static string StateKey = "StatesKey";
         public static string DatesKey = "DatesKey";
+        public static string ImageZoom = "ImageZoom";
     }
 }
