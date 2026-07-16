@@ -190,7 +190,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             return applicationActionResultPayload;
         }
 
-        private DomainObjectApplicationActionResultPayload BuildErrorPayload(DomainException exception)
+        protected DomainObjectApplicationActionResultPayload BuildErrorPayload(DomainException exception)
         {
             var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload()
             {

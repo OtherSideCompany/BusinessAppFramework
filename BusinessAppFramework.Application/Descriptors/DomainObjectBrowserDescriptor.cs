@@ -4,7 +4,6 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
-using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Descriptors

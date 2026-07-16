@@ -15,7 +15,7 @@ namespace BusinessAppFramework.Application.Actions
         #region Properties
         public string ActionKey { get; init; } = string.Empty;
         public string DocumentKey { get; set; } = string.Empty;
-        public string ExecuteRoute { get; init; } = string.Empty;
+        public string ExecuteRoute { get; set; } = string.Empty;
         public int DomainObjectId { get; set; }
         public bool RequireDomainObjectId { get; init; } = true;
 
