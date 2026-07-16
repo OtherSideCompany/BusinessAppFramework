@@ -276,6 +276,27 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             return href;
         }
 
+        protected async Task<DomainObjectReference> ResolveReferenceAsync(
+            DomainObjectReference current,
+            int accountId,
+            Func<int, CancellationToken, Task<int?>> getId)
+        {
+            var id = await getId(accountId, CancellationToken.None);
+
+            if (!id.HasValue)
+                return new DomainObjectReference { RelationKey = current.RelationKey };
+
+            var hydrated = await RelationServiceGateway.GetHydratedReferenceAsync(
+                accountId, id.Value, current.RelationKey);
+
+            return new DomainObjectReference
+            {
+                RelationKey = current.RelationKey,
+                DomainObjectId = hydrated?.DomainObjectId,
+                DisplayValue = hydrated?.DisplayValue
+            };
+        }
+
         #endregion
     }
 }

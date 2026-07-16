@@ -111,7 +111,7 @@ namespace BusinessAppFramework.WebUI.Services
             return result?.Data ?? BuildServerErrorPayload();
         }
 
-        private static DomainObjectApplicationActionResultPayload BuildServerErrorPayload()
+        protected static DomainObjectApplicationActionResultPayload BuildServerErrorPayload()
             => new() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
 
         #endregion
