@@ -1,4 +1,6 @@
-﻿namespace BusinessAppFramework.Contracts.ApiRoutes
+﻿using System.Runtime.InteropServices;
+
+namespace BusinessAppFramework.Contracts.ApiRoutes
 {
    public static class ApiRouteSegments
    {
@@ -26,5 +28,7 @@
         public const string GetMailInfo = $"get-mail-info";
         public const string GetMostUsedContactId = $"get-most-used-contact-id";
         public const string GetMostUsedAddressId = $"get-most-used-address-id";
+
+        public const string GetUnpaidAmount = "get-unpaid-amount";
     }
 }

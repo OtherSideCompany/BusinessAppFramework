@@ -1,0 +1,16 @@
+﻿@using BusinessAppFramework.WebUI.Helpers
+@using MudBlazor
+
+<MudStack Spacing="2">
+
+    <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+
+    <MudText Typo="Typo.h2" Color="Color.Primary">@Value</MudText>
+
+</MudStack>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Value { get; set; }
+
+}

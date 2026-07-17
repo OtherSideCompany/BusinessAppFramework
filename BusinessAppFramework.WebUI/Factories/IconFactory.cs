@@ -5,7 +5,7 @@ using MudBlazor;
 
 namespace BusinessAppFramework.WebUI.Factories
 {
-   public class IconFactory : stringBasedFactory, IIconFactory
+   public class IconFactory : StringBasedFactory, IIconFactory
    {
       #region Fields
 

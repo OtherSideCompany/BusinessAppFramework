@@ -3,7 +3,7 @@ using BusinessAppFramework.Application.Trees;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class TreeFactory : stringBasedFactory, ITreeFactory
+   public class TreeFactory : StringBasedFactory, ITreeFactory
    {
       #region Fields
 

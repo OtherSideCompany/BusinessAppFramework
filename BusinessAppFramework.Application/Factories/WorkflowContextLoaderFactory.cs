@@ -3,7 +3,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class WorkflowContextLoaderFactory : stringBasedFactory, IWorkflowContextLoaderFactory
+   public class WorkflowContextLoaderFactory : StringBasedFactory, IWorkflowContextLoaderFactory
    {
       #region Fields
 

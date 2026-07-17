@@ -1,11 +1,10 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
-using BusinessAppFramework.Domain;
 using System.Linq.Expressions;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class ConstraintFactory : stringBasedFactory, IConstraintFactory
+   public class ConstraintFactory : StringBasedFactory, IConstraintFactory
    {
       #region Fields
 

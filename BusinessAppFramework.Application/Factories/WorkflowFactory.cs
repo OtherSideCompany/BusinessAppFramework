@@ -4,7 +4,7 @@ using BusinessAppFramework.Domain;
 
 namespace BusinessAppFramework.Application.Factories
 {
-   public class WorkflowFactory : stringBasedFactory, IWorkflowFactory
+   public class WorkflowFactory : StringBasedFactory, IWorkflowFactory
    {
       #region Fields
 

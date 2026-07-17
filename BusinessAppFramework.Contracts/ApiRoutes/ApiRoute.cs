@@ -6,6 +6,9 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
 {
     public static class ApiRoute
     {
+        public static string BaseRoute(string route) =>
+            $"{ApiRouteSegments.Root}/{route}";
+
         public static string DomainObjectControllerRoute<T>() =>
             $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{DomainObjectAggregateKeys<T>.Type}";
 

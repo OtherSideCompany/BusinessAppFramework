@@ -28,6 +28,6 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterDomainObjectNavigationApplicationAction(IServiceProvider serviceProvider);
         void RegisterReferenceNavigationKeys(IServiceProvider serviceProvider);
         string? GetModuleWorkspaceKey();
-        List<string> GetWorkspacesKeys();
+        List<string> GetWorkspacesKeys();        
     }
 }
