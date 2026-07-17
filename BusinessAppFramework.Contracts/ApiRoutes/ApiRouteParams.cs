@@ -16,7 +16,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string DocumentId = "documentId";
         public const string CultureInfo = "cultureInfo";
         public const string MailKind = "mailKind";
-        public const string Year = "year";
-        public const string Month = "month";
+        public const string StartDate = "startDate";
+        public const string EndDate = "endDate";
     }
 }

@@ -1,0 +1,62 @@
+﻿@using BusinessAppFramework.WebUI.Helpers
+@using MudBlazor
+
+<MudStack Spacing="2">
+
+    <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+
+    <MudStack Row="true" AlignItems="AlignItems.Baseline" Spacing="1">
+
+        <MudText Typo="Typo.h2" Color="Color.Primary">@DisplayValue(Value.CurrentValue)</MudText>
+
+        @if (Value.ValueDelta(0) != 0)
+        {
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
+                <MudIcon Icon="@_deltaIcon" Size="Size.Small" Color="@_deltaColor" />
+                <MudText Typo="Typo.caption" Color="@_deltaColor">@DisplayValue(Value.ValueDelta(0))</MudText>
+            </MudStack>
+        }
+
+    </MudStack>
+
+    @if (Value.Values.Count() > 1)
+    {
+        <div style="height: 20px;">
+            <Sparkline Values="@_sparklineValues" OnClick="OnSparklineClick" />
+        </div>        
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public BusinessAppFramework.Application.Kpis.SlidingValueKpi Value { get; set; } = new();
+    [Parameter] public EventCallback OnSparklineClick { get; set; }
+    [Parameter] public bool DisplayFriendlyValue { get; set; }
+    [Parameter] public string Units { get; set; } = String.Empty;
+
+    private string _deltaIcon => Value.ValueDelta(0) > 0 ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown;
+    private Color _deltaColor => Value.ValueDelta(0) > 0 ? Color.Success : Color.Error;
+    private List<decimal> _sparklineValues => Value.Values.Select(count => count).Reverse().ToList();
+
+    private string DisplayValue(decimal value)
+    {
+        var stringValue = "";
+
+        if (DisplayFriendlyValue)
+        {
+            stringValue = StringHelper.AmountToFriendlyDisplay(value);
+        }
+        else
+        {
+            stringValue = value.ToString();
+        }
+
+        if (!String.IsNullOrEmpty(Units))
+        {
+            stringValue = $"{stringValue} {Units}";
+        }
+
+        return stringValue;
+    }
+}

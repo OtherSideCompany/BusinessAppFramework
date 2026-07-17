@@ -1,0 +1,95 @@
+﻿@using System.Text
+<style>
+    .sparkline {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+        .sparkline .spark-line {
+            stroke-width: 2;
+            transition: stroke-width 120ms ease;
+        }
+
+        .sparkline .spark-area {
+            opacity: 0.85;
+            transition: opacity 120ms ease;
+        }
+
+        .sparkline.clickable {
+            cursor: pointer;
+        }
+
+            .sparkline.clickable:hover .spark-line {
+                stroke-width: 3.5;
+            }
+
+            .sparkline.clickable:hover .spark-area {
+                opacity: 1;
+            }
+</style>
+<svg viewBox="0 0 @ViewBoxWidth @ViewBoxHeight"
+     preserveAspectRatio="none"
+     class="@_cssClass"
+     @onclick="HandleClickAsync">
+    <defs>
+        <linearGradient id="@_gradientId" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--mud-palette-primary)" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="var(--mud-palette-primary)" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+    <polygon class="spark-area" points="@_areaPoints" fill="url(#@_gradientId)" stroke="none" />
+    <polyline class="spark-line"
+              points="@_points"
+              fill="none"
+              stroke="var(--mud-palette-primary)"
+              vector-effect="non-scaling-stroke"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+</svg>
+@code {
+    private const int ViewBoxWidth = 120;
+    private const int ViewBoxHeight = 40;
+    [Parameter] public IReadOnlyList<decimal> Values { get; set; } = Array.Empty<decimal>();
+    [Parameter] public EventCallback OnClick { get; set; }
+    private readonly string _gradientId = $"sparkline-gradient-{Guid.NewGuid():N}";
+    private string _points = string.Empty;
+    private string _areaPoints = string.Empty;
+    private string _cssClass => OnClick.HasDelegate ? "sparkline clickable" : "sparkline";
+    protected override void OnParametersSet()
+    {
+        BuildPoints();
+    }
+    private async Task HandleClickAsync()
+    {
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
+    private void BuildPoints()
+    {
+        if (Values.Count < 2)
+        {
+            _points = string.Empty;
+            _areaPoints = string.Empty;
+            return;
+        }
+        var min = Values.Min();
+        var max = Values.Max();
+        var span = max - min == 0 ? 1 : max - min;
+        var stepX = (decimal)ViewBoxWidth / (Values.Count - 1);
+        var verticalPadding = 3.0m;
+        var usableHeight = ViewBoxHeight - verticalPadding * 2;
+        var builder = new StringBuilder();
+        for (var index = 0; index < Values.Count; index++)
+        {
+            var x = index * stepX;
+            var y = verticalPadding + usableHeight
+                    - (Values[index] - min) / span * usableHeight;
+            builder.Append(FormattableString.Invariant($"{x:0.#},{y:0.#} "));
+        }
+        _points = builder.ToString().TrimEnd();
+        _areaPoints = FormattableString.Invariant($"{_points} {ViewBoxWidth},{ViewBoxHeight} 0,{ViewBoxHeight}");
+    }
+}
