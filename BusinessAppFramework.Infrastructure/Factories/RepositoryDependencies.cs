@@ -35,12 +35,14 @@ namespace BusinessAppFramework.Infrastructure.Factories
            IDbContextFactory<DbContext> dbContextFactory,
            IMapper mapper,
            ILoggerFactory loggerFactory,
-           IReferenceResolver parentChildRelationResolver)
+           IReferenceResolver parentChildRelationResolver,
+           IRelationService relationService)
         {
             DbContextFactory = dbContextFactory;
             Mapper = mapper;
             LoggerFactory = loggerFactory;
             RelationResolver = parentChildRelationResolver;
+            RelationService = relationService;
         }
 
         #endregion

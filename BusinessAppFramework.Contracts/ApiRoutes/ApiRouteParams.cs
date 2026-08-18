@@ -18,5 +18,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string MailKind = "mailKind";
         public const string StartDate = "startDate";
         public const string EndDate = "endDate";
+        public const string SourceId = "sourceId";
+        public const string TargetId = "targetId";
     }
 }
