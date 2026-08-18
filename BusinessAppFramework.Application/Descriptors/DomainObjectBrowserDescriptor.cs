@@ -12,8 +12,6 @@ namespace BusinessAppFramework.Application.Descriptors
         where TDomainObject : DomainObject, new()
         where TSearchResult : DomainObjectSearchResult, new()
     {
-        public Type DomainObjectType => typeof(TDomainObject);
-        public Type SearchResultType => typeof(TSearchResult);
         public Type SearchListTemplateProviderType { get; init; } = default!;
         public Type? DetailEditorComponentType { get; init; } = default;
         public List<IApplicationAction> ApplicationActions { get; init; } = new();
