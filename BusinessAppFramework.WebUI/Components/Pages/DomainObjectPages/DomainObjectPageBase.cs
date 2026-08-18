@@ -109,6 +109,20 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             }
         }
 
+        public async Task DeleteTreeNodeAsync(int parentId, int childId, string relationKey)
+        {
+            if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(BusinessAppFramework.Contracts.MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+            {
+                var payload = await TreeGateway.DeleteNodeAsync(parentId, childId, relationKey);
+
+                DisplayPayloadMessage(payload);
+
+                await UpdateTreeBranchAsync(relationKey);
+
+                StateHasChanged();
+            }
+        }
+
         public virtual async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction, int? id)
         {
             if (id != null)
@@ -156,7 +170,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
                 context.PreventNavigation();
         }
 
-        private void DisplayPayloadMessage(DomainObjectApplicationActionResultPayload? payload)
+        protected void DisplayPayloadMessage(DomainObjectApplicationActionResultPayload? payload)
         {
             if (payload == null)
                 return;

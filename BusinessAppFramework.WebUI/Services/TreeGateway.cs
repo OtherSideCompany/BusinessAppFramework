@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Application.Interfaces;
+﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts.ApiRoutes;
 using BusinessAppFramework.WebUI.Interfaces;
@@ -72,19 +73,20 @@ namespace BusinessAppFramework.WebUI.Services
             return (await GetAsync<Node>(route)).Data;
         }
 
-        public async Task<bool> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey)
+        public async Task<DomainObjectApplicationActionResultPayload> DeleteNodeAsync(int parentId, int childId, string parentChildRelationKey)
         {
             var route = $"{_baseUrl}/{TreeRouteSegments.DeleteNode}/{parentId}/{childId}/{parentChildRelationKey}";
-            var result = await DeleteAsync<bool>(route);
+            var result = await DeleteAsync<DomainObjectApplicationActionResultPayload>(route);
 
-            return result?.Data == true;
+            return result?.Data ?? BuildServerErrorPayload();
         }
 
         #endregion
 
         #region Private Methods
 
-
+        protected static DomainObjectApplicationActionResultPayload BuildServerErrorPayload()
+            => new() { ErrorMessageKey = Contracts.MessageKeys.ServerError };
 
         #endregion
     }

@@ -150,7 +150,9 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             {
                 if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
                 {
-                    if (await TreeGateway.DeleteNodeAsync(ParentId.Value, id, Branch.ParentChildRelationKey))
+                    var payload = await TreeGateway.DeleteNodeAsync(ParentId.Value, id, Branch.ParentChildRelationKey);
+
+                    if (payload.Changes.Any(c => c.ChangeType == ChangeType.Deleted))
                     {
                         RemoveNodeRecursive(new List<Branch> { Branch }, id, Branch.ParentChildRelationKey);
                         Branch?.RemoveNode(id);

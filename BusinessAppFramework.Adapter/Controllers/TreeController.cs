@@ -1,4 +1,6 @@
-﻿using BusinessAppFramework.Application.Factories;
+﻿using BusinessAppFramework.Application.Actions;
+using BusinessAppFramework.Application.Exceptions;
+using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Relations;
 using BusinessAppFramework.Application.Trees;
@@ -167,20 +169,37 @@ namespace BusinessAppFramework.Adapter.Controllers
         }
 
         [HttpDelete($"{TreeRouteSegments.DeleteNode}/{{{ApiRouteParams.ParentDomainObjectId}:int}}/{{{ApiRouteParams.DomainObjectId}:int}}/{{{ApiRouteParams.Key}}}")]
-        public async Task<ActionResult<bool>> DeleteNode(
+        public async Task<ActionResult<DomainObjectApplicationActionResultPayload>> DeleteNode(
             [FromRoute(Name = ApiRouteParams.ParentDomainObjectId)] int parentDomainObjectId,
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId, 
             [FromRoute(Name = ApiRouteParams.Key)] string key)
         {
             if (_relationResolver.TryGetParentChildRelationEntry(key, out var parentChildRelation))
             {
-                var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
-                dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
-                await domainObjectService.DeleteAsync(domainObjectId);
-                return Ok(true);
-            }
+                try
+                {
+                    var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(parentChildRelation.ChildEntityType);
+                    dynamic domainObjectService = _domainObjectServiceFactory.CreateDomainObjectService(childDomainObjectType);
+                    await domainObjectService.DeleteAsync(domainObjectId);
 
-            return Ok(false);
+                    var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload();
+                    applicationActionResultPayload.Changes.Add(new DomainObjectChange
+                    {
+                        DomainObjectId = domainObjectId,
+                        ChangeType = ChangeType.Deleted
+                    });
+
+                    return Ok(applicationActionResultPayload);
+                }
+                catch (DomainException exception)
+                {
+                    return Ok(BuildErrorPayload(exception));
+                }
+            }
+            else
+            {
+                return Ok(BuildErrorPayload(new DomainException(DomainErrorKeys.RelationNotFoundException)));
+            }
         }
 
         #endregion
@@ -236,6 +255,16 @@ namespace BusinessAppFramework.Adapter.Controllers
             var childDomainObjectType = _domainObjectTypeMap.GetDomainTypeFromEntityType(childEntityType);
             searchResultType = _domainObjectTypeMap.GetSearchResultTypeFromDomainType(childDomainObjectType);
             return _searchServiceFactory.CreateSearchService(searchResultType);
+        }
+
+        protected DomainObjectApplicationActionResultPayload BuildErrorPayload(DomainException exception)
+        {
+            var applicationActionResultPayload = new DomainObjectApplicationActionResultPayload()
+            {
+                ErrorMessageKey = exception.ErrorKey
+            };
+
+            return applicationActionResultPayload;
         }
 
         #endregion
