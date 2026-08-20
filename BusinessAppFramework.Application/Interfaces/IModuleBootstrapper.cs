@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Contracts;
+﻿using BusinessAppFramework.Application.Mapping;
+using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -9,6 +10,7 @@ namespace BusinessAppFramework.Application.Interfaces
     {
         IEnumerable<Assembly> GetBackendServiceAssemblies();
         IEnumerable<Assembly> GetFrontendServiceAssemblies();
+        IEnumerable<IMappingProfileContributor> GetMappingProfileContributors() => [];
         void RegisterBackendServices(IServiceCollection services);
         void RegisterFrontendServices(IServiceCollection services);
         void RegisterLocalizedStrings(IServiceProvider serviceProvider);

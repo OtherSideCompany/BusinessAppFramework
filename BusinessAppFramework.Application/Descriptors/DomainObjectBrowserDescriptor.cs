@@ -1,42 +1,41 @@
 ﻿using BusinessAppFramework.Application.Actions;
 using BusinessAppFramework.Application.Factories;
 using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Contracts.ApiRoutes;
-using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Descriptors
 {
-    public class DomainObjectBrowserDescriptor<TDomainObject, TSearchResult> : WorkspaceDescriptor
-        where TDomainObject : DomainObject, new()
-        where TSearchResult : DomainObjectSearchResult, new()
+    public class DomainObjectBrowserDescriptor : WorkspaceDescriptor
     {
-        public Type SearchListTemplateProviderType { get; init; } = default!;
-        public Type? DetailEditorComponentType { get; init; } = default;
+        private DomainObjectHttpApplicationAction _createAction;
+        private DomainObjectHttpApplicationAction _deleteAction;
+
+        public Type DomainObjectType { get; private set; } = default!;
+        public Type SearchListTemplateProviderType { get; set; } = default!;
         public List<IApplicationAction> ApplicationActions { get; init; } = new();
         public List<IApplicationAction> DomainObjectApplicationActions { get; init; } = new();
         public List<string> ConstraintKeys { get; init; } = new();
-        public string DefaultConstraintKey { get; init; }
-        public string PageNavigationApplicationActionKey { get; set; }
+        public string DefaultConstraintKey { get; set; } = default!;
+        public string PageNavigationApplicationActionKey { get; set; } = default!;
 
         public DomainObjectBrowserDescriptor(
+            Type domainObjectType,
             IDomainObjectNavigationApplicationActionFactory domainObjectNavigationApplicationActionFactory,
             string pageNavigationApplicationActionKey,
             List<string>? constraintKeys = null)
         {
+            DomainObjectType = domainObjectType;
             PageNavigationApplicationActionKey = pageNavigationApplicationActionKey;
 
             ApplicationActions = new List<IApplicationAction>();
             DomainObjectApplicationActions = new List<IApplicationAction>();
 
-            var createAction = new DomainObjectHttpApplicationAction
+            _createAction = new DomainObjectHttpApplicationAction
             {
                 ActionKey = ActionKeys.CreateActionKey,
                 HttpMethod = HttpMethod.Post,
             };
-
-            createAction.ExecuteRoute = $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/{ApiRouteSegments.Create}";
 
             var importExportAction = new DomainObjectHttpApplicationAction
             {
@@ -44,22 +43,21 @@ namespace BusinessAppFramework.Application.Descriptors
                 HttpMethod = HttpMethod.Post,
             };
 
-            ApplicationActions.Add(createAction);
+            ApplicationActions.Add(_createAction);
             ApplicationActions.Add(importExportAction);
 
-            var deleteAction = new DomainObjectHttpApplicationAction
+            _deleteAction = new DomainObjectHttpApplicationAction
             {
                 ActionKey = ActionKeys.DeleteActionKey,
                 HttpMethod = HttpMethod.Delete
             };
 
-            deleteAction.ExecuteRoute =
-                $"{ApiRoute.DomainObjectControllerRoute<TDomainObject>()}/{ApiRouteSegments.Delete}/{ApiRouteParams.DomainObjectId}";
+            SetActionRoutes();
 
             var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(PageNavigationApplicationActionKey);
 
             DomainObjectApplicationActions.Add(pageNavigationAction);
-            DomainObjectApplicationActions.Add(deleteAction);
+            DomainObjectApplicationActions.Add(_deleteAction);
 
             ConstraintKeys = new List<string>()
             {
@@ -71,7 +69,7 @@ namespace BusinessAppFramework.Application.Descriptors
             if (constraintKeys != null)
             {
                 ConstraintKeys.AddRange(constraintKeys);
-            }            
+            }
         }
 
         public void RemoveDefaultApplicationAction(string actionKey)
@@ -92,6 +90,18 @@ namespace BusinessAppFramework.Application.Descriptors
             {
                 DomainObjectApplicationActions.Remove(action);
             }
+        }
+
+        public void SetDomainObjectType(Type domainObjectType)
+        {
+            DomainObjectType = domainObjectType;
+            SetActionRoutes();
+        }
+
+        private void SetActionRoutes()
+        {
+            _createAction.ExecuteRoute = $"{ApiRoute.DomainObjectControllerRoute(DomainObjectType)}/{ApiRouteSegments.Create}";
+            _deleteAction.ExecuteRoute = $"{ApiRoute.DomainObjectControllerRoute(DomainObjectType)}/{ApiRouteSegments.Delete}/{ApiRouteParams.DomainObjectId}";
         }
     }
 }

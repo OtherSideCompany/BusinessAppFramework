@@ -79,6 +79,16 @@ namespace BusinessAppFramework.Application.Factories
             return _factories.Values.Select(factory => factory(args));
         }
 
+        public void Decorate(string key, Func<object, object> decorator)
+        {
+            if (!_factories.TryGetValue(key, out var registeredFactory))
+            {
+                throw new InvalidOperationException($"No factory registered for key {key}.");
+            }
+
+            _factories[key] = args => decorator(registeredFactory(args));
+        }
+
         #endregion
 
         #region Private Methods

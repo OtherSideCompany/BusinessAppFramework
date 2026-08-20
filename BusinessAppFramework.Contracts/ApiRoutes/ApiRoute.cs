@@ -12,6 +12,9 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public static string DomainObjectControllerRoute<T>() =>
             $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{DomainObjectAggregateKeys<T>.Type}";
 
+        public static string DomainObjectControllerRoute(Type domainObjectType) =>
+            $"{ApiRouteSegments.Root}/{ApiRouteSegments.DomainObjects}/{DomainObjectAggregateKeys.Type(domainObjectType)}";
+
         public static string SearchControllerRoute<T>() =>
             $"{ApiRouteSegments.Root}/{ApiRouteSegments.Search}/{DomainObjectAggregateKeys<T>.Type}";
 

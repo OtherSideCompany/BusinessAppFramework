@@ -22,7 +22,7 @@
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
 
-@implements IWorkspaceView<DomainObjectBrowserDescriptor<TDomainObject, TSearchResult>>
+@implements IWorkspaceView<DomainObjectBrowserDescriptor>
 
 <style>
     .selected {
@@ -280,7 +280,7 @@
 
 
 @code {
-    [Parameter] public DomainObjectBrowserDescriptor<TDomainObject, TSearchResult> Descriptor { get; set; } = default!;
+    [Parameter] public DomainObjectBrowserDescriptor Descriptor { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "search")][Parameter] public string? SearchFromQuery { get; set; }
     [SupplyParameterFromQuery(Name = "constraint")][Parameter] public string? ConstraintFromQuery { get; set; }

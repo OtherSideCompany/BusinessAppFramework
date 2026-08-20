@@ -1,7 +1,5 @@
 ﻿using BusinessAppFramework.Application.Descriptors;
 using BusinessAppFramework.Application.Interfaces;
-using BusinessAppFramework.Domain;
-using PuppeteerSharp.Input;
 
 namespace BusinessAppFramework.Application.Factories
 {
@@ -15,6 +13,15 @@ namespace BusinessAppFramework.Application.Factories
         public void RegisterWorkspaceDescriptor(string key, Func<WorkspaceDescriptor> workspaceDescriptorFactory)
         {
             Register(key, workspaceDescriptorFactory);
+        }
+
+        public void DecorateWorkspaceDescriptor(string key, Action<WorkspaceDescriptor> decorator)
+        {
+            Decorate(key, workspaceDescriptor =>
+            {
+                decorator((WorkspaceDescriptor)workspaceDescriptor);
+                return workspaceDescriptor;
+            });
         }
     }
 }
