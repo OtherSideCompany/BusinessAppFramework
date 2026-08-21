@@ -5,6 +5,7 @@ using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain.DomainObjects;
+using BusinessAppFramework.WebUI.Components.Editor;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
@@ -309,6 +310,11 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
                 DomainObjectId = hydrated?.DomainObjectId,
                 DisplayValue = hydrated?.DisplayValue
             };
+        }
+
+        protected virtual List<PropertyCategory> GetPropertyCategories()
+        {
+            return new List<PropertyCategory>();
         }
 
         #endregion
