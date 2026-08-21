@@ -4,7 +4,7 @@ namespace BusinessAppFramework.Bootstrapper
 {
     public static class ServiceRegistrationHelper
     {
-        public static IServiceCollection AddAggregateService(this IServiceCollection services, Type implementationType, Type aggregateType)
+        public static IServiceCollection AddScopedWithGenericContractsFor(this IServiceCollection services, Type implementationType, Type aggregateType)
         {
             services.AddScoped(implementationType);
 
@@ -12,6 +12,12 @@ namespace BusinessAppFramework.Bootstrapper
                 services.AddScoped(contract, provider => provider.GetRequiredService(implementationType));
 
             return services;
+        }
+
+        public static IServiceCollection AddScopedWithGenericContractsFor<TImplementation, TAggregate>(this IServiceCollection services)
+        where TImplementation : class
+        {
+            return services.AddScopedWithGenericContractsFor(typeof(TImplementation), typeof(TAggregate));
         }
 
         private static bool IsContractFor(Type contract, Type aggregateType)
