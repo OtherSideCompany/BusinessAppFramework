@@ -18,6 +18,8 @@ namespace BusinessAppFramework.Adapter.Controllers
     {
         #region Fields
 
+        private const int MaxDepth = 50;
+
         private ITreeFactory _treeFactory;
         private IDomainObjectServiceFactory _domainObjectServiceFactory;
         private IParentChildRelationResolver _relationResolver;
@@ -71,7 +73,7 @@ namespace BusinessAppFramework.Adapter.Controllers
 
             foreach (var branch in tree.Branches)
             {
-                await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<int>());
+                await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<(Type, int)>());
             }
 
             return tree;
@@ -91,7 +93,7 @@ namespace BusinessAppFramework.Adapter.Controllers
             if (branch == null)
                 return NoContent();
 
-            await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<int>());        
+            await LoadBranchAsync(branch, domainObjectId, 0, new HashSet<(Type, int)>());
 
             return branch;
         }
@@ -206,48 +208,59 @@ namespace BusinessAppFramework.Adapter.Controllers
 
         #region Private Methods
 
-        private async Task LoadBranchAsync(Branch branch, int domainObjectId, int depth, IReadOnlySet<int> ancestorIds)
+        private async Task LoadBranchAsync(Branch branch, int domainObjectId, int depth, IReadOnlySet<(Type EntityType, int Id)> ancestors)
         {
             if (!_relationResolver.TryGetParentChildRelationEntry(branch.ParentChildRelationKey, out var parentChildRelation))
                 return;
 
+            var nodeEntityType = parentChildRelation.ChildEntityType;
             var nodeIds = await _relationService.GetChildrenIdsAsync(domainObjectId, branch.ParentChildRelationKey);
-            var searchService = CreateSearchServiceFor(parentChildRelation.ChildEntityType, out var searchResultType);
+            var searchService = CreateSearchServiceFor(nodeEntityType, out var searchResultType);
 
             foreach (var id in nodeIds)
             {
-                var node = await BuildNodeAsync(id, searchResultType, searchService, depth, ancestorIds);
+                var node = await BuildNodeAsync(id, nodeEntityType, searchResultType, searchService, depth, ancestors);
                 branch.Nodes.Add(node);
 
-                if (node.IsCyclic)
-                    continue;
-
-                await LoadChildBranchesAsync(node, branch.ChildBranchTemplates, depth, ancestorIds);
+                await LoadChildBranchesAsync(node, branch, nodeEntityType, depth, ancestors);
             }
         }
 
-        private async Task<Node> BuildNodeAsync(int id, Type searchResultType, dynamic searchService, int depth, IReadOnlySet<int> ancestorIds)
+        private async Task<Node> BuildNodeAsync(int id, Type nodeEntityType, Type searchResultType, dynamic searchService, int depth, IReadOnlySet<(Type EntityType, int Id)> ancestors)
         {
             var node = new Node(id)
             {
                 TypeKey = DomainObjectSearchResultAggregateKeys.Type(searchResultType),
                 Depth = depth,
-                IsCyclic = ancestorIds.Contains(id)
+                IsCyclic = ancestors.Contains((nodeEntityType, id))
             };
             node.Summary = await searchService.GetSummaryAsync(id);
             return node;
         }
 
-        private async Task LoadChildBranchesAsync(Node node, IReadOnlyList<Branch> templates, int depth, IReadOnlySet<int> ancestorIds)
+        private async Task LoadChildBranchesAsync(Node node, Branch parentBranch, Type nodeEntityType, int depth, IReadOnlySet<(Type EntityType, int Id)> ancestors)
         {
-            var childAncestorIds = new HashSet<int>(ancestorIds) { node.Id };
+            var childAncestors = new HashSet<(Type EntityType, int Id)>(ancestors) { (nodeEntityType, node.Id) };
 
-            foreach (var template in templates)
+            foreach (var template in GetChildBranchTemplates(parentBranch))
             {
                 var childBranch = new Branch(template);
                 node.ChildBranches.Add(childBranch);
-                await LoadBranchAsync(childBranch, node.Id, depth + 1, childAncestorIds);
+
+                if (node.IsCyclic || depth + 1 >= MaxDepth)
+                    continue;
+
+                await LoadBranchAsync(childBranch, node.Id, depth + 1, childAncestors);
             }
+        }
+
+        private static IEnumerable<Branch> GetChildBranchTemplates(Branch branch)
+        {
+            if (branch.IsSelfReferencing)
+                yield return branch;
+
+            foreach (var template in branch.ChildBranchTemplates)
+                yield return template;
         }
 
         private dynamic CreateSearchServiceFor(Type childEntityType, out Type searchResultType)

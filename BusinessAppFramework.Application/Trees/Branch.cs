@@ -15,6 +15,7 @@ namespace BusinessAppFramework.Application.Trees
         public bool IsExpanded { get; set; }
         public List<Node> Nodes { get; set; } = new();
         public string ParentChildRelationKey { get; set; } = string.Empty;
+        public bool IsSelfReferencing { get; set; }
 
         [JsonIgnore]
         public List<Branch> ChildBranchTemplates { get; set; } = new();
@@ -43,6 +44,7 @@ namespace BusinessAppFramework.Application.Trees
         {
             ParentChildRelationKey = from.ParentChildRelationKey;
             ChildBranchTemplates = from.ChildBranchTemplates;
+            IsSelfReferencing = from.IsSelfReferencing;
         }
 
         #endregion
