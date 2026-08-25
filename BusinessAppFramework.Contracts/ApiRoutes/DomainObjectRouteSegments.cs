@@ -9,6 +9,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string Create = "create";
         public const string CreateFromDomainObject = "create-from-domain-object";
         public const string Get = $"get";
+        public const string GetOrDefault = $"get-or-default";
         public const string GetAll = $"get-all";
         public const string GetAllHydrated = $"get-all-hydrated";
         public const string GetHydrated = $"get-hydrated";        

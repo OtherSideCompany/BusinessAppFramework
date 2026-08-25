@@ -6,6 +6,7 @@ namespace BusinessAppFramework.WebUI.Interfaces
     public interface IDomainObjectServiceGateway<T> where T : DomainObject, new()
     {
         Task<T?> GetAsync(int domainObjectId, CancellationToken cancellationToken = default);
+        Task<T?> GetOrDefaultAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<List<T>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);
         Task<T?> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);        

@@ -79,6 +79,12 @@ namespace BusinessAppFramework.WebUI.Services
             return (await GetAsync<T>(route)).Data;
         }
 
+        public async Task<T?> GetOrDefaultAsync(int domainObjectId, CancellationToken cancellationToken = default)
+        {
+            var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetOrDefault}/{domainObjectId}";
+            return (await GetAsync<T>(route)).Data;
+        }
+
         public async Task<List<T>> GetAllAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default)
         {
             var route = $"{_baseUrl}/{DomainObjectRouteSegments.GetAll}";

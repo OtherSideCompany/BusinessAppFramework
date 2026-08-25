@@ -99,6 +99,15 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(domainObject);
         }
 
+        [HttpGet($"{DomainObjectRouteSegments.GetOrDefault}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public virtual async Task<ActionResult<TDomainObject>> GetOrDefaultAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
+        {
+
+            var domainObject = await _service.GetOrDefaultAsync(domainObjectId);
+            return Ok(domainObject);
+        }
+
         [HttpPost(DomainObjectRouteSegments.GetAll)]
         public virtual async Task<ActionResult<List<TDomainObject>>> GetAllAsync(
             [FromBody] List<int> domainObjectIds)
