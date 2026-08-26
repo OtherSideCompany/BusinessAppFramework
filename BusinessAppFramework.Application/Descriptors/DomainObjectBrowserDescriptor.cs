@@ -54,9 +54,12 @@ namespace BusinessAppFramework.Application.Descriptors
 
             SetActionRoutes();
 
-            var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(PageNavigationApplicationActionKey);
+            if (!String.IsNullOrEmpty(PageNavigationApplicationActionKey))
+            {
+                var pageNavigationAction = domainObjectNavigationApplicationActionFactory.Get(PageNavigationApplicationActionKey);
+                DomainObjectApplicationActions.Add(pageNavigationAction);
+            }
 
-            DomainObjectApplicationActions.Add(pageNavigationAction);
             DomainObjectApplicationActions.Add(_deleteAction);
 
             ConstraintKeys = new List<string>()
