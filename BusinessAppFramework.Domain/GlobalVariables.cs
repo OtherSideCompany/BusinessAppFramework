@@ -1,4 +1,6 @@
-﻿namespace BusinessAppFramework.Domain
+﻿using BusinessAppFramework.Contracts.Enums;
+
+namespace BusinessAppFramework.Domain
 {
     public class GlobalVariables
     {
@@ -8,5 +10,6 @@
         public const int DefaultPurchaseQuoteRaiseDaysDelay = 7;
         public const int DefaultPaimentDaysDelay = 30;
         public const decimal DepositInvoiceDefaultPercentage = 30;
+        public const Language DefaultMailLanguage = Language.fr;
     }
 }

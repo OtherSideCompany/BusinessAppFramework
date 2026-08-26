@@ -57,7 +57,7 @@
     {
         if (DomainObjectId != null && !_isLoaded)
         {
-            _mailInfo = await MailInfoServiceGateway.GetMailInfoAsync(DomainObjectId.Value, MailKind, CultureInfo.CurrentUICulture.Name);
+            _mailInfo = await MailInfoServiceGateway.GetMailInfoAsync(DomainObjectId.Value, MailKind);
             _isLoaded = true;
 
             StateHasChanged();
