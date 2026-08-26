@@ -11,5 +11,6 @@ namespace BusinessAppFramework.Domain
         public const int DefaultPaimentDaysDelay = 30;
         public const decimal DepositInvoiceDefaultPercentage = 30;
         public const Language DefaultMailLanguage = Language.fr;
+        public const Language DefaultDocumentLanguage = Language.fr;
     }
 }
