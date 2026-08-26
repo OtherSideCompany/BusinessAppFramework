@@ -1,37 +1,51 @@
 ﻿@page "/document-generator/{DocumentKey}/{Id:int}"
 
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
 @using BusinessAppFramework.Contracts.ApiRoutes
+@using BusinessAppFramework.WebUI.Documents
 @using BusinessAppFramework.WebUI.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.JSInterop
 @using MudBlazor
 
 @attribute [Authorize]
+@implements IAsyncDisposable
 
 @inject IDocumentGeneratorGateway DocumentGeneratorGateway
+@inject ILocalizedStringService LocalizedStringService
+@inject IUserDialogService UserDialogService
 @inject IJSRuntime JS
 
-<div style="margin: 8px auto; padding-bottom: 16px">
+<div class="osc-document-viewer-surface">
 
-    <div style="width:210mm;">
-        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+    <div class="osc-document-viewer">
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd" Spacing="0">
             <MudIconButton Icon="@Icons.Material.Outlined.Download"
+                           Disabled="@(_pdfResult is null)"
                            OnClick="DownloadPdfDocument" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Print"
+                           Disabled="@(_pdfResult is null)"
+                           OnClick="PrintPdfDocument" />
         </MudStack>
-    </div>
 
-    @if (_isLoading)
-    {
-        <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
-            <MudProgressCircular Indeterminate="true" Size="Size.Small" />
-        </div>
-    }
-    else
-    {
-        <div style="margin-top:8px;">
-            @_htmlMarkup
-        </div>
-    }
+        @if (_isLoading)
+        {
+            <div style="display:flex; justify-content:center; align-items:center; flex:1 1 auto; min-height:0;">
+                <MudProgressCircular Indeterminate="true" Size="Size.Small" />
+            </div>
+        }
+        else if (_pdfObjectUrl is not null)
+        {
+            <div class="osc-document-viewer-frame">
+                <iframe id="@_pdfFrameId"
+                        src="@($"{_pdfObjectUrl}#toolbar=0")"
+                        title="@_pdfResult?.FileName"></iframe>
+            </div>
+        }
+
+    </div>
 
 </div>
 
@@ -39,29 +53,76 @@
     [Parameter] public string DocumentKey { get; set; } = "";
     [Parameter] public int Id { get; set; }
 
+    private const string _pdfFrameId = "document-generator-pdf-frame";
+
     private bool _isLoading = true;
-    private MarkupString _htmlMarkup;
+    private DocumentDownloadResult? _pdfResult;
+    private string? _pdfObjectUrl;
 
     protected override async Task OnParametersSetAsync()
     {
         _isLoading = true;
-        _htmlMarkup = default;
 
-        var html = await DocumentGeneratorGateway.GetHtmlDocumentAsync(DocumentKey, Id);
+        await ReleaseObjectUrlAsync();
+        _pdfResult = null;
 
-        _htmlMarkup = new MarkupString(html?.HtmlContent ?? "");
+        _pdfResult = await DocumentGeneratorGateway.DownloadPdfAsync(DocumentKey, Id);
+
+        if (_pdfResult is null)
+        {
+            UserDialogService.SnackError(LocalizedStringService.Get(MessageKeys.FileNoteFoundMessage) ?? "file_not_found_msg");
+        }
+        else
+        {
+            var base64 = Convert.ToBase64String(_pdfResult.Content);
+            _pdfObjectUrl = await JS.InvokeAsync<string>("oscCreateBlobUrl", _pdfResult.ContentType, base64);
+        }
 
         _isLoading = false;
     }
 
     private async Task DownloadPdfDocument()
     {
-        var result = await DocumentGeneratorGateway.DownloadPdfAsync(DocumentKey, Id);
-
-        if (result is null)
+        if (_pdfResult is null)
             return;
 
-        var base64 = Convert.ToBase64String(result.Content);
-        await JS.InvokeVoidAsync("oscDownload", result.FileName, result.ContentType, base64);
+        var base64 = Convert.ToBase64String(_pdfResult.Content);
+        await JS.InvokeVoidAsync("oscDownload", _pdfResult.FileName, _pdfResult.ContentType, base64);
+    }
+
+    private async Task PrintPdfDocument()
+    {
+        if (_pdfResult is null)
+            return;
+
+        if (await JS.InvokeAsync<bool>("oscPrintFrame", _pdfFrameId))
+            return;
+
+        // Fallback: open the document in its own tab so the user can print from there.
+        var base64 = Convert.ToBase64String(_pdfResult.Content);
+        await JS.InvokeVoidAsync("oscOpenInBrowser", _pdfResult.ContentType, base64);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await ReleaseObjectUrlAsync();
+    }
+
+    private async Task ReleaseObjectUrlAsync()
+    {
+        if (_pdfObjectUrl is null)
+            return;
+
+        var url = _pdfObjectUrl;
+        _pdfObjectUrl = null;
+
+        try
+        {
+            await JS.InvokeVoidAsync("oscRevokeBlobUrl", url);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Circuit already closed: the browser released the blob anyway.
+        }
     }
 }

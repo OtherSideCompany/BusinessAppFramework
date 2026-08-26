@@ -10,8 +10,9 @@ namespace BusinessAppFramework.DocumentRendering
     {
         #region Fields
 
-        private static readonly SemaphoreSlim _downloadSemaphore = new(1, 1);
-        private static bool _browserReady = false;  
+        private static readonly SemaphoreSlim _browserSemaphore = new(1, 1);
+        private static IBrowser? _browser;
+        private static bool _browserDownloaded = false;
 
         #endregion
 
@@ -28,6 +29,11 @@ namespace BusinessAppFramework.DocumentRendering
         #endregion
 
         #region Constructor
+
+        static HtmlDocumentRenderer()
+        {
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => ShutdownBrowser();
+        }
 
         public HtmlDocumentRenderer()
         {
@@ -57,10 +63,9 @@ namespace BusinessAppFramework.DocumentRendering
 
         public async Task<byte[]> RenderPdfDocumentAsync(string htmlContent)
         {
-            await EnsureBrowserAsync();
+            var browser = await GetBrowserAsync();
 
-            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
-            using var page = await browser.NewPageAsync();
+            await using var page = await browser.NewPageAsync();
 
             await page.EmulateMediaTypeAsync(MediaType.Print);
             await page.SetContentAsync(htmlContent, new SetContentOptions
@@ -75,40 +80,80 @@ namespace BusinessAppFramework.DocumentRendering
             });
         }
 
-        private async Task EnsureBrowserAsync()
+        #endregion
+
+        #region Private Methods        
+
+        private static async Task<IBrowser> GetBrowserAsync()
         {
-            if (_browserReady)
+            if (_browser is { IsClosed: false })
+            {
+                return _browser;
+            }
+
+            await _browserSemaphore.WaitAsync();
+            try
+            {
+                if (_browser is { IsClosed: false })
+                {
+                    return _browser;
+                }
+
+                if (_browser is not null)
+                {
+                    await _browser.DisposeAsync();
+                    _browser = null;
+                }
+
+                await EnsureBrowserDownloadedAsync();
+
+                _browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+
+                return _browser;
+            }
+            finally
+            {
+                _browserSemaphore.Release();
+            }
+        }
+
+        private static async Task EnsureBrowserDownloadedAsync()
+        {
+            if (_browserDownloaded)
             {
                 return;
             }
 
-            await _downloadSemaphore.WaitAsync();
-            try
+            var fetcher = new BrowserFetcher();
+            var buildId = Chrome.DefaultBuildId;
+
+            if (fetcher.GetInstalledBrowsers().All(b => b.BuildId != buildId))
             {
-                if (_browserReady)
-                {
-                    return;
-                }
-
-                var fetcher = new BrowserFetcher();
-                var buildId = Chrome.DefaultBuildId;
-
-                if (fetcher.GetInstalledBrowsers().All(b => b.BuildId != buildId))
-                {
-                    await fetcher.DownloadAsync(buildId);
-                }
-
-                _browserReady = true;
+                await fetcher.DownloadAsync(buildId);
             }
-            finally
-            {
-                _downloadSemaphore.Release();
-            }
+
+            _browserDownloaded = true;
         }
 
-        #endregion
+        private static void ShutdownBrowser()
+        {
+            var browser = Interlocked.Exchange(ref _browser, null);
 
-        #region Private Methods        
+            if (browser is null)
+            {
+                return;
+            }
+
+            try
+            {
+                browser.CloseAsync().GetAwaiter().GetResult();
+                browser.Dispose();
+            }
+            catch
+            {
+                // Nothing useful to do while the process is exiting.
+            }
+        }
 
         private Template TryParseTemplate(string templateString)
         {
