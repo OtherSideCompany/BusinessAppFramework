@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 namespace BusinessAppFramework.WebUI.Services
@@ -18,6 +19,7 @@ namespace BusinessAppFramework.WebUI.Services
         private IConfiguration _configuration;
         private IDialogService _dialogService;
         private IComponentRegistry _componentRegistry;
+        private IJSRuntime _jsRuntime;
 
         #endregion
 
@@ -44,13 +46,15 @@ namespace BusinessAppFramework.WebUI.Services
             IConfiguration configuration,
             ILogger<ApplicationActionExecutionService> logger,
             IDialogService dialogService,
-            IComponentRegistry componentRegistry) :
+            IComponentRegistry componentRegistry,
+            IJSRuntime jsRuntime) :
             base(clientFactory, apiClientOptions, logger, localizedStringService, userDialogService)
         {
             _navigationManager = navigationManager;
             _configuration = configuration;
             _dialogService = dialogService;
             _componentRegistry = componentRegistry;
+            _jsRuntime = jsRuntime;
         }
 
         #endregion
@@ -129,12 +133,18 @@ namespace BusinessAppFramework.WebUI.Services
 
                 return null;
             }
-            else if (action is IDocumentDownloadApplicationAction documentDownloadApplicationAction)
+            else if (action is IFileDownloadApplicationAction fileDownloadApplicationAction)
             {
-                var apiBaseUrl = _configuration["ApiBaseUrl"];
-                var fullUrl = $"{apiBaseUrl}/{route}";
+                var response = await CreateClient().GetAsync(route);
+                response.EnsureSuccessStatusCode();
 
-                _navigationManager.NavigateTo(fullUrl, forceLoad: true);
+                var bytes = await response.Content.ReadAsByteArrayAsync();
+                var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+                var fileName = response.Content.Headers.ContentDisposition?.FileNameStar
+                    ?? response.Content.Headers.ContentDisposition?.FileName?.Trim('"')
+                    ?? "download";
+
+                await _jsRuntime.InvokeVoidAsync("oscDownload", fileName, contentType, Convert.ToBase64String(bytes));
                 return null;
             }
             else if (action is IDocumentNavigationApplicationAction documentNavigationApplicationAction)

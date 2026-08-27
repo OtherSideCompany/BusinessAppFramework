@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BusinessAppFramework.Application.Interfaces
 {
-    public interface IDocumentDownloadApplicationAction : IDocumentNavigationApplicationAction
+    public interface IDocumentGeneratorDownloadApplicationAction : IDocumentNavigationApplicationAction, IFileDownloadApplicationAction
     {
     }
 }
