@@ -31,12 +31,15 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         [Inject] protected IRelationServiceGateway RelationServiceGateway { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] protected ISearchGateway<TSearchResult> SearchGateway { get; set; } = default!;
+        [Inject] protected IDocumentServiceGateway DocumentServiceGateway { get; set; } = default!;
 
         protected virtual string? PageTreeKey { get; }
+        protected virtual string? DocumentsRelationKey => null;
 
         protected bool _isDeleted;
         protected Tree? _tree;
         protected int? _loadedId;
+        private int _documentsCount;
         protected Workflow.Workflow? _workflow;
         private List<IEditable> _editableComponents { get; set; } = new();
 
@@ -214,6 +217,11 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
                 _tree = await TreeGateway.GetTreeAsync(Id.Value, PageTreeKey);
             }
 
+            if (!string.IsNullOrEmpty(DocumentsRelationKey))
+            {
+                _documentsCount = await DocumentServiceGateway.GetDocumentsCountAsync(Id.Value, DocumentsRelationKey);
+            }
+
             _loadedId = Id.Value;
 
             if (_workflow != null)
@@ -271,6 +279,14 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
         {
             var branch = GetTreeBranch(relationKey);
             return branch?.Nodes.Count != 0 ? branch?.Nodes.Count : null;
+        }
+
+        protected int? DocumentsCountForTabBadge => _documentsCount > 0 ? _documentsCount : null;
+
+        protected void OnDocumentsCountChanged(int count)
+        {
+            _documentsCount = count;
+            StateHasChanged();
         }
 
         private void SetDirtyState(bool isDirty)

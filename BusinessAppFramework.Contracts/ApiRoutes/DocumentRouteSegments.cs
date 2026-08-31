@@ -12,5 +12,8 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string Download = $"download";
         public const string GetHtml = $"html";
         public const string DownloadPdf = $"download-pdf";
+        public const string Categories = $"categories";
+        public const string Count = $"count";
+        public const string Move = $"move";
     }
 }

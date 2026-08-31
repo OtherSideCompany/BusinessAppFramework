@@ -1,4 +1,5 @@
-﻿using BusinessAppFramework.Domain.DomainObjects;
+﻿using BusinessAppFramework.Application.Documents;
+using BusinessAppFramework.Domain.DomainObjects;
 
 namespace BusinessAppFramework.Application.Interfaces
 {
@@ -8,5 +9,8 @@ namespace BusinessAppFramework.Application.Interfaces
       Task<(Stream stream, string contentType, string fileName)?> OpenReadAsync(int documentId, CancellationToken ct = default);
       Task DeleteAsync(int documentId, CancellationToken ct = default);
       Task<bool> ExistsAsync(int documentId, CancellationToken ct = default);
+      Task<List<DocumentCategory<IDocument>>> GetDocumentCategoriesAsync(int domainObjectId, string relationKey, CancellationToken ct = default);
+      Task<int> GetDocumentsCountAsync(int domainObjectId, string relationKey, CancellationToken ct = default);
+      Task MoveAsync(int documentId, int targetParentId, string targetRelationKey, CancellationToken ct = default);
    }
 }

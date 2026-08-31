@@ -85,6 +85,34 @@ namespace BusinessAppFramework.WebUI.Services
             return await response.Content.ReadFromJsonAsync<bool>(cancellationToken);
         }
 
+        public async Task<List<Application.Documents.DocumentCategory<TDocument>>> GetDocumentCategoriesAsync<TDocument>(int domainObjectId, string relationKey, CancellationToken cancellationToken = default) where TDocument : IDocument
+        {
+            var route = $"{_baseUrl}/{DocumentRouteSegments.Categories}/{domainObjectId}?relationKey={Uri.EscapeDataString(relationKey)}";
+            var response = await CreateClient().GetAsync(route, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<Application.Documents.DocumentCategory<TDocument>>>(cancellationToken) ?? new();
+        }
+
+        public async Task<int> GetDocumentsCountAsync(int domainObjectId, string relationKey, CancellationToken cancellationToken = default)
+        {
+            var route = $"{_baseUrl}/{DocumentRouteSegments.Count}/{domainObjectId}?relationKey={Uri.EscapeDataString(relationKey)}";
+            var response = await CreateClient().GetAsync(route, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<int>(cancellationToken);
+        }
+
+        public async Task MoveDocumentAsync(int documentId, int targetParentId, string targetRelationKey, CancellationToken cancellationToken = default)
+        {
+            var route = $"{_baseUrl}/{DocumentRouteSegments.Move}/{documentId}?targetParentId={targetParentId}&targetRelationKey={Uri.EscapeDataString(targetRelationKey)}";
+            var response = await CreateClient().PostAsync(route, null, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task<DocumentDownloadResult?> DownloadDocumentAsync(int documentId, CancellationToken cancellationToken = default)
         {
             var route = $"{_baseUrl}/{DocumentRouteSegments.Download}/{documentId}";

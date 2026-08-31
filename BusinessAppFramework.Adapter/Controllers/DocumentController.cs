@@ -69,6 +69,40 @@ namespace BusinessAppFramework.Adapter.Controllers
             return Ok(exists);
         }
 
+        [HttpGet($"{DocumentRouteSegments.Categories}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public async Task<ActionResult<List<Application.Documents.DocumentCategory<IDocument>>>> GetCategoriesAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+            [FromQuery] string relationKey,
+            CancellationToken ct)
+        {
+            var categories = await _domainObjectDocumentService.GetDocumentCategoriesAsync(domainObjectId, relationKey, ct);
+
+            return Ok(categories);
+        }
+
+        [HttpGet($"{DocumentRouteSegments.Count}/{{{ApiRouteParams.DomainObjectId}:int}}")]
+        public async Task<ActionResult<int>> GetCountAsync(
+            [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId,
+            [FromQuery] string relationKey,
+            CancellationToken ct)
+        {
+            var count = await _domainObjectDocumentService.GetDocumentsCountAsync(domainObjectId, relationKey, ct);
+
+            return Ok(count);
+        }
+
+        [HttpPost($"{DocumentRouteSegments.Move}/{{{ApiRouteParams.DocumentId}:int}}")]
+        public async Task<ActionResult> MoveAsync(
+            [FromRoute(Name = ApiRouteParams.DocumentId)] int documentId,
+            [FromQuery] int targetParentId,
+            [FromQuery] string targetRelationKey,
+            CancellationToken ct)
+        {
+            await _domainObjectDocumentService.MoveAsync(documentId, targetParentId, targetRelationKey, ct);
+
+            return Ok();
+        }
+
         [HttpGet($"{DocumentRouteSegments.Download}/{{{ApiRouteParams.DocumentId}:int}}")]
         public async Task<ActionResult> DownloadAsync(
             [FromRoute(Name = ApiRouteParams.DocumentId)] int documentId, CancellationToken ct)
