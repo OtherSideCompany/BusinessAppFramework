@@ -1,7 +1,35 @@
 ﻿@using BusinessAppFramework.WebUI.Helpers
 @using MudBlazor
 
-<MudStack Spacing="2">
+<style>
+    .kpi-card-clickable,
+    .kpi-card-clickable * {
+        cursor: pointer;
+    }
+
+    /* margin -16px / padding 15px + border 1px : recouvre exactement le padding pa-4 du MudPaper hôte */
+    .kpi-card-clickable {
+        margin: -16px;
+        padding: 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        transition: box-shadow .15s ease, background-color .15s ease, transform .1s ease;
+    }
+
+    .kpi-card-clickable:hover {
+        box-shadow: var(--mud-elevation-4);
+        border-color: var(--mud-palette-primary);
+    }
+
+    .kpi-card-clickable:active {
+        transform: scale(0.98);
+        box-shadow: var(--mud-elevation-2);
+    }
+</style>
+
+<MudStack Spacing="2"
+          Class="@(_isClickable ? "kpi-card-clickable" : null)"
+          @onclick="OnClickAsync">
 
     <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
 
@@ -22,7 +50,7 @@
     @if (Value.Values.Count() > 1)
     {
         <div style="height: 20px;">
-            <Sparkline Values="@_sparklineValues" OnClick="OnSparklineClick" />
+            <Sparkline Values="@_sparklineValues" />
         </div>        
     }
 
@@ -31,9 +59,19 @@
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
     [Parameter] public BusinessAppFramework.Application.Kpis.SlidingValueKpi Value { get; set; } = new();
-    [Parameter] public EventCallback OnSparklineClick { get; set; }
     [Parameter] public bool DisplayFriendlyValue { get; set; }
     [Parameter] public string Units { get; set; } = String.Empty;
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private bool _isClickable => OnClick.HasDelegate;
+
+    private async Task OnClickAsync()
+    {
+        if (_isClickable)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
 
     private string _deltaIcon => Value.ValueDelta(0) > 0 ? Icons.Material.Filled.ArrowDropUp : Icons.Material.Filled.ArrowDropDown;
     private Color _deltaColor => Value.ValueDelta(0) > 0 ? Color.Success : Color.Error;

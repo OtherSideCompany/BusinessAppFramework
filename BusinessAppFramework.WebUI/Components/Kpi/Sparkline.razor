@@ -15,23 +15,10 @@
             opacity: 0.85;
             transition: opacity 120ms ease;
         }
-
-        .sparkline.clickable {
-            cursor: pointer;
-        }
-
-            .sparkline.clickable:hover .spark-line {
-                stroke-width: 3.5;
-            }
-
-            .sparkline.clickable:hover .spark-area {
-                opacity: 1;
-            }
 </style>
 <svg viewBox="0 0 @ViewBoxWidth @ViewBoxHeight"
      preserveAspectRatio="none"
-     class="@_cssClass"
-     @onclick="HandleClickAsync">
+     class="sparkline">
     <defs>
         <linearGradient id="@_gradientId" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="var(--mud-palette-primary)" stop-opacity="0.18" />
@@ -51,22 +38,14 @@
     private const int ViewBoxWidth = 120;
     private const int ViewBoxHeight = 40;
     [Parameter] public IReadOnlyList<decimal> Values { get; set; } = Array.Empty<decimal>();
-    [Parameter] public EventCallback OnClick { get; set; }
     private readonly string _gradientId = $"sparkline-gradient-{Guid.NewGuid():N}";
     private string _points = string.Empty;
     private string _areaPoints = string.Empty;
-    private string _cssClass => OnClick.HasDelegate ? "sparkline clickable" : "sparkline";
     protected override void OnParametersSet()
     {
         BuildPoints();
     }
-    private async Task HandleClickAsync()
-    {
-        if (OnClick.HasDelegate)
-        {
-            await OnClick.InvokeAsync();
-        }
-    }
+
     private void BuildPoints()
     {
         if (Values.Count < 2)
