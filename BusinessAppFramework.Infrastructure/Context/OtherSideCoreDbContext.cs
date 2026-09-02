@@ -1,4 +1,4 @@
-﻿using BusinessAppFramework.Application;
+using BusinessAppFramework.Application;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -6,6 +6,14 @@ namespace BusinessAppFramework.Infrastructure.Context
 {
    public abstract class OtherSideCoreDbContext : DbContext
    {
+      protected OtherSideCoreDbContext()
+      {
+      }
+
+      protected OtherSideCoreDbContext(DbContextOptions options) : base(options)
+      {
+      }
+
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
          modelBuilder.HasDbFunction(typeof(Utils).GetMethod(nameof(Utils.EditDistance), new[] { typeof(string), typeof(string), typeof(int) })).HasName("EditDistance");
@@ -22,4 +30,3 @@ namespace BusinessAppFramework.Infrastructure.Context
       }
    }
 }
-
