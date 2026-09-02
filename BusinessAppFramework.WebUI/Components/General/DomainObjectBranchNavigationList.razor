@@ -1,12 +1,8 @@
-﻿@using BusinessAppFramework.Application.Factories
+@using BusinessAppFramework.Application.Factories
 @using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Application.Trees
-@using BusinessAppFramework.Domain
-@using BusinessAppFramework.WebUI.Interfaces
 @using MudBlazor
 
-@inject ILocalizedStringService LocalizedStringService
-@inject IApplicationActionExecutionService ApplicationActionExecutionService
 @inject IDomainObjectNavigationApplicationActionFactory DomainObjectNavigationApplicationActionFactory
 
 <MudStack Spacing="4">
@@ -19,7 +15,8 @@
                        FullWidth="true"
                        Variant="Variant.Outlined"
                        Style="border-color: var(--mud-palette-lines-default); border-radius:8px;"
-                       OnClick="() => NavigateToAsync(node.Id)">
+                       Href="@_navigationApplicationAction?.BuildRoute(node.Id)"
+                       Disabled="@(_navigationApplicationAction == null)">
                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="6" Style="width: 100%">
 
                     <MudIcon Icon="@Icon" />
@@ -49,18 +46,9 @@
 
     protected override void OnParametersSet()
     {
-        if (_navigationApplicationAction == null)
+        if (_navigationApplicationAction == null && !String.IsNullOrEmpty(NavigationApplicationActionKey))
         {
             _navigationApplicationAction = DomainObjectNavigationApplicationActionFactory.Get(NavigationApplicationActionKey);
-        }
-    }
-
-    private async Task NavigateToAsync(int domainObjectId)
-    {
-        if (_navigationApplicationAction != null)
-        {
-            _navigationApplicationAction.DomainObjectId = domainObjectId;
-            await ApplicationActionExecutionService.ExecuteApplicationActionAsync(_navigationApplicationAction);
         }
     }
 }
