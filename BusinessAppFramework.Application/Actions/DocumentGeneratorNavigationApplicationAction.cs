@@ -40,9 +40,13 @@ namespace BusinessAppFramework.Application.Actions
 
         public virtual string BuildRoute()
         {
-            return $"/{ApiRouteSegments.DocumentGenerator}/{DocumentKey}/{DomainObjectId}";
+            return BuildRoute(DomainObjectId);
         }
 
+        public string BuildRoute(int domainObjectId)
+        {
+            return $"/{ApiRouteSegments.DocumentGenerator}/{DocumentKey}/{domainObjectId}";
+        }
 
         #endregion
 

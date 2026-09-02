@@ -143,11 +143,22 @@
         @foreach (var action in Descriptor.DomainObjectApplicationActions)
         {
             var disabled = !_hasSelection;
+            var href = GetNavigationHref(action);
 
-            <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
-                          ActionKey="@action.ActionKey"
-                          Disabled="@disabled"
-                          Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
+            @if (href != null)
+            {
+                <ActionButton Href="@href"
+                              ActionKey="@action.ActionKey"
+                              Disabled="@disabled"
+                              Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
+            }
+            else
+            {
+                <ActionButton OnClick="() => ExecuteDomainObjectApplicationActionAsync(action)"
+                              ActionKey="@action.ActionKey"
+                              Disabled="@disabled"
+                              Shrink="@(action.ActionKey == ActionKeys.DeleteActionKey)" />
+            }
         }
 
     </MudStack>
@@ -397,6 +408,20 @@
     {
         var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
         await RefreshServerDataAsync(payload);
+    }
+
+    private string? GetNavigationHref(IApplicationAction applicationAction)
+    {
+        if (_selectedItem == null)
+            return null;
+
+        return applicationAction switch
+        {
+            IDomainObjectNavigationApplicationAction navigationAction => navigationAction.BuildRoute(_selectedItem.DomainObjectId),
+            IFileDownloadApplicationAction => null,
+            IDocumentNavigationApplicationAction documentNavigationAction => documentNavigationAction.BuildRoute(_selectedItem.DomainObjectId),
+            _ => null
+        };
     }
 
     private async Task ExecuteDomainObjectApplicationActionAsync(IApplicationAction applicationAction)

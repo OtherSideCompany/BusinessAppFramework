@@ -8,5 +8,6 @@ namespace BusinessAppFramework.Application.Interfaces
     public interface IDocumentNavigationApplicationAction : IDomainObjectApplicationAction
     {
         string DocumentKey { get; }
+        string BuildRoute(int domainObjectId);
     }
 }
