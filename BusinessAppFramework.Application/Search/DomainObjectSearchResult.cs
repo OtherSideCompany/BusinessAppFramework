@@ -32,8 +32,6 @@ namespace BusinessAppFramework.Application.Search
 
         }
 
-
-
         #endregion
 
         #region Public Methods

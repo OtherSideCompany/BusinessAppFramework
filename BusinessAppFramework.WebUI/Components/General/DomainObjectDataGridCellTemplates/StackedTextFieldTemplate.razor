@@ -1,0 +1,80 @@
+@using MudBlazor
+
+<style>
+    .stacked-text-field .mud-input-control,
+    .stacked-text-field .mud-input-control-input-container,
+    .stacked-text-field .mud-input {
+        margin: 0;
+        padding: 0;
+        min-height: 0;
+    }
+
+    .stacked-text-field .mud-input > input,
+    .stacked-text-field .mud-input > textarea {
+        padding: 2px 0;
+        height: auto;
+        line-height: 1.3;
+    }
+
+    .stacked-text-field.secondary .mud-input > input,
+    .stacked-text-field.secondary .mud-input > textarea {
+        font-size: 0.75rem;
+        color: var(--mud-palette-text-secondary);
+    }
+</style>
+
+<MudStack Spacing="0">
+    <MudTextField T="string"
+                  Value="@PrimaryValue"
+                  ValueChanged="@OnPrimaryValueChangedInternal"
+                  Placeholder="@PrimaryPlaceholder"
+                  Variant="Variant.Text"
+                  Underline="false"
+                  Margin="Margin.None"
+                  Typo="Typo.body2"
+                  ReadOnly="@ReadOnly"
+                  Class="stacked-text-field" />
+    <MudTextField T="string"
+                  Value="@SecondaryValue"
+                  ValueChanged="@OnSecondaryValueChangedInternal"
+                  Placeholder="@SecondaryPlaceholder"
+                  Variant="Variant.Text"
+                  Underline="false"
+                  Margin="Margin.None"
+                  Typo="Typo.caption"
+                  AutoGrow="true"
+                  ReadOnly="@ReadOnly"
+                  Class="stacked-text-field secondary" />
+</MudStack>
+
+@code {
+    [CascadingParameter] public Func<Task>? NotifyItemChanged { get; set; }
+
+    [Parameter] public string? PrimaryValue { get; set; }
+    [Parameter] public EventCallback<string> PrimaryValueChanged { get; set; }
+    [Parameter] public string? PrimaryPlaceholder { get; set; }
+
+    [Parameter] public string? SecondaryValue { get; set; }
+    [Parameter] public EventCallback<string> SecondaryValueChanged { get; set; }
+    [Parameter] public string? SecondaryPlaceholder { get; set; }
+
+    [Parameter] public bool ReadOnly { get; set; }
+
+    private async Task OnPrimaryValueChangedInternal(string value)
+    {
+        if (PrimaryValueChanged.HasDelegate)
+            await PrimaryValueChanged.InvokeAsync(value);
+
+        if (NotifyItemChanged != null)
+            await NotifyItemChanged();
+    }
+
+    private async Task OnSecondaryValueChangedInternal(string value)
+    {
+        if (SecondaryValueChanged.HasDelegate)
+            await SecondaryValueChanged.InvokeAsync(value);
+
+        if (NotifyItemChanged != null)
+            await NotifyItemChanged();
+    }
+}

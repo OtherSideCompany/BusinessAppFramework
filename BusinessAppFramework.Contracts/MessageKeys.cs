@@ -17,5 +17,6 @@
         public static string NoResultsFound = "NoResultsFound";
         public static string PreciseSearchOrRunExtendedSearch = "PreciseSearchOrRunExtendedSearch";
         public static string UnsavedChangedDetectedProceed = "UnsavedChangedDetectedProceed";
+        public static string NoElement = "NoElement";
     }
 }
