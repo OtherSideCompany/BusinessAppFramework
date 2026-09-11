@@ -1,0 +1,9 @@
+@using MudBlazor
+
+<MudStack Spacing="0">
+    @ChildContent
+</MudStack>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

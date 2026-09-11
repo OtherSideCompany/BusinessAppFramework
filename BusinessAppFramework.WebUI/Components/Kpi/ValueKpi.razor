@@ -1,15 +1,40 @@
-﻿@using MudBlazor
+@using MudBlazor
 
 <MudStack Spacing="2">
 
-    <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        @if (IndicatorColor != null)
+        {
+            <span style="@($"display:inline-block; width:8px; height:8px; border-radius:50%; background:{IndicatorCssColor};")"></span>
+        }
+        <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+    </MudStack>
 
-    <MudText Typo="Typo.h2" Color="Color.Primary">@Value</MudText>
+    <MudStack Spacing="0">
+        <MudText Typo="Typo.h2" Color="Color.Primary">@Value</MudText>
+
+        @if (!string.IsNullOrEmpty(Caption))
+        {
+            <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary); font-variant-numeric: tabular-nums;">@Caption</MudText>
+        }
+    </MudStack>
 
 </MudStack>
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
     [Parameter] public string? Value { get; set; }
+    [Parameter] public string? Caption { get; set; }
+    [Parameter] public Color? IndicatorColor { get; set; }
 
+    private string IndicatorCssColor => IndicatorColor switch
+    {
+        Color.Primary => "var(--mud-palette-primary)",
+        Color.Secondary => "var(--mud-palette-secondary)",
+        Color.Success => "var(--mud-palette-success)",
+        Color.Error => "var(--mud-palette-error)",
+        Color.Warning => "var(--mud-palette-warning)",
+        Color.Info => "var(--mud-palette-info)",
+        _ => "var(--mud-palette-text-disabled)"
+    };
 }

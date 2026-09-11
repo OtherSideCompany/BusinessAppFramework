@@ -1,0 +1,69 @@
+@using MudBlazor
+
+<style>
+    .constraint-chip {
+        border: 1px solid;
+        border-color: var(--mud-palette-lines-inputs);
+    }
+
+    .constraint-chip--active {
+        border-color: var(--mud-palette-primary);
+    }
+
+    .view-chip__count {
+        background-color: var(--mud-palette-action-default-hover);
+        color: var(--mud-palette-text-primary);
+        font-size: 11px;
+        padding: 2px;
+        border-radius: 999px;
+        margin-left: 4px;
+        font-weight: 400;
+        min-width: 16px;
+    }
+
+    .view-chip__count--active {
+        background-color: var(--mud-palette-primary);
+        border: 0px;
+        color: white;
+        font-weight: 600;
+    }
+</style>
+
+<MudChipSet T="string"
+            CheckMark
+            SelectionMode="SelectionMode.SingleSelection"
+            Color="Color.Primary"
+            SelectedValue="@SelectedKey"
+            SelectedValueChanged="OnSelectedKeyChangedAsync">
+
+    @foreach (var item in Items)
+    {
+        var isActive = SelectedKey == item.Key;
+        <MudChip Value="@item.Key"
+                 Variant="Variant.Filled"
+                 Color="Color.Default"
+                 Size="Size.Small"
+                 SelectedColor="Color.Primary"
+                 Class="@($"constraint-chip {(isActive ? "constraint-chip--active" : "")}")"
+                 Style="@($"background-color: var(--mud-palette-surface); font-weight: {(isActive ? "600" : "400")};")">
+            @item.Label
+            @if (item.Count != null && item.Count > 0)
+            {
+                <div class="@($"view-chip__count {(isActive ? "view-chip__count--active" : "")}")">@item.Count</div>
+            }
+        </MudChip>
+    }
+
+</MudChipSet>
+
+@code {
+    [Parameter, EditorRequired] public IEnumerable<ConstraintChipItem> Items { get; set; } = Array.Empty<ConstraintChipItem>();
+    [Parameter] public string? SelectedKey { get; set; }
+    [Parameter] public EventCallback<string?> SelectedKeyChanged { get; set; }
+
+    private async Task OnSelectedKeyChangedAsync(string? selectedKey)
+    {
+        SelectedKey = selectedKey;
+        await SelectedKeyChanged.InvokeAsync(selectedKey);
+    }
+}

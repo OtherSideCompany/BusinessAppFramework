@@ -28,7 +28,8 @@
     [EditorRequired, Parameter] public string StatusKey { get; set; }
     [Parameter] public bool IsDraft { get; set; }
     [Parameter] public bool IsOverdue { get; set; }
+    [Parameter] public Color? BadgeColor { get; set; }
 
-    private Color _color => IsDraft ? Color.Error : Color.Primary;
+    private Color _color => BadgeColor ?? (IsDraft ? Color.Error : Color.Primary);
     private Variant _variant => IsDraft ? Variant.Outlined : Variant.Filled;
 }

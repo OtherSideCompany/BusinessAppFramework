@@ -1,0 +1,15 @@
+@using MudBlazor
+
+@if (!IsFirst)
+{
+    <MudDivider />
+}
+
+<MudPaper Elevation="0" Class="pa-4">
+    @ChildContent
+</MudPaper>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsFirst { get; set; }
+}
