@@ -11,5 +11,6 @@
         public const string StockMovementPaginated = $"stock-movement-paginated";
         public const string StockReservationPaginated = $"stock-reservation-paginated";
         public const string PricingLinePaginated = $"pricing-line-paginated";
+        public const string SalesQuoteOfYear = $"sales-quote-of-year";
     }
 }
