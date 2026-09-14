@@ -7,6 +7,7 @@ namespace BusinessAppFramework.Domain
         public const string DefaultString = "NA";
         public const int DefaultSalesQuoteRaiseDaysDelay = 30;
         public const int DefaultPurchaseQuoteRaiseDaysDelay = 7;
+        public const int DefaultSalesQuoteVersionValidityMonths = 3;
         public const int DefaultPaimentDaysDelay = 30;
         public const decimal DepositInvoiceDefaultPercentage = 30;
         public const Language DefaultMailLanguage = Language.fr;
