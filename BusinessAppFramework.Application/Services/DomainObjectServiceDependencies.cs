@@ -24,6 +24,7 @@ namespace BusinessAppFramework.Application.Services
         public IUserPermissionResolverService UserPermissionResolverService { get; set; }
         public IReferenceResolver RelationResolver { get; }
         public IRelationService RelationService { get; }
+        public IDomainObjectFactory DomainObjectFactory { get; }
 
         #endregion
 
@@ -42,7 +43,8 @@ namespace BusinessAppFramework.Application.Services
             IUserPermissionResolverService userPermissionResolverService,
             IReferenceResolver relationResolver,
             IReferenceHydrator referenceHydrator,
-            IRelationService relationService)
+            IRelationService relationService,
+            IDomainObjectFactory domainObjectFactory)
         {
             CurrentUserService = currentUserService;
             PasswordService = passwordService;
@@ -51,6 +53,7 @@ namespace BusinessAppFramework.Application.Services
             RelationResolver = relationResolver;
             ReferenceHydrator = referenceHydrator;
             RelationService = relationService;
+            DomainObjectFactory = domainObjectFactory;
         }
 
         #endregion

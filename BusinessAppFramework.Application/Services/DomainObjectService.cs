@@ -63,9 +63,14 @@ namespace BusinessAppFramework.Application.Services
             await LoadReferencesAsync(domainObject);
         }
 
+        public virtual T New()
+        {
+            return _domainObjectServiceDependencies.DomainObjectFactory.Create<T>();
+        }
+
         public virtual async Task<T> CreateAsync()
         {
-            var domainObject = new T();
+            var domainObject = New();
             await CreateAsync(domainObject);
             return domainObject;
         }

@@ -11,6 +11,7 @@ namespace BusinessAppFramework.Infrastructure.Mapping
       private readonly Dictionary<Type, Type> _domainToEntity = new();
       private readonly Dictionary<Type, Type> _entityToDomain = new();
       private readonly Dictionary<Type, Type> _domainToSearchResult = new();
+      private readonly Dictionary<Type, Type> _domainTypeSubstitutions = new();
 
       #endregion
 
@@ -58,6 +59,29 @@ namespace BusinessAppFramework.Infrastructure.Mapping
           _domainToSearchResult.TryGetValue(domainType, out var searchResultType)
               ? searchResultType
               : throw new InvalidOperationException($"No search result type mapped for domain type {domainType.Name}");
+
+      public void RegisterSubstitution(Type domainType, Type substituteDomainType)
+      {
+         if (substituteDomainType == domainType || !domainType.IsAssignableFrom(substituteDomainType))
+         {
+            throw new ArgumentException($"Substitute type {substituteDomainType.Name} must derive from {domainType.Name}", nameof(substituteDomainType));
+         }
+
+         _domainTypeSubstitutions[domainType] = substituteDomainType;
+      }
+
+      public Type ResolveDomainType(Type domainType)
+      {
+         var resolvedType = domainType;
+
+         // A substitute always derives from the type it replaces, so the chain is finite.
+         while (_domainTypeSubstitutions.TryGetValue(resolvedType, out var substituteType))
+         {
+            resolvedType = substituteType;
+         }
+
+         return resolvedType;
+      }
 
 
       #endregion

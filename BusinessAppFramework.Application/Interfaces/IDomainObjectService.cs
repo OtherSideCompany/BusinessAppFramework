@@ -14,11 +14,9 @@ namespace BusinessAppFramework.Application.Interfaces
         Task<T> GetHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<T?> GetOrDefaultHydratedAsync(int domainObjectId, CancellationToken cancellationToken = default);
         Task<List<T>> GetAllHydratedAsync(List<int> domainObjectIds, CancellationToken cancellationToken = default);        
-
         Task<T?> GetFromSystemCodeAsync(string systemCode, CancellationToken cancellationToken = default);
-
+        T New();
         Task CreateAsync(T domainObject);
-
         Task<T> CreateAsync();
 
         Task<(bool isValid, string? validationErrorKey)> ValidateSaveAsync(T domainObject);

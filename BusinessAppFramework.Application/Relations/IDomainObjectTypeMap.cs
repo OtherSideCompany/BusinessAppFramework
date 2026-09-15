@@ -6,5 +6,7 @@
       Type GetEntityTypeFromDomainObjectType(Type domainType);
       Type GetDomainTypeFromEntityType(Type entityType);
       Type GetSearchResultTypeFromDomainType(Type domainType);
+      void RegisterSubstitution(Type domainType, Type substituteDomainType);
+      Type ResolveDomainType(Type domainType);
    }
 }

@@ -295,14 +295,14 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
             var ignored = GetIgnoredDomainObjectMappingProperties();
 
-            var domainObjectProps = typeof(TDomainObject)
+            var domainObjectProps = domainObject.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.CanRead &&
                             !ignored.Contains(p.Name) &&
                             p.GetGetMethod()?.GetBaseDefinition().IsAbstract != true)
                 .ToDictionary(p => p.Name);
 
-            var entityProps = typeof(TEntity)
+            var entityProps = entity.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.CanWrite &&
                             p.GetGetMethod()?.GetBaseDefinition().IsAbstract != true)
