@@ -4,17 +4,14 @@
 @using BusinessAppFramework.WebUI.Components.Browser
 @using Domain.DomainObjects
 @using Microsoft.AspNetCore.Components.Web;
-@using Microsoft.JSInterop
 @using MudBlazor
 @using WebUI.Components.SearchList
 @using WebUI.Interfaces
 
 @inject ILocalizedStringService LocalizedStringService
 @inject ISearchGateway<TSearchResult> SearchService
-@inject IDomainObjectServiceGateway<TDomainObject> DomainObjectServiceGateway
 @inject IIconFactory IconFactory
-@inject IJSRuntime JS
-@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyRegistry
+@inject IDomainObjectCreationDialogService DomainObjectCreationDialogService
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
@@ -105,14 +102,17 @@
     </Results>
 
     <Footer>
-        <MudButton StartIcon="@Icons.Material.Sharp.Add"
-                   IconColor="Color.Primary"
-                   Variant="Variant.Text"
-                   Size="Size.Small"
-                   OnClick="OpenNewDomainObjectInNewTab"
-                   Class="mt-2">
-            @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
-        </MudButton>
+        @if (CanCreate)
+        {
+            <MudButton StartIcon="@Icons.Material.Sharp.Add"
+                       IconColor="Color.Primary"
+                       Variant="Variant.Text"
+                       Size="Size.Small"
+                       OnClick="CreateNewAsync"
+                       Class="mt-2">
+                @LocalizedStringService.Get(Contracts.StringKeys.NewKey)
+            </MudButton>
+        }
     </Footer>
 
 </DomainObjectSelectorLayout>
@@ -258,16 +258,15 @@
         }
     }
 
-    private async Task OpenNewDomainObjectInNewTab()
+    private bool CanCreate => !string.IsNullOrEmpty(Descriptor.CreationDialogComponentKey);
+
+    private async Task CreateNewAsync()
     {
-        var domainObject = await DomainObjectServiceGateway.CreateAsync();
+        var createdId = await DomainObjectCreationDialogService.CreateAsync(Descriptor);
 
-        if (domainObject != null)
+        if (createdId != null)
         {
-            var workspaceKey = DomainObjectPageWorkspaceKeyRegistry.GetPageWorkspaceKey<TDomainObject>();
-
-            var url = $"/workspace/{workspaceKey}?id={domainObject.Id}";
-            await JS.InvokeVoidAsync("open", url, "_blank");
+            await OnItemSelected.InvokeAsync(createdId.Value);
         }
     }
 }

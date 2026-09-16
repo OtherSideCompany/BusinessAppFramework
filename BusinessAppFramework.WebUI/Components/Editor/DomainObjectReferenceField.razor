@@ -15,6 +15,7 @@
 @inject IDialogService DialogService
 @inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
 @inject IRelationServiceGateway RelationServiceGateway
+@inject IDomainObjectCreationDialogService DomainObjectCreationDialogService
 
 <style>
     .mud-icon-button-size-small .mud-icon-root {
@@ -115,12 +116,15 @@ else
                            OnClick="OpenSelector">
                     @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
                 </MudButton>
-                <MudButton FullWidth="true"
-                           StartIcon="@Icons.Material.Outlined.Add"
-                           IconColor="Color.Primary"
-                           OnClick="CreateNewAsync">
-                    @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.NewKey)
-                </MudButton>
+                @if (CanCreate)
+                {
+                    <MudButton FullWidth="true"
+                               StartIcon="@Icons.Material.Outlined.Add"
+                               IconColor="Color.Primary"
+                               OnClick="CreateNewAsync">
+                        @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.NewKey)
+                    </MudButton>
+                }
             </MudStack>
         </AfterItemsTemplate>
     </MudAutocomplete>
@@ -148,6 +152,7 @@ else
     private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor;
 
     private bool HasSelection => DomainObjectReference?.DomainObjectId is not null;
+    private bool CanCreate => !string.IsNullOrEmpty(_domainObjectSelectorDescriptor?.CreationDialogComponentKey);
 
     private int _pageSize = 10;
 
@@ -181,7 +186,15 @@ else
 
     private async Task CreateNewAsync()
     {
-        
+        if (_domainObjectSelectorDescriptor == null || DomainObjectReference == null)
+            return;
+
+        var createdId = await DomainObjectCreationDialogService.CreateAsync(_domainObjectSelectorDescriptor);
+
+        if (createdId != null)
+        {
+            await SelectAsync(createdId.Value, await ResolveDisplayValueAsync(createdId.Value));
+        }
     }
 
     private Task OnResultSelected(DomainObjectSearchResult? result)

@@ -43,7 +43,7 @@
     var props = GetEditableProperties().ToList();
 
     <MudStack Spacing="0">
-        @foreach (var category in GetCategoriesOrDefault())
+        @foreach (var category in GetCategoriesOrDefault().Where(c => c.PropertyEditions.Any(pe => !pe.IsIgnored)))
         {
             <MudStack Spacing="2">
 
@@ -59,7 +59,7 @@
 
                 <MudCollapse Expanded="(category.IsExpanded)" Style="width:100%;">
                     <div class="property-grid mx-1" style="@LabelColumnStyle">
-                        @foreach (var propEdition in category.PropertyEditions)
+                        @foreach (var propEdition in category.PropertyEditions.Where(pe => !pe.IsIgnored))
                         {
                             var label = LocalizedStringService.ResolveProperty(Target.GetType(), propEdition.PropertyName);
                             var propertyHelper = LocalizedStringService.ResolvePropertyHelper(Target.GetType(), propEdition.PropertyName);

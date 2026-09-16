@@ -12,6 +12,7 @@ namespace BusinessAppFramework.Application.Descriptors
       public Type SearchListTemplateProviderType { get; init; } = default!;
       public List<string> ConstraintKeys { get; init; } = new();
       public string DefaultConstraintKey { get; set; } = default!;
+      public string? CreationDialogComponentKey { get; init; }
 
       public DomainObjectSelectorDescriptor(List<string>? constraintKeys = null)
       {

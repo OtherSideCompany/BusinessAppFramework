@@ -7,5 +7,6 @@
         Type SearchListTemplateProviderType { get; }
         List<string> ConstraintKeys { get; }
         string DefaultConstraintKey { get; }
+        string? CreationDialogComponentKey { get; }
     }
 }
