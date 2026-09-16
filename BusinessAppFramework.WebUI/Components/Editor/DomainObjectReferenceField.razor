@@ -111,8 +111,15 @@ else
             <MudStack>
                 <MudButton FullWidth="true"
                            StartIcon="@Icons.Material.Outlined.Search"
+                           IconColor="Color.Primary"
                            OnClick="OpenSelector">
                     @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
+                </MudButton>
+                <MudButton FullWidth="true"
+                           StartIcon="@Icons.Material.Outlined.Add"
+                           IconColor="Color.Primary"
+                           OnClick="CreateNewAsync">
+                    @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.NewKey)
                 </MudButton>
             </MudStack>
         </AfterItemsTemplate>
@@ -170,6 +177,11 @@ else
             var selectedId = (int)result.Data;
             await SelectAsync(selectedId, await ResolveDisplayValueAsync(selectedId));
         }
+    }
+
+    private async Task CreateNewAsync()
+    {
+        
     }
 
     private Task OnResultSelected(DomainObjectSearchResult? result)
