@@ -1,10 +1,12 @@
 ﻿@using Application.Descriptors
 @using BusinessAppFramework.Application.Interfaces
 @using Application.Search
+@using BusinessAppFramework.WebUI.Components.Browser
 @using Domain.DomainObjects
 @using Microsoft.AspNetCore.Components.Web;
 @using Microsoft.JSInterop
 @using MudBlazor
+@using WebUI.Components.Browser
 @using WebUI.Components.SearchList
 @using WebUI.Interfaces
 
@@ -61,6 +63,13 @@
                               OnKeyUp="HandleKeyUp"
                               Margin="Margin.Dense"
                               Style="background: var(--mud-palette-surface);" />
+
+                @if (Descriptor.ConstraintKeys.Count > 1)
+                {
+                    <ConstraintChipSet Items="@ConstraintChipItems"
+                                       SelectedKey="@_selectedConstraintKey"
+                                       SelectedKeyChanged="OnConstraintChangedAsync" />
+                }
 
                 <MudText Typo="Typo.caption" Style="margin-top:4px; color:gray;">
                     @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
@@ -126,6 +135,23 @@
 
     private bool _isLoadRequested = false;
 
+    private string _selectedConstraintKey { get; set; } = default!;
+
+    private Dictionary<string, int> _constraintCounts = new();
+
+    private IEnumerable<ConstraintChipItem> ConstraintChipItems =>
+        Descriptor.ConstraintKeys.Select(constraintKey => new ConstraintChipItem(
+            constraintKey,
+            LocalizedStringService.Get(constraintKey),
+            _constraintCounts.TryGetValue(constraintKey, out var count) ? count : null));
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _selectedConstraintKey = Descriptor.DefaultConstraintKey ?? string.Empty;
+    }
+
     public async Task Load(string filter)
     {
         if (_grid != null)
@@ -181,7 +207,8 @@
         var request = new PaginatedSearchRequest
         {
             PageIndex = 0,
-            PageSize = _pageSize
+            PageSize = _pageSize,
+            ConstraintKey = _selectedConstraintKey
         };
 
         if (!String.IsNullOrEmpty(_filter))
@@ -194,15 +221,34 @@
         var items = result?.Items?.ToList() ?? new List<TSearchResult>();
         _totalItems = result?.Count ?? 0;
 
-        StateHasChanged();
+        await RefreshConstraintCountsAsync();
 
-        System.Diagnostics.Debug.WriteLine(items.Count);
+        StateHasChanged();
 
         return new GridData<TSearchResult>
         {
             Items = items,
             TotalItems = _totalItems
         };
+    }
+
+    private async Task RefreshConstraintCountsAsync()
+    {
+        _constraintCounts.Clear();
+
+        foreach (var constraintKey in Descriptor.ConstraintKeys)
+        {
+            _constraintCounts[constraintKey] = await SearchService.CountAsync(new SearchRequest() { ConstraintKey = constraintKey });
+        }
+    }
+
+    private async Task OnConstraintChangedAsync(string? selectedConstraintKey)
+    {
+        _selectedConstraintKey = string.IsNullOrWhiteSpace(selectedConstraintKey)
+            ? Contracts.ConstraintKeys.AllConstraintKey
+            : selectedConstraintKey;
+
+        await ReloadAsync();
     }
 
     private async Task OnSelectedItemChangedAsync(TSearchResult? item)

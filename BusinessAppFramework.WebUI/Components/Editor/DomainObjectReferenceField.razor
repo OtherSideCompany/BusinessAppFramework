@@ -209,7 +209,8 @@ else
             var searchRequest = new SearchRequest()
             {
                 SourceId = PropertyEdition.AvailableValuesParentId.Value,
-                SourceRelationKey = PropertyEdition.AvailableValuesRelationKey
+                SourceRelationKey = PropertyEdition.AvailableValuesRelationKey,
+                ConstraintKey = _domainObjectSelectorDescriptor.DefaultConstraintKey
             };
 
             var result = await searchGateway.SearchDomainObjectsAsync(searchRequest);
@@ -221,7 +222,8 @@ else
             var paginatedSearchRequest = new PaginatedSearchRequest
             {
                 PageIndex = 0,
-                PageSize = _pageSize * 2
+                PageSize = _pageSize * 2,
+                ConstraintKey = _domainObjectSelectorDescriptor.DefaultConstraintKey
             };
 
             if (!String.IsNullOrEmpty(searchText))
