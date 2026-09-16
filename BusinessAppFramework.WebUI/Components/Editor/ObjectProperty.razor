@@ -37,7 +37,8 @@
                       Underline="false"
                       Class="pg-field"
                       Sizing="InputSizing.Auto"
-                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" />
+                      ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }" 
+                      Placeholder="@(PropertyInfo.PropertyType == typeof(int?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)" />
     }
     else if (PropertyInfo.PropertyType == typeof(int) || PropertyInfo.PropertyType == typeof(int?))
     {
@@ -121,7 +122,8 @@
                    Underline="false"
                    Adornment="Adornment.End"
                    Clearable="isNullable"
-                   ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }">
+                   ValueChanged="async v => { PropertyInfo.SetValue(Target, v); await OnChanged.InvokeAsync(PropertyInfo); }"
+                   Placeholder="@(PropertyInfo.PropertyType == typeof(int?) ? LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.UndefinedKey) : null)">
             @foreach (var enumValue in enumValues)
             {
                 <MudSelectItem T="object" Value="@enumValue">@LocalizedStringService.Get(EnumKeys.For(enumType, enumValue))</MudSelectItem>

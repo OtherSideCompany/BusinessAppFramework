@@ -7,9 +7,9 @@
 <MudLink Href="@_pageNavigationAction?.BuildRoute(DomainObjectId)"
          Disabled="@(_pageNavigationAction == null)"
          @onclick:stopPropagation="true"
-         Underline="Underline.Hover"
+         Underline="@Underline"
          Typo="Typo.body2"
-         Style="color: var(--mud-palette-primary-darken) !important;">
+         Color="Color.Inherit">
     @Text
 </MudLink>
 
@@ -17,6 +17,7 @@
     [Parameter, EditorRequired] public int DomainObjectId { get; set; }
     [Parameter, EditorRequired] public string Text { get; set; }
     [Parameter, EditorRequired] public string NavigationApplicationActionKey { get; set; }
+    [Parameter] public Underline Underline { get; set; } = Underline.Always;
 
     private IDomainObjectNavigationApplicationAction? _pageNavigationAction;
 

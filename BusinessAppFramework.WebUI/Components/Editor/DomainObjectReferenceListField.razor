@@ -14,51 +14,68 @@
 @inject IReferenceNavigationKeyRegistry ReferenceNavigationKeyRegistry
 @inject IRelationServiceGateway RelationServiceGateway
 
+<style>
+    .reference-chip > .mud-chip-content {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .reference-chip > .mud-chip-content > .mud-typography {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .reference-chip .mud-chip-close-button {
+        flex-shrink: 0;
+    }
+</style>
+
 <MudField Typo="Typo.body2"
           Variant="@Variant"
           Margin="Margin.Dense"
           @onclick="OpenSelector"
-          AdornmentIcon="@Icons.Material.Outlined.Search"
-          Adornment="Adornment.Start"
           IconSize="Size.Small"
           Class="lookup-field"
           InnerPadding="false"
           Underline="false">
     <div style="margin-bottom:4px;">
-        <MudStack Row="true">
+        <MudStack Row="true" Spacing="0" Wrap="Wrap.Wrap">
             @if (DomainObjectReferenceList != null)
             {
                 foreach (var reference in DomainObjectReferenceList.Items.OrderBy(i => i.DisplayValue))
                 {
                     var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReferenceList.RelationKey ?? "");
 
-                    <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+                    <MudChip T="string"
+                             Class="reference-chip"
+                             Size="Size.Small"
+                             Variant="Variant.Text"
+                             Color="Color.Default"
+                             CloseIcon="@Icons.Material.Rounded.Close"
+                             OnClose="() => RemoveReference(reference)" >
                         @if (!String.IsNullOrEmpty(navigationKey))
                         {
                             <NavigationLink NavigationApplicationActionKey="@navigationKey"
                                             DomainObjectId="@reference.DomainObjectId"
-                                            Text="@reference.DisplayValue" />
+                                            Text="@reference.DisplayValue" 
+                                            Underline="Underline.Hover"/>
                         }
                         else
                         {
                             <MudText Typo="Typo.body2">@reference.DisplayValue</MudText>
                         }
-                        <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small"
-                                       OnClick="() => RemoveReference(reference)"
-                                       Style="color: var(--mud-palette-primary-darken); width:20px; height:20px" />
-                    </MudStack>
+                    </MudChip>                          
                 }
             }
 
-            <MudSpacer />
-
             <MudIconButton Icon="@Icons.Material.Filled.Add"
-                           Color="Color.Primary"
                            Size="Size.Small"
                            OnClick="OpenSelector" />
         </MudStack>
     </div>
-
 
 </MudField>
 

@@ -66,29 +66,9 @@
                             var prop = props.FirstOrDefault(p => p.Name == propEdition.PropertyName);
                             if (prop != null)
                             {
-                                <div class="property-grid-label">
-                                    @if (string.IsNullOrEmpty(propertyHelper))
-                                    {
-                                        <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudTooltip>
-                                            <TooltipContent>
-                                                <MudText Typo="Typo.caption" Style="max-width:240px; white-space:normal; text-align:left;">
-                                                    @propertyHelper
-                                                </MudText>
-                                            </TooltipContent>
-                                            <ChildContent>
-                                                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
-                                                    <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@label</MudText>
-                                                    <MudIcon Icon="@Icons.Material.Outlined.Info" Style="color:var(--mud-palette-text-secondary); width:16px; height:16px;" />
-                                                </MudStack>
-                                            </ChildContent>
-                                        </MudTooltip>
-                                    }
-                                </div>
-                                <ObjectProperty PropertyEdition="propEdition"
+                                <InlineProperty PropertyHelper="@propertyHelper"
+                                                PropertyEdition="@propEdition"
+                                                Label="@label"
                                                 PropertyInfo="@prop"
                                                 Target="@Target"
                                                 OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />

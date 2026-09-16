@@ -28,6 +28,23 @@
     .lookup-field .mud-input-adornment {
         cursor: pointer;
     }
+
+    .reference-chip > .mud-chip-content {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .reference-chip > .mud-chip-content > .mud-typography {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .reference-chip .mud-chip-close-button {
+        flex-shrink: 0;
+    }
 </style>
 
 @if (HasSelection)
@@ -44,20 +61,26 @@
         <div style="margin-bottom:4px;">
             @if (!string.IsNullOrEmpty(DomainObjectReference.DisplayValue))
             {
-                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                <MudChip T="string"
+                         Class="reference-chip"
+                         Size="Size.Small"
+                         Variant="Variant.Text"
+                         Color="Color.Default"
+                         CloseIcon="@Icons.Material.Rounded.Close"
+                         OnClose="ClearSelectionAsync">
                     @if (!String.IsNullOrEmpty(navigationKey))
                     {
                         <NavigationLink NavigationApplicationActionKey="@navigationKey"
                                         DomainObjectId="@DomainObjectReference.DomainObjectId!.Value"
-                                        Text="@DomainObjectReference.DisplayValue" />
+                                        Text="@DomainObjectReference.DisplayValue"
+                                        Underline="Underline.Hover" />
                     }
                     else
                     {
                         <MudText Typo="Typo.body2">@DomainObjectReference.DisplayValue</MudText>
                     }
-                    <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small"
-                                   OnClick="ClearSelectionAsync" />
-                </MudStack>
+                </MudChip>
+
             }
             else
             {

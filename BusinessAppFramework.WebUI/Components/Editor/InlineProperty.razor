@@ -1,0 +1,46 @@
+﻿@using System.Reflection
+@using MudBlazor
+
+<style>
+    .property-grid-label {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+</style>
+
+<div class="property-grid-label">
+    @if (string.IsNullOrEmpty(PropertyHelper))
+    {
+        <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@Label</MudText>
+    }
+    else
+    {
+        <MudTooltip>
+            <TooltipContent>
+                <MudText Typo="Typo.caption" Style="max-width:240px; white-space:normal; text-align:left;">
+                    @PropertyHelper
+                </MudText>
+            </TooltipContent>
+            <ChildContent>
+                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                    <MudText Style="color:var(--mud-palette-text-secondary);" Typo="Typo.caption">@Label</MudText>
+                    <MudIcon Icon="@Icons.Material.Outlined.Info" Style="color:var(--mud-palette-text-secondary); width:16px; height:16px;" />
+                </MudStack>
+            </ChildContent>
+        </MudTooltip>
+    }
+</div>
+<ObjectProperty PropertyEdition="PropertyEdition"
+                PropertyInfo="@PropertyInfo"
+                Target="@Target"
+                OnChanged="async(PropertyInfo p) => await OnChanged.InvokeAsync(p)" />
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? PropertyHelper { get; set; }
+    [Parameter] public PropertyEdition? PropertyEdition { get; set; }
+    [Parameter] public PropertyInfo? PropertyInfo { get; set; }
+    [Parameter] public object? Target { get; set; }
+    [Parameter] public EventCallback<PropertyInfo> OnChanged { get; set; }
+}
