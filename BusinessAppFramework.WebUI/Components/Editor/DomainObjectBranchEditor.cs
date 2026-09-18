@@ -154,8 +154,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
 
                     if (payload.Changes.Any(c => c.ChangeType == ChangeType.Deleted))
                     {
-                        RemoveNodeRecursive(new List<Branch> { Branch }, id, Branch.ParentChildRelationKey);
-                        Branch?.RemoveNode(id);
+                        RemoveNodeRecursive(new List<Branch> { Branch }, id);
                         await OnBranchChanged.InvokeAsync();
                     }
                 }
@@ -204,11 +203,11 @@ namespace BusinessAppFramework.WebUI.Components.Editor
             }
         }
 
-        private static bool RemoveNodeRecursive(IEnumerable<Branch> branches, int id, string relationKey)
+        private static bool RemoveNodeRecursive(IEnumerable<Branch> branches, int id)
         {
             foreach (var branch in branches)
             {
-                if (branch.ParentChildRelationKey == relationKey && branch.Nodes.Any(n => n.Id == id))
+                if (branch.Nodes.Any(n => n.Id == id))
                 {
                     branch.RemoveNode(id);
                     return true;
@@ -216,7 +215,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
 
                 foreach (var node in branch.Nodes)
                 {
-                    if (RemoveNodeRecursive(node.ChildBranches, id, relationKey))
+                    if (RemoveNodeRecursive(node.ChildBranches, id))
                         return true;
                 }
             }
