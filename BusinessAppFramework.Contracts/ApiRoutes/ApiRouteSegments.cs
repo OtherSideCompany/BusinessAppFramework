@@ -10,7 +10,6 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string Search = "search";
         public const string DomainObjects = "domain-objects";
         public const string RelationShips = "relationships";
-        public const string Documents = "documents";
         public const string DocumentGenerator = "document-generator";
         public const string Workflow = "workflow";
         public const string PageTree = "page-tree";
