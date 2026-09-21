@@ -230,6 +230,7 @@ namespace BusinessAppFramework.Infrastructure.Services
         }
 
         private static readonly (string Name, bool IsNullable)[] _searchableProperties = BuildSearchableProperties();
+        private static readonly PropertyInfo[] _searchableCollectionProperties = BuildSearchableCollectionProperties();
 
         private static (string Name, bool IsNullable)[] BuildSearchableProperties()
         {
@@ -244,6 +245,18 @@ namespace BusinessAppFramework.Infrastructure.Services
                 .ToArray();
         }
 
+
+        private static PropertyInfo[] BuildSearchableCollectionProperties()
+        {
+            return typeof(TSearchResult)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.PropertyType != typeof(string)
+                            && typeof(IEnumerable<string>).IsAssignableFrom(p.PropertyType)
+                            && p.CanRead
+                            && p.GetCustomAttribute<NotSearchableAttribute>() is null)
+                .ToArray();
+        }
+
         protected virtual Expression<Func<TSearchResult, bool>> GetFilterConstraint(string lowerFilter, bool extendedSearch, int maxSearchDistance)
         {
             Expression<Func<TSearchResult, bool>> predicate = null;
@@ -254,7 +267,27 @@ namespace BusinessAppFramework.Infrastructure.Services
                 predicate = predicate == null ? condition : predicate.Or(condition);
             }
 
+            foreach (var property in _searchableCollectionProperties)
+            {
+                var condition = BuildCollectionPropertyFilter(property, lowerFilter, extendedSearch, maxSearchDistance);
+                predicate = predicate == null ? condition : predicate.Or(condition);
+            }
+
             return predicate ?? (x => false);
+        }
+
+        private static Expression<Func<TSearchResult, bool>> BuildCollectionPropertyFilter(
+            PropertyInfo property, string lowerFilter, bool extendedSearch, int maxSearchDistance)
+        {
+            Expression<Func<string, bool>> elementFilter = extendedSearch
+                ? value => Utils.EditDistance(lowerFilter, value.ToLower(), maxSearchDistance) <= maxSearchDistance
+                : value => value.ToLower().Contains(lowerFilter);
+
+            var parameter = Expression.Parameter(typeof(TSearchResult), "x");
+            var collection = Expression.Convert(Expression.Property(parameter, property), typeof(IEnumerable<string>));
+            var any = Expression.Call(typeof(Enumerable), nameof(Enumerable.Any), new[] { typeof(string) }, collection, elementFilter);
+
+            return Expression.Lambda<Func<TSearchResult, bool>>(any, parameter);
         }
 
         private static Expression<Func<TSearchResult, bool>> BuildPropertyFilter(
