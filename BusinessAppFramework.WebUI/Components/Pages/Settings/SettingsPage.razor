@@ -1,0 +1,164 @@
+@using System.Reflection
+@using BusinessAppFramework.Application.Descriptors
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Settings
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.WebUI.Components.Editor
+@using BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
+@using BusinessAppFramework.WebUI.Interfaces
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Sections
+@using MudBlazor
+
+@inject IModuleSettingsGateway ModuleSettingsGateway
+@inject ILocalizedStringService LocalizedStringService
+@inject IUserDialogService UserDialogService
+@inject IIconFactory IconFactory
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
+
+<style>
+    .osc-settings-page {
+        height: 100%;
+        overflow-y: auto;
+        background: var(--mud-palette-background);
+    }
+
+    .osc-settings-content {
+        max-width: 760px;
+    }
+</style>
+
+<SectionContent SectionName="page-title">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0" Style="width:100%;">
+        <MudText Typo="Typo.h6" Class="mx-1">@LocalizedStringService.Get(SettingsKeys.Workspace)</MudText>
+    </MudStack>
+</SectionContent>
+
+<div class="osc-settings-page">
+    @if (_isLoading)
+    {
+        <MudStack Spacing="2" Class="pa-4 osc-settings-content">
+            @for (int i = 0; i < 4; i++)
+            {
+                <MudSkeleton Height="40px" />
+            }
+        </MudStack>
+    }
+    else if (!_items.Any())
+    {
+        <MudText Class="pa-4" Typo="Typo.body2">@LocalizedStringService.Get(MessageKeys.NoElement)</MudText>
+    }
+    else
+    {
+        <MudStack Spacing="4" Class="pa-4 osc-settings-content">
+            @foreach (var item in _items)
+            {
+                <ObjectProperties Target="@item.Settings"
+                                  PropertyCategories="@item.Categories"
+                                  MaxLabelColumnWidth="320"
+                                  OnChanged="() => MarkDirty(item.Key)" />
+            }
+        </MudStack>
+    }
+</div>
+
+<ChangesPopover IsDirty="_dirtyKeys.Any()"
+                SaveAsync="SaveAsync"
+                UndoAsync="UndoAsync" />
+
+@code {
+    [Parameter] public WorkspaceDescriptor Descriptor { get; set; } = default!;
+
+    private class SettingsItem
+    {
+        public string Key { get; init; } = default!;
+        public ModuleSettings Settings { get; init; } = default!;
+        public List<PropertyCategory> Categories { get; init; } = new();
+    }
+
+    private readonly List<SettingsItem> _items = new();
+    private readonly HashSet<string> _dirtyKeys = new();
+    private bool _isLoading = true;
+    private IDisposable? _locationChangingRegistration;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(HandleLocationChanging);
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _items.Clear();
+        _dirtyKeys.Clear();
+
+        foreach (var (key, settings) in await ModuleSettingsGateway.GetAllAsync())
+        {
+            _items.Add(new SettingsItem
+            {
+                Key = key,
+                Settings = settings,
+                Categories = new List<PropertyCategory> { BuildCategory(key, settings) }
+            });
+        }
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    // One category per settings, labelled and iconed by the settings key.
+    private PropertyCategory BuildCategory(string key, ModuleSettings settings)
+    {
+        var propertyEditions = settings.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead && p.CanWrite)
+            .Select(p => new PropertyEdition { PropertyName = p.Name })
+            .ToList();
+
+        return new PropertyCategory
+        {
+            LabelKey = key,
+            Icon = IconFactory.CreateIcon(key),
+            PropertyEditions = propertyEditions
+        };
+    }
+
+    private void MarkDirty(string key)
+    {
+        if (_dirtyKeys.Add(key))
+            StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        foreach (var item in _items.Where(i => _dirtyKeys.Contains(i.Key)))
+        {
+            if (!await ModuleSettingsGateway.SaveAsync(item.Key, item.Settings))
+                return;
+        }
+
+        await LoadAsync();
+    }
+
+    private async Task UndoAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async ValueTask HandleLocationChanging(LocationChangingContext context)
+    {
+        if (!_dirtyKeys.Any())
+            return;
+
+        if (!await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.UnsavedChangedDetectedProceed)))
+            context.PreventNavigation();
+    }
+
+    public void Dispose()
+    {
+        _locationChangingRegistration?.Dispose();
+    }
+}

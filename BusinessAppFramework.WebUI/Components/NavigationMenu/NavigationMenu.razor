@@ -53,8 +53,28 @@
     .nav-skeleton {
         background-color: rgba(139, 128, 255, 0.08) !important;
     }
+
+    .nav-menu-root {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    .nav-menu-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .nav-menu-footer {
+        flex: 0 0 auto;
+        padding: 4px 0 8px 0;
+    }
 </style>
 
+<div class="nav-menu-root">
+<div class="nav-menu-scroll">
 <MudNavMenu>
 
     @if (_isLoading)
@@ -104,8 +124,34 @@
         }
     }
 
-
 </MudNavMenu>
+</div>
+
+@{
+    var settingsHref = GetWorkspaceLink(BusinessAppFramework.Contracts.SettingsKeys.Workspace);
+    var isSettingsActive = NavigationManager.Uri.Contains(settingsHref);
+}
+
+<div class="nav-menu-footer">
+    <MudDivider Class="mb-1" />
+    <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center" Style="padding-left:12px;" Class="nav-item">
+        <MudIcon Icon="@IconFactory.CreateIcon(BusinessAppFramework.Contracts.SettingsKeys.SettingsKey)"
+                 Class="nav-menu-icon"
+                 Color="@(isSettingsActive ? Color.Primary : Color.Inherit)" />
+        <MudButton Href="@settingsHref"
+                   FullWidth="true"
+                   Ripple="false"
+                   Style="text-transform: none; justify-content: flex-start;"
+                   Color="Color.Transparent">
+            <MudText Typo="Typo.body2"
+                     Style="@(isSettingsActive ? "font-weight:600;" : "")"
+                     Color="@(isSettingsActive ? Color.Primary : Color.Inherit)">
+                @LocalizedStringService.Get(BusinessAppFramework.Contracts.SettingsKeys.SettingsKey)
+            </MudText>
+        </MudButton>
+    </MudStack>
+</div>
+</div>
 
 @code {
     private List<string> _moduleKeys { get; set; } = new()!;

@@ -13,6 +13,7 @@ namespace BusinessAppFramework.Contracts.ApiRoutes
         public const string DocumentGenerator = "document-generator";
         public const string Workflow = "workflow";
         public const string PageTree = "page-tree";
+        public const string Settings = "settings";
 
         public const string Create = "create";
         public const string Get = "get";

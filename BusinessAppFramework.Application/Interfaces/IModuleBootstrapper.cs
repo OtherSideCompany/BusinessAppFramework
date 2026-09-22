@@ -29,6 +29,7 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterParentChildRelations(IServiceProvider serviceProvider);
         void RegisterDomainObjectNavigationApplicationAction(IServiceProvider serviceProvider);
         void RegisterReferenceNavigationKeys(IServiceProvider serviceProvider);
+        void RegisterSettings(IServiceProvider serviceProvider) { }
         string? GetModuleWorkspaceKey();
         List<string> GetWorkspacesKeys();        
     }
