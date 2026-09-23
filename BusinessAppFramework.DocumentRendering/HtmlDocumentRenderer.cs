@@ -1,5 +1,4 @@
 ﻿using PuppeteerSharp;
-using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Media;
 using Scriban;
 using Scriban.Runtime;
@@ -12,7 +11,9 @@ namespace BusinessAppFramework.DocumentRendering
 
         private static readonly SemaphoreSlim _browserSemaphore = new(1, 1);
         private static IBrowser? _browser;
-        private static bool _browserDownloaded = false;
+
+        private readonly string _executablePath;
+        private readonly string[] _launchArguments;
 
         #endregion
 
@@ -35,9 +36,13 @@ namespace BusinessAppFramework.DocumentRendering
             AppDomain.CurrentDomain.ProcessExit += (_, _) => ShutdownBrowser();
         }
 
-        public HtmlDocumentRenderer()
+        public HtmlDocumentRenderer(string? executablePath = null, string[]? launchArguments = null)
         {
+            _executablePath = string.IsNullOrWhiteSpace(executablePath)
+                ? Path.Combine(AppContext.BaseDirectory, "chrome", "chrome.exe")
+                : executablePath;
 
+            _launchArguments = launchArguments ?? [];
         }
 
         #endregion
@@ -84,7 +89,7 @@ namespace BusinessAppFramework.DocumentRendering
 
         #region Private Methods        
 
-        private static async Task<IBrowser> GetBrowserAsync()
+        private async Task<IBrowser> GetBrowserAsync()
         {
             if (_browser is { IsClosed: false })
             {
@@ -105,9 +110,20 @@ namespace BusinessAppFramework.DocumentRendering
                     _browser = null;
                 }
 
-                await EnsureBrowserDownloadedAsync();
+                if (!File.Exists(_executablePath))
+                {
+                    throw new FileNotFoundException(
+                        $"Chrome was not found at '{_executablePath}'. Download it with 'dotnet run --project Cyklor.ChromePackager -- download <directory>' " +
+                        "and set DocumentRendering:ChromeExecutablePath to the resulting chrome.exe.",
+                        _executablePath);
+                }
 
-                _browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+                _browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+                    Headless = true,
+                    ExecutablePath = _executablePath,
+                    Args = _launchArguments
+                });
 
                 return _browser;
             }
@@ -115,24 +131,6 @@ namespace BusinessAppFramework.DocumentRendering
             {
                 _browserSemaphore.Release();
             }
-        }
-
-        private static async Task EnsureBrowserDownloadedAsync()
-        {
-            if (_browserDownloaded)
-            {
-                return;
-            }
-
-            var fetcher = new BrowserFetcher();
-            var buildId = Chrome.DefaultBuildId;
-
-            if (fetcher.GetInstalledBrowsers().All(b => b.BuildId != buildId))
-            {
-                await fetcher.DownloadAsync(buildId);
-            }
-
-            _browserDownloaded = true;
         }
 
         private static void ShutdownBrowser()
