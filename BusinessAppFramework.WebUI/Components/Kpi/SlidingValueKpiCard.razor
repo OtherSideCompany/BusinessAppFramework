@@ -1,5 +1,6 @@
 ﻿@using BusinessAppFramework.Application.Interfaces
 @using BusinessAppFramework.Contracts
+@using BusinessAppFramework.Contracts.Enums
 @using BusinessAppFramework.WebUI.Helpers
 @using MudBlazor
 
@@ -52,7 +53,7 @@
         @Label
         @if (Value.TimeframeDays > 0)
         {
-            <span class="kpi-period">@Value.TimeframeDays@LocalizedStringService.Get(StringKeys.DayShortKey)</span>
+            <span class="kpi-period">@Value.TimeframeValue@LocalizedStringService.Get(EnumKeys<TimeUnit>.ForShort(Value.TimeframeUnit))</span>
         }
     </MudText>
 
