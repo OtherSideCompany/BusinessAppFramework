@@ -1,0 +1,140 @@
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.WebUI.Helpers
+@using MudBlazor
+
+@inject ILocalizedStringService LocalizedStringService
+
+<style>
+    .kpi-card-clickable,
+    .kpi-card-clickable * {
+        cursor: pointer;
+    }
+
+    .kpi-card-clickable {
+        margin: -16px;
+        padding: 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        transition: box-shadow .15s ease, background-color .15s ease, transform .1s ease;
+    }
+
+    .kpi-card-clickable:hover {
+        box-shadow: var(--mud-elevation-4);
+        border-color: var(--mud-palette-primary);
+    }
+
+    .kpi-card-clickable:active {
+        transform: scale(0.98);
+        box-shadow: var(--mud-elevation-2);
+    }
+
+    .kpi-period {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: .6875rem;
+        font-weight: 500;
+        line-height: 1.4;
+        letter-spacing: .02em;
+        color: var(--mud-palette-text-secondary);
+        background: var(--mud-palette-action-default-hover);
+        vertical-align: 1px;
+    }
+
+    .kpi-target-track {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--mud-palette-action-default-hover);
+        overflow: hidden;
+    }
+
+    .kpi-target-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--mud-palette-primary);
+        transition: width .3s ease;
+    }
+
+    .kpi-target-line {
+        font-variant-numeric: tabular-nums;
+    }
+</style>
+
+<MudStack Spacing="2"
+          Class="@(_isClickable ? "kpi-card-clickable" : null)"
+          @onclick="OnClickAsync">
+
+    <MudText Style="color:var(--mud-palette-text-secondary);">
+        @Label
+        @if (!string.IsNullOrEmpty(Period))
+        {
+            <span class="kpi-period">@Period</span>
+        }
+    </MudText>
+
+    <MudText Typo="Typo.h2" Color="Color.Primary">@DisplayValue(Value.CurrentValue)</MudText>
+
+    @if (Value.IsTargetSet)
+    {
+        <MudStack Spacing="1">
+            <div class="kpi-target-track">
+                <div class="kpi-target-fill" style="@($"width:{_progressPercent}%;")"></div>
+            </div>
+
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline" Spacing="2" Class="kpi-target-line">
+                <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary);">
+                    @LocalizedStringService.Get(StringKeys.TargetKey) @DisplayValue(Value.TargetValue!.Value)
+                </MudText>
+                <MudText Typo="Typo.caption" Color="@_deltaColor" Style="font-weight:500;">@_deltaDisplay</MudText>
+            </MudStack>
+        </MudStack>
+    }
+    else
+    {
+        <MudText Typo="Typo.caption" Style="color:var(--mud-palette-text-secondary); font-style:italic;">
+            @LocalizedStringService.Get(StringKeys.NoTargetDefinedKey)
+        </MudText>
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Period { get; set; }
+    [Parameter] public BusinessAppFramework.Application.Kpis.TargetValueKpi Value { get; set; } = new();
+    [Parameter] public bool DisplayFriendlyValue { get; set; }
+    [Parameter] public string Units { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private bool _isClickable => OnClick.HasDelegate;
+
+    private string _progressPercent => (Value.ProgressRatio * 100m).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+
+    private Color _deltaColor => Value.Delta < 0 ? Color.Warning : Color.Success;
+
+    private string _deltaDisplay => $"{(Value.Delta < 0 ? "-" : "+")} {DisplayValue(Math.Abs(Value.Delta))}";
+
+    private async Task OnClickAsync()
+    {
+        if (_isClickable)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
+
+    private string DisplayValue(decimal value)
+    {
+        var stringValue = DisplayFriendlyValue
+            ? StringHelper.AmountToFriendlyDisplay(value)
+            : value.ToString();
+
+        if (!string.IsNullOrEmpty(Units))
+        {
+            stringValue = $"{stringValue} {Units}";
+        }
+
+        return stringValue;
+    }
+}

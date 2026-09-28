@@ -48,5 +48,7 @@ namespace BusinessAppFramework.Contracts
         public static string DatesKey = "DatesKey";
         public static string ImageZoom = "ImageZoom";
         public static string WaitingKey = "WaitingKey";
+        public static string TargetKey = "TargetKey";
+        public static string NoTargetDefinedKey = "NoTargetDefinedKey";
     }
 }
