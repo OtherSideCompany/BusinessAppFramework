@@ -30,6 +30,8 @@
         cursor: pointer;
     }
 
+    .reference-chip { margin: 0; }
+
     .reference-chip > .mud-chip-content {
         min-width: 0;
         overflow: hidden;
@@ -46,12 +48,42 @@
     .reference-chip .mud-chip-close-button {
         flex-shrink: 0;
     }
+
+    .ghost-reference-button {
+        border-style: dashed;
+        border-color: var(--mud-palette-lines-inputs);
+        border-radius: 16px;
+        color: var(--mud-palette-lines-inputs);
+        text-transform: none;
+        white-space: nowrap;
+    }
 </style>
 
-@if (HasSelection)
+@if (IsCompact)
 {
-    var navigationKey = ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference!.RelationKey ?? "");
-
+    @if (HasSelection)
+    {
+        <MudTooltip Text="@DomainObjectReference!.DisplayValue">
+            @ReferenceChip(CompactText)
+        </MudTooltip>
+    }
+    else if (_isSearching)
+    {
+        @SearchField
+    }
+    else
+    {
+        <MudButton Variant="Variant.Outlined"
+                   Size="Size.Small"
+                   Class="ghost-reference-button"
+                   StartIcon="@Icons.Material.Outlined.Link"
+                   OnClick="StartSearching">
+            @EmptyLabel
+        </MudButton>
+    }
+}
+else if (HasSelection)
+{
     <MudField Typo="Typo.body2"
               Variant="@Variant"
               Underline="false"
@@ -60,28 +92,9 @@
               InnerPadding="false">
 
         <div style="margin-bottom:4px;">
-            @if (!string.IsNullOrEmpty(DomainObjectReference.DisplayValue))
+            @if (!string.IsNullOrEmpty(DomainObjectReference!.DisplayValue))
             {
-                <MudChip T="string"
-                         Class="reference-chip"
-                         Size="Size.Small"
-                         Variant="Variant.Text"
-                         Color="Color.Default"
-                         CloseIcon="@Icons.Material.Rounded.Close"
-                         OnClose="ClearSelectionAsync">
-                    @if (!String.IsNullOrEmpty(navigationKey))
-                    {
-                        <NavigationLink NavigationApplicationActionKey="@navigationKey"
-                                        DomainObjectId="@DomainObjectReference.DomainObjectId!.Value"
-                                        Text="@DomainObjectReference.DisplayValue"
-                                        Underline="Underline.Hover" />
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.body2">@DomainObjectReference.DisplayValue</MudText>
-                    }
-                </MudChip>
-
+                @ReferenceChip(DomainObjectReference.DisplayValue)
             }
             else
             {
@@ -95,39 +108,7 @@
 }
 else
 {
-    <MudAutocomplete T="DomainObjectSearchResult"
-                     Variant="@Variant"
-                     Margin="Margin.Dense"
-                     Underline="false"
-                     ValueChanged="OnResultSelected"
-                     SearchFunc="SearchAsync"
-                     ToStringFunc="@(r => r?.DisplayValue ?? string.Empty)"
-                     ResetValueOnEmptyText="false"
-                     AdornmentIcon="@Icons.Material.Outlined.Search"
-                     Adornment="Adornment.Start"
-                     IconSize="Size.Small"
-                     OnAdornmentClick="OpenSelector"
-                     Placeholder="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.TypeToSearchKey)">
-        <AfterItemsTemplate>
-            <MudStack>
-                <MudButton FullWidth="true"
-                           StartIcon="@Icons.Material.Outlined.Search"
-                           IconColor="Color.Primary"
-                           OnClick="OpenSelector">
-                    @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
-                </MudButton>
-                @if (CanCreate)
-                {
-                    <MudButton FullWidth="true"
-                               StartIcon="@Icons.Material.Outlined.Add"
-                               IconColor="Color.Primary"
-                               OnClick="CreateNewAsync">
-                        @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.NewKey)
-                    </MudButton>
-                }
-            </MudStack>
-        </AfterItemsTemplate>
-    </MudAutocomplete>
+    @SearchField
 }
 
 @code {
@@ -147,14 +128,104 @@ else
     [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public EventCallback<DomainObjectReference?> OnDomainObjectReferenceChanged { get; set; }
     [Parameter] public PropertyEdition? PropertyEdition { get; set; }
+    [Parameter] public DomainObjectReferenceDisplayMode DisplayMode { get; set; } = DomainObjectReferenceDisplayMode.DisplayValue;
+    [Parameter] public string? EmptyLabel { get; set; }
 
     private DomainObjectReference? _domainObjectReference;
     private IDomainObjectSelectorDescriptor? _domainObjectSelectorDescriptor;
+    private bool _isSearching;
 
     private bool HasSelection => DomainObjectReference?.DomainObjectId is not null;
     private bool CanCreate => !string.IsNullOrEmpty(_domainObjectSelectorDescriptor?.CreationDialogComponentKey);
+    private bool IsCompact => DisplayMode == DomainObjectReferenceDisplayMode.ReferenceNumber;
+    private string CompactText => string.IsNullOrEmpty(DomainObjectReference?.ReferenceNumber) ? DomainObjectReference?.DisplayValue ?? string.Empty : DomainObjectReference.ReferenceNumber;
+    private string? NavigationKey => ReferenceNavigationKeyRegistry.TryGetNavigationKey(DomainObjectReference?.RelationKey ?? string.Empty);
 
     private int _pageSize = 10;
+
+    private RenderFragment<string> ReferenceChip => text =>
+        @<MudChip T="string"
+                  Class="reference-chip"
+                  Size="Size.Small"
+                  Variant="Variant.Text"
+                  Color="Color.Default"
+                  CloseIcon="@Icons.Material.Rounded.Close"
+                  OnClose="ClearSelectionAsync">
+            @if (!string.IsNullOrEmpty(NavigationKey))
+            {
+                <NavigationLink NavigationApplicationActionKey="@NavigationKey"
+                                DomainObjectId="@DomainObjectReference!.DomainObjectId!.Value"
+                                Text="@text"
+                                Underline="Underline.Hover" />
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">@text</MudText>
+            }
+        </MudChip>;
+
+    private RenderFragment SearchField =>
+        @<MudAutocomplete T="DomainObjectSearchResult"
+                          Variant="@Variant"
+                          Margin="Margin.Dense"
+                          Underline="false"
+                          AutoFocus="@_isSearching"
+                          ValueChanged="OnResultSelected"
+                          SearchFunc="SearchAsync"
+                          ToStringFunc="@(r => r?.DisplayValue ?? string.Empty)"
+                          ResetValueOnEmptyText="false"
+                          AdornmentIcon="@Icons.Material.Outlined.Search"
+                          Adornment="Adornment.Start"
+                          IconSize="Size.Small"
+                          OnAdornmentClick="OpenSelector"
+                          OnBlur="OnSearchBlurredAsync"
+                          OnKeyDown="OnSearchKeyDown"
+                          Placeholder="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.TypeToSearchKey)">
+            <AfterItemsTemplate>
+                <MudStack>
+                    <MudButton FullWidth="true"
+                               StartIcon="@Icons.Material.Outlined.Search"
+                               IconColor="Color.Primary"
+                               OnClick="OpenSelector">
+                        @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.SearchKey)
+                    </MudButton>
+                    @if (CanCreate)
+                    {
+                        <MudButton FullWidth="true"
+                                   StartIcon="@Icons.Material.Outlined.Add"
+                                   IconColor="Color.Primary"
+                                   OnClick="CreateNewAsync">
+                            @LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.NewKey)
+                        </MudButton>
+                    }
+                </MudStack>
+            </AfterItemsTemplate>
+        </MudAutocomplete>;
+
+    private void StartSearching()
+    {
+        _isSearching = true;
+    }
+
+    private async Task OnSearchBlurredAsync()
+    {
+        if (!_isSearching)
+            return;
+
+        await Task.Delay(300);
+
+        if (!HasSelection)
+        {
+            _isSearching = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+            _isSearching = false;
+    }
 
     private async Task OpenSelector()
     {
@@ -179,8 +250,7 @@ else
 
         if (result is { Canceled: false })
         {
-            var selectedId = (int)result.Data;
-            await SelectAsync(selectedId, await ResolveDisplayValueAsync(selectedId));
+            await SelectAsync((int)result.Data);
         }
     }
 
@@ -193,22 +263,26 @@ else
 
         if (createdId != null)
         {
-            await SelectAsync(createdId.Value, await ResolveDisplayValueAsync(createdId.Value));
+            await SelectAsync(createdId.Value);
         }
     }
 
     private Task OnResultSelected(DomainObjectSearchResult? result)
         => result is null
             ? ClearSelectionAsync()
-            : SelectAsync(result.DomainObjectId, result.DisplayValue);
+            : SelectAsync(result.DomainObjectId);
 
-    private async Task SelectAsync(int domainObjectId, string? displayValue)
+    private async Task SelectAsync(int domainObjectId)
     {
         if (DomainObjectReference == null)
             return;
 
+        var hydrated = await RelationServiceGateway.GetHydratedDomainObjectReference(domainObjectId, DomainObjectReference.RelationKey);
+
         DomainObjectReference.DomainObjectId = domainObjectId;
-        DomainObjectReference.DisplayValue = displayValue;
+        DomainObjectReference.DisplayValue = hydrated?.DisplayValue;
+        DomainObjectReference.ReferenceNumber = hydrated?.ReferenceNumber ?? string.Empty;
+        _isSearching = false;
 
         await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
         StateHasChanged();
@@ -220,6 +294,7 @@ else
         {
             DomainObjectReference.DomainObjectId = null;
             DomainObjectReference.DisplayValue = null;
+            DomainObjectReference.ReferenceNumber = string.Empty;
         }
 
         await OnDomainObjectReferenceChanged.InvokeAsync(DomainObjectReference);
@@ -233,15 +308,6 @@ else
 
         var selectorWorkspaceKey = RelationSelectorRegistry.Resolve(DomainObjectReference.RelationKey);
         _domainObjectSelectorDescriptor = (IDomainObjectSelectorDescriptor)WorkspaceDescriptorFactory.GetWorkspaceDescriptor(selectorWorkspaceKey);
-    }
-
-    private async Task<string?> ResolveDisplayValueAsync(int domainObjectId)
-    {
-        if (DomainObjectReference == null)
-            return null;
-
-        var hydrated = await RelationServiceGateway.GetHydratedDomainObjectReference(domainObjectId, DomainObjectReference.RelationKey);
-        return hydrated?.DisplayValue;
     }
 
     private async Task<IEnumerable<DomainObjectSearchResult>> SearchAsync(string searchText, CancellationToken token)
@@ -281,6 +347,6 @@ else
 
             var result = await searchGateway.PaginatedSearchDomainObjectsAsync(paginatedSearchRequest);
             return result.Items.OrderBy(i => i.DisplayValue);
-        }       
+        }
     }
 }

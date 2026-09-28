@@ -62,7 +62,7 @@
                 <Columns>
                     <HierarchyColumn T="Node" EnableHeaderToggle="true" />
                     @ColumnsContent
-                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
+                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)" HeaderClass="@DataGridColumnClasses.Compact">
                         <EditTemplate>
                             <MudStack Row="true" Spacing="0">
                                 @ItemActions?.Invoke(context.Item)
@@ -98,7 +98,7 @@
                          CommittedItemChanges="OnCommitedItemChanged">
                 <Columns>
                     @ColumnsContent
-                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)">
+                    <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)" HeaderClass="@DataGridColumnClasses.Compact">
                         <EditTemplate>
                             <MudStack Row="true" Spacing="0">
                                 @ItemActions?.Invoke(context.Item)

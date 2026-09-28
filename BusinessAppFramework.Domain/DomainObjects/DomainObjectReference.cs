@@ -13,6 +13,7 @@
         public string RelationKey { get; set; }
         public int? DomainObjectId { get; set; }
         public string DisplayValue { get; set; }
+        public string ReferenceNumber { get; set; } = string.Empty;
 
         #endregion
 
@@ -39,6 +40,7 @@
         {
             DomainObjectId = null;
             DisplayValue = string.Empty;
+            ReferenceNumber = string.Empty;
         }
 
         #endregion

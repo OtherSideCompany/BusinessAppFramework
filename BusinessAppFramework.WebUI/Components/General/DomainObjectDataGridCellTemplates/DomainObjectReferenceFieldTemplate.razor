@@ -2,7 +2,9 @@
 @using BusinessAppFramework.WebUI.Components.Editor
 @using MudBlazor
 
-<DomainObjectReferenceField DomainObjectReference="@Value" 
+<DomainObjectReferenceField DomainObjectReference="@Value"
+                            DisplayMode="@DisplayMode"
+                            EmptyLabel="@EmptyLabel"
                             OnDomainObjectReferenceChanged="@OnValueChangedInternal" />
 
 @code {
@@ -10,6 +12,8 @@
 
     [Parameter] public DomainObjectReference? Value { get; set; }
     [Parameter] public EventCallback<DomainObjectReference?> ValueChanged { get; set; }
+    [Parameter] public DomainObjectReferenceDisplayMode DisplayMode { get; set; } = DomainObjectReferenceDisplayMode.DisplayValue;
+    [Parameter] public string? EmptyLabel { get; set; }
 
     private async Task OnValueChangedInternal(DomainObjectReference v)
     {

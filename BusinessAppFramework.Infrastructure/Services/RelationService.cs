@@ -125,8 +125,14 @@ namespace BusinessAppFramework.Infrastructure.Services
             if (_relationResolver.TryGetReferenceRelationEntry(domainObjectReference.RelationKey, out var relationEntry))
             {
                 var entity = await context.FindAsync(relationEntry.TargetEntityType, domainObjectReference.DomainObjectId);
-                domainObjectReference.DisplayValue = entity?.ToString();
+                Hydrate(domainObjectReference, entity);
             }
+        }
+
+        private static void Hydrate(DomainObjectReference domainObjectReference, object? entity)
+        {
+            domainObjectReference.DisplayValue = entity?.ToString();
+            domainObjectReference.ReferenceNumber = entity is IHasReferenceNumber referenced ? referenced.ReferenceNumber : string.Empty;
         }
 
         public async Task HydrateDomainObjectReferenceListAsync(DomainObjectReferenceList domainObjectReferenceList)
@@ -274,7 +280,10 @@ namespace BusinessAppFramework.Infrastructure.Services
                 if (entity == null)
                     return null;
 
-                return new DomainObjectReference(relationKey, entity.Id) { DisplayValue = entity.ToString() };
+                var domainObjectReference = new DomainObjectReference(relationKey, entity.Id);
+                Hydrate(domainObjectReference, entity);
+
+                return domainObjectReference;
             }
 
             return null;
