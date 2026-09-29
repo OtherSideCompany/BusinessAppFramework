@@ -1,7 +1,7 @@
-﻿namespace BusinessAppFramework.Application.Mail
+namespace BusinessAppFramework.Application.Mail
 {
    public interface IMailService
    {
-      void Send(MailInfo mail);
+      string BuildMailtoUri(MailInfo mail);
    }
 }

@@ -3,11 +3,13 @@
 @using BusinessAppFramework.Application.Mail
 @using BusinessAppFramework.Domain.DomainObjects
 @using BusinessAppFramework.WebUI.Interfaces
+@using Microsoft.JSInterop
 @using MudBlazor
 
 @implements IApplicationDialog
 
 @inject IMailService MailService
+@inject IJSRuntime JS
 @inject ILocalizedStringService LocalizedStringService
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
@@ -24,10 +26,6 @@
     <MudTextField @bind-Value="_mailInfo?.Object"
                   Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailObjectKey)"
                   Variant="Variant.Outlined" />
-
-    @* <MudTextField @bind-Value="Object"
-                  Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.strings.MailAttachmentsKey)"
-                  Variant="Variant.Outlined" /> *@
 
     <MudTextField @bind-Value="_mailInfo?.Body"
                   Label="@LocalizedStringService.Get(BusinessAppFramework.Contracts.StringKeys.MailBodyKey)"
@@ -64,11 +62,12 @@
         }
     }
 
-    private void OnSend()
+    private async Task OnSend()
     {
         if (_mailInfo == null)
             return;
 
-        MailService.Send(_mailInfo);
+        var mailtoUri = MailService.BuildMailtoUri(_mailInfo);
+        await JS.InvokeVoidAsync("open", mailtoUri, "_self");
     }
 }

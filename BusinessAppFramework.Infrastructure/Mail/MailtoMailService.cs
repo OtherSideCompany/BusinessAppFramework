@@ -1,7 +1,6 @@
 ﻿using BusinessAppFramework.Application.Mail;
 using System;
-using System.Diagnostics;
-using System.Net;
+using System.Linq;
 
 namespace BusinessAppFramework.Infrastructure.Mail
 {
@@ -36,30 +35,15 @@ namespace BusinessAppFramework.Infrastructure.Mail
 
       #region Public Methods
 
-      public void Send(Application.Mail.MailInfo mail)
+      public string BuildMailtoUri(Application.Mail.MailInfo mail)
       {
-         string mailtoUri = "";
+         string to = string.Join(",", (mail.To ?? string.Empty)
+            .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(address => Uri.EscapeDataString(address).Replace("%40", "@")));
+         string subject = Uri.EscapeDataString(mail.Object ?? string.Empty);
+         string body = Uri.EscapeDataString((mail.Body ?? string.Empty).Replace("\r\n", "\n").Replace("\n", "\r\n"));
 
-         try
-         {
-            string to = WebUtility.UrlEncode(mail.To);
-            string subject = Uri.EscapeDataString(mail.Object);
-            string body = Uri.EscapeDataString(mail.Body.Replace("\n", "\r\n"));
-
-            mailtoUri = $"mailto:{to}?subject={subject}&body={body}";
-
-            Process.Start(new ProcessStartInfo(mailtoUri) { UseShellExecute = true });
-         }
-         catch (Exception e)
-         {
-            string message = "Tentative d'envoi du mail:\n\n";
-            message += $"A : {mail.To}\n";
-            message += $"Sujet : {mail.Object}\n";
-            message += $"Mail : {mail.Body}\n";            
-            message += $"\n\nProblème lors de l'ouverture du mail. Vérifiez que votre client mail est bien configuré.\n\n{mailtoUri}";
-
-            throw new InvalidOperationException(message, e);
-         }
+         return $"mailto:{to}?subject={subject}&body={body}";
       }
 
       #endregion
