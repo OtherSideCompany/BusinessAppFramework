@@ -1,6 +1,33 @@
 @using MudBlazor
 
-<MudStack Spacing="2">
+<style>
+    .kpi-card-clickable,
+    .kpi-card-clickable * {
+        cursor: pointer;
+    }
+
+    .kpi-card-clickable {
+        margin: -16px;
+        padding: 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        transition: box-shadow .15s ease, background-color .15s ease, transform .1s ease;
+    }
+
+    .kpi-card-clickable:hover {
+        box-shadow: var(--mud-elevation-4);
+        border-color: var(--mud-palette-primary);
+    }
+
+    .kpi-card-clickable:active {
+        transform: scale(0.98);
+        box-shadow: var(--mud-elevation-2);
+    }
+</style>
+
+<MudStack Spacing="2"
+          Class="@(_isClickable ? "kpi-card-clickable" : null)"
+          @onclick="OnClickAsync">
 
     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
         @if (IndicatorColor != null)
@@ -26,6 +53,17 @@
     [Parameter] public string? Value { get; set; }
     [Parameter] public string? Caption { get; set; }
     [Parameter] public Color? IndicatorColor { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private bool _isClickable => OnClick.HasDelegate;
+
+    private async Task OnClickAsync()
+    {
+        if (_isClickable)
+        {
+            await OnClick.InvokeAsync();
+        }
+    }
 
     private string IndicatorCssColor => IndicatorColor switch
     {

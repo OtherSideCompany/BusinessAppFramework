@@ -13,5 +13,6 @@
         public const string PricingLinePaginated = $"pricing-line-paginated";
         public const string SalesQuoteOfYear = $"sales-quote-of-year";
         public const string NewClientSalesOrderOfYear = $"new-client-sales-order-of-year";
+        public const string OpenSalesOrderOfYear = $"open-sales-order-of-year";
     }
 }
