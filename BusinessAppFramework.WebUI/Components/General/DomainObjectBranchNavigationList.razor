@@ -6,54 +6,59 @@
 @inject IDomainObjectNavigationApplicationActionFactory DomainObjectNavigationApplicationActionFactory
 @inject ILocalizedStringService LocalizedStringService
 
-<MudStack Spacing="4">
-
-    @if (Branch != null && Branch.Nodes.Any())
-    {
+@if (Branch != null && Branch.Nodes.Any())
+{
         @foreach (var node in Branch.Nodes)
         {
-            <MudButton Class="pa-4"
-                       FullWidth="true"
-                       Variant="Variant.Outlined"
-                       Style="border-color: var(--mud-palette-lines-default); border-radius:8px;"
-                       Href="@_navigationApplicationAction?.BuildRoute(node.Id)"
-                       Disabled="@(_navigationApplicationAction == null)">
-                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="6" Style="width: 100%">
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Spacing="4"
+                      Class="py-3 px-1">
 
-                    <MudIcon Icon="@Icon" />
+                <MudIcon Icon="@Icon" Color="Color.Default" />
 
-                    @if (Content == null)
-                    {
-                        <MudStack Spacing="0" AlignItems="AlignItems.Start">
+                @if (Content == null)
+                {
+                    <MudStack Spacing="0" AlignItems="AlignItems.Start">
 
-                            <MudText>@node?.Summary?.ReferenceNumber</MudText>
-                            <MudText Typo="Typo.caption">@(node?.Summary?.Title) - @(node?.Summary?.SubTitle)</MudText>
+                        <MudLink Href="@_navigationApplicationAction?.BuildRoute(node.Id)"
+                                 Disabled="@(_navigationApplicationAction == null)"
+                                 Color="Color.Inherit"
+                                 Underline="Underline.Always">
+                            @node?.Summary?.ReferenceNumber
+                        </MudLink>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@(node?.Summary?.Title) - @(node?.Summary?.SubTitle)</MudText>
 
-                        </MudStack>
-                    }
-                    else
-                    {
-                        @Content(node)
-                    }
+                    </MudStack>
+                }
+                else
+                {
+                    @Content(node)
+                }
 
-                    <MudIcon Icon="@Icons.Material.Outlined.TrendingFlat" Class="ml-auto" />
+                @if (ItemActions != null)
+                {
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="ml-auto">
+                        @ItemActions(node)
+                    </MudStack>
+                }
 
-                </MudStack>
-            </MudButton>
+            </MudStack>
+
+            <MudDivider />
         }
-    }
-    else
-    {
-        <MudText Typo="Typo.body2" Class="mud-text-secondary">@(NoElementText ?? LocalizedStringService.Get(BusinessAppFramework.Contracts.MessageKeys.NoElement))</MudText>
-    }
-
-</MudStack>
+}
+else
+{
+    <MudText Typo="Typo.body2" Class="mud-text-secondary">@(NoElementText ?? LocalizedStringService.Get(BusinessAppFramework.Contracts.MessageKeys.NoElement))</MudText>
+}
 
 @code {
     [Parameter, EditorRequired] public Branch? Branch { get; set; }
     [Parameter, EditorRequired] public string NavigationApplicationActionKey { get; set; }
     [Parameter] public string Icon { get; set; } = default!;
     [Parameter] public RenderFragment<Node>? Content { get; set; }
+    [Parameter] public RenderFragment<Node>? ItemActions { get; set; }
     [Parameter] public string? NoElementText { get; set; }
 
     private IDomainObjectNavigationApplicationAction? _navigationApplicationAction;
