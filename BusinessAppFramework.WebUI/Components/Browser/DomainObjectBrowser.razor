@@ -220,19 +220,22 @@
     </Results>
 
     <Pagination>
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Row="true" Class="ma-2">
+        @if (TotalPages > 1)
+        {
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Row="true" Class="ma-2">
 
-            <MudPagination Selected="@(_currentPage + 1)"
-                           Count="@TotalPages"
-                           ShowFirstButton="true"
-                           ShowLastButton="true"
-                           SelectedChanged="HandlePageChangedAsync"
-                           BoundaryCount="1"
-                           MiddleCount="3" 
-                           Size="Size.Small"
-                           Color="Color.Transparent"
-                           DropShadow="false"/>
-        </MudStack>
+                <MudPagination Selected="@(_currentPage + 1)"
+                               Count="@TotalPages"
+                               ShowFirstButton="true"
+                               ShowLastButton="true"
+                               SelectedChanged="HandlePageChangedAsync"
+                               BoundaryCount="1"
+                               MiddleCount="3"
+                               Size="Size.Small"
+                               Color="Color.Transparent"
+                               DropShadow="false" />
+            </MudStack>
+        }
     </Pagination>
 
 </DomainObjectBrowserLayout>
