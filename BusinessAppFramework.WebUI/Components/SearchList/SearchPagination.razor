@@ -1,0 +1,35 @@
+@using MudBlazor
+
+<style>
+    .mud-pagination-item .mud-selected {
+        background-color: transparent !important;
+        color: var(--mud-palette-text-primary) !important;
+        font-weight: 600;
+    }
+</style>
+
+@if (TotalPages > 1)
+{
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Row="true" Class="@Class">
+
+        <MudPagination Selected="@(CurrentPage + 1)"
+                       Count="@TotalPages"
+                       ShowFirstButton="true"
+                       ShowLastButton="true"
+                       SelectedChanged="HandleSelectedChangedAsync"
+                       BoundaryCount="1"
+                       MiddleCount="3"
+                       Size="Size.Small"
+                       Color="Color.Transparent"
+                       DropShadow="false" />
+    </MudStack>
+}
+
+@code {
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public EventCallback<int> CurrentPageChanged { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private Task HandleSelectedChangedAsync(int selectedPage) => CurrentPageChanged.InvokeAsync(selectedPage - 1);
+}

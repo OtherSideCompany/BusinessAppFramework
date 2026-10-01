@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
-@using WebUI.Components.SearchList
+@using BusinessAppFramework.WebUI.Components.SearchList
 @using WebUI.Interfaces
 
 @inject ILocalizedStringService LocalizedStringService
@@ -76,12 +76,6 @@
         height: 44px;
         padding-top: 0;
         padding-bottom: 0;
-    }
-
-    .mud-pagination-item .mud-selected {
-        background-color: transparent !important;
-        color: var(--mud-palette-text-primary) !important;
-        font-weight: 600;
     }
 </style>
 
@@ -160,12 +154,12 @@
             @if (Descriptor.ConstraintKeys.Count > 1)
             {
                 <ConstraintChipSet Items="@ConstraintChipItems"
-                                   SelectedKey="@_selectedConstraintKey"
+                                   SelectedKey="@_search.ConstraintKey"
                                    SelectedKeyChanged="OnConstraintChanged" />
             }
 
             <MudText Typo="Typo.caption" Align="Align.Start" Style="margin-top:4px; color:gray">
-                @_startIndex - @_endIndex / @_totalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
+                @_search.StartIndex - @_search.EndIndex / @_search.TotalItems @LocalizedStringService.Get(Contracts.StringKeys.ResultsKey)
             </MudText>
 
             <MudLink Typo="Typo.caption"
@@ -192,13 +186,13 @@
                      Elevation="0"
                      @ref="_grid"
                      ServerData="LoadGridData"
-                     RowsPerPage="@_pageSize"
+                     RowsPerPage="@_search.PageSize"
                      SelectedItem="@_selectedItem"
                      RowClassFunc="GridRowClassFunc"
                      ReadOnly="true"
                      ColumnResizeMode="ResizeMode.Column"
                      RowClick="OnSearchTableRowClick"
-                     @bind-CurrentPage="_currentPage">
+                     @bind-CurrentPage="_search.CurrentPage">
 
             <Columns>
                 @_searchListTemplateProvider?.Template?.DataGridColumns
@@ -206,7 +200,7 @@
 
         </MudDataGrid>
 
-        @if (!_pendingGridReload && _totalItems == 0)
+        @if (!_pendingGridReload && _search.TotalItems == 0)
         {
             <MudAlert Severity="Severity.Normal" Variant="Variant.Text" Dense="true">
                 @LocalizedStringService.Get(MessageKeys.NoResultsFound)
@@ -220,22 +214,10 @@
     </Results>
 
     <Pagination>
-        @if (TotalPages > 1)
-        {
-            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Row="true" Class="ma-2">
-
-                <MudPagination Selected="@(_currentPage + 1)"
-                               Count="@TotalPages"
-                               ShowFirstButton="true"
-                               ShowLastButton="true"
-                               SelectedChanged="HandlePageChangedAsync"
-                               BoundaryCount="1"
-                               MiddleCount="3"
-                               Size="Size.Small"
-                               Color="Color.Transparent"
-                               DropShadow="false" />
-            </MudStack>
-        }
+        <SearchPagination CurrentPage="@_search.CurrentPage"
+                          TotalPages="@_search.TotalPages"
+                          CurrentPageChanged="HandlePageChangedAsync"
+                          Class="ma-2" />
     </Pagination>
 
 </DomainObjectBrowserLayout>
@@ -256,66 +238,33 @@
     private string _searchText = default!;
     private bool _hasSelection => _selectedItem != null;
 
-    private int _totalItems;
-    private int _pageSize = 20;
-    private int _currentPage = 0;
-    private int _startIndex => TotalPages == 0 ? 0 : (_currentPage * _pageSize) + 1;
-    private int _endIndex => Math.Min((_currentPage + 1) * _pageSize, _totalItems);
-    private int TotalPages => (int)Math.Ceiling(_totalItems / (double)_pageSize);
+    private PaginatedSearchState<TSearchResult> _search = default!;
 
     private bool _extendedSearch;
 
-    private string _selectedConstraintKey { get; set; } = default!;
-
     private MudDataGrid<TSearchResult>? _grid;
     private TSearchResult? _selectedItem;
-
-    private Dictionary<string, int> _constraintCounts = new();
 
     private IEnumerable<ConstraintChipItem> ConstraintChipItems =>
         Descriptor.ConstraintKeys.Select(constraintKey => new ConstraintChipItem(
             constraintKey,
             LocalizedStringService.Get(constraintKey),
-            _constraintCounts.TryGetValue(constraintKey, out var count) ? count : null));
+            _search.GetConstraintCount(constraintKey)));
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _search = new PaginatedSearchState<TSearchResult>(SearchGateway, Descriptor.ConstraintKeys, Descriptor.DefaultConstraintKey);
+    }
 
     private async Task<GridData<TSearchResult>> LoadGridData(GridState<TSearchResult> state, CancellationToken cancellationToken)
     {
-        var request = new PaginatedSearchRequest
-        {
-            PageIndex = _currentPage,
-            PageSize = _pageSize,
-            ConstraintKey = _selectedConstraintKey,
-            ExtendedSearch = _extendedSearch
-        };
-
-        if (!string.IsNullOrEmpty(_searchText))
-            request.Filters.Add(_searchText);
-
-        var result = await SearchGateway.PaginatedSearchAsync(request);
-
-        var items = result?.Items?.ToList() ?? new List<TSearchResult>();
-        _totalItems = result?.Count ?? 0;
-
-        await RefreshConstraintCountsAsync();
+        var gridData = await _search.LoadAsync(_searchText, _extendedSearch);
 
         StateHasChanged();
 
-        return new GridData<TSearchResult>
-        {
-            Items = items,
-            TotalItems = _totalItems
-        };
-    }
-
-    private async Task RefreshConstraintCountsAsync()
-    {
-        _constraintCounts.Clear();
-
-        foreach (var constraint in Descriptor.ConstraintKeys)
-        {
-            _constraintCounts[constraint] = await SearchGateway.CountAsync(new SearchRequest() { ConstraintKey = constraint });
-        }
+        return gridData;
     }
 
     private string GridRowClassFunc(TSearchResult item, int rowIndex) => (_selectedItem?.Equals(item) ?? false) ? "selected" : string.Empty;
@@ -337,12 +286,12 @@
 
         var hasChanged =
             newSearchText != _searchText ||
-            newConstraintKey != _selectedConstraintKey ||
-            newPage != _currentPage;
+            newConstraintKey != _search.ConstraintKey ||
+            newPage != _search.CurrentPage;
 
         _searchText = newSearchText;
-        _selectedConstraintKey = newConstraintKey;
-        _currentPage = newPage;
+        _search.ConstraintKey = newConstraintKey;
+        _search.CurrentPage = newPage;
 
         if (hasChanged)
         {
@@ -443,15 +392,15 @@
 
     private async Task FireSearchAsync(bool extended)
     {
-        _currentPage = 0;
+        _search.CurrentPage = 0;
         _extendedSearch = extended;
         UpdateUrl();
         await _grid.ReloadServerData();
     }
 
-    private async Task HandlePageChangedAsync(int selectedPage)
+    private async Task HandlePageChangedAsync(int page)
     {
-        _currentPage = selectedPage - 1;
+        _search.CurrentPage = page;
         UpdateUrl();
 
         if (_grid != null)
@@ -462,8 +411,8 @@
 
     private async Task OnConstraintChanged(string? newSelectedContraintKey)
     {
-        _selectedConstraintKey = newSelectedContraintKey ?? String.Empty;
-        _currentPage = 0;
+        _search.ConstraintKey = newSelectedContraintKey ?? String.Empty;
+        _search.CurrentPage = 0;
 
         UpdateUrl();
 
@@ -478,8 +427,8 @@
         var uri = NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?>
         {
             ["search"] = string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
-            ["constraint"] = string.IsNullOrWhiteSpace(_selectedConstraintKey) ? null : _selectedConstraintKey,
-            ["page"] = _currentPage > 0 ? _currentPage + 1 : null
+            ["constraint"] = string.IsNullOrWhiteSpace(_search.ConstraintKey) ? null : _search.ConstraintKey,
+            ["page"] = _search.CurrentPage > 0 ? _search.CurrentPage + 1 : null
         });
 
         NavigationManager.NavigateTo(uri, replace: replace);
