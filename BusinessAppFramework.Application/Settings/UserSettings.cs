@@ -1,6 +1,6 @@
 namespace BusinessAppFramework.Application.Settings
 {
-    public abstract class ModuleSettings
+    public abstract class UserSettings
     {
     }
 }

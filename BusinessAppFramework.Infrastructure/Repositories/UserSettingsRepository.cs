@@ -4,11 +4,11 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ModuleSettings = BusinessAppFramework.Application.Settings.ModuleSettings;
+using UserSettings = BusinessAppFramework.Application.Settings.UserSettings;
 
 namespace BusinessAppFramework.Infrastructure.Repositories
 {
-    public class ModuleSettingsRepository : IModuleSettingsRepository
+    public class UserSettingsRepository : IUserSettingsRepository
     {
         #region Fields
 
@@ -20,7 +20,7 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
         #region Constructor
 
-        public ModuleSettingsRepository(IDbContextFactory<DbContext> dbContextFactory)
+        public UserSettingsRepository(IDbContextFactory<DbContext> dbContextFactory)
         {
             _dbContextFactory = dbContextFactory;
         }
@@ -29,26 +29,26 @@ namespace BusinessAppFramework.Infrastructure.Repositories
 
         #region Public Methods
 
-        public async Task<ModuleSettings?> GetAsync(string key, Type settingsType)
+        public async Task<UserSettings?> GetAsync(int userId, string key, Type settingsType)
         {
             using var context = _dbContextFactory.CreateDbContext();
 
-            var entity = await context.Set<Entities.ModuleSettings>()
+            var entity = await context.Set<Entities.UserSettings>()
                                       .AsNoTracking()
-                                      .FirstOrDefaultAsync(e => e.Key == key);
+                                      .FirstOrDefaultAsync(e => e.UserId == userId && e.Key == key);
 
-            return entity == null ? null : (ModuleSettings?)JsonSerializer.Deserialize(entity.Values, settingsType, _jsonOptions);
+            return entity == null ? null : (UserSettings?)JsonSerializer.Deserialize(entity.Values, settingsType, _jsonOptions);
         }
 
-        public async Task SaveAsync(string key, ModuleSettings settings)
+        public async Task SaveAsync(int userId, string key, UserSettings settings)
         {
             using var context = _dbContextFactory.CreateDbContext();
 
-            var entity = await context.Set<Entities.ModuleSettings>().FirstOrDefaultAsync(e => e.Key == key);
+            var entity = await context.Set<Entities.UserSettings>().FirstOrDefaultAsync(e => e.UserId == userId && e.Key == key);
 
             if (entity == null)
             {
-                entity = new Entities.ModuleSettings { Key = key };
+                entity = new Entities.UserSettings { UserId = userId, Key = key };
                 context.Add(entity);
             }
 
