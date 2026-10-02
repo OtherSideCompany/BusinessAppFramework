@@ -49,13 +49,19 @@
           Class="@(_isClickable ? "kpi-card-clickable" : null)"
           @onclick="OnClickAsync">
 
-    <MudText Style="color:var(--mud-palette-text-secondary);">
-        @Label
-        @if (Value.TimeframeDays > 0)
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        @if (!string.IsNullOrEmpty(Icon))
         {
-            <span class="kpi-period">@Value.TimeframeValue@LocalizedStringService.Get(EnumKeys<TimeUnit>.ForShort(Value.TimeframeUnit))</span>
+            <KpiIcon Icon="@Icon" />
         }
-    </MudText>
+        <MudText Typo="Typo.body2" Style="font-weight:500;">
+            @Label
+            @if (Value.TimeframeDays > 0)
+            {
+                <span class="kpi-period">@Value.TimeframeValue@LocalizedStringService.Get(EnumKeys<TimeUnit>.ForShort(Value.TimeframeUnit))</span>
+            }
+        </MudText>
+    </MudStack>
 
     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
         
@@ -75,6 +81,7 @@
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
     [Parameter] public BusinessAppFramework.Application.Kpis.SlidingValueKpi Value { get; set; } = new();
     [Parameter] public bool DisplayFriendlyValue { get; set; }
     [Parameter] public string Units { get; set; } = String.Empty;

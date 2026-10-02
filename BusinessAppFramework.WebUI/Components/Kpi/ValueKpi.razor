@@ -34,7 +34,11 @@
         {
             <span style="@($"display:inline-block; width:8px; height:8px; border-radius:50%; background:{IndicatorCssColor};")"></span>
         }
-        <MudText Style="color:var(--mud-palette-text-secondary);">@Label</MudText>
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <KpiIcon Icon="@Icon" />
+        }
+        <MudText Typo="Typo.body2" Style="font-weight:500;">@Label</MudText>
     </MudStack>
 
     <MudStack Spacing="0">
@@ -50,6 +54,7 @@
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
     [Parameter] public string? Value { get; set; }
     [Parameter] public string? Caption { get; set; }
     [Parameter] public Color? IndicatorColor { get; set; }

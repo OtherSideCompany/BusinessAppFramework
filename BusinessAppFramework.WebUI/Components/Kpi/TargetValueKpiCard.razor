@@ -66,13 +66,19 @@
           Class="@(_isClickable ? "kpi-card-clickable" : null)"
           @onclick="OnClickAsync">
 
-    <MudText Style="color:var(--mud-palette-text-secondary);">
-        @Label
-        @if (!string.IsNullOrEmpty(Period))
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        @if (!string.IsNullOrEmpty(Icon))
         {
-            <span class="kpi-period">@Period</span>
+            <KpiIcon Icon="@Icon" />
         }
-    </MudText>
+        <MudText Typo="Typo.body2" Style="font-weight:500;">
+            @Label
+            @if (!string.IsNullOrEmpty(Period))
+            {
+                <span class="kpi-period">@Period</span>
+            }
+        </MudText>
+    </MudStack>
 
     <MudText Typo="Typo.h2" Color="Color.Primary">@DisplayValue(Value.CurrentValue)</MudText>
 
@@ -102,6 +108,7 @@
 
 @code {
     [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
     [Parameter] public string? Period { get; set; }
     [Parameter] public BusinessAppFramework.Application.Kpis.TargetValueKpi Value { get; set; } = new();
     [Parameter] public bool DisplayFriendlyValue { get; set; }
