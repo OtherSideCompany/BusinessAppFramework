@@ -349,18 +349,23 @@
             payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
         }
 
-        DisplayPayLoadUserMessage(payload);
+        await DisplayPayLoadUserMessageAsync(payload);
         await RefreshServerDataAsync(payload);
     }
 
-    private void DisplayPayLoadUserMessage(DomainObjectApplicationActionResultPayload? payload)
+    private async Task DisplayPayLoadUserMessageAsync(DomainObjectApplicationActionResultPayload? payload)
     {
         if (payload == null)
             return;
 
-        if (!string.IsNullOrEmpty(payload?.ErrorMessageKey))
+        if (!string.IsNullOrEmpty(payload.ErrorMessageKey))
         {
-            UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
+            var errorMessage = LocalizedStringService.Get(payload.ErrorMessageKey);
+
+            if (string.IsNullOrWhiteSpace(payload.ErrorDetails))
+                UserDialogService.SnackError(errorMessage);
+            else
+                await UserDialogService.DialogErrorAsync($"{errorMessage}\n{payload.ErrorDetails}");
         }
 
         if (!string.IsNullOrEmpty(payload?.ConfirmationMessageKey))

@@ -102,7 +102,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             {
                 var payload = await DomainObjectServiceGateway.DeleteAsync(Id.Value);
 
-                DisplayPayloadMessage(payload);
+                await DisplayPayloadMessageAsync(payload);
 
                 _isDeleted = payload.Changes.Any(c => c.ChangeType == ChangeType.Deleted);
 
@@ -116,7 +116,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             {
                 var payload = await TreeGateway.DeleteNodeAsync(parentId, childId, relationKey);
 
-                DisplayPayloadMessage(payload);
+                await DisplayPayloadMessageAsync(payload);
 
                 await UpdateTreeBranchAsync(relationKey);
 
@@ -140,7 +140,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
             var payload = await ApplicationActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
 
-            DisplayPayloadMessage(payload);
+            await DisplayPayloadMessageAsync(payload);
         }
 
         public virtual async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
@@ -171,14 +171,19 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
                 context.PreventNavigation();
         }
 
-        protected void DisplayPayloadMessage(DomainObjectApplicationActionResultPayload? payload)
+        protected async Task DisplayPayloadMessageAsync(DomainObjectApplicationActionResultPayload? payload)
         {
             if (payload == null)
                 return;
 
-            if (payload?.ErrorMessageKey != null)
+            if (payload.ErrorMessageKey != null)
             {
-                UserDialogService.SnackError(LocalizedStringService.Get(payload.ErrorMessageKey));
+                var errorMessage = LocalizedStringService.Get(payload.ErrorMessageKey);
+
+                if (string.IsNullOrWhiteSpace(payload.ErrorDetails))
+                    UserDialogService.SnackError(errorMessage);
+                else
+                    await UserDialogService.DialogErrorAsync($"{errorMessage}\n{payload.ErrorDetails}");
             }
 
             if (payload?.ConfirmationMessageKey != null)
