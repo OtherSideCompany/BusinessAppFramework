@@ -5,6 +5,6 @@ namespace BusinessAppFramework.DocumentRendering
    public interface IHtmlDocumentRenderer
    {
       string RenderDocument(string htmlTemplate, List<object> models);
-      Task<byte[]> RenderPdfDocumentAsync(string htmlContent);
+      Task<byte[]> RenderPdfDocumentAsync(string htmlContent, PdfPageLayout? pageLayout = null);
    }
 }

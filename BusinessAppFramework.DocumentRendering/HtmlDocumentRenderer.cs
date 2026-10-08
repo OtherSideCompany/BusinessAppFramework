@@ -57,7 +57,7 @@ namespace BusinessAppFramework.DocumentRendering
 
             foreach (var model in models)
             {
-                globalScriptObject.Import(model);
+                ImportModel(globalScriptObject, model);
             }
 
             var ctx = new TemplateContext();
@@ -66,7 +66,7 @@ namespace BusinessAppFramework.DocumentRendering
             return template.Render(ctx);
         }
 
-        public async Task<byte[]> RenderPdfDocumentAsync(string htmlContent)
+        public async Task<byte[]> RenderPdfDocumentAsync(string htmlContent, PdfPageLayout? pageLayout = null)
         {
             var browser = await GetBrowserAsync();
 
@@ -78,16 +78,59 @@ namespace BusinessAppFramework.DocumentRendering
                 WaitUntil = [WaitUntilNavigation.Networkidle0]
             });
 
-            return await page.PdfDataAsync(new PdfOptions
-            {
-                PreferCSSPageSize = true,
-                PrintBackground = true
-            });
+            return await page.PdfDataAsync(CreatePdfOptions(pageLayout));
         }
 
         #endregion
 
-        #region Private Methods        
+        #region Private Methods
+
+        private static void ImportModel(ScriptObject globalScriptObject, object model)
+        {
+            switch (model)
+            {
+                case Type functionsType:
+                    globalScriptObject.Import(functionsType);
+                    break;
+                case IScriptObject scriptObject:
+                    globalScriptObject.Import(scriptObject);
+                    break;
+                default:
+                    globalScriptObject.Import(model);
+                    break;
+            }
+        }
+
+        private static PdfOptions CreatePdfOptions(PdfPageLayout? pageLayout)
+        {
+            var options = new PdfOptions
+            {
+                PreferCSSPageSize = true,
+                PrintBackground = true
+            };
+
+            if (pageLayout == null)
+            {
+                return options;
+            }
+
+            options.MarginOptions = new MarginOptions
+            {
+                Top = pageLayout.MarginTop,
+                Bottom = pageLayout.MarginBottom,
+                Left = pageLayout.MarginLeft,
+                Right = pageLayout.MarginRight
+            };
+
+            if (pageLayout.FooterTemplate != null)
+            {
+                options.DisplayHeaderFooter = true;
+                options.HeaderTemplate = "<span></span>";
+                options.FooterTemplate = pageLayout.FooterTemplate;
+            }
+
+            return options;
+        }
 
         private async Task<IBrowser> GetBrowserAsync()
         {
