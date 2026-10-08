@@ -14,7 +14,7 @@ namespace BusinessAppFramework.Application.Trees
         public int Id { get; set; }
         public int Depth { get; set; }
         public bool IsCyclic { get; set; }
-        public bool IsExpanded { get; set; }
+        public bool IsExpanded { get; set; } = true;
         public string TypeKey { get; set; } = default!;
         public NodeSummary? Summary { get; set; }
         public object? DomainObject { get; set; }
