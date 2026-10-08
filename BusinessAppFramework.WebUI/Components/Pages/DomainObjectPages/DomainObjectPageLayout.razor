@@ -1,4 +1,8 @@
-﻿@using MudBlazor
+﻿@using BusinessAppFramework.WebUI.Interfaces
+@using MudBlazor
+
+@inject ILocalStorageService LocalStorageService
+
 <style>
     .osc-domainobject-page {
         height: 100%;
@@ -98,18 +102,33 @@ else
     [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnUndo { get; set; }
 
+    private const string LeftPanelCollapsedStorageKey = "domainObjectPage.leftPanelCollapsed";
+    private const string RightPanelCollapsedStorageKey = "domainObjectPage.rightPanelCollapsed";
+
     private bool _isRightPanelCollapsed;
     private bool _isLeftPanelCollapsed;
 
-    private void SetRightPanelExpandedState(bool isExpanded)
+    protected override async Task OnInitializedAsync()
     {
-        _isRightPanelCollapsed = isExpanded;
-        StateHasChanged();
+        await base.OnInitializedAsync();
+
+        _isLeftPanelCollapsed = await LocalStorageService.GetAsync<bool>(LeftPanelCollapsedStorageKey);
+        _isRightPanelCollapsed = await LocalStorageService.GetAsync<bool>(RightPanelCollapsedStorageKey);
     }
 
-    private void SetLeftPanelExpandedState(bool isExpanded)
+    private async Task SetRightPanelExpandedState(bool isCollapsed)
     {
-        _isLeftPanelCollapsed = isExpanded;
+        _isRightPanelCollapsed = isCollapsed;
         StateHasChanged();
+
+        await LocalStorageService.SetAsync(RightPanelCollapsedStorageKey, isCollapsed);
+    }
+
+    private async Task SetLeftPanelExpandedState(bool isCollapsed)
+    {
+        _isLeftPanelCollapsed = isCollapsed;
+        StateHasChanged();
+
+        await LocalStorageService.SetAsync(LeftPanelCollapsedStorageKey, isCollapsed);
     }
 }
