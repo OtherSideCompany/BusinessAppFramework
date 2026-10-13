@@ -54,12 +54,14 @@ namespace BusinessAppFramework.Adapter.Controllers
             [FromRoute(Name = ApiRouteParams.Key)] string documentKey,
             [FromRoute(Name = ApiRouteParams.DomainObjectId)] int domainObjectId)
         {
-            var pdfDocumentBytes = await _documentGenerator.GetPdfDocumentAsync(documentKey, domainObjectId);
+            var pdfDocument = await _documentGenerator.GetPdfDocumentAsync(documentKey, domainObjectId);
 
-            if (pdfDocumentBytes is null || pdfDocumentBytes.Length == 0)
+            if (pdfDocument is null || pdfDocument.Content.Length == 0)
                 return NotFound();
 
-            return File(pdfDocumentBytes, "application/pdf", $"{documentKey}-{domainObjectId}.pdf");
+            var documentNumber = string.IsNullOrWhiteSpace(pdfDocument.DocumentNumber) ? domainObjectId.ToString() : pdfDocument.DocumentNumber;
+
+            return File(pdfDocument.Content, "application/pdf", $"{documentKey}-{documentNumber}.pdf");
         }
 
         #endregion

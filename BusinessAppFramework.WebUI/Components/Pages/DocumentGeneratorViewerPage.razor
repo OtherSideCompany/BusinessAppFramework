@@ -98,7 +98,6 @@
         if (await JS.InvokeAsync<bool>("oscPrintFrame", _pdfFrameId))
             return;
 
-        // Fallback: open the document in its own tab so the user can print from there.
         var base64 = Convert.ToBase64String(_pdfResult.Content);
         await JS.InvokeVoidAsync("oscOpenInBrowser", _pdfResult.ContentType, base64);
     }
