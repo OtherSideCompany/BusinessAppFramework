@@ -59,9 +59,11 @@ namespace BusinessAppFramework.Adapter.Controllers
             if (pdfDocument is null || pdfDocument.Content.Length == 0)
                 return NotFound();
 
-            var documentNumber = string.IsNullOrWhiteSpace(pdfDocument.DocumentNumber) ? domainObjectId.ToString() : pdfDocument.DocumentNumber;
+            var fileName = string.IsNullOrWhiteSpace(pdfDocument.DocumentNumber)
+                ? $"{documentKey}-{domainObjectId}.pdf"
+                : $"{pdfDocument.DocumentNumber}.pdf";
 
-            return File(pdfDocument.Content, "application/pdf", $"{documentKey}-{documentNumber}.pdf");
+            return File(pdfDocument.Content, "application/pdf", fileName);
         }
 
         #endregion
