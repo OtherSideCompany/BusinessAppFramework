@@ -37,6 +37,11 @@ namespace BusinessAppFramework.WebUI.Factories
          return (string)Create(key);
       }
 
+      public bool HasIcon(string key)
+      {
+         return _factories.ContainsKey(key);
+      }
+
       public void RegisterIcon(string key, string icon)
       {
          Register(key, () => icon);

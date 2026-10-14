@@ -1,25 +1,27 @@
-﻿@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
 @using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Interfaces
 @using Microsoft.AspNetCore.Components.Sections
 @using MudBlazor
 
 @inject ILocalizedStringService LocalizedStringService
+@inject IIconFactory IconFactory
 
 <SectionContent SectionName="page-title">
 
     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0" Style="width:100%;">
 
-        <MudText Typo="Typo.h6" Class="mx-1">
-            @LocalizedStringService.Get(DescriptorKey)
-        </MudText>
+        <DomainObjectChainBreadcrumb DomainObject="@DomainObject" />
 
-        <MudChip T="string"
-                 Variant="Variant.Outlined"
-                 Size="Size.Small"
-                 Color="Color.Default"
-                 Style="font-size: 12px; font-weight: 700; color: var(--mud-palette-text-secondary);">
-            @DomainObject?.ToString()
-        </MudChip>
+        @if (_icon != null)
+        {
+            <MudIcon Icon="@_icon" Class="ml-1" Style="width:16px; height:16px;" />
+        }
+
+        <MudText Typo="Typo.h6" Class="mx-1" Style="white-space: nowrap;">
+            @LocalizedStringService.Get(DescriptorKey) @DomainObject?.ToString()
+        </MudText>
 
         @Tags
 
@@ -38,4 +40,25 @@
     [Parameter] public string? DescriptorKey { get; set; }
     [Parameter] public RenderFragment? Tags { get; set; }
     [Parameter] public RenderFragment? Actions { get; set; }
+
+    private string? _icon;
+
+    // The workspace icon of the object type, or of the nearest base type that registered one.
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _icon = null;
+
+        for (var type = DomainObject?.GetType(); type != null && type != typeof(DomainObject); type = type.BaseType)
+        {
+            var iconKey = DomainObjectAggregateKeys.Workspace(type);
+
+            if (IconFactory.HasIcon(iconKey))
+            {
+                _icon = IconFactory.CreateIcon(iconKey);
+                break;
+            }
+        }
+    }
 }

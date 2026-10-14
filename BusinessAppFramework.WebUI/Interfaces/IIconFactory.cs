@@ -6,5 +6,6 @@ namespace BusinessAppFramework.WebUI.Interfaces
    {
       void RegisterIcon(string key, string icon);
       string CreateIcon(string key);
+      bool HasIcon(string key);
    }
 }

@@ -1,0 +1,53 @@
+@using BusinessAppFramework.Application.DomainObjectChains
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts
+@using BusinessAppFramework.Domain.DomainObjects
+@using BusinessAppFramework.WebUI.Interfaces
+@using MudBlazor
+
+@inject IDomainObjectChainGateway DomainObjectChainGateway
+@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyRegistry
+@inject ILocalizedStringService LocalizedStringService
+@inject IIconFactory IconFactory
+
+@foreach (var node in _ancestors)
+{
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="mx-1" title="@node.ReferenceNumber">
+
+        <MudIcon Icon="@IconFactory.CreateIcon(node.IconKey)" Style="width:16px; height:16px;" />
+
+        <DomainObjectChainNodeLink Node="@node" Text="@LocalizedStringService.Get(node.LabelKey)" />
+
+    </MudStack>
+
+    <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Style="width:16px; height:16px; color: var(--mud-palette-text-disabled);" />
+}
+
+@code {
+    [Parameter] public DomainObject? DomainObject { get; set; }
+
+    private DomainObject? _loadedDomainObject;
+    private List<DomainObjectChainNode> _ancestors = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (ReferenceEquals(DomainObject, _loadedDomainObject))
+            return;
+
+        _loadedDomainObject = DomainObject;
+
+        if (DomainObject == null)
+        {
+            _ancestors = new();
+            return;
+        }
+
+        var chain = await DomainObjectChainGateway.GetChainAsync(DomainObjectAggregateKeys.Type(DomainObject.GetType()), DomainObject.Id, DomainObjectChainDirection.Ancestors);
+
+        _ancestors = chain.Nodes
+            .Where(n => !n.IsCurrent && DomainObjectPageWorkspaceKeyRegistry.TryGetPageWorkspaceKey(n.DomainObjectTypeKey) != null)
+            .ToList();
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using BusinessAppFramework.Application.Interfaces;
+using BusinessAppFramework.Contracts;
 using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 
@@ -22,6 +23,11 @@ namespace BusinessAppFramework.Application.Factories
             return key;
 
          throw new InvalidOperationException($"No page workspace registered for {domainObjectType.Name}.");
+      }
+
+      public string? TryGetPageWorkspaceKey(string domainObjectTypeKey)
+      {
+         return _map.Where(e => DomainObjectAggregateKeys.Type(e.Key) == domainObjectTypeKey).Select(e => e.Value).FirstOrDefault();
       }
 
       public string GetPageWorkspaceKey<TDomainObject>() => GetPageWorkspaceKey(typeof(TDomainObject));

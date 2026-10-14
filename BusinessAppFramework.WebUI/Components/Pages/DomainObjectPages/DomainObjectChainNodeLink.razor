@@ -1,0 +1,38 @@
+@using BusinessAppFramework.Application.DomainObjectChains
+@using BusinessAppFramework.Application.Interfaces
+@using BusinessAppFramework.Contracts.ApiRoutes
+@using MudBlazor
+
+@inject IDomainObjectPageWorkspaceKeyRegistry DomainObjectPageWorkspaceKeyRegistry
+
+@if (Node.CanAccess && _href != null)
+{
+    <MudLink Href="@_href"
+             @onclick:stopPropagation="true"
+             Underline="@Underline"
+             Typo="Typo.body2"
+             Color="Color.Inherit">
+        @Text
+    </MudLink>
+}
+else
+{
+    <MudText Typo="Typo.body2">@Text</MudText>
+}
+
+@code {
+    [Parameter, EditorRequired] public DomainObjectChainNode Node { get; set; } = default!;
+    [Parameter, EditorRequired] public string? Text { get; set; }
+    [Parameter] public Underline Underline { get; set; } = Underline.Hover;
+
+    private string? _href;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        var pageWorkspaceKey = DomainObjectPageWorkspaceKeyRegistry.TryGetPageWorkspaceKey(Node.DomainObjectTypeKey);
+
+        _href = pageWorkspaceKey == null ? null : $"/{ApiRouteSegments.Workspace}/{pageWorkspaceKey}?id={Node.DomainObjectId}";
+    }
+}

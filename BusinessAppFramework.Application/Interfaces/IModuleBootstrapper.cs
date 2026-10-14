@@ -27,6 +27,7 @@ namespace BusinessAppFramework.Application.Interfaces
         void RegisterTrees(IServiceProvider serviceProvider);
         void RegisterReferences(IServiceProvider serviceProvider);
         void RegisterParentChildRelations(IServiceProvider serviceProvider);
+        void RegisterDomainObjectChains(IServiceProvider serviceProvider) { }
         void RegisterDomainObjectNavigationApplicationAction(IServiceProvider serviceProvider);
         void RegisterReferenceNavigationKeys(IServiceProvider serviceProvider);
         void RegisterSettings(IServiceProvider serviceProvider) { }

@@ -7,6 +7,7 @@ namespace BusinessAppFramework.Application.Interfaces
    {
       void Register<T>(string workspaceKey) where T : DomainObject;
       string GetPageWorkspaceKey(Type domainObjectType);
+      string? TryGetPageWorkspaceKey(string domainObjectTypeKey);
       string GetPageWorkspaceKey<TDomainObject>();
    }
 }

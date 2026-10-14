@@ -8,5 +8,6 @@
       Type GetSearchResultTypeFromDomainType(Type domainType);
       void RegisterSubstitution(Type domainType, Type substituteDomainType);
       Type ResolveDomainType(Type domainType);
+      Type? FindDomainType(string domainObjectTypeKey);
    }
 }

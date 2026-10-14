@@ -1,4 +1,6 @@
 ﻿using BusinessAppFramework.Application.Relations;
+using BusinessAppFramework.Contracts;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -74,7 +76,6 @@ namespace BusinessAppFramework.Infrastructure.Mapping
       {
          var resolvedType = domainType;
 
-         // A substitute always derives from the type it replaces, so the chain is finite.
          while (_domainTypeSubstitutions.TryGetValue(resolvedType, out var substituteType))
          {
             resolvedType = substituteType;
@@ -83,6 +84,11 @@ namespace BusinessAppFramework.Infrastructure.Mapping
          return resolvedType;
       }
 
+
+      public Type? FindDomainType(string domainObjectTypeKey)
+      {
+         return _domainToEntity.Keys.Concat(_domainTypeSubstitutions.Values).FirstOrDefault(t => DomainObjectAggregateKeys.Type(t) == domainObjectTypeKey);
+      }
 
       #endregion
 
