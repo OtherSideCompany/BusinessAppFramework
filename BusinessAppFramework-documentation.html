@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BusinessAppFramework</title>
+<meta name="description" content="Developer documentation of BusinessAppFramework, a .NET 10 framework for building line-of-business web applications.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed left rail with the table of contents, one reading column on the right.
+   Palette: a royal violet (#7C3AED) as the single accent on a white / cool-grey ground, anthracite for strong neutrals. */
+:root {
+  --violet: #7C3AED;
+  --violet-dark: #6D28D9;
+  --violet-light: #A78BFA;
+  --violet-tint: #F3EEFE;
+  --violet-tint-2: #E9E0FD;
+  --anthracite: #26282D;
+  --ink: #1A1A1A;
+  --ink-2: #4B4F57;
+  --muted: #8A8A8A;
+  --bg: #FFFFFF;
+  --bg-2: #F7F8FA;
+  --bg-3: #EFF0F3;
+  --line: #ECEDF0;
+  --line-2: #D6D8DC;
+  --code-bg: #F5F2FD;
+  --code-ink: #5B21B6;
+  --shadow: 0 1px 2px rgba(26,26,26,.04), 0 8px 24px -12px rgba(109,40,217,.18);
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --rail: 288px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --violet: #A78BFA; --violet-dark: #8B5CF6; --violet-light: #C4B5FD;
+    --violet-tint: #221B36; --violet-tint-2: #2E2448;
+    --anthracite: #E6E6EA; --ink: #ECECEF; --ink-2: #B7B9C1; --muted: #85878F;
+    --bg: #121216; --bg-2: #18181D; --bg-3: #202026;
+    --line: #26272E; --line-2: #3A3B43;
+    --code-bg: #1E1930; --code-ink: #C4B5FD;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --violet: #A78BFA; --violet-dark: #8B5CF6; --violet-light: #C4B5FD;
+  --violet-tint: #221B36; --violet-tint-2: #2E2448;
+  --anthracite: #E6E6EA; --ink: #ECECEF; --ink-2: #B7B9C1; --muted: #85878F;
+  --bg: #121216; --bg-2: #18181D; --bg-3: #202026;
+  --line: #26272E; --line-2: #3A3B43;
+  --code-bg: #1E1930; --code-ink: #C4B5FD;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font); font-size: 15.5px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+a { color: var(--violet-dark); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; border-radius: 4px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); color: var(--code-ink); padding: .12em .4em; border-radius: 5px; white-space: nowrap; }
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: italic; }
+p { margin: 0 0 1em; }
+ul { margin: 0 0 1.1em; padding-left: 1.25em; }
+li { margin: .3em 0; }
+li::marker { color: var(--violet-light); }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.25; letter-spacing: -.01em; margin: 0; }
+
+/* ---------- Rail ---------- */
+.rail {
+  position: fixed; inset: 0 auto 0 0; width: var(--rail); z-index: 20;
+  background: var(--bg); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+}
+.brand { display: flex; align-items: center; gap: 12px; padding: 22px 22px 18px; border-bottom: 1px solid var(--line); }
+.brand svg { width: 38px; height: 38px; flex: none; }
+.brand .name { font-weight: 700; font-size: 15px; letter-spacing: -.02em; line-height: 1.15; }
+.brand .name span { font-weight: 400; color: var(--ink-2); }
+.brand .sub { font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 3px; }
+.toc { flex: 1; overflow-y: auto; padding: 14px 12px 16px; }
+.toc-group { margin-bottom: 14px; }
+.toc-group > .label { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 10px 12px 6px; }
+.toc a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 7px; color: var(--ink-2); font-size: 13.5px; font-weight: 500;
+  border-left: 2px solid transparent; transition: background .15s, color .15s;
+}
+.toc a:hover { background: var(--bg-2); color: var(--ink); text-decoration: none; }
+.toc a.active { background: var(--violet-tint); color: var(--violet-dark); border-left-color: var(--violet); }
+.toc a .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); flex: none; }
+.toc a.active .dot { background: var(--violet); }
+.toc a.repo { color: var(--ink-2); }
+.toc a.repo .dot { background: var(--violet-light); }
+.toc a.repo.here { color: var(--ink); font-weight: 600; }
+.toc a.repo.here .dot { background: var(--violet); }
+.rail-foot { border-top: 1px solid var(--line); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.btn-ghost { appearance: none; border: 1px solid var(--line-2); background: var(--bg); color: var(--ink-2); font: inherit; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--bg-2); color: var(--ink); }
+.btn-ghost svg { width: 14px; height: 14px; }
+
+/* ---------- Top bar (small screens) ---------- */
+.topbar { display: none; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); border-bottom: 1px solid var(--line); align-items: center; gap: 12px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); }
+.topbar svg { width: 30px; height: 30px; }
+.topbar .name { font-weight: 700; font-size: 14px; flex: 1; letter-spacing: -.02em; }
+.scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 15; }
+
+/* ---------- Main ---------- */
+.main { margin-left: var(--rail); min-width: 0; overflow-x: clip; }
+.hero {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(900px 420px at 15% -20%, color-mix(in srgb, var(--violet) 18%, transparent), transparent 60%),
+    radial-gradient(600px 300px at 95% 10%, color-mix(in srgb, var(--violet-light) 16%, transparent), transparent 60%),
+    var(--bg-2);
+  border-bottom: 1px solid var(--line);
+}
+.hero-in { max-width: 900px; padding: 64px max(16px, env(safe-area-inset-right, 0px)) 48px max(40px, env(safe-area-inset-left, 0px)); }
+.hero-mark { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-bottom: 22px; min-width: 0; }
+.hero-mark svg { flex: none; width: 64px; height: 64px; filter: drop-shadow(0 10px 24px rgba(109,40,217,.35)); }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--violet-dark); }
+.hero h1 { font-size: clamp(28px, 4.4vw, 46px); font-weight: 800; letter-spacing: -.035em; margin: 2px 0 0; overflow-wrap: anywhere; }
+.hero h1 span { color: var(--violet-dark); }
+.hero .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-2); max-width: 44ch; margin: 18px 0 24px; line-height: 1.5; text-wrap: balance; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12.5px; font-weight: 500; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line-2); border-radius: 999px; padding: 5px 11px; display: inline-flex; align-items: center; gap: 6px; }
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--violet); }
+.hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px; mask-image: radial-gradient(600px 400px at 70% 40%, #000, transparent 70%); -webkit-mask-image: radial-gradient(600px 400px at 70% 40%, #000, transparent 70%); }
+
+.content { max-width: 900px; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 96px max(40px, env(safe-area-inset-left, 0px)); }
+.part { padding-top: 56px; }
+.part + .part { border-top: 1px solid var(--line); margin-top: 56px; }
+.part-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+.part-head .kicker { font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--violet-dark); }
+.part-head .src { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+h2 { font-size: 30px; font-weight: 700; letter-spacing: -.025em; margin: 0 0 18px; scroll-margin-top: 24px; }
+h3 { font-size: 20px; font-weight: 600; margin: 40px 0 12px; scroll-margin-top: 24px; position: relative; }
+h3 .anchor, h2 .anchor { color: var(--line-2); font-weight: 400; margin-left: 8px; opacity: 0; transition: opacity .15s; font-size: .8em; }
+h3:hover .anchor, h2:hover .anchor { opacity: 1; }
+h4 { font-size: 15px; font-weight: 600; margin: 24px 0 8px; color: var(--ink); }
+.prose { max-width: 70ch; }
+.prose > p:first-child { font-size: 17px; color: var(--ink-2); }
+
+/* figures */
+.figure { margin: 24px 0 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); overflow: hidden; box-shadow: var(--shadow); }
+.figure-scroll { overflow-x: auto; padding: 18px; }
+.figure svg { display: block; width: 100%; height: auto; min-width: 640px; }
+.figure-cap { font-size: 12.5px; color: var(--muted); padding: 10px 18px; border-top: 1px solid var(--line); background: var(--bg-2); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.figure-cap i { display: inline-block; width: 22px; border-top: 2px solid var(--ink-2); vertical-align: middle; margin-right: 6px; }
+.figure-cap i.dash { border-top-style: dashed; }
+.diag { font-family: var(--font); }
+.diag .node { fill: var(--bg); stroke: var(--line-2); stroke-width: 1.2; }
+.diag .node.core { fill: var(--violet-tint); stroke: var(--violet); }
+.diag .node.host { fill: var(--bg-2); stroke: var(--muted); stroke-dasharray: 5 4; }
+.diag .node.boot { fill: var(--bg); stroke: var(--anthracite); }
+.diag .group { fill: var(--bg-2); stroke: var(--line); }
+.diag .glabel { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; fill: var(--muted); }
+.diag .t { font-size: 14px; font-weight: 600; fill: var(--ink); }
+.diag .t.core { fill: var(--violet-dark); }
+.diag .s { font-size: 11.5px; fill: var(--ink-2); }
+.diag .e { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.diag .e.dim { stroke: var(--muted); stroke-dasharray: 5 4; }
+.diag .el { font-size: 11px; fill: var(--muted); font-style: italic; paint-order: stroke; stroke: var(--bg); stroke-width: 4; stroke-linejoin: round; }
+.diag .el.on-group { stroke: var(--bg-2); }
+.seq .p { fill: var(--bg-2); stroke: var(--line-2); stroke-width: 1.2; }
+.seq .p.hl { fill: var(--violet-tint); stroke: var(--violet); }
+.seq .pt { font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+.seq .life { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 3 4; }
+.seq .m { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+.seq .m.ret { stroke: var(--violet); stroke-dasharray: 5 4; }
+.seq .ml { font-family: var(--mono); font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 5; stroke-linejoin: round; }
+.seq .ml.ret { fill: var(--violet-dark); }
+
+/* project cards */
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 20px 0 8px; }
+.card { display: flex; flex-direction: column; gap: 8px; padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: inherit; transition: border-color .15s, transform .15s, box-shadow .15s; min-width: 0; }
+.card:hover { text-decoration: none; border-color: var(--violet-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+.card .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.card .cname { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.card .cname b { color: var(--violet-dark); font-weight: 600; }
+.card p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+.card .more { font-size: 12.5px; font-weight: 500; color: var(--violet-dark); margin-top: auto; }
+.pill { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+.pill.core { background: var(--violet-tint); color: var(--violet-dark); border-color: var(--violet-tint-2); }
+.pill.infra { background: var(--bg-3); color: var(--ink-2); border-color: var(--line-2); }
+.pill.edge { background: var(--bg); color: var(--ink-2); border-color: var(--line-2); }
+
+/* concept list */
+.concepts { display: grid; gap: 10px; margin: 18px 0 8px; padding: 0; list-style: none; }
+.concepts > div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); margin: 0; }
+.concepts > div:last-child { border-bottom: 1px solid var(--line); }
+.concepts dt { font-weight: 600; color: var(--violet-dark); }
+.concepts dd { margin: 0; color: var(--ink-2); }
+
+/* callouts and meta */
+.callout { border: 1px solid var(--violet-tint-2); background: var(--violet-tint); border-radius: 12px; padding: 16px 18px; margin: 20px 0; }
+.callout .ct { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--violet-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+.note { border-left: 3px solid var(--violet); background: var(--bg-2); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 18px 0; color: var(--ink-2); }
+.note p:last-child { margin-bottom: 0; }
+.meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 18px 0 26px; }
+.meta div { background: var(--bg-2); padding: 12px 16px; min-width: 0; }
+.meta .k { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.meta .v { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+.proj-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.proj-title h2 { margin: 0; font-family: var(--mono); font-weight: 600; font-size: 24px; letter-spacing: -.01em; }
+.proj-title h2 b { color: var(--violet-dark); font-weight: 600; }
+.group-title { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 22px 0 6px; }
+.stack { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.stack span { font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 8px; background: var(--bg-2); border: 1px solid var(--line); color: var(--ink); }
+.license { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; margin-top: 12px; }
+.license .badge { font-weight: 700; font-size: 13px; color: var(--violet-dark); background: var(--violet-tint); border-radius: 8px; padding: 6px 10px; letter-spacing: .04em; }
+.foot { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  :root { --rail: 0px; }
+  .rail { width: 288px; transform: translateX(-100%); transition: transform .2s ease; box-shadow: none; }
+  .rail.open { transform: none; box-shadow: 0 0 0 1px var(--line), 0 20px 60px rgba(0,0,0,.25); }
+  .scrim.show { display: block; }
+  .topbar { display: flex; }
+  .main { margin-left: 0; }
+  .hero-in, .content { padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+  .hero-in { padding-top: 44px; padding-bottom: 36px; }
+  .cards { grid-template-columns: 1fr; }
+  .meta { grid-template-columns: 1fr; }
+  .concepts > div { grid-template-columns: 1fr; gap: 4px; }
+  h2 { font-size: 26px; }
+}
+@media print {
+  .rail, .topbar, .scrim, .anchor { display: none !important; }
+  .main { margin-left: 0; }
+  .hero { background: none; }
+  .part { break-before: page; }
+  .part:first-of-type { break-before: auto; }
+  .figure { box-shadow: none; break-inside: avoid; }
+  .card, .callout, .meta { break-inside: avoid; }
+  a { color: inherit; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <symbol id="logo" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="12" fill="url(#logo-g)"/>
+      <rect x="9" y="9" width="30" height="30" rx="8" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2"/>
+      <rect x="15.5" y="15.5" width="17" height="17" rx="5" fill="none" stroke="#fff" stroke-opacity=".62" stroke-width="2"/>
+      <rect x="21" y="21" width="6" height="6" rx="2" fill="#fff"/>
+    </symbol>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker>
+  </defs>
+</svg>
+
+<!-- small screens -->
+<header class="topbar">
+  <button class="btn-ghost" id="menu-btn" aria-label="Open the table of contents" aria-controls="rail" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    Contents
+  </button>
+  <svg aria-hidden="true"><use href="#logo"/></svg>
+  <span class="name">BusinessAppFramework</span>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<!-- rail -->
+<aside class="rail" id="rail">
+  <a class="brand" href="#top" style="color:inherit">
+    <svg aria-hidden="true"><use href="#logo"/></svg>
+    <div>
+      <div class="name">BusinessApp<span>Framework</span></div>
+      <div class="sub">Documentation</div>
+    </div>
+  </a>
+  <nav class="toc" id="toc" aria-label="Table of contents">
+    <div class="toc-group">
+      <div class="label">Overview</div>
+      <a href="#introduction"><span class="dot"></span>Introduction</a>
+      <a href="#architecture-at-a-glance"><span class="dot"></span>Architecture at a glance</a>
+      <a href="#projects"><span class="dot"></span>Projects</a>
+      <a href="#key-concepts"><span class="dot"></span>Key concepts</a>
+      <a href="#tech-stack"><span class="dot"></span>Tech stack &amp; license</a>
+    </div>
+    <div class="toc-group">
+      <div class="label">Architecture</div>
+      <a href="#layers"><span class="dot"></span>Layers</a>
+      <a href="#request-flow"><span class="dot"></span>How a request flows</a>
+      <a href="#module-plug-in"><span class="dot"></span>How a module plugs in</a>
+      <a href="#design-choices"><span class="dot"></span>Design choices worth knowing</a>
+    </div>
+    <div class="toc-group">
+      <div class="label">Projects</div>
+      <a href="#project-contracts"><span class="dot"></span>Contracts</a>
+      <a href="#project-domain"><span class="dot"></span>Domain</a>
+      <a href="#project-application"><span class="dot"></span>Application</a>
+      <a href="#project-infrastructure"><span class="dot"></span>Infrastructure</a>
+      <a href="#project-adapter"><span class="dot"></span>Adapter</a>
+      <a href="#project-documentrendering"><span class="dot"></span>DocumentRendering</a>
+      <a href="#project-bootstrapper"><span class="dot"></span>Bootstrapper</a>
+      <a href="#project-webui"><span class="dot"></span>WebUI</a>
+    </div>
+  </nav>
+  <div class="rail-foot">
+    <span>.NET 10 · MIT</span>
+    <button class="btn-ghost" id="theme-btn" aria-label="Switch between light and dark theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <span id="theme-label">Theme</span>
+    </button>
+  </div>
+</aside>
+
+<main class="main" id="top">
+
+  <section class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-in">
+      <div class="hero-mark">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        <div>
+          <div class="eyebrow">Developer documentation</div>
+          <h1>BusinessApp<span>Framework</span></h1>
+        </div>
+      </div>
+      <p class="lede">A .NET 10 framework for building line-of-business web applications.</p>
+      <div class="chips">
+        <span class="chip">.NET 10</span>
+        <span class="chip">ASP.NET Core</span>
+        <span class="chip">Blazor · MudBlazor</span>
+        <span class="chip">Entity Framework Core</span>
+        <span class="chip">Clean architecture</span>
+        <span class="chip">MIT license</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="content">
+
+    <!-- ===================================================== OVERVIEW -->
+    <section class="part" id="overview">
+      <div class="part-head"><span class="kicker">Overview</span><span class="src">README.md</span></div>
+      <h2 id="introduction">Introduction<a class="anchor" href="#introduction" aria-label="Link to this section">#</a></h2>
+      <div class="prose">
+        <p>BusinessAppFramework gives you the plumbing every back-office application needs, so that a business module only has to describe <em>what</em> it manages, not <em>how</em> it is stored, searched, displayed or exported.</p>
+        <p>Out of the box it provides:</p>
+        <ul>
+          <li><strong>Domain objects</strong> with identity, audit trail, references between objects and parent/child hierarchies.</li>
+          <li><strong>Persistence</strong> on SQL Server or SQLite through Entity Framework Core, with a clean separation between domain objects and database entities.</li>
+          <li><strong>Search</strong> with pagination, sorting and named constraints (filters) for every domain object type.</li>
+          <li><strong>A generic REST API</strong> that exposes create / read / save / delete / search for any registered domain object.</li>
+          <li><strong>A Blazor UI toolkit</strong> (MudBlazor) with ready-made browsers, editors, selectors, dialogs, KPIs and workspaces.</li>
+          <li><strong>Workflows</strong> (steps, transitions, conditions) that drive the state of a business object.</li>
+          <li><strong>Document generation</strong>: HTML templates rendered with Scriban and turned into PDF with a headless Chromium.</li>
+          <li><strong>Cross-cutting services</strong>: authentication (JWT), module and user settings, localization, mail, file storage, image compression, logging.</li>
+        </ul>
+        <div class="note"><p>An application built on the framework is the combination of <strong>framework libraries</strong> (this repository), one or more <strong>business modules</strong> that plug into them, and a <strong>host</strong> that wires everything together. This repository only contains the framework; it ships no executable.</p></div>
+      </div>
+
+      <h3 id="architecture-at-a-glance">Architecture at a glance<a class="anchor" href="#architecture-at-a-glance" aria-label="Link to this section">#</a></h3>
+      <div class="prose">
+        <p>The solution follows a clean architecture. Dependencies only point inward, towards the domain.</p>
+      </div>
+
+      <figure class="figure" style="margin-left:0;margin-right:0">
+        <div class="figure-scroll">
+        <svg class="diag" viewBox="0 0 960 690" role="img" aria-label="Dependency diagram: the host wires Bootstrapper, the presentation projects and the infrastructure projects; all of them depend on Application, which depends on Domain, which depends on Contracts.">
+          <!-- Host -->
+          <rect class="node host" x="40" y="22" width="520" height="68" rx="12"/>
+          <text class="t" x="300" y="50" text-anchor="middle">Host application <tspan class="s" font-weight="400">(not in this repository)</tspan></text>
+          <text class="s" x="300" y="70" text-anchor="middle">composition root: wires modules, database and web server</text>
+          <!-- Bootstrapper -->
+          <rect class="node boot" x="640" y="22" width="280" height="68" rx="12"/>
+          <text class="t" x="780" y="46" text-anchor="middle">Bootstrapper</text>
+          <text class="s" x="780" y="64" text-anchor="middle">generic helpers the host uses</text>
+          <text class="s" x="780" y="79" text-anchor="middle">to register services and controllers</text>
+          <!-- Host -> Bootstrapper -->
+          <path class="e" d="M560 56 H634" marker-end="url(#arr)"/>
+
+          <!-- Presentation group -->
+          <rect class="group" x="40" y="150" width="400" height="130" rx="14"/>
+          <text class="glabel" x="60" y="175">Presentation &amp; entry points</text>
+          <rect class="node" x="60" y="190" width="160" height="70" rx="10"/>
+          <text class="t" x="140" y="220" text-anchor="middle">WebUI</text>
+          <text class="s" x="140" y="240" text-anchor="middle">Blazor components</text>
+          <rect class="node" x="260" y="190" width="160" height="70" rx="10"/>
+          <text class="t" x="340" y="220" text-anchor="middle">Adapter</text>
+          <text class="s" x="340" y="240" text-anchor="middle">REST API controllers</text>
+          <!-- WebUI -. HTTP .-> Adapter -->
+          <path class="e dim" d="M220 225 H254" marker-end="url(#arr)"/>
+          <text class="el on-group" x="240" y="213" text-anchor="middle">HTTP</text>
+
+          <!-- Infrastructure group -->
+          <rect class="group" x="480" y="150" width="440" height="130" rx="14"/>
+          <text class="glabel" x="500" y="175">Infrastructure</text>
+          <rect class="node" x="500" y="190" width="180" height="70" rx="10"/>
+          <text class="t" x="590" y="220" text-anchor="middle">Infrastructure</text>
+          <text class="s" x="590" y="240" text-anchor="middle">EF Core, search, auth, mail…</text>
+          <rect class="node" x="720" y="190" width="180" height="70" rx="10"/>
+          <text class="t" x="810" y="220" text-anchor="middle">DocumentRendering</text>
+          <text class="s" x="810" y="240" text-anchor="middle">Scriban + PDF</text>
+
+          <!-- Host -. registers .-> groups -->
+          <path class="e dim" d="M240 90 V144" marker-end="url(#arr)"/>
+          <text class="el" x="240" y="124" text-anchor="middle">registers</text>
+          <path class="e dim" d="M520 90 V144" marker-end="url(#arr)"/>
+          <text class="el" x="520" y="124" text-anchor="middle">registers</text>
+
+          <!-- Application -->
+          <rect class="node core" x="300" y="370" width="360" height="70" rx="12"/>
+          <text class="t core" x="480" y="400" text-anchor="middle">Application</text>
+          <text class="s" x="480" y="420" text-anchor="middle">use cases, ports, descriptors, workflows</text>
+          <!-- edges into Application -->
+          <path class="e" d="M140 260 V318 H360 V364" marker-end="url(#arr)"/>
+          <path class="e" d="M340 260 V334 H430 V364" marker-end="url(#arr)"/>
+          <path class="e" d="M590 260 V334 H530 V364" marker-end="url(#arr)"/>
+          <path class="e" d="M810 260 V318 H600 V364" marker-end="url(#arr)"/>
+          <!-- Bootstrapper -> Application, around the right -->
+          <path class="e" d="M920 56 H940 V405 H666" marker-end="url(#arr)"/>
+
+          <!-- Domain -->
+          <rect class="node core" x="300" y="500" width="360" height="62" rx="12"/>
+          <text class="t core" x="480" y="527" text-anchor="middle">Domain</text>
+          <text class="s" x="480" y="546" text-anchor="middle">domain objects</text>
+          <path class="e" d="M480 440 V494" marker-end="url(#arr)"/>
+
+          <!-- Contracts -->
+          <rect class="node core" x="300" y="612" width="360" height="62" rx="12"/>
+          <text class="t core" x="480" y="639" text-anchor="middle">Contracts</text>
+          <text class="s" x="480" y="658" text-anchor="middle">keys, routes, enums</text>
+          <path class="e" d="M480 562 V606" marker-end="url(#arr)"/>
+        </svg>
+        </div>
+        <figcaption class="figure-cap">
+          <span><i></i>project reference</span>
+          <span><i class="dash"></i>runtime registration or HTTP call</span>
+          <span>Violet: the core, free of technical dependencies</span>
+        </figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>Bootstrapper sits above the layers: it does not belong to any of them and only exposes generic helpers. The host, which lives outside this repository, uses them to wire every module, pick a database context and start the web server.</p>
+        <p>The WebUI never talks to the Infrastructure layer directly. It calls the REST API exposed by the Adapter through small HTTP gateways, using the routes defined in Contracts.</p>
+        <p>Read more in the <a href="#layers">Architecture</a> chapter.</p>
+      </div>
+
+      <h3 id="projects">Projects<a class="anchor" href="#projects" aria-label="Link to this section">#</a></h3>
+      <div class="cards">
+        <a class="card" href="#project-contracts">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Contracts</b></span><span class="pill core">Shared</span></div>
+          <p>Constants shared by every layer: action keys, error keys, settings keys, API routes, enums.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-domain">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Domain</b></span><span class="pill core">Domain</span></div>
+          <p>The <code>DomainObject</code> base class, references between objects, localized texts.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-application">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Application</b></span><span class="pill core">Application</span></div>
+          <p>Use cases and ports: services, repositories and search interfaces, descriptors, application actions, workflows, trees, chains, events, settings.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-infrastructure">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Infrastructure</b></span><span class="pill infra">Infrastructure</span></div>
+          <p>Implementations backed by EF Core and third-party libraries: repositories, search, relations, mapping, JWT, logging, mail, storage.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-adapter">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Adapter</b></span><span class="pill edge">Entry point</span></div>
+          <p>ASP.NET Core Web API controllers, mostly generic, that expose the application layer over HTTP.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-documentrendering">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>DocumentRendering</b></span><span class="pill infra">Infrastructure</span></div>
+          <p>Document templates, model loaders and the HTML-to-PDF renderer.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-bootstrapper">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>Bootstrapper</b></span><span class="pill edge">Composition</span></div>
+          <p>Generic helpers the host uses to register services and closed generic controllers when it boots the modules.</p>
+          <span class="more">Read more →</span>
+        </a>
+        <a class="card" href="#project-webui">
+          <div class="top"><span class="cname">BusinessAppFramework.<b>WebUI</b></span><span class="pill edge">Presentation</span></div>
+          <p>Blazor component library and the HTTP gateways that call the API.</p>
+          <span class="more">Read more →</span>
+        </a>
+      </div>
+
+      <h3 id="key-concepts">Key concepts<a class="anchor" href="#key-concepts" aria-label="Link to this section">#</a></h3>
+      <div class="prose"><p>A few words you will meet everywhere in the code:</p></div>
+      <dl class="concepts">
+        <div><dt>Domain object</dt><dd>A business entity handled by the framework (a customer, an order, a task…). It derives from <code>DomainObject</code>, which gives it an id and audit fields.</dd></div>
+        <div><dt>Module</dt><dd>A package of business features that registers its domain objects, services, UI descriptors, workflows and constraints through an <code>IModuleBootstrapper</code>.</dd></div>
+        <div><dt>Workspace</dt><dd>A screen of the application. A workspace descriptor says which Blazor component renders it. The most common one is the <strong>domain object browser</strong>, a searchable list of one domain object type.</dd></div>
+        <div><dt>Application action</dt><dd>A declarative description of something the user can trigger (create, delete, navigate, download, open a dialog). The UI renders it as a button, the backend executes it.</dd></div>
+        <div><dt>Constraint</dt><dd>A named filter applied to a search, exposed in the UI as a chip the user can toggle.</dd></div>
+        <div><dt>Relation</dt><dd>A typed link between domain objects. References point to one object, reference lists to many, parent/child relations build trees.</dd></div>
+        <div><dt>Workflow</dt><dd>An ordered set of steps with transitions and conditions that move a domain object through a business process.</dd></div>
+      </dl>
+
+      <h3 id="tech-stack">Tech stack &amp; license<a class="anchor" href="#tech-stack" aria-label="Link to this section">#</a></h3>
+      <div class="stack">
+        <span>.NET 10</span><span>ASP.NET Core</span><span>Blazor with MudBlazor</span><span>Entity Framework Core (SQL Server and SQLite)</span><span>AutoMapper</span><span>Serilog</span><span>Scriban</span><span>PuppeteerSharp</span><span>Magick.NET</span>
+      </div>
+      <div class="license">
+        <span class="badge">MIT</span>
+        <span>The framework is released under the MIT license. See the <code>LICENSE</code> file at the root of the repository.</span>
+      </div>
+    </section>
+
+    <!-- ===================================================== ARCHITECTURE -->
+    <section class="part" id="architecture">
+      <div class="part-head"><span class="kicker">Architecture</span><span class="src">docs/architecture.md</span></div>
+      <h2 id="layers">Layers<a class="anchor" href="#layers" aria-label="Link to this section">#</a></h2>
+      <div class="prose">
+        <p>BusinessAppFramework follows the <strong>clean architecture</strong> principles: the business rules sit at the center, technical concerns sit at the edges, and every dependency points inward. A layer never knows about the layers outside it.</p>
+        <p>Three projects form the core and carry no technical dependency: Contracts, Domain and Application. The five others sit at the edges and depend on the core: Infrastructure, DocumentRendering, Adapter, Bootstrapper and WebUI. The <a href="#architecture-at-a-glance">diagram in the overview</a> shows them side by side.</p>
+
+        <h4>Contracts</h4>
+        <p>Constants that every layer, frontend included, needs to agree on: action keys, constraint keys, error and message keys, settings keys, API route segments and a few enums. It depends on nothing. Keeping it apart from Domain means the Blazor frontend can build an API URL or display an error key without pulling in business types.</p>
+
+        <h4>Domain</h4>
+        <p>The heart of the model: the <code>DomainObject</code> base class, the <code>DomainObjectReference</code> and <code>DomainObjectReferenceList</code> types used to link objects together, <code>LocalizedText</code> for multilingual values, and a handful of marker interfaces (<code>IIndexable</code>, <code>ISystemObject</code>, <code>IHasReferenceNumber</code>). No persistence, no HTTP, no UI.</p>
+
+        <h4>Application</h4>
+        <p>The use cases and the <strong>ports</strong>. This is where the framework defines what it can do, as interfaces, and implements the parts that do not depend on a technology:</p>
+        <ul>
+          <li><code>IDomainObjectService&lt;T&gt;</code> and its default <code>DomainObjectService&lt;T&gt;</code>: the CRUD use cases for any domain object, including validation, hydration of references and event publication.</li>
+          <li><code>IRepository&lt;T&gt;</code>, <code>ISearchService&lt;T&gt;</code>, <code>IRelationService</code>, <code>IAuthenticationService</code>, <code>IDocumentGenerator</code>, <code>IMailService</code>, <code>IFileSystemService</code>… : ports that the Infrastructure layer implements.</li>
+          <li><strong>Descriptors</strong>: declarative descriptions of UI screens (workspaces, domain object browsers, selectors) that the WebUI renders.</li>
+          <li><strong>Application actions</strong>: declarative descriptions of what a user can trigger.</li>
+          <li><strong>Workflows, trees, domain object chains, KPIs, activities</strong>: business building blocks shared by backend and frontend.</li>
+          <li><strong>Registries and factories</strong>: the plug-in points a module uses to register its types.</li>
+          <li><code>IModuleBootstrapper</code>: the contract a business module implements to plug into the framework.</li>
+        </ul>
+
+        <h4>Infrastructure</h4>
+        <p>The <strong>adapters driven by the application</strong>: everything that touches a database, a file system or a third-party library. Entity Framework Core contexts for SQL Server and SQLite, generic repositories mapping domain objects to entities with AutoMapper, the search service, relation resolution, JWT token generation, password hashing, Serilog logging, mail, printers, image compression and document storage.</p>
+
+        <h4>DocumentRendering</h4>
+        <p>A specialised infrastructure project for generating documents. It renders Scriban HTML templates with data loaded from domain objects and converts the result to PDF with PuppeteerSharp.</p>
+
+        <h4>Adapter</h4>
+        <p>The <strong>driving adapter</strong> on the server side: ASP.NET Core Web API controllers. Most of them are generic (<code>DomainObjectController&lt;TDomainObject, TSearchResult&gt;</code>, <code>DomainObjectSearchController&lt;…&gt;</code>) and are closed per domain object type at startup.</p>
+
+        <h4>Bootstrapper</h4>
+        <p>The toolbox of the composition root. It is not a layer: it sits above all of them and only exposes generic helpers (registration of closed generic controllers, route conventions, service registration shortcuts). The actual composition root is the host application, outside this repository, which is why Bootstrapper itself only references Application.</p>
+
+        <h4>WebUI</h4>
+        <p>The Blazor frontend. A Razor class library built on MudBlazor that renders the descriptors defined in Application and calls the REST API through HTTP gateways. It depends on Application and Domain for the types it displays, but never on Infrastructure.</p>
+      </div>
+
+      <h3 id="request-flow">How a request flows<a class="anchor" href="#request-flow" aria-label="Link to this section">#</a></h3>
+      <div class="prose"><p>A typical round trip, saving a domain object from the UI:</p></div>
+
+      <figure class="figure" style="margin-left:0;margin-right:0">
+        <div class="figure-scroll">
+        <svg class="diag seq" viewBox="-8 0 1128 560" role="img" aria-label="Sequence diagram of a save: the WebUI component calls its gateway, which calls the Adapter controller over HTTP, which calls the Application service, which validates, publishes an event and calls the Infrastructure repository, which maps the object and saves it through EF Core; the result payload returns to the gateway and the component.">
+          <!-- participants -->
+          <rect class="p" x="0" y="12" width="160" height="44" rx="9"/><text class="pt" x="80" y="39" text-anchor="middle">WebUI component</text>
+          <rect class="p" x="170" y="12" width="160" height="44" rx="9"/><text class="pt" x="250" y="39" text-anchor="middle">WebUI gateway</text>
+          <rect class="p" x="340" y="12" width="160" height="44" rx="9"/><text class="pt" x="420" y="39" text-anchor="middle">Adapter controller</text>
+          <rect class="p hl" x="510" y="12" width="160" height="44" rx="9"/><text class="pt" x="590" y="39" text-anchor="middle">Application service</text>
+          <rect class="p" x="680" y="12" width="160" height="44" rx="9"/><text class="pt" x="760" y="39" text-anchor="middle">Infrastructure repository</text>
+          <rect class="p" x="850" y="12" width="160" height="44" rx="9"/><text class="pt" x="930" y="39" text-anchor="middle">Database</text>
+          <!-- lifelines -->
+          <path class="life" d="M80 56 V540 M250 56 V540 M420 56 V540 M590 56 V540 M760 56 V540 M930 56 V540"/>
+          <!-- 1 UI -> GW -->
+          <path class="m" d="M80 100 H244" marker-end="url(#arr)"/>
+          <text class="ml" x="165" y="92" text-anchor="middle">SaveAsync(domainObject)</text>
+          <!-- 2 GW -> API -->
+          <path class="m" d="M250 148 H414" marker-end="url(#arr)"/>
+          <text class="ml" x="335" y="140" text-anchor="middle">PUT /api/domain-objects/{type}/save</text>
+          <!-- 3 API -> SVC -->
+          <path class="m" d="M420 196 H584" marker-end="url(#arr)"/>
+          <text class="ml" x="505" y="188" text-anchor="middle">IDomainObjectService.SaveAsync</text>
+          <!-- 4 SVC self -->
+          <path class="m" d="M590 236 H640 V262 H596" marker-end="url(#arr)"/>
+          <text class="ml" x="650" y="254">Validate, publish DomainObjectSavedEvent</text>
+          <!-- 5 SVC -> REPO -->
+          <path class="m" d="M590 306 H754" marker-end="url(#arr)"/>
+          <text class="ml" x="675" y="298" text-anchor="middle">IRepository.SaveAsync</text>
+          <!-- 6 REPO self -->
+          <path class="m" d="M760 346 H810 V372 H766" marker-end="url(#arr)"/>
+          <text class="ml" x="820" y="364">Map domain object to entity (AutoMapper)</text>
+          <!-- 7 REPO -> DB -->
+          <path class="m" d="M760 416 H924" marker-end="url(#arr)"/>
+          <text class="ml" x="845" y="408" text-anchor="middle">EF Core SaveChanges</text>
+          <!-- 8 API -->> GW -->
+          <path class="m ret" d="M420 466 H256" marker-end="url(#arr)"/>
+          <text class="ml ret" x="335" y="458" text-anchor="middle">DomainObjectApplicationActionResultPayload</text>
+          <!-- 9 GW -->> UI -->
+          <path class="m ret" d="M250 514 H86" marker-end="url(#arr)"/>
+          <text class="ml ret" x="165" y="506" text-anchor="middle">changes to apply to the screen</text>
+        </svg>
+        </div>
+        <figcaption class="figure-cap">
+          <span><i></i>call</span>
+          <span><i class="dash" style="border-color:var(--violet)"></i>response</span>
+        </figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>The frontend and the backend share the same Application and Domain assemblies, so a domain object, a descriptor or a workflow is the same type on both sides. What travels over HTTP is JSON produced from those types.</p>
+      </div>
+
+      <h3 id="module-plug-in">How a module plugs in<a class="anchor" href="#module-plug-in" aria-label="Link to this section">#</a></h3>
+      <div class="prose">
+        <p>The framework alone does nothing visible. A <strong>business module</strong> brings the actual features and plugs in by implementing <code>IModuleBootstrapper</code> (Application) and, for its controllers, <code>IWebApiModuleBootstrapper</code> (Adapter). The bootstrapper declares:</p>
+        <ul>
+          <li>the backend and frontend service assemblies to scan,</li>
+          <li>the domain object types and their entity mapping,</li>
+          <li>browser and selector descriptors, constraints, icons and components for the UI,</li>
+          <li>workflows and their context loaders,</li>
+          <li>relations: references, reference lists and parent/child trees,</li>
+          <li>navigation actions, domain object chains and settings,</li>
+          <li>the workspaces (screens) it contributes.</li>
+        </ul>
+        <p>A host application collects the module bootstrappers, registers everything with the helpers from Bootstrapper, configures a database context and serves both the API and the Blazor UI.</p>
+      </div>
+
+      <h3 id="design-choices">Design choices worth knowing<a class="anchor" href="#design-choices" aria-label="Link to this section">#</a></h3>
+      <div class="prose">
+        <ul>
+          <li><strong>Domain objects and entities are distinct types.</strong> A domain object is what the business logic and the UI manipulate. An entity is what EF Core persists. AutoMapper profiles, contributed per module, translate between the two. This keeps the domain free of persistence attributes.</li>
+          <li><strong>Generics everywhere.</strong> Services, repositories, search services and controllers are generic over the domain object type. A module rarely writes a controller or a repository; it registers closed generic types.</li>
+          <li><strong>Declarative UI.</strong> Screens are described by descriptors and actions in the Application layer, and rendered by generic Blazor components. A module gets a browser, an editor and a page for a new domain object type mostly by configuration.</li>
+          <li><strong>Keys over types across the wire.</strong> Actions, constraints, workspaces, relations and settings are identified by string keys declared in Contracts, so the frontend and backend can refer to them without sharing implementation types.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================================================== PROJECTS -->
+    <section class="part" id="project-contracts">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Contracts.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Contracts</b></h2><span class="pill core">Shared</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Shared, innermost</div></div>
+        <div><div class="k">Depends on</div><div class="v">Nothing</div></div>
+        <div><div class="k">Used by</div><div class="v">Every other project</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Contracts holds the constants that the backend and the frontend must agree on. It has no behaviour and no business type, so it can be referenced from anywhere, including the Blazor client, without dragging in the domain model.</p>
+        <h4>What's inside</h4>
+        <ul>
+          <li><strong>Keys</strong>: <code>ActionKeys</code>, <code>ConstraintKeys</code>, <code>DomainErrorKeys</code>, <code>MessageKeys</code>, <code>SettingsKeys</code>, <code>StringKeys</code>, <code>EnumKeys</code>. String identifiers for actions, filters, errors, translated strings and settings.</li>
+          <li><strong>Aggregate keys</strong>: <code>DomainObjectAggregateKeys</code> and <code>DomainObjectSearchResultAggregateKeys</code> derive a stable route key from a domain object type.</li>
+          <li><strong>API routes</strong>: the <code>ApiRoutes</code> folder defines the URL segments of the REST API (domain objects, search, trees, workflows, documents, navigation, relationships) and the <code>ApiRoute</code> helper that assembles them.</li>
+          <li><strong>Enums</strong>: <code>Language</code> and <code>TimeUnit</code>, with extension methods.</li>
+          <li><code>KebabStringFormatter</code>: turns type names into kebab-case route segments.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">Why it is a separate project</div>
+          <p>Putting these constants in Domain would force the frontend to reference business types just to build a URL. Keeping them apart also makes the HTTP contract between Adapter and WebUI explicit and easy to find.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-domain">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Domain.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Domain</b></h2><span class="pill core">Domain</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Domain</div></div>
+        <div><div class="k">Depends on</div><div class="v">Contracts</div></div>
+        <div><div class="k">Used by</div><div class="v">Application, Infrastructure, Adapter, DocumentRendering, WebUI</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Domain defines what a business object <em>is</em> in the framework. It contains no persistence, no HTTP and no UI code. Every business module derives its own objects from the types found here.</p>
+        <h4>What's inside</h4>
+        <ul>
+          <li><code>DomainObject</code>: the abstract base class of every business object. It carries an <code>Id</code> and audit fields (creation and last modification date, user id and user name), all tagged with <code>SystemPropertyAttribute</code> so the UI can tell them apart from business properties. It also knows how to clone itself and how to enumerate its references.</li>
+          <li><code>DomainObjectReference</code> and <code>DomainObjectReferenceList</code>: typed links from one domain object to one or many others, identified by a relation key. They hold the target id plus a display value so the UI can show them without an extra round trip.</li>
+          <li><code>HistoryInfo</code>: the audit information as a value object, shared with persistence entities.</li>
+          <li><code>LocalizedText</code>: a dictionary of culture to text with fallback resolution, plus its JSON converter.</li>
+          <li>Marker interfaces: <code>IIndexable</code> for objects that have a user-defined order, <code>ISystemObject</code> for objects identified by a system code and protected from deletion, <code>IHasReferenceNumber</code> for objects that carry a human-readable number.</li>
+          <li><code>IPasswordService</code>: the only service contract in Domain, used for password hashing.</li>
+          <li><code>UserRolePermissionType</code> and <code>GlobalVariables</code>.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>A module creates a class such as <code>Customer : DomainObject</code>, adds business properties and, for links to other objects, properties of type <code>DomainObjectReference</code>. The rest of the framework (services, repositories, search, UI) works on any such class.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-application">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Application.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Application</b></h2><span class="pill core">Application</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Application</div></div>
+        <div><div class="k">Depends on</div><div class="v">Domain, Contracts</div></div>
+        <div><div class="k">Used by</div><div class="v">Infrastructure, Adapter, DocumentRendering, Bootstrapper, WebUI</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Application is the largest project and the center of the framework. It defines the use cases, the ports that the infrastructure implements, and the declarative building blocks that the UI renders. It is shared by the server and the Blazor client.</p>
+        <h4>What's inside</h4>
+        <div class="group-title">Use cases and services</div>
+        <ul>
+          <li><code>IDomainObjectService&lt;T&gt;</code> / <code>DomainObjectService&lt;T&gt;</code>: create, read, save, delete and validate any domain object, hydrate its references and publish events.</li>
+          <li><code>WorkflowService</code>, <code>AuthenticationService</code>, <code>CalendarService</code>, <code>LocalizedStringService</code>, <code>ModuleSettingsService</code>, <code>UserSettingsService</code>, <code>ReferenceHydrator</code>.</li>
+        </ul>
+        <div class="group-title">Ports (interfaces)</div>
+        <ul>
+          <li>Persistence and search: <code>IRepository&lt;T&gt;</code>, <code>IIndexableRepository</code>, <code>IStatusRepository</code>, <code>ISearchService&lt;T&gt;</code>, <code>ISearchGateway</code>.</li>
+          <li>Relations: <code>IRelationService</code>, <code>IReferenceResolver</code>, <code>IParentChildRelationResolver</code>, <code>IDomainObjectTypeMap</code>.</li>
+          <li>Technical services: <code>IFileSystemService</code>, <code>IFileSerializationService</code>, <code>IDocumentStorageService</code>, <code>IImageCompressionService</code>, <code>IMailService</code>, <code>IPrintersService</code>, <code>IAuthenticationTokenService</code>, <code>ICurrentUserService</code>, <code>IUserDialogService</code>.</li>
+        </ul>
+        <div class="group-title">Declarative building blocks</div>
+        <ul>
+          <li><code>Descriptors</code>: <code>WorkspaceDescriptor</code> names the component that renders a screen; <code>DomainObjectBrowserDescriptor</code> describes a searchable list of one domain object type, with its actions and constraints; <code>DomainObjectSelectorDescriptor</code> describes a picker.</li>
+          <li><code>Actions</code>: <code>ApplicationAction</code> and its variants (HTTP, navigation, file download, document generation, open dialog). The UI shows them as buttons, the backend executes them.</li>
+          <li><code>Browser/Constraint</code>: a named filter expressed as a LINQ expression over a search result.</li>
+          <li><code>Workflows</code>: <code>ProcessWorkflow</code>, <code>Step</code>, <code>Transition</code>, <code>Condition</code>, <code>WorkflowContext</code>.</li>
+          <li><code>Trees</code>: <code>Tree</code>, <code>Branch</code>, <code>Node</code>, <code>NodeSummary</code> for parent/child hierarchies.</li>
+          <li><code>DomainObjectChains</code>: the navigation chain from one object to its related objects, shown as a breadcrumb.</li>
+          <li><code>Kpis</code> and <code>Activities</code>: indicators and counters shown on dashboards.</li>
+          <li><code>Search</code>: <code>SearchRequest</code>, <code>PaginatedSearchRequest</code>, <code>SearchResult</code>, <code>DomainObjectSearchResult</code>.</li>
+        </ul>
+        <div class="group-title">Extension points</div>
+        <ul>
+          <li><code>IModuleBootstrapper</code>: the contract a business module implements to register everything it contributes.</li>
+          <li><code>Registry</code> and the registries built on it (settings, reference navigation keys), plus the factories (<code>DomainObjectServiceFactory</code>, <code>WorkflowFactory</code>, <code>TreeFactory</code>, <code>ConstraintFactory</code>, <code>WorkspaceDescriptorFactory</code> and others) that resolve registered items by key or by type.</li>
+          <li><code>DomainObjectEvents</code>: an in-process event bus with created, saved, deleting and deleted events a module can handle.</li>
+          <li><code>Mapping/IMappingProfileContributor</code>: how a module provides its AutoMapper profiles.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>Most of a module's backend code is configuration against this project: register domain object types, declare descriptors and constraints, write a few event handlers or a workflow. The generic services do the rest.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-infrastructure">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Infrastructure.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Infrastructure</b></h2><span class="pill infra">Infrastructure</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Infrastructure</div></div>
+        <div><div class="k">Depends on</div><div class="v">Application, Domain, Contracts</div></div>
+        <div><div class="k">Used by</div><div class="v">The host application</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Infrastructure implements the ports declared in Application with concrete technologies. It is the only framework project that knows about Entity Framework Core, Serilog, AutoMapper, Magick.NET or JWT.</p>
+        <h4>What's inside</h4>
+        <div class="group-title">Persistence</div>
+        <ul>
+          <li><code>OtherSideCoreDbContext</code>: the abstract EF Core context every host derives from. It restricts cascade deletes on all foreign keys and registers an <code>EditDistance</code> database function used by fuzzy search.</li>
+          <li><code>SqlServerSSPIDbContext</code> and <code>SqliteDbContext</code>: ready-made contexts for the two supported providers.</li>
+          <li><code>IModelBuilderContributor</code>: lets modules add their entity configuration to the model. The framework contributes module settings and user settings itself.</li>
+          <li><code>ISeedContributor</code>, <code>DbInitializerService</code>, <code>WebDbInitializerService</code>: database creation and seeding at startup.</li>
+          <li><code>Repositories</code>: <code>Repository&lt;TDomainObject, TEntity&gt;</code> maps domain objects to persistence entities with AutoMapper and performs CRUD. <code>IndexableRepository</code>, <code>StatusRepository</code>, <code>ModuleSettingsRepository</code> and <code>UserSettingsRepository</code> specialise it.</li>
+          <li><code>Entities</code>: the framework's own entities (module settings, user settings) and the relation entries used to resolve references and parent/child links.</li>
+        </ul>
+        <div class="group-title">Search and relations</div>
+        <ul>
+          <li><code>SearchService&lt;TSearchResult&gt;</code>: paginated, sorted and constrained search projected directly from the database.</li>
+          <li><code>RelationService</code>, <code>ReferenceResolver</code>, <code>ParentChildRelationResolver</code>, <code>DomainObjectTypeMap</code>: resolve typed links between domain objects and build trees.</li>
+        </ul>
+        <div class="group-title">Technical services</div>
+        <ul>
+          <li><code>JwtAuthenticationTokenService</code> and <code>PasswordService</code> for authentication.</li>
+          <li><code>Logger</code> built on Serilog with a file sink.</li>
+          <li><code>MailtoMailService</code>, <code>PrintersService</code>, <code>FileSystemDocumentStorageService</code>, <code>JsonFileSerializationService</code>, <code>ImageCompressionService</code>.</li>
+          <li><code>WorkflowContextLoader</code>: loads the data a workflow needs to evaluate its state.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>A host picks a database context, registers the repositories and services from this project, and adds the module's model builder contributors and seed contributors. Business modules usually do not write infrastructure code beyond entity classes and mapping profiles.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-adapter">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Adapter.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Adapter</b></h2><span class="pill edge">Entry point</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Entry point (server side)</div></div>
+        <div><div class="k">Depends on</div><div class="v">Application, Domain, Contracts</div></div>
+        <div><div class="k">Used by</div><div class="v">WebUI (for the HTTP contract), the host application</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Adapter exposes the application layer as a REST API with ASP.NET Core controllers. It is the server-side door through which the Blazor frontend, or any other client, reaches the framework.</p>
+        <h4>What's inside</h4>
+        <ul>
+          <li><code>DomainObjectController&lt;TDomainObject, TSearchResult&gt;</code>: generic create / read / save / delete endpoints for one domain object type. Business errors are returned as a payload rather than as HTTP errors so the UI can display them.</li>
+          <li><code>DomainObjectSearchController</code>: paginated and constrained search for one domain object type.</li>
+          <li><code>AuthenticationController</code>: login and token issuance.</li>
+          <li><code>DocumentGeneratorController</code>: HTML preview and PDF download of generated documents.</li>
+          <li><code>WorkflowController</code>, <code>TreeController</code>, <code>RelationServiceController</code>, <code>DomainObjectChainController</code>, <code>NavigationController</code>: expose the corresponding application services.</li>
+          <li><code>ModuleSettingsController</code> and <code>UserSettingsController</code>.</li>
+          <li><code>IWebApiModuleBootstrapper</code>: the contract a module implements to declare its closed generic controllers and their route keys.</li>
+          <li><code>Requests</code> and <code>Responses</code>: the few DTOs that are specific to the HTTP layer (login request, authentication response, document responses).</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>A module does not write controllers. It lists the closed generic controller types it needs, for example <code>DomainObjectController&lt;Customer, CustomerSearchResult&gt;</code>, and the Bootstrapper project registers them with ASP.NET Core at startup. Routes are built from the segments defined in Contracts.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-documentrendering">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/DocumentRendering.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>DocumentRendering</b></h2><span class="pill infra">Infrastructure</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Infrastructure</div></div>
+        <div><div class="k">Depends on</div><div class="v">Application, Domain</div></div>
+        <div><div class="k">Used by</div><div class="v">The host application</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>DocumentRendering turns a domain object into a printable document. A module provides an HTML template and a loader that gathers the data; the framework renders the template and produces HTML or PDF.</p>
+        <h4>What's inside</h4>
+        <ul>
+          <li><code>HtmlDocumentTemplate</code> and <code>HtmlDocumentTemplateRegistry</code>: a template is a layout resource plus a content resource, both embedded in an assembly. Templates are registered under a document key.</li>
+          <li><code>IDocumentModelLoader</code>, <code>DocumentModelLoaderFactory</code>, <code>DocumentModelLoaderTypeRegistry</code>: a loader fetches the data a document needs from a domain object id. The registry associates a loader with a document key.</li>
+          <li><code>HtmlDocumentRenderer</code>: renders the template with Scriban, then drives a headless Chromium through PuppeteerSharp to produce a PDF. A single browser instance is shared and shut down with the process.</li>
+          <li><code>PdfPageLayout</code>: page size, margins and orientation.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>A module registers a template and a model loader for, say, an invoice. The <code>DocumentGeneratorController</code> in Adapter then serves an HTML preview and a PDF download for any invoice id, and the UI exposes them through document generation application actions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-bootstrapper">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/Bootstrapper.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>Bootstrapper</b></h2><span class="pill edge">Composition</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Entry point (composition)</div></div>
+        <div><div class="k">Depends on</div><div class="v">Application</div></div>
+        <div><div class="k">Used by</div><div class="v">The host application</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>Bootstrapper is a small project of helpers that a host uses to assemble the framework and its modules at startup. It deals with the one thing ASP.NET Core does not do by itself: discovering and routing closed generic controllers.</p>
+        <h4>What's inside</h4>
+        <ul>
+          <li><code>ClosedGenericControllerFeatureProvider</code>: adds the closed generic controller types declared by the modules (for example <code>DomainObjectController&lt;Customer, CustomerSearchResult&gt;</code>) to the MVC controller feature.</li>
+          <li><code>ClosedGenericRouteConvention</code>: gives each of those controllers its route from the module's route key.</li>
+          <li><code>ServiceRegistrationHelper</code>: registers an implementation together with every generic interface it implements for a given domain object type, in one call.</li>
+          <li><code>IBootstrapService</code> and <code>IBootstrapConfiguration</code>: the contract the host implements to provide the service collection and basic configuration such as the log file name.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>The host's startup code collects the <code>IModuleBootstrapper</code> and <code>IWebApiModuleBootstrapper</code> instances of every module, feeds the controller descriptions to the feature provider and the convention, and uses the registration helper to wire services, repositories and search services per domain object type.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="part" id="project-webui">
+      <div class="part-head"><span class="kicker">Project</span><span class="src">docs/projects/WebUI.md</span></div>
+      <div class="proj-title"><h2>BusinessAppFramework.<b>WebUI</b></h2><span class="pill edge">Presentation</span></div>
+      <div class="meta">
+        <div><div class="k">Layer</div><div class="v">Presentation</div></div>
+        <div><div class="k">Depends on</div><div class="v">Adapter, Application, Domain, Contracts</div></div>
+        <div><div class="k">Used by</div><div class="v">The host application and the modules' Blazor components</div></div>
+      </div>
+      <div class="prose">
+        <h4>Role</h4>
+        <p>WebUI is a Blazor component library built on MudBlazor. It renders the descriptors, actions and workflows defined in the Application layer and talks to the REST API exposed by Adapter. It contains no page of its own: the host and the modules compose the application from these components.</p>
+        <h4>What's inside</h4>
+        <div class="group-title">Components</div>
+        <ul>
+          <li><code>Pages</code>: <code>WorkspaceHost</code> and <code>WorkspaceView</code> render the component named by a workspace descriptor. <code>DomainObjectPages</code> provide the default detail page of a domain object with its header, tabs, history, changes popover and chain breadcrumb. <code>SettingsPage</code> and <code>DocumentGeneratorViewerPage</code> cover settings and document preview.</li>
+          <li><code>Browser</code>: <code>DomainObjectBrowser</code>, the searchable list driven by a <code>DomainObjectBrowserDescriptor</code>, with constraint chips and action buttons.</li>
+          <li><code>Editor</code>: property editors for a domain object, including reference and reference list fields, inline properties and categories.</li>
+          <li><code>Selector</code> and <code>Dialog</code>: pickers and dialogs to choose, create or edit domain objects, confirm or display errors.</li>
+          <li><code>SearchList</code>: templates, pagination and value indicators for search results.</li>
+          <li><code>Kpi</code>, <code>Workflow</code>, <code>Images</code>, <code>Mail</code>, <code>NavigationMenu</code>, <code>General</code>: cards, workflow display, image upload and viewer, mail dialog, menu, data grids and badges.</li>
+        </ul>
+        <div class="group-title">Gateways</div>
+        <ul>
+          <li><code>HttpService</code> and the gateways built on it (<code>DomainObjectServiceGateway</code>, <code>DomainObjectSearchGateway</code>, <code>WorkflowServiceGateway</code>, <code>TreeGateway</code>, <code>RelationServiceGateway</code>, <code>DocumentGeneratorGateway</code>, settings and authentication gateways). Each wraps the calls to one controller of the Adapter, using the routes defined in Contracts.</li>
+        </ul>
+        <div class="group-title">Services and registries</div>
+        <ul>
+          <li><code>ApplicationActionExecutionService</code>: runs an application action from a click, whether it is an HTTP call, a navigation, a download or a dialog.</li>
+          <li><code>WorkspaceNavigationService</code>, <code>UserDialogService</code>, <code>DomainObjectCreationDialogService</code>, <code>LocalStorageService</code>.</li>
+          <li><code>Authentication</code>: cookie-based authentication state and a handler that attaches the JWT to API calls.</li>
+          <li><code>ComponentRegistry</code>, <code>DomainObjectBrowserWorkspaceRegistry</code>, <code>RelationSelectorRegistry</code>, <code>IconFactory</code>: where modules register their components, workspaces, selectors and icons by key.</li>
+        </ul>
+        <div class="callout">
+          <div class="ct">In practice</div>
+          <p>A module gets a working browser, detail page and editor for a new domain object type by registering a descriptor, a search list template and an icon. It writes custom Razor components only for screens that go beyond the generic ones.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>BusinessAppFramework · developer documentation</span>
+      <span>Generated from the repository's Markdown documentation · October 2026</span>
+    </footer>
+  </div>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var rail = document.getElementById('rail');
+  var scrim = document.getElementById('scrim');
+  var menuBtn = document.getElementById('menu-btn');
+  var themeBtn = document.getElementById('theme-btn');
+  var themeLabel = document.getElementById('theme-label');
+
+  /* theme toggle: light / dark / follow system */
+  var saved = null;
+  try { saved = localStorage.getItem('baf-doc-theme'); } catch (e) {}
+  function applyTheme(t) {
+    if (t === 'dark' || t === 'light') root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+    themeLabel.textContent = t === 'dark' ? 'Dark' : t === 'light' ? 'Light' : 'System';
+  }
+  applyTheme(saved);
+  themeBtn.addEventListener('click', function () {
+    var cur = root.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : cur === 'light' ? null : 'dark';
+    applyTheme(next);
+    try { if (next) localStorage.setItem('baf-doc-theme', next); else localStorage.removeItem('baf-doc-theme'); } catch (e) {}
+  });
+
+  /* mobile table of contents */
+  function openRail(open) {
+    rail.classList.toggle('open', open);
+    scrim.classList.toggle('show', open);
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  menuBtn.addEventListener('click', function () { openRail(!rail.classList.contains('open')); });
+  scrim.addEventListener('click', function () { openRail(false); });
+  rail.addEventListener('click', function (e) { if (e.target.closest('a') && window.innerWidth <= 960) openRail(false); });
+
+  /* scroll spy */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a[href^="#"]'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var targets = Object.keys(byId).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var current = null;
+  function setActive(id) {
+    if (id === current) return;
+    current = id;
+    links.forEach(function (a) { a.classList.toggle('active', a === byId[id]); });
+    var a = byId[id];
+    if (a && a.scrollIntoView) {
+      var r = a.getBoundingClientRect(), tr = rail.querySelector('.toc').getBoundingClientRect();
+      if (r.top < tr.top || r.bottom > tr.bottom) a.scrollIntoView({ block: 'nearest' });
+    }
+  }
+  function spy() {
+    var line = 120, best = targets[0];
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i].getBoundingClientRect().top <= line) best = targets[i]; else break;
+    }
+    if (best) setActive(best.id);
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(function () { spy(); ticking = false; }); }
+  }, { passive: true });
+  window.addEventListener('resize', spy);
+  spy();
+})();
+</script>
+</body>
+</html>
