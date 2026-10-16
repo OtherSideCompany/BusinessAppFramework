@@ -10,7 +10,6 @@ using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
-using Search.Contracts.SearchResults;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages

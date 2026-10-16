@@ -24,7 +24,6 @@
    </ItemGroup>
 
    <ItemGroup>
-     <ProjectReference Include="..\..\Cyklor\Search.Contracts\Search.Contracts.csproj" />
      <ProjectReference Include="..\BusinessAppFramework.Adapter\BusinessAppFramework.Adapter.csproj" />
      <ProjectReference Include="..\BusinessAppFramework.Application\BusinessAppFramework.Application.csproj" />
      <ProjectReference Include="..\BusinessAppFramework.Contracts\BusinessAppFramework.Contracts.csproj" />
