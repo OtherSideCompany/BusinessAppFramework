@@ -33,6 +33,8 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
 
         protected virtual string? PageTreeKey { get; }
 
+        protected virtual string DeleteConfirmationMessageKey => MessageKeys.DeleteConfirmationMessage;
+
         protected bool _isDeleted;
         protected Tree? _tree;
         protected int? _loadedId;
@@ -97,7 +99,7 @@ namespace BusinessAppFramework.WebUI.Components.Pages.DomainObjectPages
             if (Id == null)
                 return;
 
-            if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+            if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(DeleteConfirmationMessageKey) ?? "delete_msg"))
             {
                 var payload = await DomainObjectServiceGateway.DeleteAsync(Id.Value);
 

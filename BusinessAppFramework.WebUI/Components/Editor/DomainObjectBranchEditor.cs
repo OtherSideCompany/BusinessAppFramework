@@ -36,6 +36,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
         [Parameter, EditorRequired] public Branch? Branch { get; set; }
         [Parameter] public EventCallback OnBranchChanged { get; set; }
         [Parameter] public EventCallback ItemChanged { get; set; } 
+        [Parameter] public string DeleteConfirmationMessageKey { get; set; } = MessageKeys.DeleteConfirmationMessage;
         public IEnumerable<Node> VisibleNodes => CollectVisible(Branch?.Nodes ?? Enumerable.Empty<Node>());
 
         #endregion
@@ -148,7 +149,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
         {         
             if (ParentId != null && Branch != null)
             {
-                if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+                if (await UserDialogService.ConfirmAsync(LocalizedStringService.Get(DeleteConfirmationMessageKey) ?? "delete_msg"))
                 {
                     var payload = await TreeGateway.DeleteNodeAsync(ParentId.Value, id, Branch.ParentChildRelationKey);
 
