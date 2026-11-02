@@ -3,5 +3,6 @@
    public interface IHttpDomainObjectApplicationAction : IDomainObjectApplicationAction
    {
       HttpMethod HttpMethod { get; }
+      string? ConfirmationMessageKey { get; }
    }
 }

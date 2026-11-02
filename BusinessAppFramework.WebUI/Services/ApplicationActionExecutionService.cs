@@ -92,7 +92,9 @@ namespace BusinessAppFramework.WebUI.Services
             }
             else if (httpApplicationAction.HttpMethod == HttpMethod.Delete)
             {
-                if (await _userDialogService.ConfirmAsync(_localizedStringService.Get(MessageKeys.DeleteConfirmationMessage) ?? "delete_msg"))
+                var confirmationMessageKey = httpApplicationAction.ConfirmationMessageKey ?? MessageKeys.DeleteConfirmationMessage;
+
+                if (await _userDialogService.ConfirmAsync(_localizedStringService.Get(confirmationMessageKey) ?? "delete_msg"))
                 {
                     result = await DeleteAsync<DomainObjectApplicationActionResultPayload>(route);
                 }

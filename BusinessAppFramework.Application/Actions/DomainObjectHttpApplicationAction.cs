@@ -15,6 +15,8 @@ namespace BusinessAppFramework.Application.Actions
 
       public HttpMethod HttpMethod { get; set; } = HttpMethod.Post;
 
+      public string? ConfirmationMessageKey { get; set; }
+
       #endregion
 
       #region Events
