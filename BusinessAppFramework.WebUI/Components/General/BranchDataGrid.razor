@@ -6,13 +6,16 @@
 @using Domain.DomainObjects
 @using MudBlazor
 @using MudBlazor.Utilities
+@using Microsoft.JSInterop
 
 @typeparam TDomainObject where TDomainObject : DomainObject, new()
 @typeparam TSearchResult where TSearchResult : DomainObjectSearchResult, new()
 
 @inherits DomainObjectBranchEditor<TDomainObject, TSearchResult>
+@implements IAsyncDisposable
 
 @inject IIconFactory IconFactory
+@inject IJSRuntime JSRuntime
 
 <MudStack Spacing="2">
 
@@ -44,6 +47,8 @@
 
     <CascadingValue Value="(Func<Task>)NotifyItemChanged">
 
+        <div class="osc-reorder-container" @ref="_reorderContainer">
+
         @if (RowDetailContent != null)
         {
             <MudDataGrid T="Node"
@@ -60,6 +65,16 @@
                          Virtualize="false"
                          CommittedItemChanges="OnCommitedItemChanged">
                 <Columns>
+                    @if (CanReorder)
+                    {
+                        <TemplateColumn T="Node" HeaderClass="@DataGridColumnClasses.Compact">
+                            <EditTemplate>
+                                <span class="osc-row-grip" draggable="true" data-node-id="@context.Item.Id">
+                                    <MudIcon Icon="@Icons.Material.Filled.DragIndicator" Size="Size.Small" />
+                                </span>
+                            </EditTemplate>
+                        </TemplateColumn>
+                    }
                     <HierarchyColumn T="Node" EnableHeaderToggle="true" />
                     @ColumnsContent
                     <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)" HeaderClass="@DataGridColumnClasses.Compact">
@@ -97,6 +112,16 @@
                          Virtualize="false"
                          CommittedItemChanges="OnCommitedItemChanged">
                 <Columns>
+                    @if (CanReorder)
+                    {
+                        <TemplateColumn T="Node" HeaderClass="@DataGridColumnClasses.Compact">
+                            <EditTemplate>
+                                <span class="osc-row-grip" draggable="true" data-node-id="@context.Item.Id">
+                                    <MudIcon Icon="@Icons.Material.Filled.DragIndicator" Size="Size.Small" />
+                                </span>
+                            </EditTemplate>
+                        </TemplateColumn>
+                    }
                     @ColumnsContent
                     <TemplateColumn T="Node" Title="@LocalizedStringService.Get(StringKeys.ActionsKey)" HeaderClass="@DataGridColumnClasses.Compact">
                         <EditTemplate>
@@ -114,6 +139,8 @@
             </MudDataGrid>
         }
 
+        </div>
+
     </CascadingValue>
 
 </MudStack>
@@ -124,4 +151,47 @@
     [Parameter] public RenderFragment<Node>? RowDetailContent { get; set; }
     [Parameter] public RenderFragment<Node>? ItemActions { get; set; }
     [Parameter] public bool DisplayHeader { get; set; } = true;
+
+    private const string ReorderModulePath = "./_content/BusinessAppFramework.WebUI/Components/General/BranchDataGrid.razor.js";
+
+    private ElementReference _reorderContainer;
+    private IJSObjectReference? _reorderModule;
+    private DotNetObjectReference<BranchDataGrid<TDomainObject, TSearchResult>>? _dotNetReference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender && CanReorder)
+        {
+            _dotNetReference = DotNetObjectReference.Create(this);
+            _reorderModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", ReorderModulePath);
+            await _reorderModule.InvokeVoidAsync("initialize", _reorderContainer, _dotNetReference);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnRowMovedAsync(int movedNodeId, int targetNodeId, bool insertAfter)
+    {
+        await MoveNodeAsync(movedNodeId, targetNodeId, insertAfter);
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_reorderModule != null)
+            {
+                await _reorderModule.InvokeVoidAsync("dispose", _reorderContainer);
+                await _reorderModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is already gone, there is nothing left to clean up in the browser.
+        }
+
+        _dotNetReference?.Dispose();
+    }
 }

@@ -3,6 +3,7 @@ using BusinessAppFramework.Application.Interfaces;
 using BusinessAppFramework.Application.Search;
 using BusinessAppFramework.Application.Trees;
 using BusinessAppFramework.Contracts;
+using BusinessAppFramework.Domain;
 using BusinessAppFramework.Domain.DomainObjects;
 using BusinessAppFramework.WebUI.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -38,6 +39,7 @@ namespace BusinessAppFramework.WebUI.Components.Editor
         [Parameter] public EventCallback ItemChanged { get; set; } 
         [Parameter] public string DeleteConfirmationMessageKey { get; set; } = MessageKeys.DeleteConfirmationMessage;
         public IEnumerable<Node> VisibleNodes => CollectVisible(Branch?.Nodes ?? Enumerable.Empty<Node>());
+        protected bool CanReorder => typeof(IIndexable).IsAssignableFrom(typeof(TDomainObject));
 
         #endregion
 
@@ -106,6 +108,11 @@ namespace BusinessAppFramework.WebUI.Components.Editor
                 node.DomainObjectSearchResult = searchResults.First(s => s.DomainObjectId == node.Id);
             }
 
+            if (CanReorder && Branch != null)
+            {
+                SortByIndex(Branch);
+            }
+
             _loadedParentId = ParentId;
             _loadedBranch = Branch;
 
@@ -166,6 +173,84 @@ namespace BusinessAppFramework.WebUI.Components.Editor
         {
             await ItemChanged.InvokeAsync();
             return DataGridEditFormAction.Close;
+        }
+
+        protected async Task MoveNodeAsync(int movedNodeId, int targetNodeId, bool insertAfter)
+        {
+            if (!CanReorder || Branch == null || movedNodeId == targetNodeId)
+                return;
+
+            var siblings = FindSiblings(new List<Branch> { Branch }, movedNodeId);
+            var movedNode = siblings?.FirstOrDefault(n => n.Id == movedNodeId);
+            var targetNode = siblings?.FirstOrDefault(n => n.Id == targetNodeId);
+
+            if (siblings == null || movedNode == null || targetNode == null)
+                return;
+
+            var originalPosition = siblings.IndexOf(movedNode);
+
+            siblings.Remove(movedNode);
+
+            var targetPosition = siblings.IndexOf(targetNode);
+            siblings.Insert(insertAfter ? targetPosition + 1 : targetPosition, movedNode);
+
+            if (siblings.IndexOf(movedNode) == originalPosition)
+                return;
+
+            Reindex(siblings);
+
+            await ItemChanged.InvokeAsync();
+        }
+
+        private static void Reindex(List<Node> nodes)
+        {
+            for (var position = 0; position < nodes.Count; position++)
+            {
+                if (nodes[position].DomainObject is IIndexable indexable)
+                {
+                    indexable.Index = position;
+                }
+            }
+        }
+
+        private static void SortByIndex(Branch branch)
+        {
+            var sortedNodes = branch.Nodes
+                .OrderBy(n => n.DomainObject is IIndexable indexable ? indexable.Index : int.MaxValue)
+                .ThenBy(n => n.Id)
+                .ToList();
+
+            if (!sortedNodes.SequenceEqual(branch.Nodes))
+            {
+                branch.Nodes = sortedNodes;
+            }
+
+            foreach (var node in sortedNodes)
+            {
+                foreach (var childBranch in node.ChildBranches)
+                {
+                    SortByIndex(childBranch);
+                }
+            }
+        }
+
+        private static List<Node>? FindSiblings(IEnumerable<Branch> branches, int id)
+        {
+            foreach (var branch in branches)
+            {
+                if (branch.Nodes.Any(n => n.Id == id))
+                    return branch.Nodes;
+
+                foreach (var node in branch.Nodes)
+                {
+                    var siblings = FindSiblings(node.ChildBranches, id);
+
+                    if (siblings != null)
+                        return siblings;
+                }
+            }
+
+            return null;
         }
 
         protected static IEnumerable<Node> FlattenNodes(IEnumerable<Node>? nodes)
