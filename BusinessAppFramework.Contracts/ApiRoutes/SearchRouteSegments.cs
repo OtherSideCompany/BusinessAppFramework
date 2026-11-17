@@ -11,7 +11,8 @@
         public const string StockMovementPaginated = $"stock-movement-paginated";
         public const string StockReservationPaginated = $"stock-reservation-paginated";
         public const string PricingLinePaginated = $"pricing-line-paginated";
-        public const string SalesQuoteOfYear = $"sales-quote-of-year";
+        public const string ClosedSalesQuotesOfYear = $"closed-sales-quotes-of-year";
+        public const string OpenSalesQuotes = $"open-sales-quotes";
         public const string NewClientSalesOrderOfYear = $"new-client-sales-order-of-year";
         public const string OpenSalesOrderOfYear = $"open-sales-order-of-year";
     }
