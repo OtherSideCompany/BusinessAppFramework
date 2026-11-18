@@ -4,31 +4,72 @@
 
 @inject ILocalizedStringService LocalizedStringService
 
-<MudPopover Open="@IsDirty"
+<MudPopover Open="@(IsDirty || _isBusy)"
             AnchorOrigin="Origin.TopRight"
             TransformOrigin="Origin.TopRight"
             OverflowBehavior="OverflowBehavior.FlipNever"
             Style="margin-left:-8px !important; margin-top:8px;" Elevation="2">
-    <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
-        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
-            <MudIconButton Icon="@Icons.Material.Filled.Save"
-                           OnClick="SaveAsync"
-                           Style="color:white"
-                           Size="Size.Large" />
-        </MudTooltip>
+    @if (_isBusy)
+    {
+        <div style="position:relative; color:white;">
+            <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
+                <MudIconButton Icon="@Icons.Material.Filled.Save"
+                               Disabled="true"
+                               Style="visibility:hidden"
+                               Size="Size.Large" />
+            </MudButtonGroup>
+
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                <MudProgressCircular Indeterminate="true" Color="Color.Inherit" Style="width:24px; height:24px;" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <MudButtonGroup Variant="Variant.Filled" Style="background:var(--mud-palette-error)">
+            <MudTooltip Text="@LocalizedStringService.Get(StringKeys.SaveKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Save"
+                               OnClick="RunSaveAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
 
 
-        <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
-            <MudIconButton Icon="@Icons.Material.Filled.Undo"
-                           OnClick="UndoAsync"
-                           Style="color:white"
-                           Size="Size.Large" />
-        </MudTooltip>
-    </MudButtonGroup>
+            <MudTooltip Text="@LocalizedStringService.Get(StringKeys.UndoKey)">
+                <MudIconButton Icon="@Icons.Material.Filled.Undo"
+                               OnClick="RunUndoAsync"
+                               Style="color:white"
+                               Size="Size.Large" />
+            </MudTooltip>
+        </MudButtonGroup>
+    }
 </MudPopover>
 
 @code{
     [Parameter, EditorRequired] public bool IsDirty { get; set; }
     [Parameter] public EventCallback SaveAsync { get; set; }
     [Parameter] public EventCallback UndoAsync { get; set; }
+
+    private bool _isBusy;
+
+    private Task RunSaveAsync() => RunAsync(SaveAsync);
+
+    private Task RunUndoAsync() => RunAsync(UndoAsync);
+
+    private async Task RunAsync(EventCallback callback)
+    {
+        if (_isBusy)
+            return;
+
+        _isBusy = true;
+
+        try
+        {
+            await callback.InvokeAsync();
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
 }
