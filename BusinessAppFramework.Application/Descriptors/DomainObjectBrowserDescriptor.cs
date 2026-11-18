@@ -18,6 +18,7 @@ namespace BusinessAppFramework.Application.Descriptors
         public List<string> ConstraintKeys { get; init; } = new();
         public string DefaultConstraintKey { get; set; } = default!;
         public string PageNavigationApplicationActionKey { get; set; } = default!;
+        public bool OpenPageOnCreation { get; set; } = true;
         public string DeleteConfirmationMessageKey
         {
             get => _deleteAction.ConfirmationMessageKey ?? MessageKeys.DeleteConfirmationMessage;

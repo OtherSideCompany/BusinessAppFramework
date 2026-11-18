@@ -315,7 +315,29 @@
     private async Task ExecuteApplicationActionAsync(IApplicationAction applicationAction)
     {
         var payload = await ActionExecutionService.ExecuteApplicationActionAsync(applicationAction);
+
+        if (Descriptor.OpenPageOnCreation &&
+            applicationAction.ActionKey == ActionKeys.CreateActionKey &&
+            TryOpenCreatedDomainObject(payload))
+            return;
+
         await RefreshServerDataAsync(payload);
+    }
+
+    private bool TryOpenCreatedDomainObject(DomainObjectApplicationActionResultPayload? payload)
+    {
+        var createdDomainObjectId = payload?.Changes.FirstOrDefault(c => c.ChangeType == ChangeType.Added)?.DomainObjectId;
+
+        var openAction = Descriptor.DomainObjectApplicationActions
+            .OfType<IDomainObjectNavigationApplicationAction>()
+            .FirstOrDefault(a => a.ActionKey.Equals(ActionKeys.OpenActionKey));
+
+        if (createdDomainObjectId == null || openAction == null)
+            return false;
+
+        NavigationManager.NavigateTo(openAction.BuildRoute(createdDomainObjectId.Value));
+
+        return true;
     }
 
     private string? GetNavigationHref(IApplicationAction applicationAction)
