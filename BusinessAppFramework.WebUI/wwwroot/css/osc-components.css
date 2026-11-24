@@ -23,3 +23,19 @@
         padding-top: 0;
         padding-bottom: 0;
     }
+
+.osc-chart,
+.osc-chart .mud-chart {
+    width: 100%;
+}
+
+    .osc-chart .mud-chart-line,
+    .osc-chart .mud-chart-bar {
+        width: 100%;
+        margin: 0;
+    }
+
+        .osc-chart .mud-chart-line svg,
+        .osc-chart .mud-chart-bar svg {
+            width: 100%;
+        }

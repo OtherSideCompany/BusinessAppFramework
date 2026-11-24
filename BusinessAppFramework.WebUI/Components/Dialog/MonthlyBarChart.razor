@@ -1,0 +1,117 @@
+@using BusinessAppFramework.WebUI.Helpers
+@using MudBlazor
+@using MudBlazor.Charts
+
+<div class="osc-chart">
+    @if (Tooltip != null)
+    {
+        <MudChart T="decimal"
+                  ChartType="ChartType.StackedBar"
+                  ChartSeries="_series"
+                  ChartLabels="MonthLabels"
+                  ChartOptions="_options"
+                  MatchBoundsToSize="true"
+                  Width="100%"
+                  Height="@Height">
+            <TooltipTemplate Context="hovered">
+                @Tooltip(hovered.Item1)
+            </TooltipTemplate>
+        </MudChart>
+    }
+    else
+    {
+        <MudChart T="decimal"
+                  ChartType="ChartType.StackedBar"
+                  ChartSeries="_series"
+                  ChartLabels="MonthLabels"
+                  ChartOptions="_options"
+                  MatchBoundsToSize="true"
+                  Width="100%"
+                  Height="@Height" />
+    }
+</div>
+
+@code {
+    private const string PrimaryColor = "var(--mud-palette-primary)";
+    private const string DimmedPrimaryColor = "rgba(var(--mud-palette-primary-rgb), .3)";
+
+    [Parameter] public decimal[] Values { get; set; } = Array.Empty<decimal>();
+    [Parameter] public string[] MonthLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public int SelectedMonth { get; set; }
+    [Parameter] public string? SeriesName { get; set; }
+    [Parameter] public string TooltipYValueFormat { get; set; } = "N2";
+    [Parameter] public string? TooltipTitleFormat { get; set; }
+    [Parameter] public Func<double, string>? YAxisToStringFunc { get; set; }
+    [Parameter] public bool ShowZeroValues { get; set; } = true;
+    [Parameter] public string Height { get; set; } = "240px";
+    [Parameter] public RenderFragment<SvgPath>? Tooltip { get; set; }
+
+    private List<ChartSeries<decimal>> _series = new();
+    private StackedBarChartOptions _options = new();
+    private decimal[]? _builtValues;
+    private int _builtSelectedMonth;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (ReferenceEquals(_builtValues, Values) && _builtSelectedMonth == SelectedMonth)
+        {
+            return;
+        }
+
+        _builtValues = Values;
+        _builtSelectedMonth = SelectedMonth;
+
+        _options = BuildOptions();
+
+        _series = new List<ChartSeries<decimal>>
+        {
+            BuildSeries(month => month != SelectedMonth),
+            BuildSeries(month => month == SelectedMonth)
+        };
+    }
+
+    private ChartSeries<decimal> BuildSeries(Func<int, bool> includeMonth)
+    {
+        return new ChartSeries<decimal>
+        {
+            Name = SeriesName,
+            Data = Values.Select((value, index) => includeMonth(index + 1) ? value : 0m).ToArray(),
+            TooltipYValueFormat = TooltipYValueFormat
+        };
+    }
+
+    private StackedBarChartOptions BuildOptions()
+    {
+        var maxValue = Values.Length == 0 ? 0m : Values.Max();
+
+        var options = new StackedBarChartOptions
+        {
+            ShowLegend = false,
+            ChartPalette = new[] { SelectedMonth == 0 ? PrimaryColor : DimmedPrimaryColor, PrimaryColor },
+            Justify = Justify.SpaceAround,
+            BarWidthRatio = 0.6,
+            YAxisTicks = ChartAxisHelper.ComputeYAxisStep(maxValue),
+            MaxNumYAxisTicks = 6,
+        };
+
+        if (YAxisToStringFunc != null)
+        {
+            options.YAxisToStringFunc = YAxisToStringFunc;
+        }
+
+        if (TooltipTitleFormat != null)
+        {
+            options.TooltipTitleFormat = TooltipTitleFormat;
+            options.TooltipSubtitleFormat = "{{X_VALUE}}";
+        }
+
+        if (!ShowZeroValues)
+        {
+            options.ShowZeroValues = false;
+        }
+
+        return options;
+    }
+}

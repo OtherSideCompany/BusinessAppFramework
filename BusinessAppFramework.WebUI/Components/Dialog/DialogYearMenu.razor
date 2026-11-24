@@ -1,0 +1,44 @@
+@using MudBlazor
+
+<style>
+    .dialog-year-menu .mud-menu-button-activator {
+        min-width: 0;
+        margin-left: -4px;
+        padding: 0 4px;
+        font-size: .75rem;
+        font-weight: 400;
+        line-height: 1.66;
+        letter-spacing: normal;
+        text-transform: none;
+        color: var(--mud-palette-text-secondary);
+    }
+
+    .dialog-year-menu .mud-menu-button-activator .mud-button-icon-end {
+        margin-left: 2px;
+    }
+
+    .dialog-year-menu .mud-menu-button-activator .mud-icon-root {
+        font-size: 1rem;
+    }
+</style>
+
+<MudMenu Class="dialog-year-menu"
+         Label="@($"{Label} {Year}")"
+         EndIcon="@Icons.Material.Filled.ExpandMore"
+         Variant="Variant.Text"
+         Size="Size.Small"
+         Dense="true"
+         AnchorOrigin="Origin.BottomLeft"
+         TransformOrigin="Origin.TopLeft">
+    @foreach (var year in Years)
+    {
+        <MudMenuItem OnClick="() => YearChanged.InvokeAsync(year)">@year</MudMenuItem>
+    }
+</MudMenu>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public int Year { get; set; }
+    [Parameter] public IEnumerable<int> Years { get; set; } = Array.Empty<int>();
+    [Parameter] public EventCallback<int> YearChanged { get; set; }
+}

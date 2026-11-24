@@ -1,0 +1,25 @@
+<style>
+    .dialog-body .mud-table,
+    .dialog-body .mud-table-container,
+    .dialog-body .mud-table-root {
+        background: transparent !important;
+    }
+
+    .dialog-body .osc-table {
+        border: none;
+        border-radius: 0;
+    }
+
+    .dialog-body .mud-table-head .mud-table-cell,
+    .dialog-body .mud-table-head th {
+        background: var(--mud-palette-background-gray) !important;
+    }
+</style>
+
+<div class="dialog-body" style="display:flex; flex-direction:column; gap:36px; padding:24px 24px 28px 24px; background:var(--mud-palette-background-gray); border-radius:0 0 var(--mud-default-borderradius) var(--mud-default-borderradius);">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

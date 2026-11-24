@@ -70,14 +70,5 @@
         }
     }
 
-    private string IndicatorCssColor => IndicatorColor switch
-    {
-        Color.Primary => "var(--mud-palette-primary)",
-        Color.Secondary => "var(--mud-palette-secondary)",
-        Color.Success => "var(--mud-palette-success)",
-        Color.Error => "var(--mud-palette-error)",
-        Color.Warning => "var(--mud-palette-warning)",
-        Color.Info => "var(--mud-palette-info)",
-        _ => "var(--mud-palette-text-disabled)"
-    };
+    private string IndicatorCssColor => BusinessAppFramework.WebUI.Helpers.ColorCssHelper.ToCssVariable(IndicatorColor);
 }

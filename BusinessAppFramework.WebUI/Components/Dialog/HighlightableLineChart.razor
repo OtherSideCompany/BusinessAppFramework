@@ -1,0 +1,34 @@
+@using MudBlazor
+@using MudBlazor.Charts
+
+@if (HighlightedPointIndex > 0)
+{
+    <style>
+        .@(_id) circle.mud-chart-point:nth-of-type(@(2 * HighlightedPointIndex - 1)):not([opacity]),
+        .@(_id) circle.mud-chart-point:nth-of-type(@(2 * HighlightedPointIndex - 2)):not([opacity]) {
+            fill: var(--mud-palette-primary);
+            r: 7px;
+        }
+    </style>
+}
+
+<div class="osc-chart @_id">
+    <MudChart T="decimal"
+              ChartType="ChartType.Line"
+              ChartSeries="Series"
+              ChartLabels="Labels"
+              ChartOptions="Options"
+              MatchBoundsToSize="true"
+              Width="100%"
+              Height="@Height" />
+</div>
+
+@code {
+    private readonly string _id = $"line-chart-{Guid.NewGuid():N}";
+
+    [Parameter] public List<ChartSeries<decimal>> Series { get; set; } = new();
+    [Parameter] public string[] Labels { get; set; } = Array.Empty<string>();
+    [Parameter] public LineChartOptions Options { get; set; } = new();
+    [Parameter] public int HighlightedPointIndex { get; set; }
+    [Parameter] public string Height { get; set; } = "240px";
+}

@@ -1,0 +1,25 @@
+@using MudBlazor
+
+<div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+    @if (!string.IsNullOrEmpty(Title) || TitleContent != null || Actions != null)
+    {
+        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px;">
+            <MudText Typo="Typo.subtitle1" Style="font-weight:600;">@Title</MudText>
+            @TitleContent
+            @if (Actions != null)
+            {
+                <div style="margin-left:auto;">
+                    @Actions
+                </div>
+            }
+        </div>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? TitleContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

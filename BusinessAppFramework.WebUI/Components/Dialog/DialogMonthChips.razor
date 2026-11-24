@@ -1,0 +1,27 @@
+@using MudBlazor
+
+<MudChipSet T="int"
+            SelectionMode="SelectionMode.SingleSelection"
+            SelectedValue="SelectedMonth"
+            SelectedValueChanged="SelectedMonthChanged"
+            Variant="Variant.Text"
+            Color="Color.Default"
+            SelectedColor="Color.Primary"
+            Size="Size.Small"
+            CheckMark="false"
+            Ripple="false">
+    <MudChip T="int" Value="0">@YearLabel</MudChip>
+    @for (var index = 1; index <= MonthLabels.Length; index++)
+    {
+        var month = index;
+        <MudChip T="int" Value="@month" Disabled="@(IsMonthDisabled != null && IsMonthDisabled(month))">@MonthLabels[month - 1]</MudChip>
+    }
+</MudChipSet>
+
+@code {
+    [Parameter] public int SelectedMonth { get; set; }
+    [Parameter] public EventCallback<int> SelectedMonthChanged { get; set; }
+    [Parameter] public string? YearLabel { get; set; }
+    [Parameter] public string[] MonthLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public Func<int, bool>? IsMonthDisabled { get; set; }
+}
